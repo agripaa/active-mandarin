@@ -1,0 +1,121 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;500;600;700&display=swap');
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: 'Poppins', sans-serif;
+  scroll-behavior: smooth;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.classes{
+  background: url('/public/assets/grids.png') #181B3F no-repeat right;
+  background-size: 80rem;
+}
+
+svg { vertical-align: baseline; }
+
+:where(.lectures, .cates)::-webkit-scrollbar{
+  height: .5vh;
+}
+:where(.lectures, .cates)::-webkit-scrollbar-track{
+  background-color: #FFFFFF;
+}
+.lectures::-webkit-scrollbar-thumb{
+  background: #FFFFFF;
+  border-radius: 30px;
+}
+
+.supp{
+  background: url('/public/assets/supports.png') #181B3F no-repeat center;
+}
+
+.panels{
+  position: relative;
+}
+.panels::after{
+  position: absolute;
+  content: '';
+  width: 100%;
+  height: 10px;
+  background-color: #F5F5F5;
+  border-radius: 30px;
+}
+
+.menus{
+  position: relative;
+  animation: shows .5s 1;
+  opacity: 1;
+}
+
+.loadings{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #6699FF;
+  width: 3px;
+  height: 20%;
+  border-radius: 30px;
+  animation: loads 2s infinite;
+}
+
+.loadings::before{
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -20px;
+  transform: translate(-50%, -50%);
+  background: #6699FF;
+  width: 3px;
+  height: 50%;
+  border-radius: 30px;
+  animation: loads1 1.8s infinite;
+}
+
+.loadings::after{
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  transform: translate(-50%, -50%);
+  background: #6699FF;
+  width: 3px;
+  height: 90%;
+  border-radius: 30px;
+  animation: loads1 2s infinite;
+}
+
+@keyframes loads1 {
+  0%, 100%{
+    height: 100%;
+  }
+  50%{
+    height: 0%;
+  }
+}
+
+@keyframes loads {
+  0%, 100%{
+    height: 0%;
+  }
+  50%{
+    height: 20%;
+  }
+}
+
+@keyframes shows {
+  0%{
+    opacity: 0;
+  }
+}
