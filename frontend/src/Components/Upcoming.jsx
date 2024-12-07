@@ -13,29 +13,29 @@ const Upcoming = ({ text }) => {
 
     useEffect(() => {
         dispatch(getPost())
-    }, [])
-    const dummy = [
-        {
-            title: 'QnA Session',
-            source: 'www.instagram.com',
-            cover: '/assets/events.png'
-        },
-        {
-            title: 'QnA Session',
-            source: 'www.instagram.com',
-            cover: '/assets/events.png'
-        },
-        {
-            title: 'QnA Session',
-            source: 'www.instagram.com',
-            cover: '/assets/events.png'
-        },
-        {
-            title: 'QnA Session',
-            source: 'www.instagram.com',
-            cover: '/assets/events.png'
-        }
-    ]
+    }, [dispatch])
+    // const dummy = [
+    //     {
+    //         title: 'QnA Session',
+    //         source: 'www.instagram.com',
+    //         cover: '/assets/events.png'
+    //     },
+    //     {
+    //         title: 'QnA Session',
+    //         source: 'www.instagram.com',
+    //         cover: '/assets/events.png'
+    //     },
+    //     {
+    //         title: 'QnA Session',
+    //         source: 'www.instagram.com',
+    //         cover: '/assets/events.png'
+    //     },
+    //     {
+    //         title: 'QnA Session',
+    //         source: 'www.instagram.com',
+    //         cover: '/assets/events.png'
+    //     }
+    // ]
     return(
         <div className="container mx-auto py-20 px-5 md:px-10">
             <div className="text-center">

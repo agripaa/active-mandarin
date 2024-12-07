@@ -13,7 +13,7 @@ const Event = () => {
     const text = langs ? data?.english : data?.indonesia
     useEffect(() => {
         dispatch(getPost())
-    }, [])
+    }, [dispatch])
     return(
         <Mainlayouts>
             <div className="container mx-auto md:px-10 px-5">

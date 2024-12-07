@@ -7,7 +7,7 @@
     "test": "nodemon index.js",
     "dev": "nodemon --exec babel-node index.js",
     "production": "nodemon --exec babel-node index.js",
-    "build" : "babel src --out-dir dist"
+    "build": "babel src --out-dir dist"
   },
   "author": "",
   "license": "ISC",
@@ -27,6 +27,7 @@
     "mysql2": "^2.3.3",
     "nodemon": "^2.0.20",
     "package": "^1.0.1",
+    "path": "^0.12.7",
     "sequelize": "^6.23.0"
   }
 }

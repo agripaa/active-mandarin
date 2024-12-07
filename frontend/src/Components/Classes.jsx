@@ -15,7 +15,7 @@ const Classes = ({ title, button }) => {
     })
     useEffect(() => {
         dispatch(getClass(filters[0]))
-    }, [])
+    }, [dispatch, filters])
     return(
         <div className="classes bg-[#181B3F] px-5">
             <div className="bg-gradient-to-r from-[#181B3F] via-[#181B3F] to-transparent text-white">

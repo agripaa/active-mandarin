@@ -12,7 +12,7 @@ const Faq = ({ text }) => {
 
     useEffect(() => {
         dispatch(getFaq())
-    }, [])
+    }, [dispatch])
 
     return(
         <div className="container m-auto py-20 px-5 md:px-10">

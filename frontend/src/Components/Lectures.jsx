@@ -10,7 +10,7 @@ const Lectures = ({ text }) => {
 
     useEffect(() => {
         dispatch(getLecture())
-    }, [])
+    }, [dispatch])
 
     return(
         <div className="md:py-20 py-10 md:px-10 px-5">

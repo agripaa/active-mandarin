@@ -11,7 +11,7 @@ const Sponsors = ({ text }) => {
     const { data } = useSelector(state => state.sponsorReducer)
     useEffect(() => {
         dispatch(getSponsors())
-    }, [])
+    }, [dispatch])
     return (
         <div className="my-20 container mx-auto p-3">
             <h2 className="font-normal text-[#7D7D7D] md:text-xl text-xs text-center">{text.tags}</h2>

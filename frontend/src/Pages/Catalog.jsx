@@ -14,11 +14,11 @@ const Catalog = () => {
 
     useEffect(() => {
         dispatch(getClass())
-    }, [])
+    }, [dispatch])
 
     useEffect(() => {
         dispatch(getClass({ search: filter }))
-    }, [filter])
+    }, [dispatch, filter])
 
     const category = ['', 'Mandarin', 'Taiwan']
     return(

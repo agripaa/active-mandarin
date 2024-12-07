@@ -1,7 +1,7 @@
 import { LangType } from "../Constants/LangType";
-
+import {EngLang, IndLang} from '../../Lang/Data';
 const initialState = {
-    data: [],
+    data: {english: EngLang, indonesia: IndLang},
     langs: true
 }
 

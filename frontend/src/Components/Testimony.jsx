@@ -13,7 +13,7 @@ const Testimony = ({ text }) => {
     let pointer = Math.ceil(testimony.length / (testimony.length/2))
     useEffect(() => {
         dispatch(getTestimony())
-    }, [])
+    }, [dispatch])
     useEffect(() => {
         const newData = []
         for(let i = 0; i < testimony.length; i += pointer){
@@ -21,7 +21,7 @@ const Testimony = ({ text }) => {
             newData.push(temp)
         }
         setData(newData)
-    }, [testimony])
+    }, [testimony, pointer])
 
     const left = "md:py-5 md:px-6 py-3 px-4 border-2 border-[#02264A] text-[#02264A] hover:bg-[#02264A] hover:text-white rounded-full md:text-2xl text-lg font-bold"
     const right = "md:py-5 md:px-6 py-3 px-4 border-2 border-[#02264A] bg-[#02264A] text-white rounded-full md:text-2xl text-lg font-bold"

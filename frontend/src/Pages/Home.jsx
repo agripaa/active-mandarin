@@ -16,6 +16,7 @@ import { useSelector } from "react-redux";
 const Homes = () => {
     const { data, langs } = useSelector(state => state.LangReducer)
     const text = langs ? data?.english : data?.indonesia
+    console.log({data})
     return(
         <Mainlayouts>
             <Heros text={{title: text?.herosTitle, desc: text?.herosDesc}}/>

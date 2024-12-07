@@ -61,9 +61,8 @@ const Headers = ({ collapse, funcs }) => {
                 <Col span={14} className="lg:block hidden">
                     <Row justify="center" gutter={24} >
                         {navs.map((item, index) => 
-                            <Col>
+                            <Col key={index} >
                                 <Link 
-                                key={index} 
                                 to={item.href}
                                 className={`no-underline font-medium text-lg hover:text-[#09072E] ${item.href === location.pathname ? 'text-[#09072E]' : 'text-[#9F9FA1]'}`}>{item.name}</Link>
                             </Col>

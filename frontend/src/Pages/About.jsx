@@ -14,7 +14,7 @@ const About = () => {
     const dispatch = useDispatch()
     useEffect(() => {
         dispatch(getAbout(idx))
-    }, [idx])
+    }, [dispatch, idx])
 
     const year = ['2019', '2020', '2021', '2022', '2023']
 
