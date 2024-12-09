@@ -13,7 +13,7 @@ const Testimony = ({ text }) => {
             <div className="container mx-auto">
                 <div className="flex justify-between min-h-screen items-center px-5">
                     <div className="flex flex-col items-center justify-center w-[30%]">
-                        <img src="/assets/social media.png" className="w-9/12" alt="" />
+                        <img src="/assets/contact2x.png" className="w-9/12" alt="" />
                         <h2 className="text-4xl font-semibold text-white tracking-wide my-6 mt-10">{text.tags}</h2>
                         <div className="flex justify-start items-start w-full">
                             <button className="bg-[#FFCC00] px-8 py-5 rounded-3xl font-semibold">Join Now</button>

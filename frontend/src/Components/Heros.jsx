@@ -28,7 +28,7 @@ const Heros = ({ text }) => {
                         </Link>
                     </div>
                 </div>
-                <img src="/assets/heros.png" alt="img" className="sm:w-3/4 mx-auto w-full"/>
+                <img src="/assets/hero.png" alt="img" className="sm:w-3/4 mx-auto w-full"/>
             </Space>
         </div>
     )
