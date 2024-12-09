@@ -60,8 +60,8 @@ export const EngLang = {
     help: 'FAQ',
     chatAdmin: 'Chat Admin',
     flashCardDesc: 'Play everywhere, Study anywhere. Our learning will be have a lot of fun with our flashcard. Our products are the best in the market and special for you, to have fun while you learn. Grab it fast!',
-    aboutTitle: 'The Story Behind Active Mandarin ID',
-    aboutDesc: 'The reason why we made Active Mandarin ID'
+    aboutTitle: 'The story behind Active Mandarin',
+    aboutDesc: ''
 }
 
 export const IndLang = {
