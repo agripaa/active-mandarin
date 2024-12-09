@@ -23,7 +23,11 @@ const Mainlayouts = ({ children }) => {
 
     const onClose = () => setCollapse(!collapse)
     return(
-
+        // load ? (
+        //     <div className="min-h-[90vh]">
+        //         <div className="loadings"></div>
+        //     </div>
+        // ) : 
         <>
             <Headers collapse={collapse} funcs={onClose}/>
             <main style={{ minHeight: '60vh'}}>{children}</main>

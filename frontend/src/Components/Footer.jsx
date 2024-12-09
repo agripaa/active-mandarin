@@ -71,7 +71,7 @@ const Footers = () => {
                 </Row>
             </div>
             <div className="bg-[#181B3F] p-5 w-full text-white text-center">
-                <p>© 2023 All Right Reserved | Active Mandarin</p>
+                <p>© 2024 All Right Reserved | Active Mandarin</p>
             </div>
         </div>
     )

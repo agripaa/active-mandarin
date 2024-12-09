@@ -40,17 +40,7 @@ svg { vertical-align: baseline; }
   background: url('/public/assets/supports.png') #181B3F no-repeat center;
 }
 
-.panels{
-  position: relative;
-}
-.panels::after{
-  position: absolute;
-  content: '';
-  width: 100%;
-  height: 10px;
-  background-color: #F5F5F5;
-  border-radius: 30px;
-}
+
 
 .menus{
   position: relative;
@@ -118,4 +108,65 @@ svg { vertical-align: baseline; }
   0%{
     opacity: 0;
   }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-in-out;
+}
+
+.animate-slide-in {
+  animation: slide-in 0.5s ease-in-out;
+}
+
+.nav-text::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background: #09072E; /* Warna border */
+  transition: width 0.3s ease-out; /* Durasi animasi */
+}
+
+.nav-text:hover::after,
+.nav-text {
+  width: 100%; 
+}
+
+.active-link {
+  width: 0;
+  color: #09072E;
+}
+
+.active-link::after {
+  content: "";
+  width: 0;
+  color: #09072E;
+}
+
+.nav-text{
+  position: relative; /* Memastikan pseudo-element ::after bekerja relatif terhadap elemen ini */
 }

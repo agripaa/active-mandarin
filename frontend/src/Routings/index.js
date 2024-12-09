@@ -5,6 +5,7 @@ import About from "../Pages/About";
 import Flashcard from "../Pages/Flashcard";
 import Catalog from "../Pages/Catalog";
 import Event from "../Pages/Event";
+import Contact from "../Pages/Contact";
 
 const Routings = () => {
     return(
@@ -15,6 +16,7 @@ const Routings = () => {
                 <Route path="/flash" element={<Flashcard/>}/>
                 <Route path="/class" element={<Catalog/>}/>
                 <Route path="/events" element={<Event/>}/>
+                <Route path="/contact" element={<Contact/>}/>
             </Routes>
         </BrowserRouter>
     )

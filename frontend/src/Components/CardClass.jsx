@@ -1,33 +1,79 @@
 import React from "react";
-import { HiOutlineUsers } from "react-icons/hi"
-import { StarFilled } from '@ant-design/icons'
+import { HiOutlineUsers } from "react-icons/hi";
+import { StarFilled, StarOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
-import { Row, Col } from "antd"
+import { Row, Col } from "antd";
 
 const CardClasses = ({ data }) => {
     const addCommas = (num) => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
-    return(
-        <Link to='https://wa.link/4hhjtd' target="_blank">
-            <div className="md:px-3 transition ease-in px-0 py-5 bg-white md:rounded-2xl rounded text-[#02264A] md:min-h-[280px] min-h-[2r0px] hover:drop-shadow-md">
-                <img src="/assets/dummy.png" alt="card" className="w-full"/>
-                <div className="md:px-0 px-3">
-                    <h1 className="md:text-xl text-sm font-semibold mt-8 min-h-[35px] md:min-h-0 md:mb-4">{data?.title}</h1>
-                    <Row align="middle" justify="space-between" gutter={[0, 8]}>
-                        <Col xs={{ span: 24 }} sm={{ span: 12 }} xl={{ span: 8 }} className="flex items-center gap-2 text-[#7A7778] sm:text-lg text-sm font-medium">
-                            <HiOutlineUsers/> {data?.student} <span>Students</span>
-                        </Col>
-                        <Col xs={{ span: 24 }} sm={{ span: 3 }} xl={{ span: 2 }} className="flex items-center gap-2 text-[#7A7778] sm:text-lg text-sm font-medium">
-                            <span className="text-[#FAC917]"><StarFilled /></span>{data?.rating}
-                        </Col>
-                        <Col xs={{ span: 24 }} xl={{ span: 8 }}>
-                            <h2 className="md:text-xl text-sm font-semibold">Rp.{addCommas(data?.price)}</h2>
-                        </Col>
-                    </Row>
+    // Render bintang
+    const renderStars = () => {
+        const stars = [];
+        for (let i = 0; i < 5; i++) {
+            if (i < data.star) {
+                stars.push(<StarFilled key={i} className="text-[#FAC917]" />);
+            } else {
+                stars.push(
+                    <StarOutlined key={i} className="text-[#FAC917] border-[#FAC917]" />
+                );
+            }
+        }
+        return stars;
+    };
+
+    // Render grafik level berbentuk tangga
+    const renderLevel = () => {
+        const heights = ["h-4", "h-6", "h-8"]; // Tinggi bar
+        return (
+            <div className="flex items-end gap-1">
+                {heights.map((height, index) => (
+                    <div
+                        key={index}
+                        className={`w-2 ${
+                            index < data.level ? "bg-blue-500" : "bg-gray-300"
+                        } ${height} rounded`}
+                    ></div>
+                ))}
+            </div>
+        );
+    };
+
+    return (
+        <Link to="https://wa.link/4hhjtd" target="_blank">
+            <div className="transition ease-in bg-white rounded-2xl text-[#02264A] min-h-[320px] w-full mx-6 drop-shadow-md overflow-hidden">
+                <img
+                    src="/assets/dummy.png"
+                    alt="card"
+                    className="w-full h-48 object-cover"
+                />
+                <div className="px-6 py-4">
+                    <h1 className="text-2xl font-semibold mb-4">{data?.title}</h1>
+                    <div className="">
+                        <div className="flex flex-row  items-center text-start">
+                            <p className="line-through text-base text-red-500">
+                                Rp.{addCommas(data?.price)}
+                            </p>
+                            <p className="text-base font-semibold text-[#252525] ml-4">
+                                Rp.{addCommas(data?.discountPrice)}
+                            </p>
+                        </div>
+                    </div>
+                    <div className="flex justify-between items-center mt-4">
+                        <div span={12} className="flex items-center gap-1">
+                            {renderStars()} 
+                            <span>(138)</span>
+                        </div>
+                        <div className=" flex items-center">
+                            {renderLevel()}
+                            <h4 className="text-sm font-medium text-gray-500 ml-2">
+                            </h4>
+                        </div>
+                    </div>
                 </div>
             </div>
         </Link>
-    )
-}
+    );
+};
 
-export default CardClasses
+export default CardClasses;

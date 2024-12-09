@@ -16,11 +16,20 @@ import { useSelector } from "react-redux";
 const Homes = () => {
     const { data, langs } = useSelector(state => state.LangReducer)
     const text = langs ? data?.english : data?.indonesia
-    console.log({data})
+
     return(
         <Mainlayouts>
-            <Heros text={{title: text?.herosTitle, desc: text?.herosDesc}}/>
-            <Sponsors text={{ tags: text?.sponsorsTags, button: text?.sponsorsCTA}}/>
+            <Heros text={{
+                title: text?.herosTitle, 
+                desc: text?.herosDesc, 
+                actionDesc: text?.herosActionDesc,
+                listInformation: text?.herosListInformation
+            }}/>
+            <Sponsors 
+                text={{ 
+                    tags: text?.sponsorsTags, 
+                    button: text?.sponsorsCTA
+            }}/>
             <Works 
                 text={{ 
                     title: text?.workflowTitle,
@@ -28,14 +37,32 @@ const Homes = () => {
                     }}
                 cards={text?.workflowCards}
             />
-            <Products text={{ title: text?.productsTitle, tags: text?.productsTags, desc: text?.productsDesc }} />
-            <Classes title={text?.classTitle} button={text?.viewButton}/>
-            <Lectures text={{ title: text?.lectureTitle, tags: text?.lectureTags}} />
-            <Moments text={{ title: text?.momentsTitle, tags: text?.momentsTags}} />
-            <Testimony text={{ title: text?.testimonyTitle, tags: text?.testimonyTags}} />
-            <Upcoming text={{title: text?.eventTitle, tags: text?.eventTags, button: text?.viewButton}} />
-            <Faq text={{title: text?.faqTitle, tags: text?.faqTags}}/>
-            <Supports text={{ title: text?.donateTitle, desc: text?.donateDesc, button: text?.donateButton}}/>
+            <Products text={{ 
+                title: text?.productsTitle,
+                tags: text?.productsTags, 
+                desc: text?.productsDesc 
+            }} />
+            <Classes 
+                title={text?.classTitle} 
+                button={text?.viewButton}
+            />
+            <Lectures text={{ 
+                title: text?.lectureTitle, 
+                tags: text?.lectureTags
+            }} />
+            <Moments 
+                text={{ 
+                    title: text?.momentsTitle, 
+                    tags: text?.momentsTags
+                }} />
+            <Testimony 
+                text={{ 
+                    title: text?.testimonyTitle, 
+                    tags: text?.testimonyTags
+                }} />
+            {/* <Upcoming text={{title: text?.eventTitle, tags: text?.eventTags, button: text?.viewButton}} /> */}
+            <Faq text={{title: text?.help, tags: text?.faqTags}}/>
+            {/* <Supports text={{ title: text?.donateTitle, desc: text?.donateDesc, button: text?.donateButton}}/> */}
         </Mainlayouts>
     )
 }
