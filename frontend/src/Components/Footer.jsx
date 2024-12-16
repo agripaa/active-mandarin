@@ -70,7 +70,7 @@ const Footers = () => {
                     </Col>
                 </Row>
             </div>
-            <div className="bg-[#181B3F] p-5 w-full text-white text-center">
+            <div className="bg-[#02264A] p-5 w-full text-white text-center">
                 <p>© 2024 All Right Reserved | Active Mandarin</p>
             </div>
         </div>

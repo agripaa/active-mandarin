@@ -4,16 +4,12 @@ import CardSlider from "./CardSlider";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
 const Testimony = ({ text }) => {
-
-
-    const left = "md:py-5 md:px-6 py-3 px-4 border-2 border-[#02264A] text-[#02264A] hover:bg-[#02264A] hover:text-white rounded-full md:text-2xl text-lg font-bold"
-    const right = "md:py-5 md:px-6 py-3 px-4 border-2 border-[#02264A] bg-[#02264A] text-white rounded-full md:text-2xl text-lg font-bold"
     return(
-        <div className="bg-[#181B3F]">
+        <div className="bg-[#02264A]" style={{ backgroundImage: "url('/assets/texture-card-big.png')", backgroundSize: "cover", backgroundPosition: "center" }}>
             <div className="container mx-auto">
                 <div className="flex justify-between min-h-screen items-center px-5">
                     <div className="flex flex-col items-center justify-center w-[30%]">
-                        <img src="/assets/contact2x.png" className="w-9/12" alt="" />
+                        <img src="/assets/contact2x(white).png" className="w-9/12" alt="" />
                         <h2 className="text-4xl font-semibold text-white tracking-wide my-6 mt-10">{text.tags}</h2>
                         <div className="flex justify-start items-start w-full">
                             <button className="bg-[#FFCC00] px-8 py-5 rounded-3xl font-semibold">Join Now</button>

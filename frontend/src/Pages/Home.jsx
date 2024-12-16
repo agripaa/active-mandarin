@@ -8,10 +8,13 @@ import Classes from "../Components/Classes";
 import Lectures from "../Components/Lectures";
 import Moments from "../Components/Moments";
 import Testimony from "../Components/Testimony";
+import Affiliate from "../Components/Affiliate";
 import Upcoming from "../Components/Upcoming";
 import Supports from "../Components/Supports";
 import Faq from "../Components/FAQ";
 import { useSelector } from "react-redux";
+import Tags from "../Components/Tags";
+import Prospect from "../Components/ Prospect";
 
 const Homes = () => {
     const { data, langs } = useSelector(state => state.LangReducer)
@@ -25,6 +28,7 @@ const Homes = () => {
                 actionDesc: text?.herosActionDesc,
                 listInformation: text?.herosListInformation
             }}/>
+            <Tags />
             <Sponsors 
                 text={{ 
                     tags: text?.sponsorsTags, 
@@ -37,15 +41,22 @@ const Homes = () => {
                     }}
                 cards={text?.workflowCards}
             />
+            <Affiliate text={{
+                title: text?.affiliateTitle,
+                desc: text?.affliateDesc
+            }}/>
             <Products text={{ 
                 title: text?.productsTitle,
                 tags: text?.productsTags, 
-                desc: text?.productsDesc 
+                desc: text?.productsDesc,
+                productDesc1: text?.productItemDesc1,
+                productDesc2: text?.productItemDesc2
             }} />
             <Classes 
                 title={text?.classTitle} 
                 button={text?.viewButton}
             />
+            <Prospect />
             <Lectures text={{ 
                 title: text?.lectureTitle, 
                 tags: text?.lectureTags

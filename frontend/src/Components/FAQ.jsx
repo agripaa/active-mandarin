@@ -6,7 +6,7 @@ import { RiArrowDownSLine, RiArrowUpSLine } from "@remixicon/react";
 const Faq = ({ text }) => {
     const { Panel } = Collapse;
     const { langs } = useSelector((state) => state.LangReducer);
-    const [activeKey, setActiveKey] = useState([]); // Track active panel(s)
+    const [activeKey, setActiveKey] = useState(null); // Track single active panel
 
     const faq = [
         {
@@ -72,7 +72,7 @@ const Faq = ({ text }) => {
     ];
 
     const handleExpandIcon = (panelKey) => {
-        return activeKey.includes(panelKey) ? (
+        return activeKey === panelKey ? (
             <RiArrowUpSLine className="text-xl" />
         ) : (
             <RiArrowDownSLine className="text-xl" />
@@ -86,14 +86,15 @@ const Faq = ({ text }) => {
     return (
         <div className="flex container m-auto py-20 px-5 md:px-10">
             <div className="text-start w-6/12">
-                <h1 className="text-3xl lg:text-4xl font-semibold text-[#252525]">{text.title}</h1>
-                <h2 className="text-md w-4/6 font-normal text-[#252525] mt-6">"{text.tags}"</h2>
-                <h2 className="text-md w-4/6 font-normal text-[#252525] mt-1">- Frank Smith</h2>
+                <h1 className="text-5xl font-semibold text-[#252525]">{text.title}</h1>
+                <h2 className="text-lg w-4/6 font-normal text-[#252525] mt-6">"{text.tags}"</h2>
+                <h2 className="text-lg w-4/6 font-normal text-[#252525] mt-1">- Frank Smith</h2>
                 <button className="bg-[#FFCC00] py-4 px-8 rounded-full mt-4">Help & Support</button>
             </div>
             <Collapse
+                accordion
                 activeKey={activeKey}
-                onChange={onChange}
+                onChange={(key) => onChange(key)}
                 size="large"
                 className="w-6/12"
                 ghost
@@ -106,7 +107,7 @@ const Faq = ({ text }) => {
                         header={<span className="text-2xl font-semibold">{item.question[langs ? 'english' : 'indonesia']}</span>}
                         key={index.toString()}
                     >
-                        <p className="text-lg py-2 text-[#505E79]">
+                        <p className="text-lg py-2 text-[#505e79]">
                             {item.answer[langs ? 'english' : 'indonesia']}
                         </p>
                     </Panel>

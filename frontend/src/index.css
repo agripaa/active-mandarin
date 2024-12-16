@@ -40,7 +40,32 @@ svg { vertical-align: baseline; }
   background: url('/public/assets/supports.png') #181B3F no-repeat center;
 }
 
+/* Animasi masuk modal */
+.modal-enter {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
 
+.modal-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.modal-exit {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.modal-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.hover\:shadow-lg:hover {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
 
 .menus{
   position: relative;

@@ -15,43 +15,28 @@ const Works = ({ text, cards }) => {
     const colors = ["#9848FF", "#417CD3", "#EC722E", "#EC4882"];
 
     const positions = [
-        { transform: "translate(30%, 50px)" }, 
-        { transform: "translate(60%, 130px)" },   
-        { transform: "translate(-40%, 40px)" },   
-        { transform: "translate(-40%, 130px)" },  
+        { transform: "translate(160%, -150px)" }, 
+        { transform: "translate(45%, -45px)" },   
+        { transform: "translate(-35%, -140px)" },   
+        { transform: "translate(-160%, -80px)" },  
     ];
 
     return (
-        <div className="py-10 bg-[#FAFAFA] w-full">
+        <div className="py-10 w-full" style={{ backgroundImage: "url('/assets/texture.png')", backgroundSize: "cover", backgroundPosition: "center" }}>
             <div className="container mx-auto relative w-full">
             <h1 className="text-center mt-4 font-semibold text-4xl text-[#252525] px-3">
                 {text?.title}
             </h1>
             <h2 className="text-4xl text-center font-semibold my-5">{text?.desc}</h2>
 
-
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 1200 200"
-                    preserveAspectRatio="none"
-                    className="absolute left-[10%] w-[4/6] h-[200px] top-[130px] z-0"
-                    >
-                    <path
-                        d="M0,100 C350,0 400,250 600,150 C900,0 700,150 1200,180"
-                        stroke="#7D7D7D"
-                        strokeWidth="2"
-                        strokeDasharray="25,15"
-                        fill="none"
-                        />
-                </svg>
+            <div className="w-full flex items-center mt-36 justify-center">
+                <img src="/assets/line.png" className="w-3/6" alt="" />
+            </div>
 
             {/* Konten */}
-            <Row justify="space-between" align="middle" className="relative w-full my-24 z-10">
+            <Row justify="space-between" align="middle" className="relative w-full z-10">
                 {cards?.map((item, index) => (
                     <Col
-                    xs={{ span: 24 }}
-                    sm={{ span: 12 }}
-                    md={{ span: 6 }}
                     key={index}
                     className="text-center"
                     style={{
@@ -62,7 +47,7 @@ const Works = ({ text, cards }) => {
                     >
                         <Space direction="vertical" align="center">
                             <div
-                                className="p-5 rounded-full text-3xl"
+                                className=" rounded-full text-3xl"
                                 style={{
                                     backgroundColor: colors[index],
                                     color: "white",

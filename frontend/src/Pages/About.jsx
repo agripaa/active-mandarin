@@ -3,7 +3,6 @@ import Mainlayouts from "../Layouts/MainLayouts";
 import { Row, Col } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { getAbout } from "../Store/Action/getAllDatas";
-import { url } from "../Store/Config/url";
 
 const About = () => {
   const { data, langs } = useSelector((state) => state.LangReducer);
@@ -16,7 +15,7 @@ const About = () => {
 
   return (
     <Mainlayouts>
-      <div className="container mx-auto px-5 md:px-10 py-10">
+      <div className="container min-h-[80vh] items-center flex mx-auto px-5 md:px-10 py-10">
         <Row gutter={[32, 32]} align="middle">
           {/* Left Column: Image */}
           <Col xs={24} md={12}>
