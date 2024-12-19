@@ -9,11 +9,11 @@ const Heros = ({ text }) => {
                 <div className="flex justify-center items-center w-full">
                     <div className="flex justify-center items-center flex-col w-4/5 text-center">
                         <h1 className="text-xl font-bold tracking-wide text-[#02264A] md:text-4xl">{text.title}</h1>
-                        <h2 className="text-lg font-reguler text-[#201F1F] tracking-wide w-9/12 mt-4 md:text-xl">{text.desc} <span className="font-semibold">{text.actionDesc}</span></h2>
+                        <h2 className="text-lg font-reguler text-[#201F1F] tracking-wide w-full mt-4 md:text-xl">{text.desc} <span className="font-semibold">{text.actionDesc}</span></h2>
                         <div className="flex w-8/12 justify-between my-6">
                             {text.listInformation.map((list, index) => {
                                 return <h4
-                                    className="font-semibold tracking-wide text-[17px]"
+                                    className="font-semibold tracking-wide text-lg"
                                     key={index}
                                 >
                                     {list}
@@ -21,10 +21,10 @@ const Heros = ({ text }) => {
                             })}
                         </div>
                         <Link
-                            to="/donate"
+                            to="/class"
                             className="px-8 py-4 bg-[#FFCC00] tracking-wide mt-2 text-base text-[#252525] font-semibold rounded-3xl transition-all duration-300 hover:bg-yellow-500 hover:text-black"
                         >
-                            Explore Our Programs
+                            {text.btn}
                         </Link>
                     </div>
                 </div>

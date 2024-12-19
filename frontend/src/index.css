@@ -12,6 +12,10 @@ body {
   font-family: 'Poppins', sans-serif;
   scroll-behavior: smooth;
 }
+html {
+  scroll-behavior: smooth;
+}
+
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
@@ -34,6 +38,23 @@ svg { vertical-align: baseline; }
 .lectures::-webkit-scrollbar-thumb{
   background: #FFFFFF;
   border-radius: 30px;
+}
+
+.faq-content ul {
+  list-style-type: disc; /* Bulet default */
+  margin-left: 20px; /* Spasi indentasi */
+  padding-left: 20px;
+}
+
+.faq-content ol {
+  list-style-type: decimal; /* Angka untuk ordered list */
+  margin-left: 20px;
+  padding-left: 20px;
+}
+
+.faq-content li {
+  margin-bottom: 5px; /* Jarak antar item */
+  font-size: 1rem; /* Ukuran teks */
 }
 
 .supp{

@@ -30,7 +30,6 @@ const About = () => {
 
       <div className="container mx-auto px-5 md:px-10 py-10">
         <Row gutter={[32, 32]} align="middle">
-          {/* Left Column: Image */}
           <Col xs={24} md={10}>
             <div className="relative rounded-xl overflow-hidden shadow-lg">
               <img
@@ -40,7 +39,6 @@ const About = () => {
               />
             </div>
           </Col>
-          {/* Right Column: Text */}
           <Col xs={24} md={14}>
             <div className="sp">
               <h1 className="text-xl md:text-xl font-bold text-[#02264A]">
@@ -77,8 +75,8 @@ const About = () => {
               </div>
               <p className="text-md md:text-lg text-gray-600 text-justify">
                 {langs
-                  ? "Surya mewakili Perhimpuan Pelajar Indonesia Kota Nanjing untuk ikut serta dalam rapat di KJRI Shanghai dengan bahasan agenda koordinasi region timur.  Di sana, ia bersama teman lainnya membahas beberapa isu serius salah satunya mengenai agen-agen bodong yang saat ini banyak sekali melalukan penipuan terhadap pelajar Indonesia yang ingin berkuliah di luar negeri, khususnya ke Tiongkok & Taiwan"
-                  : "Surya represented the Indonesian Student Association of Nanjing City to participate in a meeting at the Indonesian Consulate General in Shanghai with the discussion of the eastern region coordination agenda. There, he and other friends discussed several serious issues, one of which was about fake agents who are currently committing fraud against Indonesian students who want to study abroad, especially in China & Taiwan."}
+                  ? "Surya represented the Indonesian Student Association of Nanjing City to participate in a meeting at the Indonesian Consulate General in Shanghai with the discussion of the eastern region coordination agenda. There, he and other friends discussed several serious issues, one of which was about fake agents who are currently committing fraud against Indonesian students who want to study abroad, especially in China & Taiwan."
+                  : "Surya mewakili Perhimpuan Pelajar Indonesia Kota Nanjing untuk ikut serta dalam rapat di KJRI Shanghai dengan bahasan agenda koordinasi region timur.  Di sana, ia bersama teman lainnya membahas beberapa isu serius salah satunya mengenai agen-agen bodong yang saat ini banyak sekali melalukan penipuan terhadap pelajar Indonesia yang ingin berkuliah di luar negeri, khususnya ke Tiongkok & Taiwan"}
               </p>
             </div>
           </Col>
@@ -160,7 +158,7 @@ const About = () => {
               </h1>
               <div className="bg-blue-500 text-slate-50 text-md font-semibold inline-block rounded-lg px-3 py-1 mt-3 mb-3">
                 <AiOutlineRight className="inline-block mr-2" />
-                2020
+                2023
               </div>
               <p className="text-md md:text-lg text-gray-600 text-justify">
                 {langs

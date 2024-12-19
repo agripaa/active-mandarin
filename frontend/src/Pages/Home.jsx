@@ -3,6 +3,7 @@ import Mainlayouts from "../Layouts/MainLayouts";
 import Heros from "../Components/Heros";
 import Sponsors from "../Components/Sponsors";
 import Works from "../Components/Works";
+import Oprec from '../Components/Oprec';
 import Products from "../Components/Products";
 import Classes from "../Components/Classes";
 import Lectures from "../Components/Lectures";
@@ -25,10 +26,15 @@ const Homes = () => {
             <Heros text={{
                 title: text?.herosTitle, 
                 desc: text?.herosDesc, 
+                btn: text?.herosBtn,
                 actionDesc: text?.herosActionDesc,
                 listInformation: text?.herosListInformation
             }}/>
-            <Tags />
+            <Tags text={{ 
+                regist: text?.tagsRegistrant,
+                participants: text?.tagsParticipant,
+                skill: text?.tagsEnhancement
+             }}/>
             <Sponsors 
                 text={{ 
                     tags: text?.sponsorsTags, 
@@ -52,11 +58,21 @@ const Homes = () => {
                 productDesc1: text?.productItemDesc1,
                 productDesc2: text?.productItemDesc2
             }} />
+            <Oprec text={{
+                title: text?.oprecTitle,
+                desc: text?.oprecDesc
+            }}/>
             <Classes 
                 title={text?.classTitle} 
                 button={text?.viewButton}
             />
-            <Prospect />
+            <Prospect text={{ 
+                title: text?.prospectTitle,
+                tags: text?.prospectTags,
+                source: text?.prospectSource,
+                head: text?.prospectheadCareer,
+                careers: text?.careers
+             }}/>
             <Lectures text={{ 
                 title: text?.lectureTitle, 
                 tags: text?.lectureTags

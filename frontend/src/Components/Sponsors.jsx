@@ -28,7 +28,7 @@ const Sponsors = ({ text }) => {
                 </div>
             </div>
                 <div className="w-full flex justify-center items-center ">
-                    <Link to='mailto:activemandarinid@gmail.com' target="_blank">
+                    <Link to='https://docs.google.com/forms/d/14c32eKPuWFBfkXPRlS7cgWFBvfx0C_p3zZdhL0Kikzk/edit' target="_blank">
                         <Buttons>{text.button}</Buttons>
                     </Link>
                 </div>

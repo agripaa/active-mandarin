@@ -1,8 +1,12 @@
-import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
 import Slider from "react-slick";
 
 const Gallery = ({ text }) => {
     const [activeSlide, setActiveSlide] = React.useState(0);
+    const [galleryData, setGalleryData] = useState([]); // State untuk menyimpan data dari API/sumber
+    const { data, langs } = useSelector((state) => state.LangReducer);
+    
 
     const settings = {
         dots: false,
@@ -18,43 +22,112 @@ const Gallery = ({ text }) => {
         beforeChange: (current, next) => setActiveSlide(next),
     };
 
-    const images = [
-        "/assets/gallery.png",
-        "/assets/gallery.png",
-        "/assets/gallery.png",
-        "/assets/gallery.png",
-        "/assets/gallery.png",
-    ];
+    useEffect(() => {
+        const fetchData = () => {
+            const images = [
+                {
+                    image: "/assets/gallery/Assist the teacher to make a video of the teaching competition.jpeg",
+                    activity: {
+                        english: "Assist the teacher to make a video of the teaching competition",
+                        indonesia: "Membantu guru membuat video untuk lomba mengajar",
+                    },
+                },
+                {
+                    image: "/assets/gallery/Campaign Indonesian batik in Campus.jpeg",
+                    activity: {
+                        english: "Campaign Indonesian batik in Campus",
+                        indonesia: "Kampanye batik Indonesia di kampus",
+                    },
+                },
+                {
+                    image: "/assets/gallery/Celebrating Chinese Day at the campus library.jpeg",
+                    activity: {
+                        english: "Celebrating Chinese Day at the campus library",
+                        indonesia: "Merayakan Hari Bahasa Mandarin di perpustakaan kampus",
+                    },
+                },
+                {
+                    image: "/assets/gallery/Chinese Speech Contest.jpg",
+                    activity: {
+                        english: "Chinese Speech Contest",
+                        indonesia: "Lomba pidato bahasa Mandarin",
+                    },
+                },
+                {
+                    image: "/assets/gallery/Chinese Writing Competition.jpg",
+                    activity: {
+                        english: "Chinese Writing Competition",
+                        indonesia: "Lomba menulis bahasa Mandarin",
+                    },
+                },
+                {
+                    image: "/assets/gallery/International Culture Festival.jpeg",
+                    activity: {
+                        english: "International Culture Festival",
+                        indonesia: "Festival budaya internasional",
+                    },
+                },
+                {
+                    image: "/assets/gallery/International student and teacher performance at Chinese New Year event.jpeg",
+                    activity: {
+                        english: "International student and teacher performance at Chinese New Year event",
+                        indonesia: "Penampilan mahasiswa dan guru internasional di acara Tahun Baru China",
+                    },
+                },
+                {
+                    image: "/assets/gallery/Jiangsu Intercultural Competence Competition.jpeg",
+                    activity: {
+                        english: "Jiangsu Intercultural Competence Competition",
+                        indonesia: "Kompetisi kemampuan lintas budaya Jiangsu",
+                    },
+                },
+                {
+                    image: "/assets/gallery/Opening ceremony for international students.jpeg",
+                    activity: {
+                        english: "Opening ceremony for international students",
+                        indonesia: "Upacara pembukaan untuk mahasiswa internasional",
+                    },
+                },
+                {
+                    image: "/assets/gallery/International Chinese Language Day.jpeg",
+                    activity: {
+                        english: "International Chinese Language Day",
+                        indonesia: "Hari Bahasa Mandarin Internasional",
+                    },
+                },
+            ];
+            setGalleryData(images);
+        };
+
+        fetchData();
+    }, []);
 
     return (
         <div className="container mx-auto py-20 px-5">
             <div className="text-center flex flex-col items-center mb-10">
-                <h1 className="text-5xl uppercase tracking-wide font-semibold text-[#02264A]">
+                <h1 className="text-4xl w-9/12 capitalize font-semibold text-[#02264A]">
                     {text.title}
                 </h1>
-                <p className="text-lg w-4/5 text-[#02264A] mt-2 tracking-wide font-normal">
-                    {text.tags}
-                </p>
             </div>
             <div className="h-full">
                 <Slider {...settings} className="rounded-xl overflow-hidden h-full">
-                    {images.map((image, index) => (
+                    {galleryData.map((item, index) => (
                         <div
                             key={index}
-                            className={`relative transition-transform duration-500 px-12 my-12 ${
-                                activeSlide === index ? "z-10 scale-105" : "z-0 scale-95"
+                            className={`relative transition-transform duration-1000 px-8 my-12 ${
+                                activeSlide === index ? "z-10 scale-110" : "z-0 scale-95"
                             }`}
                         >
                             <img
-                                src={image}
+                                src={item.image}
                                 alt={`Gallery ${index + 1}`}
                                 className="w-full h-[50vh] object-cover rounded-xl cursor-pointer"
                                 draggable="false"
                             />
                             {activeSlide === index && (
-                                <div className="absolute left-12 cursor-pointer inset-0 w-[89.25%] h-full bg-black bg-opacity-50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-500 rounded-xl">
-                                    <span className="text-white text-4xl font-semibold">
-                                        Image {index + 1}
+                                <div className="absolute left-8 cursor-pointer inset-0 w-[93%] h-full bg-black bg-opacity-50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-500 rounded-xl">
+                                    <span className="text-white text-center text-2xl font-semibold px-4">
+                                        {langs ? item.activity.english : item.activity.indonesia}
                                     </span>
                                 </div>
                             )}

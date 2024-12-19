@@ -16,10 +16,11 @@ const Donation = ({text}) => {
             </span>
             <div className="flex items-center text-md space-x-4">
                 <Link
-                    to="/donate"
+                    to="https://docs.google.com/forms/d/1t9Ti-EZBO0ZCHwvaj0lTfmI8yO-sibZV2DZXm10fpK8/edit"
+                    target="_blank"
                     className="px-4 py-3 bg-[#FFCC00] text-[#252525] rounded-2xl transition-all duration-300 font-medium text-md hover:bg-yellow-500"
                 >
-                    Give Your Support
+                    {text.btn}
                 </Link>
             </div>
         </div>

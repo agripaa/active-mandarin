@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import Slider from "react-slick";
 import { Modal, Button } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
+import { useSelector } from "react-redux";
 
 const Lectures = ({ text }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [currentLecturer, setCurrentLecturer] = useState({});
     const [currentSlide, setCurrentSlide] = useState(1);
     const [currentCertificates, setCurrentCertificates] = useState([]);
+    const { data, langs } = useSelector(state => state.LangReducer)
 
     const lecture = [
           {
@@ -162,8 +164,7 @@ const Lectures = ({ text }) => {
               }
             ]
           }
-    ]
-
+    ];
 
     const settings = {
       dots: true,
@@ -190,62 +191,40 @@ const Lectures = ({ text }) => {
   return (
       <div className="bg-[#02264A] py-20" style={{ backgroundImage: "url('/assets/texture-card-big.png')", backgroundSize: "cover", backgroundPosition: "center" }}>
           <div className="container mx-auto text-start">
-              <h1 className="text-white text-4xl font-semibold mb-10">{text.title}</h1>
-              <Slider {...settings} className="px-5">
-                  {lecture.map((item, index) => (
-                      <div key={index} className="p-4">
-                          <div className="bg-white rounded-xl w-full max-h-[650px] h-full shadow-lg text-center p-6">
-                            <div className="relative w-48 h-48 mx-auto mb-4 flex justify-center items-center">
-                              {/* SVG Border */}
-                              <svg
-                                className="absolute"
-                                width="190"
-                                height="190"
-                                viewBox="0 0 305 339"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M122.937 5.04074C122.745 2.52876 124.626 0.330389 127.142 0.206158C155.043 -1.17136 182.878 4.36808 208.159 16.363C234.815 29.0103 257.707 48.3963 274.573 72.6041C291.44 96.8118 301.695 125.003 304.325 154.389C306.955 183.776 301.87 213.34 289.57 240.158C277.271 266.976 258.185 290.12 234.199 307.3C210.213 324.48 182.158 335.101 152.809 338.114C123.459 341.127 93.8311 336.426 66.855 324.478C41.2704 313.145 18.9115 295.666 1.7514 273.623C0.203819 271.635 0.642517 268.775 2.67137 267.282C4.70022 265.788 7.55063 266.227 9.10125 268.212C25.3178 288.977 46.4172 305.447 70.5497 316.136C96.0739 327.442 124.107 331.889 151.877 329.038C179.647 326.188 206.192 316.138 228.887 299.883C251.582 283.627 269.641 261.73 281.278 236.355C292.915 210.98 297.727 183.007 295.238 155.203C292.75 127.398 283.046 100.724 267.088 77.8194C251.13 54.9146 229.469 36.572 204.248 24.6055C180.402 13.2913 154.154 8.0474 127.837 9.30634C125.321 9.42672 123.129 7.55272 122.937 5.04074Z"
-                                  fill="url(#paint0_linear_448_40)"
+            <div className="w-9/12 mx-auto mb-5">
+              <h1 className="text-white text-4xl font-semibold">{text?.title}</h1>
+            </div>
+              <div className="my-8 flex justify-center">
+                <div className="w-9/12">
+                  <Slider {...settings} className="">
+                    {lecture.map((item, index) => (
+                        <div key={index} className="p-4">
+                            <div className="bg-white rounded-xl w-full h-full shadow-lg text-center p-6">
+                              <div className="relative w-48 h-48 mx-auto mb-4 flex justify-center items-center">
+                                <img
+                                  src={item.profile}
+                                  alt={item.name}
+                                  className="relative shadow-lg mr-[17px] p-[2px] w-full h-[90%] object-cover rounded-full"
                                 />
-                                <defs>
-                                  <linearGradient
-                                    id="paint0_linear_448_40"
-                                    x1="135.5"
-                                    y1="0"
-                                    x2="135.5"
-                                    y2="339"
-                                    gradientUnits="userSpaceOnUse"
-                                  >
-                                    <stop stopColor="#6699FF" />
-                                    <stop offset="1" stopColor="#181B3F" />
-                                  </linearGradient>
-                                </defs>
-                              </svg>
-
-                              {/* Gambar Profil */}
-                              <img
-                                src={item.profile}
-                                alt={item.name}
-                                className="relative shadow-lg mr-[17px] p-[2px] w-[90%] h-[90%] object-cover rounded-full"
-                              />
-                            </div>
-                              <div className="flex flex-col mt-6 justify-center items-center">
-                                <h2 className="text-lg font-semibold text-gray-800">{item.name}</h2>
-                                <span className=" w-full py-1 text-center text-[#8493AC] font-medium text-sm">
-                                    {item.university_name}
-                                </span>
                               </div>
-                              <Button
-                                  className="mt-4 flex items-center font-semibold justify-center w-full bg-yellow-400 text-black border-none hover:text-black rounded-2xl py-6"
-                                  onClick={() => showModal(item)}
-                              >
-                                  View More
-                              </Button>
-                          </div>
-                      </div>
-                  ))}
-              </Slider>
+                                <div className="flex flex-col mt-6 justify-center items-center">
+                                  <h2 className="text-lg font-semibold text-gray-800">{item.name}</h2>
+                                  <span className=" w-full py-1 text-center h-12 text-[#8493AC] font-medium text-sm">
+                                      {item.university_name}
+                                  </span>
+                                </div>
+                                <Button
+                                    className="mt-4 flex items-center font-semibold justify-center w-full bg-yellow-400 text-black border-none hover:text-black rounded-2xl py-6"
+                                    onClick={() => showModal(item)}
+                                >
+                                    View More
+                                </Button>
+                            </div>
+                        </div>
+                    ))}
+                </Slider>
+                </div>
+              </div>
           </div>
 
           {/* Modal */}

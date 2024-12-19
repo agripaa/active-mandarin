@@ -176,7 +176,7 @@ const Headers = ({ collapse, funcs }) => {
                             <div className="text-sm md:text-xl">
                                 <GlobalOutlined />
                                 <span className="ml-2 font-normal">
-                                    {langs ? "ENG" : "INA"}
+                                    {langs ? "ENG" : "ID"}
                                 </span>
                             </div>
                         </button>

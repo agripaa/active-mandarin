@@ -40,9 +40,9 @@ const Footers = () => {
                         <Space direction="vertical" className="mt-5">
                             <p className="md:text-xl text-md font-regular">{text?.footerDesc}</p>
                             <h2 className="text-xl font-semibold">{text?.addressTitle}</h2>
-                            <p className="md:text-xl text-md font-regular">Lahat, Sumatera Selatan, Indonesia</p>
+                            <p className="md:text-xl text-md font-regular">Xinle Road, Jinbei New Area Nanjing, Jiangsu China</p>
                             <h2 className="text-xl font-semibold">{text?.phoneTitle}</h2>
-                            <p className="md:text-xl text-md font-regular">+62 821 3337 6775</p>
+                            <p className="md:text-xl text-md font-regular">+62 822-7950-6450</p>
                         </Space>
                     </Col>
                     <Col xs={{ span: 24, offset: 0 }} lg={{ span: 4, offset: 0 }} sm={{ span: 12 }}>
@@ -59,19 +59,18 @@ const Footers = () => {
                         <h1 className="text-2xl font-bold">{text?.general}</h1>
                         <Space direction="vertical" className="mt-5" size={15}>
                             <Link to='/about' className="md:text-xl text-md flex items-center gap-3">{text?.generalItem[0]}</Link>
-                            <Link to='https://docs.google.com/forms/d/e/1FAIpQLSdMLbD0-_nz9BJvUnviScGuVkHkoyI57VPsgnZ0G8dSfbH51Q/viewform' target="_blank" className="md:text-xl text-md flex items-center gap-3">{text?.generalItem[1]}</Link>
-                        </Space>
-                    </Col>
-                    <Col xs={{ span: 24, offset: 0 }} lg={{ span: 4, offset: 0 }} sm={{ span: 12 }}>
-                        <h1 className="text-2xl font-bold">FAQ</h1>
-                        <Space direction="vertical" className="mt-5" size={15}>
-                            <Link to='https://wa.link/4hhjtd' target="_blank" className="md:text-xl text-md flex items-center gap-3">{text?.chatAdmin}</Link>
+                            <Link to='#products' className="md:text-xl text-md flex items-center gap-3">Product</Link>
+                            <Link to='/class' className="md:text-xl text-md flex items-center gap-3">Programs</Link>
+                            <Link to='https://docs.google.com/forms/d/1t9Ti-EZBO0ZCHwvaj0lTfmI8yO-sibZV2DZXm10fpK8/edit' target="_blank" className="md:text-xl text-md flex items-center gap-3">Donation</Link>
+                            <Link to='https://docs.google.com/forms/d/14c32eKPuWFBfkXPRlS7cgWFBvfx0C_p3zZdhL0Kikzk/edit' target="_blank" className="md:text-xl text-md flex items-center gap-3">Become Partner</Link>
+                            <Link to='https://forms.gle/s1DuHDGpyUiwPjXp8' target="_blank" className="md:text-xl text-md flex items-center gap-3">Join our Team</Link>
+
                         </Space>
                     </Col>
                 </Row>
             </div>
             <div className="bg-[#02264A] p-5 w-full text-white text-center">
-                <p>© 2024 All Right Reserved | Active Mandarin</p>
+                <p>© 2024 All Right Reserved | Active Mandarin Indonesia</p>
             </div>
         </div>
     )

@@ -1,10 +1,12 @@
 export const EngLang = {
     donationTitle: 'Support Free Education Today',
-    donationTag: 'Your contribution creates opportunities for children to learn.',
+    donationTag: 'Help Make Mandarin Learning, Mentor Scholarship, Carrer Center, Accessible for All!',
+    donationBtn: 'Give Your Support',
     navbar: ['Home', 'About Us', 'Our Programs', 'Contact Us'],
     getStarted: 'Get Started',
-    herosTitle: 'Be Active With Active Mandarin',
-    herosDesc: 'Active Mandarin is a platform focused on Mandarin Education, Mentor Schoolarship and Career Center.',
+    herosTitle: 'Transform Your Future with Active Mandarin Indonesia',
+    herosDesc: 'Active Mandarin Indonesia is a platform focused on Mandarin Education, Mentor Scholarship and Career Center.',
+    herosBtn: "Explore Our Programs",
     herosActionDesc: 'Join us today and experience:',
     herosListInformation: ['Education', 'Mentor Scholarship', 'Career Center'],
     sponsorsTags: 'Our Company & Organization Partners',
@@ -12,35 +14,35 @@ export const EngLang = {
     workflowTitle: 'Why we are different from others?',
     workflowCards: [
         {
-            title: 'Highly Qualified Tutors',
-            shorts: 'Our tutors has HSK and TOCFL certification'
+            title: 'Best Teachers',
+            shorts: 'We have highly skilled teachers with experience'
         },
         {
-            title: 'Easy-To-Understand Teaching Materials',
-            shorts: 'We have made our curriculum easy-to-understand'
+            title: 'Best Curriculum',
+            shorts: 'We have made our structure easy & understandable'
         },
         {
-            title: "Don’t worry about the price as we have",
-            shorts: 'Lower price with high, quality teaching materials'
+            title: "1 to 1 Support",
+            shorts: 'We give 1 to 1 support to our students'
         },
         {
-            title: 'Ready to Work',
-            shorts: 'We have 50+ access with top companies, just only for you to work in the Mandarin industry'
+            title: 'Work Relation',
+            shorts: 'We have more than 500+ access with top company '
         }
     ],
-    affiliateTitle: 'Join Active Mandarin Affiliate',
+    affiliateTitle: 'Join Our Affiliate By Active Mandarin Indonesia',
     affliateDesc: 'Empower learners while earning rewards! Collaborate with us to make Mandarin education accessible and impactful.',
     productsTitle: 'Our Products',
     productsDesc: 'To Enhanced your learning in understanding Mandarin',
     productItemDesc1: 'Master Mandarin vocabulary efficiently with our comprehensive flashcard system,  featuring word definitions, usage examples, and pronunciation guides.',
     productItemDesc2: 'Reinforce your learning with structured exercise books designed to build  practical language skills through progressive learning methods.',
-    classTitle: 'Active Mandarin Premium Class',
+    classTitle: 'Premium Mandarin Learning',
     classButton: 'View more',
     classPageTitle: 'Catalog Class',
-    classPageDesc: "Let’s do the placement test",
+    classPageDesc: "Let’s do ",
     lectureTitle: 'Learn with Expert Tutors',
     lectureTags: 'Our experience and professional mentor in Active',
-    momentsTitle: 'Gallery',
+    momentsTitle: 'Documentation of Indonesian Students and International Students in China',
     momentsTags: 'Documentation of Active Mandarin ID activities.',
     testimonyTitle: 'TESTIMONY',
     testimonyTags: 'Join Our Supportive Community',
@@ -53,7 +55,7 @@ export const EngLang = {
     donateTitle: 'Give',
     donateDesc: '100% of the donations go towards to our program for the scholarship',
     donateButton: 'Donate now',
-    footerDesc: 'Active Mandarin ID is a platform focused on education, mentorship and career center',
+    footerDesc: 'Active Mandarin Indonesia is a platform focused on education, mentorship and career center',
     addressTitle: 'Address',
     phoneTitle: 'Phone Number',
     socmed: 'Social Media',
@@ -63,52 +65,75 @@ export const EngLang = {
     chatAdmin: 'Chat Admin',
     flashCardDesc: 'Play everywhere, Study anywhere. Our learning will be have a lot of fun with our flashcard. Our products are the best in the market and special for you, to have fun while you learn. Grab it fast!',
     aboutTitle: 'The story behind Active Mandarin',
-    aboutDesc: ''
+
+    prospectTitle: 'Earn a Higher Salary by Learning Mandarin',
+    prospectTags: 'Rp8-30 Million',
+    proespectSource: 'Source: Jobstreet',
+    prospectheadCareer: "As a",
+    careers: [
+        'Asistant Manager',
+        'Mandarin Editor',
+        'Mandarin Translator',
+        'Personal Assistant',
+        'Bussiness Consultant',
+        'Mandarin Speaker',
+        'Mandarin Teacher',
+        'Other',
+    ],
+
+    tagsRegistrant: "Registrant",
+    tagsParticipant: "Happy Participants",
+    tagsEnhancement: "Skills Enhancement",
+
+    oprecTitle: "Join Our Team and Grow with Active Mandarin Indonesia",
+    oprecDesc: "Be part of our team! Help us empower Mandarin education and make an impact.",
 }
 
 export const IndLang = {
     donationTitle: 'Dukung Pendidikan Gratis Hari Ini',
-    donationTag: 'Kontribusi Anda menciptakan peluang bagi anak-anak untuk belajar.',
-    navbar: ['Beranda', 'Tentang Kita', 'Kelas', 'Hubungi kami'],
+    donationTag: 'Bantu Pembelajaran Mandarin, Pembimbingan Beasiswa, dan Pusat Karier Dapat Diakses oleh Semua!',
+    donationBtn: 'Berikan Dukungan Anda',
+    navbar: ['Beranda', 'Tentang Kami', 'Program Kami', 'Hubungi kami'],
     getStarted: 'Mulai',
-    herosTitle: 'Belajar Minimal, Hasil Optimal',
-    herosDesc: 'Active Mandarin adalah platform yang berfokus pada Pendidikan Mandarin, Sekolah Mentor, dan Karir.',
+    herosTitle: 'Ubah Masa Depan Anda dengan Active Mandarin Indonesia',
+    herosBtn: "Jelajahi Program Kami",
+    herosDesc: 'Active Mandarin Indonesia adalah platform yang berfokus pada Pendidikan Mandarin, Pembimbingan Beasiswa, dan Pusat Karir.',
     herosActionDesc: 'Bergabunglah dengan kami hari ini dan rasakan:',
     herosListInformation: ['Pendidikan', 'Beasiswa Mentor', 'Pusat Karir'],
     sponsorsTags: 'Mitra Perusahaan & Organisasi Kami',
-    sponsorsCTA: 'Informasi kerja sama',
+    sponsorsCTA: 'menjadi mitra kami',
     workflowTitle: 'Mengapa kami berbeda dari yang lain?',
     workflowCards: [
         {
-            title: 'Tutor Berkualitas',
-            shorts: 'Tutor kami telah tersertifikasi HSK dan TOCFL'
+            title: 'Guru Terbaik',
+            shorts: 'Kami memiliki guru berpengalaman dan sangat terampil'
         },
         {
-            title: 'Kurikulum Ajar Mudah Dipahami',
-            shorts: 'Kami telah mendesain kurikulum ajar yang komprehensif dan proporsional'
+            title: 'Kurikulum Terbaik',
+            shorts: 'Kami menyusun kurikulum yang mudah dipahami'
         },
         {
-            title: 'Termurah',
-            shorts: 'Harga murah, kualitas wah!'
+            title: 'Bantuan 1 Per 1',
+            shorts: 'Kami memberikan dukungan 1 lawan 1 kepada siswa kami'
         },
         {
-            title: 'Langsung Kerja',
-            shorts: 'Kami telah memiliki 50+ akses ke perusahaan ternama'
-        }
+            title: 'Relasi Kerja',
+            shorts: 'Kami memiliki lebih dari 500+ koneksi dengan perusahaan terkemuka'
+        }        
     ],
-    affiliateTitle: 'Bergabunglah dengan Afiliasi Mandarin Aktif',
-    affliateDesc: 'Berdayakan pelajar sambil mendapatkan imbalan! Berkolaborasilah dengan kami untuk menjadikan pendidikan bahasa Mandarin mudah diakses dan berdampak.',
+    affiliateTitle: 'Bergabung dengan Afiliasi Kami di Active Mandarin Indonesia',
+    affliateDesc: 'Memberdayakan para pelajar sambil mendapatkan hadiah! Berkolaborasi dengan kami untuk membuat pendidikan Mandarin lebih mudah diakses dan berdampak.',    
     productsTitle: 'Produk Kami',
     productsDesc: 'Untuk Meningkatkan pembelajaran Anda dalam memahami bahasa Mandarin',
     productItemDesc1: 'Kuasai kosakata bahasa Mandarin secara efisien dengan sistem kartu flash kami yang komprehensif, yang menampilkan definisi kata, contoh penggunaan, dan panduan pengucapan.',
     productItemDesc2: 'Perkuat pembelajaran Anda dengan buku latihan terstruktur yang dirancang untuk membangun keterampilan bahasa praktis melalui metode pembelajaran progresif.',
-    classTitle: 'Kelas Mandarin Premium Aktif',
+    classTitle: 'Pembelajaran Mandarin Premium',
     classButton: 'Kelas lainnya',
     classPageTitle: 'Katalog Kelas',
-    classPageDesc: 'Ilmu yang dipersiapkan untuk persiapan studi dan kerja impian di masa depan',
+    classPageDesc: 'For your bright future starts here',
     lectureTitle: ' Belajar dengan Tutor Ahli',
     lectureTags: 'Tutor Active Mandarin ID',
-    momentsTitle: 'Galeri',
+    momentsTitle: 'Dokumentasi Pelajar Indonesia dan Pelajar Internasional di Tiongkok',
     momentsTags: 'Dokumentasi kegiatan Aktif Mandarin ID',
     testimonyTitle: 'Ulasan',
     testimonyTags: 'Bergabunglah dengan Komunitas Pendukung Kami',
@@ -117,11 +142,11 @@ export const IndLang = {
     eventDesc: 'Ikuti rangkaian acara yang dapat membantumu mengenal lebih jauh tentang Active Mandarin ID',
     viewButton: 'Selengkapnya',
     faqTitle: 'Semangat Belajar, 加油!',
-    faqTags: 'Tanya Jawab',
+    faqTags: 'Satu bahasa menempatkanmu di sebuah koridor sepanjang hidup. Dua bahasa membuka setiap pintu di sepanjang jalan.',
     donateTitle: 'Mari Berdonasi',
     donateDesc: '100% donasi digunakan untuk keperluan beasiswa',
     donateButton: 'Donasi sekarang',
-    footerDesc: 'Active Mandarin ID adalah sebuah platform yang berfokus pada pendidikan, bimbingan, dan pusat karir',
+    footerDesc: 'Active Mandarin Indonesia adalah sebuah platform yang berfokus pada pendidikan, bimbingan, dan pusat karir',
     addressTitle: 'Alamat',
     phoneTitle: 'Nomor Telepon',
     socmed: 'Media Sosial',
@@ -131,5 +156,28 @@ export const IndLang = {
     chatAdmin: 'Hubungi Admin',
     flashCardDesc: 'Belajar bahasa mandarin semakin seru dengan menggunakan bantuan flashcard Mandarin simplified and traditional sebagai metode belajar alternatif untuk mengingat dan mengkaji ulang kosakata. Active Mandarin ID mengeluarkan beberapa produk baru untuk menunjang belajar kamu dalam memahami bahasa mandarin. Beli sekarang!',
     aboutTitle: 'Cerita Dibalik Active Mandarin ID',
-    aboutDesc: 'Latar belakang terbentuknya Active Mandarin sebagai tempat berkembang bersama'
+
+    prospectTitle: 'Dapatkan Gaji Lebih Tinggi dengan Belajar Mandarin',
+    prospectTags: 'Rp8-30 Juta',
+    prospectSource: 'Sumber: Jobstreet',
+    prospectheadCareer: "Sebagai",
+    careers: [
+        'Asisten Manajer',
+        'Editor Bahasa Mandarin',
+        'Penerjemah Bahasa Mandarin',
+        'Asisten Pribadi',
+        'Konsultan Bisnis',
+        'Penutur Bahasa Mandarin',
+        'Guru Bahasa Mandarin',
+        'Lainnya',
+    ],
+
+    tagsRegistrant: "Pendaftar",
+    tagsParticipant: "Peserta Puas",
+    tagsEnhancement: "Peningkatan Keterampilan",
+
+    oprecTitle: "Bergabunglah dengan Tim Kami dan Berkembang Bersama Active Mandarin Indonesia",
+    oprecDesc: "Jadilah bagian dari tim kami! Bantu kami memperkuat pendidikan Mandarin dan memberikan dampak positif."
+
+
 }

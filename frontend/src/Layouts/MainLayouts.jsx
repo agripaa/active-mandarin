@@ -29,7 +29,8 @@ const Mainlayouts = ({ children }) => {
         <>
             <Donation text={{ 
                 title: text?.donationTitle,
-                tags: text?.donationTag
+                tags: text?.donationTag,
+                btn: text?.donationBtn
              }} />
             <Headers collapse={collapse} funcs={onClose}/>
             <main style={{ minHeight: '60vh'}}>{children}</main>
