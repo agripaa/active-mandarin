@@ -13,8 +13,8 @@ const CardDegree = ({ data }) => {
 
   return (
     <>
-      <div className="transition px-6 py-8 ease-in bg-white rounded-2xl text-[#02264A] h-full w-full drop-shadow-md overflow-hidden flex">
-        <div className="w-6/12 mr-8">
+      <div className="transition p-4 ease-in bg-white rounded-2xl text-[#02264A] h-full w-full drop-shadow-md overflow-hidden flex flex-col gap-8 sm:p-6 lg:items-start lg:flex-row xl:items-center">
+        <div className="w-full lg:w-6/12">
           <img
             src={data.image}
             alt="degree-program"
@@ -22,8 +22,8 @@ const CardDegree = ({ data }) => {
           />
         </div>
 
-        <div className="flex flex-col justify-between w-6/12">
-          <h1 className="text-2xl font-semibold mb-4">{data?.title}</h1>
+        <div className="flex flex-col justify-between w-full lg:w-6/12">
+          <h1 className="text-xl font-semibold mb-4 md:text-2xl">{data?.title}</h1>
 
           <ul className="space-y-2">
             {data?.bnefits?.map((bnefit, index) => (
@@ -31,7 +31,7 @@ const CardDegree = ({ data }) => {
                 {data?.bnefits?.length > 1 && (
                     <FaCheckCircle className="text-green-500 flex-shrink-0" size={20} />
                 )}
-                <span className="text-base font-medium text-gray-700 leading-relaxed">
+                <span className="text-sm font-medium text-gray-700 leading-relaxed md:text-base">
                     {bnefit}
                 </span>
                 </li>
@@ -41,14 +41,14 @@ const CardDegree = ({ data }) => {
           <div className="flex justify-between items-center mt-6">
             <button
               onClick={showModal}
-              className="bg-[#FFCC00] text-[#252525] px-5 py-3 font-medium rounded-2xl text-sm"
+              className="bg-[#FFCC00] text-[#252525] px-2.5 py-2 font-medium rounded-xl text-sm sm:px-5 sm:py-3 sm:rounded-2xl"
             >
               Program Detail
             </button>
             <p className="font-semibold text-lg">
               {data?.price === "Chat Admin" || data?.price === "Hubungi Admin" ? "Chat Admin" : `Rp ${addCommas(data?.price)}`}
               {data?.price !== "Chat Admin" || data?.price !== "Hubungi Admin" && (
-                <span className="font-light text-sm ml-1">/Orang</span>
+                <span className="font-light text-xs ml-1 sm:text-sm">/Orang</span>
               )}
             </p>
           </div>
@@ -62,7 +62,6 @@ const CardDegree = ({ data }) => {
         footer={null}
         onCancel={handleCancel}
         centered
-        width={900}
       >
         <div className="grid grid-cols-1 gap-x-8 gap-y-6">
           <div className="w-full flex justify-center">
@@ -142,8 +141,8 @@ const CardDegree = ({ data }) => {
 
         {/* Informasi Harga dan Chat Admin */}
         <div className="flex justify-between items-center mt-8 border-t pt-6">
-          <p className="text-3xl font-bold text-gray-800">
-            {data?.price === "Chat Admin" || data?.price === "Hubungi Admin"  ? "Chat Admin" : <>Rp {addCommas(data?.price)} <span className="text-lg font-normal">/ Item</span></>}
+          <p className="text-xl md:text-2xl font-bold text-gray-800">
+            {data?.price === "Chat Admin" || data?.price === "Hubungi Admin"  ? "Chat Admin" : <>Rp {addCommas(data?.price)} <span className="text-sm md:text-lg font-normal">/ Item</span></>}
           </p>
           <a
             href="https://wa.me/+6282223369246"

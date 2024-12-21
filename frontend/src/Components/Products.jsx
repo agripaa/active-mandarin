@@ -412,14 +412,17 @@ const Products = ({ text }) => {
                     className="w-full h-48 object-contain mb-6 rounded-lg"
                 />
                 <p className="text-gray-700 mb-4">{currentProduct.desc}</p>
-                <h3 className="font-semibold text-lg mb-2">Details:</h3>
+                <h3 className="font-medium text-xl mb-2">Details:</h3>
                 <ul className="list-disc ml-5 text-gray-600">
                     {currentProduct.product_detail?.map((detail, index) => (
                         <li key={index}>{detail}</li>
                     ))}
                 </ul>
-                <div className="flex justify-between items-center mt-6">
-                    <h3 className="font-semibold text-lg mb-2 text-[#252525]">
+                <div className="flex flex-col justify-between items-start mt-6 gap-6">
+                    <p className="font-medium text-xl text-[#252525]">
+                        Learn intensively for only
+                    </p>
+                    <h3 className="font-semibold text-xl md:text-3xl text-[#252525]">
                         Starting From: Rp {currentProduct.price}
                     </h3>
                     <a
@@ -427,9 +430,9 @@ const Products = ({ text }) => {
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        <Button type="primary" size="large" className="bg-[#FFCC00] text-black border-none" onClick="https://wa.me/+6282223369246">
+                        <button type="primary" size="large" className="bg-[#FFCC00] text-black px-6 py-3 border-none rounded-2xl" onClick="https://wa.me/+6282223369246">
                             Chat Admin
-                        </Button>
+                        </button>
                     </a>
                 </div>
             </Modal>

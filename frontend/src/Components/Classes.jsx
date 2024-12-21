@@ -280,15 +280,15 @@ const Classes = ({title}) => {
     console.log(text)
 
     return (
-        <div className="px-5">
-            <div className="container mx-auto py-20">
-                <div className="w-9/12 mx-auto mb-5">
+        <div className="px-5 bg-neutral-50">
+            <div className="container mx-auto py-8">
+                <div className="w-full mx-auto mb-5 lg:w-9/12">
                     <h1 className="text-4xl font-semibold text-start">{title}</h1>
                 </div>
 
                 <Col className="py-5 flex flex-col justify-center items-center w-full">
                     {text.map((item, index) => (
-                        <div key={index} className="mb-8 w-9/12">
+                        <div key={index} className="mb-8 w-full lg:w-11/12 xl:w-9/12">
                             <CardClasses data={item} />
                         </div>
                     ))}

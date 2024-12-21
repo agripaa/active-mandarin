@@ -17,12 +17,12 @@ const About = () => {
 
   return (
     <Mainlayouts>
-      <h1 className="text-4xl text-center mt-11">
+      <h1 className="text-2xl md:text-4xl text-center mt-11 px-5 md:px-10">
         {langs
           ? "The Story Behind Active Mandarin Indonesia"
           : "Kisah di Balik Active Mandarin Indonesia"}
       </h1>
-      <div className="font-light text-center capitalize mt-3">
+      <div className="font-light text-center capitalize mt-3 px-5 md:px-10">
         {langs
           ? "The history of the formation of Active Mandarin Indonesia which is now a place to grow together. #BeActiveWithActive"
           : "Sejarah terbentuknya Active Mandarin Indonesia yang kini menjadi tempat berkembang bersama. #BeActiveWithActive"}

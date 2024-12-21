@@ -2,7 +2,7 @@ import { Col, Row, Space, Dropdown, Modal, Input, List, Avatar } from "antd";
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { GlobalOutlined, MenuOutlined, CloseOutlined } from "@ant-design/icons";
-import { RiHandHeartLine, RiSearch2Line } from "@remixicon/react";
+import { RiHandHeartLine, RiSearch2Line, RiMenu3Line  } from "@remixicon/react";
 import { useDispatch, useSelector } from "react-redux";
 import { HandleLang } from "../Store/Action/LangAction";
 import CardClasses from "./CardClass";
@@ -120,7 +120,7 @@ const Headers = ({ collapse, funcs }) => {
     <div
         className={`bg-white backdrop-blur-md bg-opacity-80`}
     >
-        <Row align="middle" className="py-5 container mx-auto">
+        <Row align="middle" className="py-5 container mx-auto px-5">
             <Col span={5}>
                 <Link to="/" className="flex items-center w-full">
                     <img
@@ -141,7 +141,7 @@ const Headers = ({ collapse, funcs }) => {
                         <Col key={index}>
                             <Link
                                 to={item.href}
-                                className={`relative no-underline nav-text font-medium text-xl text-[#9F9FA1] mx-4 hover:text-[#09072E] p-2 transition-all duration-300 ${
+                                className={`relative no-underline nav-text font-medium text-lg text-[#9F9FA1] px-3 xl:px-4 hover:text-[#09072E] p-2 transition-all duration-300 xl:text-xl ${
                                     item.href === location.pathname
                                         ? "active-link"
                                         : ""
@@ -154,7 +154,7 @@ const Headers = ({ collapse, funcs }) => {
                 </Row>
             </Col>
             <Col
-                className="lg:m-0 ml-auto flex justify-end"
+                className="lg:m-0 ml-auto hidden justify-end lg:flex"
                 xs={{ span: 6, offset: 0 }}
                 lg={{ span: 5, offset: 0 }}
             >
@@ -183,91 +183,121 @@ const Headers = ({ collapse, funcs }) => {
                     </Dropdown>
                 </Space>
             </Col>
+            <Col
+                className="lg:m-0 ml-auto flex justify-end lg:hidden"
+                xs={{ span: 6, offset: 0 }}
+                lg={{ span: 5, offset: 0 }}
+            >
+                <Space size={15} align="center">
+                    <RiMenu3Line
+                        size={25}
+                        className="cursor-pointer mr-2"
+                        onClick={funcs}
+                    />
+                </Space>
+            </Col>
         </Row>
+    </div>
+
+    <div className={`${collapse ? 'flex' : 'hidden'} h-screen w-screen bg-white backdrop-blur-md bg-opacity-70`}>
+        <div className="container mx-auto px-5">
+            <Row align="middle" className="py-5">
+                <div className="flex flex-col">
+                    {navs.map((item, index) => (
+                        <Link
+                            to={item.href}
+                            className={`relative no-underline nav-text font-medium text-xl text-[#9F9FA1] mx-4 hover:text-[#09072E] p-2 transition-all duration-300 !w-full ${
+                                item.href === location.pathname
+                                    ? "active-link"
+                                    : ""
+                            }`}
+                        >
+                            {item.name}
+                        </Link>
+                    ))}
+                </div>
+            </Row>
+        </div>
     </div>
 
     {/* Search Modal */}
     {isModalVisible && (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-        <div className="bg-white h-3/6 w-full max-w-md rounded-lg shadow-lg overflow-hidden">
-            {/* Modal Header */}
-            <div className="flex justify-between items-center w-full px-6 pt-4">
-                <h2 className="text-xl font-semibold">Find Your Class</h2>
-                <button
-                    className="text-gray-400 hover:text-gray-600 p-0 m-0"
-                    onClick={handleModalCancel}
-                >
-                    <CloseOutlined className="text-lg" />
-                </button>
-            </div>
-            {/* Modal Body */}
-            <div className="p-6">
-                {/* Search Input */}
-                <div className="relative mb-6">
-                    <RiSearch2Line className="absolute top-1/2 left-4 transform -translate-y-1/2 text-gray-400 text-lg" />
-                    <input
-                        type="text"
-                        placeholder="Search Class Ex: Mandarin Basic"
-                        value={searchQuery}
-                        onChange={handleSearchInput}
-                        className="w-full pl-12 pr-4 py-3 border rounded-lg bg-[#FAFAFA] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white h-3/6 w-full max-w-md rounded-lg shadow-lg overflow-hidden">
+                {/* Modal Header */}
+                <div className="flex justify-between items-center w-full px-6 pt-4">
+                    <h2 className="text-xl font-semibold">Find Your Class</h2>
+                    <button
+                        className="text-gray-400 hover:text-gray-600 p-0 m-0"
+                        onClick={handleModalCancel}
+                    >
+                        <CloseOutlined className="text-lg" />
+                    </button>
                 </div>
-                {/* Search Results */}
-                {searchResults.length ? (
-                    <div className="space-y-4">
-                        {searchResults.map((item, index) => (
-                            <div
-                                key={index}
-                                className="flex cursor-pointer items-center border rounded-lg bg-white hover:shadow-lg transition-shadow p-4"
-                            >
-                                {/* Thumbnail */}
-                                <div className="w-54 h-20 flex-shrink-0 mr-8">
-                                    <img
-                                        src={item.image}
-                                        alt={item.name}
-                                        className="w-full h-full object-contain rounded-lg"
-                                    />
-                                </div>
-                                {/* Class Details */}
-                                <div className="flex-1">
-                                    <h3 className="text-lg font-semibold text-[#02264A]">
-                                        {item.name}
-                                    </h3>
-                                    <div className="flex items-center mt-2">
-                                        <span className="line-through text-red-500 text-sm">
-                                            Rp {item.originalPrice.toLocaleString()}
-                                        </span>
-                                        <span className="ml-4 text-black font-normal text-sm">
-                                            Rp {item.price.toLocaleString()}
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center mt-2">
-                                        <span className="text-yellow-500 text-sm flex items-center">
-                                            ★ {item.rating}
-                                        </span>
-                                        <span className="ml-2 text-gray-500 text-sm">
-                                            ({item.reviews} reviews)
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                {/* Modal Body */}
+                <div className="p-6">
+                    {/* Search Input */}
+                    <div className="relative mb-6">
+                        <RiSearch2Line className="absolute top-1/2 left-4 transform -translate-y-1/2 text-gray-400 text-lg" />
+                        <input
+                            type="text"
+                            placeholder="Search Class Ex: Mandarin Basic"
+                            value={searchQuery}
+                            onChange={handleSearchInput}
+                            className="w-full pl-12 pr-4 py-3 border rounded-lg bg-[#FAFAFA] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
                     </div>
-                ) : (
-                    <p className="text-gray-500 text-center">
-                        Search for your desired class above.
-                    </p>
-                )}
+                    {/* Search Results */}
+                    {searchResults.length ? (
+                        <div className="space-y-4">
+                            {searchResults.map((item, index) => (
+                                <div
+                                    key={index}
+                                    className="flex cursor-pointer items-center border rounded-lg bg-white hover:shadow-lg transition-shadow p-4"
+                                >
+                                    {/* Thumbnail */}
+                                    <div className="w-54 h-20 flex-shrink-0 mr-8">
+                                        <img
+                                            src={item.image}
+                                            alt={item.name}
+                                            className="w-full h-full object-contain rounded-lg"
+                                        />
+                                    </div>
+                                    {/* Class Details */}
+                                    <div className="flex-1">
+                                        <h3 className="text-lg font-semibold text-[#02264A]">
+                                            {item.name}
+                                        </h3>
+                                        <div className="flex items-center mt-2">
+                                            <span className="line-through text-red-500 text-sm">
+                                                Rp {item.originalPrice.toLocaleString()}
+                                            </span>
+                                            <span className="ml-4 text-black font-normal text-sm">
+                                                Rp {item.price.toLocaleString()}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center mt-2">
+                                            <span className="text-yellow-500 text-sm flex items-center">
+                                                ★ {item.rating}
+                                            </span>
+                                            <span className="ml-2 text-gray-500 text-sm">
+                                                ({item.reviews} reviews)
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-gray-500 text-center">
+                            Search for your desired class above.
+                        </p>
+                    )}
+                </div>
             </div>
         </div>
+    )}
     </div>
-)}
-
-
-
-
-</div>
 
     );
 };

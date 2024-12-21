@@ -173,8 +173,23 @@ const Lectures = ({ text }) => {
       slidesToShow: 3,
       slidesToScroll: 1,
       centerMode: false, // Nonaktifkan centerMode
-      arrows: true, // Nonaktifkan tombol next dan prev
+      arrows: false, // Nonaktifkan tombol next dan prev
       beforeChange: (current, next) => setCurrentSlide(next),
+      responsive: [
+        {
+          breakpoint: 768,
+          settings: {
+            slidesToShow: 1,
+            centerMode: true,
+          }
+        },
+        {
+          breakpoint: 1024,
+          settings: {
+            slidesToShow: 2,
+          }
+        }
+      ],
     };
 
 
@@ -195,16 +210,16 @@ const Lectures = ({ text }) => {
               <h1 className="text-white text-4xl font-semibold">{text?.title}</h1>
             </div>
               <div className="my-8 flex justify-center">
-                <div className="w-9/12">
+                <div className="w-full md:w-9/12">
                   <Slider {...settings} className="">
                     {lecture.map((item, index) => (
-                        <div key={index} className="p-4">
+                        <div key={index} className="px-4 h-full">
                             <div className="bg-white rounded-xl w-full h-full shadow-lg text-center p-6">
-                              <div className="relative w-48 h-48 mx-auto mb-4 flex justify-center items-center">
+                              <div className="relative w-48 h-fit mx-auto mb-4 flex justify-center items-center">
                                 <img
                                   src={item.profile}
                                   alt={item.name}
-                                  className="relative shadow-lg mr-[17px] p-[2px] w-full h-[90%] object-cover rounded-full"
+                                  className="relative shadow-lg p-[2px] w-full aspect-square object-cover rounded-full"
                                 />
                               </div>
                                 <div className="flex flex-col mt-6 justify-center items-center">
@@ -231,32 +246,30 @@ const Lectures = ({ text }) => {
           <Modal
                 visible={isModalVisible}
                 footer={null}
-                className="rounded-lg min-w-[650px]"
+                className="rounded-lg lg:min-w-[650px]"
                 closeIcon={<></>}
             >
-                <div className="bg-[#02264A] text-white p-6 rounded-lg flex justify-between items-center">
-                    <div className="flex w-full">
-                      <div className="w-3/12">
+                <div className="relative bg-[#02264A] text-white p-4 rounded-lg flex justify-between items-center md:p-6">
+                    <div className="flex flex-col items-center w-full gap-4 md:flex-row">
                         <img
                           src={currentLecturer.profile}
                           alt={currentLecturer.name}
-                          className="w-24 h-24 object-cover rounded-full mr-4 shadow-lg"
+                          className="w-20 h-20 object-cover rounded-full shadow-lg lg:w-24 lg:h-24"
                         />
-                      </div>
-                        <div className="w-full flex flex-col justify-around ml-4">
+                        <div className="w-full flex flex-col-reverse justify-around gap-2 md:flex-col md:mr-4">
                           <div className="flex w-full justify-between">
-                                  <h1 className="tracking-wide text-2xl font-bold">{currentLecturer.name}</h1>
-                                  <button
-                                      className="text-white text-xl bg-transparent border-none cursor-pointer"
-                                      onClick={handleCancel}
-                                  >
-                                      <CloseOutlined />
-                                  </button>
+                              <h1 className="text-lg font-bold mx-auto md:text-2xl lg:tracking-wide md:mx-0">{currentLecturer.name}</h1>
                           </div>
-                          <span className="bg-[#3377FF] w-[30%] py-1 text-center text-white  font-medium rounded-full text-sm">
+                          <span className="bg-[#3377FF] w-fit mx-auto py-1 px-3 text-center text-white font-medium rounded-full text-sm mt-auto md:mx-0">
                               {currentLecturer.cat_certificate}
                           </span>
                         </div>
+                        <button
+                            className="absolute text-white text-xl bg-transparent border-none cursor-pointer top-4 right-4 md:top-6 md:right-6"
+                            onClick={handleCancel}
+                        >
+                            <CloseOutlined />
+                        </button>
                     </div>
                 </div>
                 <div className="p-6">

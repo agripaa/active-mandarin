@@ -778,7 +778,7 @@ const Catalog = () => {
             program_start: []
         }
     ]
-};
+  };
 
   
 
@@ -810,42 +810,42 @@ const Catalog = () => {
   };
 
   useEffect(() => {
-          const fetchData = () => {
-              const images = [
-                  {
-                      image: "/assets/banner/Web Banne Act CTA-1.png",
-                      link: "#start"
-                  },
-                  {
-                      image: "/assets/banner/Web Banne Act CTA-2.png",
-                      link: "https://wa.me/+6282223369246"
-                  },
-                  {
-                      image: "/assets/banner/Web Banne Act CTA-3.png",
-                      link: "https://wa.me/+6282223369246"
-                  },
-                  {
-                      image: "/assets/banner/Web Banne Act CTA-4.png",
-                      link: "https://wa.me/+6282223369246"
-                  },
-                  {
-                      image: "/assets/banner/Web Banne Act CTA-5.png",
-                      link: "https://wa.me/+6282223369246"
-                  },
-                  {
-                      image: "/assets/banner/Web Banne Act CTA-6.png",
-                      link: "https://wa.me/+6282223369246"
-                  },
-                  {
-                      image: "/assets/banner/Web Banne Act CTA-7.png",
-                      link: "https://wa.me/+6282223369246"
-                  }
-              ];
-              setGalleryData(images);
-          };
-  
-          fetchData();
-      }, []);
+    const fetchData = () => {
+      const images = [
+        {
+          image: "/assets/banner/Web Banne Act CTA-1.png",
+          link: "#start"
+        },
+        {
+          image: "/assets/banner/Web Banne Act CTA-2.png",
+          link: "https://wa.me/+6282223369246"
+        },
+        {
+          image: "/assets/banner/Web Banne Act CTA-3.png",
+          link: "https://wa.me/+6282223369246"
+        },
+        {
+          image: "/assets/banner/Web Banne Act CTA-4.png",
+          link: "https://wa.me/+6282223369246"
+        },
+        {
+          image: "/assets/banner/Web Banne Act CTA-5.png",
+          link: "https://wa.me/+6282223369246"
+        },
+        {
+          image: "/assets/banner/Web Banne Act CTA-6.png",
+          link: "https://wa.me/+6282223369246"
+        },
+        {
+          image: "/assets/banner/Web Banne Act CTA-7.png",
+          link: "https://wa.me/+6282223369246"
+        }
+      ];
+      setGalleryData(images);
+    };
+
+    fetchData();
+  }, []);
 
   const settingsCarousel = {
     dots: false,
@@ -859,6 +859,15 @@ const Catalog = () => {
     centerMode: true,
     centerPadding: "20%",
     beforeChange: (current, next) => setActiveSlide(next),
+    responsive: [
+      {
+        breakpoint: 768,
+        settings: {
+          centerMode: false,
+          centerPadding: 0,
+        }
+      }
+    ],
   };
 
   const { classes = [] } = useSelector((state) => state.classReducer);
@@ -884,12 +893,12 @@ const Catalog = () => {
     <Mainlayouts>
       <div className="container mx-auto px-5">
         <div className="h-auto">
-        <Slider {...settingsCarousel} className="rounded-xl overflow-hidden h-full">
+        <Slider {...settingsCarousel} className="rounded-xl overflow-visible h-full">
           {galleryData.map((item, index) => (
             <div
               key={index}
-              className={`relative transition-transform duration-[1500ms] px-16 my-12 ${
-                activeSlide === index ? "z-10 scale-125" : "z-0 scale-105"
+              className={`relative transition-transform duration-[1500ms] px-2 sm:px-8 my-8 md:my-12 md:px-10 lg:px-14 xl:px-16 ${
+                activeSlide === index ? "md:z-10 md:scale-125" : "md:z-0 md:scale-105"
               }`}
             >
               <a
@@ -908,8 +917,8 @@ const Catalog = () => {
           ))}
         </Slider>
         </div>
-        <div className="py-10" id="start">
-          <div className="w-9/12 mx-auto mb-6">
+        <div className="md:py-10" id="start">
+          <div className="w-full mx-auto mb-6 lg:w-9/12">
             <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
               {langs ? "Premium Mandarin Learning" : "Pembelajaran Mandarin Premium"}
             </h2>
@@ -921,7 +930,7 @@ const Catalog = () => {
           </div>
           <div className="w-full flex flex-col justify-center items-center">
             {translateClass.map((item, index) => (
-              <div key={index} className="flex flex-col w-9/12 mb-6">
+              <div key={index} className="w-full flex flex-col mb-6 lg:w-9/12">
                 <CardClasses data={item} />
               </div>
             ))}
@@ -930,20 +939,18 @@ const Catalog = () => {
 
         <div className="pt-10 pb-1">
           <div>
-            <div>
-            <div className="w-9/12 mx-auto mb-6">
+            <div className="w-full mx-auto mb-6 lg:w-9/12">
               <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
                 {langs ? "From Zero To Hero" : "Dari Nol Menjadi Pahlawan"}
               </h2>
                 <span className="font-semibold text-[#8493AC] text-lg">
-                    {langs
-                      ? "Find the premium class and opportunities along the way "
-                      : "Temukan kelas premium dan peluang di sepanjang prosesnya"}
-                  </span>
-            </div>
+                  {langs
+                    ? "Find the premium class and opportunities along the way "
+                    : "Temukan kelas premium dan peluang di sepanjang prosesnya"}
+                </span>
             </div>
             <div className="my-8 flex justify-center">
-              <div className="w-9/12">
+              <div className="w-full lg:w-9/12">
                 <Slider {...settings}>
                   {translateProduct.map((item, index) => (
                     <div key={index} className="p-0 m-4" onClick={() => showModal(item)}>
@@ -1015,7 +1022,7 @@ const Catalog = () => {
           </div>
           
           <div className="py-10">
-            <div className="w-9/12 mx-auto mb-6">
+            <div className="w-full mx-auto mb-6 lg:w-9/12">
               <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
                 {langs ? "Mentor Scholarship Program" : "Program Beasiswa Mentor"}
               </h2>
@@ -1028,7 +1035,7 @@ const Catalog = () => {
 
             <div className="w-full flex flex-col justify-center items-center">
               {translateScholarship.map((item, index) => (
-                <div key={index} className="flex flex-col w-9/12 mb-6">
+                <div key={index} className="w-full flex flex-col mb-6 lg:w-9/12">
                   <CardClasses data={item} />
                 </div>
               ))}
@@ -1036,7 +1043,7 @@ const Catalog = () => {
           </div>
 
           <div className="py-10">
-            <div className="w-9/12 mx-auto mb-6">
+            <div className="w-full mx-auto mb-6 lg:w-9/12">
               <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
                 {langs ? "Non Degree / Degree Program" : "Program Non Gelar/Gelar"}
               </h2>
@@ -1048,7 +1055,7 @@ const Catalog = () => {
             </div>
             <div className="w-full flex flex-col justify-center items-center">
               {translateDegree.map((item, index) => (
-                <div key={index} className="flex flex-col w-9/12 mb-6">
+                <div key={index} className="w-full flex flex-col mb-6 lg:w-9/12">
                   <CardDegree data={item} />
                 </div>
               ))}

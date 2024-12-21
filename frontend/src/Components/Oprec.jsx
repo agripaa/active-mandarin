@@ -15,18 +15,18 @@ const Oprec = ({ text }) => {
   }
 
   return (
-    <div className='container mx-auto my-24 relative w-full'>
+    <div className='container mx-auto my-24 relative w-full px-5'>
       <div className='flex items-center justify-center w-full h-full'>
         <div
-          className='relative w-9/12 flex bg-[#02264A] rounded-2xl py-16 px-14 overflow-hidden'
+          className='relative w-full flex bg-[#02264A] rounded-2xl p-10 md:p-14 lg:w-11/12 xl:w-10/12 2xl:w-9/12'
           style={{
             backgroundImage: "url('/assets/card-texture.png')",
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
         >
-          <div className='flex flex-col justify-center text-white w-7/12'>
-            <h2 className='font-semibold text-4xl'>{text.title}</h2>
+          <div className='flex flex-col justify-center text-white w-full lg:w-7/12'>
+            <h2 className='font-semibold text-2xl md:text-[32px]'>{text.title}</h2>
             <p className='mt-4 text-lg font-light'>{text.desc}</p>
             <div className='mt-12'>
               <button
@@ -41,7 +41,7 @@ const Oprec = ({ text }) => {
           <img
             src="/assets/oprec.png"
             alt="Oprec"
-            className='absolute top-1/2 right-10 transform -translate-y-1/2 h-auto w-[30%] object-cover z-30'
+            className='absolute bottom-0 right-10 transform h-auto w-[28%] object-cover z-10 hidden sm:block lg:w-[38%]'
           />
         </div>
       </div>
