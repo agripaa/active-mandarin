@@ -15,10 +15,10 @@ const Works = ({ text, cards }) => {
     const colors = ["#9848FF", "#417CD3", "#EC722E", "#EC4882"];
 
     const positions = [
-        { transform: "translate(160%, -150px)" }, 
-        { transform: "translate(45%, -45px)" },   
-        { transform: "translate(-35%, -140px)" },   
-        { transform: "translate(-160%, -80px)" },  
+        { transform: "sm:translate-x-[0%] sm:translate-y-[0px] md:translate-x-[0%] md:translate-y-[-130px] lg:translate-x-[0%] lg:translate-y-[-150px] xl:translate-x-[110%] 2xl:translate-x-[160%] xl:translate-y-[-150px]" }, 
+        { transform: "sm:translate-x-[0%] sm:translate-y-[0px] md:translate-x-[-6%] md:translate-y-[-45px] lg:translate-x-[-6%] lg:translate-y-[-45px] xl:translate-x-[35%] 2xl:translate-x-[45%] xl:translate-y-[-45px]" },   
+        { transform: "sm:translate-x-[0%] sm:translate-y-[0px] md:translate-x-[16%] md:translate-y-[-120px] lg:translate-x-[20%] lg:translate-y-[-140px] xl:translate-x-[-20%] 2xl:translate-x-[-35%] xl:translate-y-[-140px]" },   
+        { transform: "sm:translate-x-[0%] sm:translate-y-[0px] md:translate-x-[0%] md:translate-y-[-50px] lg:translate-x-[0%] lg:translate-y-[-50px] xl:translate-x-[-110%] xl:translate-y-[-50px] 2xl:translate-x-[-160%] 2xl:translate-y-[-80px]" },  
     ];
 
     return (
@@ -29,25 +29,23 @@ const Works = ({ text, cards }) => {
             </h1>
             <h2 className="text-4xl text-center font-semibold my-5">{text?.desc}</h2>
 
-            <div className="w-full flex items-center mt-36 justify-center">
-                <img src="/assets/line.png" className="w-3/6" alt="" />
+            <div className="w-full hidden items-center mt-36 justify-center md:flex">
+                <img src="/assets/line.png" className="w-10/12 md:w-9/12 xl:w-3/6" alt="" />
             </div>
 
             {/* Konten */}
-            <Row justify="space-between" align="middle" className="relative w-full z-10">
+            <Row justify="space-between" align="middle" className="relative w-full mt-10 z-10 gap-y-10 md:mt-0">
                 {cards?.map((item, index) => (
                     <Col
                     key={index}
-                    className="text-center"
+                    className={`text-center trasnform w-1/2 px-2 md:max-w-[180px] ${positions[index].transform}`}
                     style={{
                         position: "relative",
-                        ...positions[index],
-                        maxWidth: "180px",
                     }}
                     >
                         <Space direction="vertical" align="center">
                             <div
-                                className=" rounded-full text-3xl"
+                                className="rounded-full text-3xl"
                                 style={{
                                     backgroundColor: colors[index],
                                     color: "white",
@@ -63,7 +61,7 @@ const Works = ({ text, cards }) => {
                             <h3 className="font-semibold md:text-lg text-sm mx-auto">
                                 {item?.title}
                             </h3>
-                            <p className="text-center font-reguler md:text-md text-xs">
+                            <p className="text-center font-reguler md:text-md text-sm text-[#7A7778]">
                                 {item?.shorts}
                             </p>
                         </Space>

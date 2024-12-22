@@ -18,7 +18,7 @@ const Sponsors = ({ text }) => {
             <h2 className="font-normal text-[#252525] md:text-lg text-xs text-start">{text.tags}</h2>
             <div className="w-full flex justify-between items-center">
                 <div className="w-full my-6 justify-center flex items-center">
-                    <Row className="w-full justify-center flex items-center mb-7">
+                    <Row className="w-full justify-center flex items-center gap-3 mb-7">
                         {
                             data.map((item, index) => 
                                     <img key={index} src={item} alt='company' className="w-auto h-20 mx-12"/>

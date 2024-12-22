@@ -216,3 +216,19 @@ svg { vertical-align: baseline; }
 .nav-text{
   position: relative; /* Memastikan pseudo-element ::after bekerja relatif terhadap elemen ini */
 }
+
+/* Slick content same height */
+.slick-track
+{
+    display: flex !important;
+}
+
+.slick-slide
+{
+    height: inherit !important;
+}
+
+.slick-slide > div
+{
+    height: 100% !important;
+}

@@ -279,11 +279,11 @@ const Faq = ({ text }) => {
     };
 
     return (
-        <div className="flex container m-auto py-20 px-5 md:px-10">
-            <div className="text-start w-6/12">
+        <div className="grid grid-cols-1 container m-auto py-16 px-5 lg:px-10 lg:grid-cols-2 gap-10">
+            <div className="text-center md:text-start w-full">
                 <h1 className="text-5xl font-semibold text-[#252525]">{text.title}</h1>
-                <h2 className="text-lg w-4/6 font-normal text-[#252525] mt-6">"{text.tags}"</h2>
-                <h2 className="text-lg w-4/6 font-normal text-[#252525] mt-1">- Frank Smith</h2>
+                <h2 className="text-lg font-normal text-[#252525] mt-6 lg:w-5/6">"{text.tags}"</h2>
+                <h2 className="text-lg font-normal text-[#252525] mt-1 lg:w-5/6">- Frank Smith</h2>
                 <div className="mt-8">
                     <a  href="/contact" className="bg-[#FFCC00] py-4 px-8 rounded-full">Help & Support</a>
                 </div>
@@ -293,7 +293,6 @@ const Faq = ({ text }) => {
                 activeKey={activeKey}
                 onChange={(key) => onChange(key)}
                 size="large"
-                className="w-6/12"
                 ghost
                 expandIcon={({ isActive, panelKey }) => handleExpandIcon(panelKey)}
                 expandIconPosition="end"
@@ -301,7 +300,7 @@ const Faq = ({ text }) => {
                 {faq.map((item, index) => (
                     <Panel
                         className="mb-10 px-2 py-3 shadow-md rounded-lg"
-                        header={<span className="text-2xl font-semibold">{item.question[langs ? 'english' : 'indonesia']}</span>}
+                        header={<span className="text-xl md:text-2xl font-semibold">{item.question[langs ? 'english' : 'indonesia']}</span>}
                         key={index.toString()}
                     >
                         <p

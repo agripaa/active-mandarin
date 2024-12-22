@@ -16,10 +16,10 @@ const Affiliate = ({ text }) => {
   }
 
   return (
-    <div className='container mx-auto my-24 relative w-full'>
+    <div className='container mx-auto my-24 relative w-full px-5'>
       <div className='flex items-center justify-center w-full h-full'>
         <div
-          className='relative w-9/12 flex bg-[#02264A] rounded-2xl py-10 px-14 overflow-hidden'
+          className='relative w-full lg:w-11/12 xl:w-10/12 2xl:w-9/12 flex bg-[#02264A] rounded-2xl p-10 md:p-14'
           style={{
             backgroundImage: "url('/assets/card-texture.png')",
             backgroundSize: "cover",
@@ -27,14 +27,20 @@ const Affiliate = ({ text }) => {
           }}
         >
           <img
-            src="/assets/affiliate89.png"
+            src="/assets/affiliate-cropped.png"
             alt="Affiliate"
-            className='absolute top-0 left-20 h-auto w-[30%] object-cover z-30 rounded-full'
+            className='absolute bottom-0 left-0 h-auto w-[43%] object-cover z-30 hidden lg:block'
           />
 
-          <div className='flex flex-col justify-center text-white w-7/12 ml-auto'>
-            <h2 className='font-semibold text-4xl'>{text.title}</h2>
-            <p className='mt-4 text-lg font-light'>{text.desc}</p>
+          <img
+            src="/assets/c.png"
+            alt="Affiliate"
+            className='h-full hidden lg:block'
+          />
+
+          <div className='flex flex-col justify-center text-white w-full ml-auto lg:w-7/12'>
+            <h2 className='font-semibold text-2xl md:text-[32px]'>{text.title}</h2>
+            <p className='mt-4 text-base font-light'>{text.desc}</p>
             <div className='mt-6'>
               <button
                 onClick={showModal}

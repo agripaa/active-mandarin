@@ -20,6 +20,15 @@ const Gallery = ({ text }) => {
         centerMode: true,
         centerPadding: "20%",
         beforeChange: (current, next) => setActiveSlide(next),
+        responsive: [
+            {
+                breakpoint: 768,
+                settings: {
+                    centerMode: false,
+                    centerPadding: 0,
+                }
+            }
+        ],
     };
 
     useEffect(() => {
@@ -105,7 +114,7 @@ const Gallery = ({ text }) => {
     return (
         <div className="container mx-auto py-20 px-5">
             <div className="text-center flex flex-col items-center mb-10">
-                <h1 className="text-4xl w-9/12 capitalize font-semibold text-[#02264A]">
+                <h1 className="text-2xl w-full capitalize font-semibold text-[#02264A] md:text-3xl lg:w-9/12 lg:text-4xl">
                     {text.title}
                 </h1>
             </div>
