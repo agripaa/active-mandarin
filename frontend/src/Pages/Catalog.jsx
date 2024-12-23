@@ -550,6 +550,7 @@ const Catalog = () => {
         title: "Mentor Scholarship Group",
         price: "3.499.000",
         image: "/assets/scholarship/1.png",
+        banner: "/assets/banner/scholarship.png",
         category: "scholarship",
         bnefits: [
             "Group chat with mentors to share information and experiences.",
@@ -570,6 +571,7 @@ const Catalog = () => {
           title: "Mentor Scholarship one-on-one",
           price: "4.999.000",
           image: "/assets/scholarship/2.png",
+          banner: "/assets/banner/scholarship.png",
           category: "scholarship",
           bnefits: [
               "Private group chats directly with experienced mentors.",
@@ -591,6 +593,7 @@ const Catalog = () => {
         title: "One Step Closer to Chinese Scholarship",
         price: "6.500.000",
         image: "/assets/scholarship/3.png",
+        banner: "/assets/banner/scholarship.png",
         category: "scholarship",
         bnefits: [
             "Your scholarship application will be fully supported by Active Mandarin Indonesia's Education Consultant..",
@@ -613,6 +616,7 @@ const Catalog = () => {
         title: "Kelompok Beasiswa Mentor",
         price: "3.499.000",
         image: "/assets/scholarship/1.png",
+        banner: "/assets/banner/scholarship.png",
         category: "beasiswa",
         bnefits: [
             "Grup chat dengan mentor untuk berbagi informasi dan pengalaman.",
@@ -633,6 +637,7 @@ const Catalog = () => {
           title: "Beasiswa Mentor 1 on 1",
           price: "4.999.000",
           image: "/assets/scholarship/2.png",
+          banner: "/assets/banner/scholarship.png",
           category: "beasiswa",
           bnefits: [
               "Grup chat pribadi langsung dengan mentor berpengalaman.",
@@ -654,6 +659,7 @@ const Catalog = () => {
         title: "Selangkah Lebih Dekat ke Beasiswa China",
         price: "6.500.000",
         image: "/assets/scholarship/3.png",
+        banner: "/assets/banner/scholarship.png",
         category: "beasiswa",
         bnefits: [
             "Aplikasi beasiswa Anda akan sepenuhnya didukung oleh Konsultan Pendidikan Active Mandarin Indonesia.",
@@ -679,6 +685,7 @@ const Catalog = () => {
             title: "Non-Degree Program",
             price: "6.999.000",
             image: "/assets/degree/1.png",
+            banner: "/assets/banner/non-degree.png",
             bnefits: [
                 "Enjoy a hands-on Mandarin learning experience in Nanjing while exploring the unique Chinese culture. Sample must-try street food specialties and experience the authentic atmosphere of this historic city! In addition to learning the language, you'll make valuable international connections and expand your future opportunities. Only this program combines intensive learning with exciting adventure!"
             ],
@@ -698,6 +705,7 @@ const Catalog = () => {
             title: "Degree Program D3-S3",
             price: "Chat Admin",
             image: "/assets/degree/2.png",
+            banner: "",
             bnefits: [
                 "Private group chat for exclusive information and advice.",
                 "1 on 1 consultation for personalized guidance on your academic and scholarship needs.",
@@ -731,6 +739,7 @@ const Catalog = () => {
             title: "Program Non-Gelar",
             price: "6.999.000",
             image: "/assets/degree/1.png",
+            banner: "/assets/banner/non-degree.png",
             bnefits: [
                 "Nikmati pengalaman belajar langsung bahasa Mandarin di Nanjing sambil menjelajahi keunikan budaya Tiongkok. Cicipi makanan khas street food yang wajib dicoba dan rasakan suasana autentik dari kota bersejarah ini! Selain belajar bahasa, Anda akan membangun koneksi internasional yang berharga dan memperluas peluang masa depan Anda. Program ini menggabungkan pembelajaran intensif dengan petualangan yang seru!"
             ],
@@ -750,6 +759,7 @@ const Catalog = () => {
             title: "Program Gelar D3-S3",
             price: "Hubungi Admin",
             image: "/assets/degree/2.png",
+            banner: "",
             bnefits: [
                 "Grup chat pribadi untuk informasi dan saran eksklusif.",
                 "Konsultasi 1-on-1 untuk panduan pribadi terkait kebutuhan akademik dan beasiswa Anda.",
@@ -779,8 +789,6 @@ const Catalog = () => {
         }
     ]
   };
-
-  
 
   const settings = {
       dots: true,
@@ -983,36 +991,91 @@ const Catalog = () => {
                 onCancel={handleCancel}
                 footer={null}
                 centered
+                width={600}
               >
                 <img
                   src={currentProduct.image}
                   alt={currentProduct.title}
-                  className="w-full h-48 object-contain mb-4 rounded-lg"
+                  className="w-full h-48 object-contain mb-4 rounded-lg my-6"
                 />
                 <p className="text-gray-700 mb-4">{currentProduct.desc}</p>
-                <h3 className="font-semibold text-lg mb-2">Facilities:</h3>
-                <ul className="list-disc ml-5 text-gray-600">
-                  {currentProduct.facilities?.map((facility, index) => (
-                    <li key={index}>{facility}</li>
+                <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {[
+                    {
+                      title: "Reading",
+                      iconPath: "M2 3.9934C2 3.44476 2.45531 3 2.9918 3H21.0082C21.556 3 22 3.44495 22 3.9934V20.0066C22 20.5552 21.5447 21 21.0082 21H2.9918C2.44405 21 2 20.5551 2 20.0066V3.9934ZM11 5H4V19H11V5ZM13 5V19H20V5H13ZM14 7H19V9H14V7ZM14 10H19V12H14V10Z",
+                    },
+                    {
+                      title: "Speaking",
+                      iconPath: "M14.45 19L12 22.5L9.55 19H3C2.73478 19 2.48043 18.8946 2.29289 18.7071C2.10536 18.5196 2 18.2652 2 18V4C2 3.73478 2.10536 3.48043 2.29289 3.29289C2.48043 3.10536 2.73478 3 3 3H21C21.2652 3 21.5196 3.10536 21.7071 3.29289C21.8946 3.48043 22 3.73478 22 4V18C22 18.2652 21.8946 18.5196 21.7071 18.7071C21.5196 18.8946 21.2652 19 21 19H14.45ZM13.409 17H20V5H4V17H10.591L12 19.012L13.409 17Z",
+                    },
+                    {
+                      title: "Writing",
+                      iconPath: "M6.93912 14.0328C6.7072 14.6563 6.51032 15.2331 6.33421 15.8155C7.29345 15.1189 8.43544 14.6767 9.75193 14.5121C12.2652 14.198 14.4976 12.5385 15.6279 10.4537L14.1721 8.99888L15.5848 7.58417C15.9185 7.25004 16.2521 6.91614 16.5858 6.58248C17.0151 6.15312 17.5 5.35849 18.0129 4.2149C12.4197 5.08182 8.99484 8.50647 6.93912 14.0328ZM17 8.99739L18 9.99669C17 12.9967 14 15.9967 10 16.4967C7.33146 16.8303 5.66421 18.6636 4.99824 21.9967H3C4 15.9967 6 1.99669 21 1.99669C20.0009 4.99402 19.0018 6.99313 18.0027 7.99402C17.6662 8.33049 17.3331 8.66382 17 8.99739Z",
+                    },
+                    {
+                      title: "Listening",
+                      iconPath: "M12 4C7.58172 4 4 7.58172 4 12H7C8.10457 12 9 12.8954 9 14V19C9 20.1046 8.10457 21 7 21H4C2.89543 21 2 20.1046 2 19V12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12V19C22 20.1046 21.1046 21 20 21H17C15.8954 21 15 20.1046 15 19V14C15 12.8954 15.8954 12 17 12H20C20 7.58172 16.4183 4 12 4ZM4 14V19H7V14H4ZM17 14V19H20V14H17Z",
+                    },
+                  ].map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-col items-center p-4"
+                    >
+                      <span className="bg-[#02264A] flex p-4 rounded-full text-white">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="35"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                        >
+                          <path d={item.iconPath}></path>
+                        </svg>
+                      </span>
+                      <div className="text-center font-semibold text-base mt-2">
+                        <h2>{item.title}</h2>
+                      </div>
+                    </div>
                   ))}
-                </ul>
-                <h3 className="font-semibold text-lg mt-4 mb-2">Details:</h3>
-                <ul className="list-disc ml-5 text-gray-600">
-                  {currentProduct.detail_class?.map((detail, index) => (
-                    <li key={index}>{detail}</li>
-                  ))}
-                </ul>
+                </div>
+
+                <div className="w-full">
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2">Free:</h3>
+                    <ul className="list-disc ml-5 text-gray-600">
+                      {currentProduct.free?.map((free, index) => (
+                        <li key={index}>{free}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg mt-4 mb-2">Facilities:</h3>
+                    <ul className="list-disc ml-5 text-gray-600">
+                      {currentProduct.facilities?.map((facility, index) => (
+                        <li key={index}>{facility}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg mt-4 mb-2">Class Detail:</h3>
+                    <ul className="list-disc ml-5 text-gray-600">
+                      {currentProduct.detail_class?.map((detail, index) => (
+                        <li key={index}>{detail}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
                 <div className="flex justify-between items-center mt-6">
-                  <p className="font-semibold text-lg">
+                  <p className="font-semibold text-2xl">
                     Rp {currentProduct.price}
-                    <span className="font-light text-sm ml-1">/Item</span>
+                    <span className="font-light text-base ml-1">/Item</span>
                   </p>
                   <Button
                     type="primary"
                     href="https://wa.me/+6282223369246"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-[#FFCC00] text-black font-semibold"
+                    className="bg-[#FFCC00] text-black font-semibold h-12"
                   >
                     Chat Admin
                   </Button>

@@ -63,6 +63,7 @@ const CardClasses = ({ data }) => {
         footer={null}
         onCancel={handleCancel}
         centered
+        width={700}
       >
         <div className="grid grid-cols-1 gap-x-8 gap-y-4">
           <div className="w-full flex justify-center my-4">
@@ -74,39 +75,55 @@ const CardClasses = ({ data }) => {
           </div>
             <p className="text-gray-700 text-justify leading-relaxed">{data?.desc}</p>
 
-          <div className="space-y-4">
-            {data.detail_class.length > 0 && (
-              <div>
-                <h3 className="font-semibold text-lg text-[#02264A] mb-2">Class Details:</h3>
-                <ul className="list-disc ml-5 text-gray-600">
-                  {data.detail_class.map((detail, index) => (
-                    <li key={index}>{detail}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+          <div className="space-y-4 w-full">
+            <div className="w-full justify-between flex">
+              {data.facilities.length > 0 && (
+                  <div className={data.facilities.length > 0 ? "w-9/12" : "w-6/12"}>
+                    <h3 className="font-semibold text-lg text-[#02264A] mb-2">Facilities:</h3>
+                    <ul className="list-disc ml-5 text-gray-600">
+                      {data.facilities.map((facility, index) => (
+                        <li key={index}>{facility}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
-            {data.facilities.length > 0 && (
-              <div>
-                <h3 className="font-semibold text-lg text-[#02264A] mb-2">Facilities:</h3>
-                <ul className="list-disc ml-5 text-gray-600">
-                  {data.facilities.map((facility, index) => (
-                    <li key={index}>{facility}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+                {data.free.length > 0 && (
+                  <div className="w-6/12">
+                    <h3 className="font-semibold text-lg text-[#02264A] mb-2">Free:</h3>
+                    <ul className="list-disc ml-5 text-gray-600">
+                      {data.free.map((detail, index) => (
+                        <li key={index}>{detail}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
-            {data.free.length > 0 && (
-              <div>
-                <h3 className="font-semibold text-lg text-[#02264A] mb-2">Free Benefits:</h3>
-                <ul className="list-disc ml-5 text-gray-600">
-                  {data.free.map((item, index) => (
-                    <li key={index}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            </div>
+
+            <div className="w-full justify-between flex">
+              {data.other.length > 0 && (
+                  <div className="w-6/12">
+                    <h3 className="font-semibold text-lg text-[#02264A] mb-2">Other:</h3>
+                    <ul className="list-disc ml-5 text-gray-600">
+                      {data.other.map((facility, index) => (
+                        <li key={index}>{facility}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {data.detail_class.length > 0 && (
+                  <div className="w-6/12">
+                    <h3 className="font-semibold text-lg text-[#02264A] mb-2">Class Detail:</h3>
+                    <ul className="list-disc ml-5 text-gray-600">
+                      {data.detail_class.map((detail, index) => (
+                        <li key={index}>{detail}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+            </div>
           </div>
         </div>
 

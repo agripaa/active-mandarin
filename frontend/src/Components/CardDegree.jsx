@@ -62,23 +62,27 @@ const CardDegree = ({ data }) => {
         footer={null}
         onCancel={handleCancel}
         centered
+        width={700}
       >
         <div className="grid grid-cols-1 gap-x-8 gap-y-6">
-          <div className="w-full flex justify-center">
+          <div className="w-full flex justify-center mt-6">
             <img
-              src={data.image}
+              src={data?.banner ? data?.banner : data.image}
               alt={data?.title}
-              className="w-7/12 h-auto object-cover rounded-lg mb-4"
+              className="w-9/12 h-auto object-cover rounded-lg mb-4"
             />
           </div>
+          <div>
+            <h2 className="text-xl font-semibold">{data?.title == "Non-Degree Program" ? "China Calling! Ready to Master Mandarin?" : "Pursue Higher Education with Scholarships in China"}</h2>
             <p className="text-gray-700 leading-relaxed">{data?.desc}</p>
+          </div>
           <div>
           {data?.program_start?.length > 0 && (
             <div>
               <h3 className="font-semibold text-lg text-[#02264A] mb-2">Program Start:</h3>
-              <ul className=" text-gray-600">
+              <ul className="ml-6 list-disc text-gray-600">
                 {data?.program_start?.map((date, index) => (
-                  <p key={index}>{date}</p>
+                  <li key={index}>{date}</li>
                 ))}
               </ul>
             </div>
