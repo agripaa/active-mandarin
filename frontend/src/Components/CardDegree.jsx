@@ -148,7 +148,7 @@ const CardDegree = ({ data }) => {
             href="https://wa.me/+6282223369246"
             rel="noopener noreferrer"
             target="_blank"
-            className="bg-[#FFCC00] text-[#252525] font-semibold px-6 py-3 rounded-full shadow-lg transition duration-300"
+            className="bg-[#FFCC00] text-[#252525] font-semibold rounded-full shadow-lg transition duration-300 px-3 py-2 sm:px-6 sm:py-3"
           >
             Chat Admin
           </a>

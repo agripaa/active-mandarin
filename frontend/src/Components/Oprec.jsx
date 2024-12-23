@@ -41,7 +41,7 @@ const Oprec = ({ text }) => {
           <img
             src="/assets/oprec.png"
             alt="Oprec"
-            className='absolute bottom-0 right-10 transform h-auto w-[28%] object-cover z-10 hidden sm:block lg:w-[38%]'
+            className='absolute bottom-0 right-10 transform h-auto w-[28%] object-cover z-10 hidden lg:block lg:w-[38%]'
           />
         </div>
       </div>
@@ -54,11 +54,9 @@ const Oprec = ({ text }) => {
   footer={null}
   width={800}
   className="rounded-lg"
+  title={<span className='font-semibold text-xl'>{langs ? "Registration Process" : "Proses Pendaftaran"}</span>}
 >
-  <div className="p-6">
-    <h2 className="font-bold text-2xl mb-4">
-      {langs ? "Registration Process" : "Proses Pendaftaran"}
-    </h2>
+  <div className="pt-6">
     <p className="mb-4">
       <strong>
         {langs
@@ -68,7 +66,7 @@ const Oprec = ({ text }) => {
     </p>
 
     <h3 className="font-semibold mt-4">
-      {langs ? "1. Registration" : "1. Pendaftaran"}
+      {langs ? "1. Initial Registration" : "1. Pendaftaran"}
     </h3>
     <ul className="list-disc ml-5 mb-4">
       <li>
@@ -169,7 +167,7 @@ const Oprec = ({ text }) => {
         ? "Required Documents (For Tutors)"
         : "Dokumen yang Diperlukan (Untuk Tutor)"}
     </h3>
-    <ul className="list-disc ml-5 mb-4">
+    <ol className="list-decimal ml-5 mb-4">
       <li>{langs ? "CV" : "CV"}</li>
       <li>
         {langs
@@ -185,14 +183,14 @@ const Oprec = ({ text }) => {
           ? "Proof of teaching experience"
           : "Bukti pengalaman mengajar"}
       </li>
-    </ul>
+    </ol>
 
     <h3 className="font-semibold mt-4">
       {langs
         ? "Required Documents (For Scholarship Mentors)"
         : "Dokumen yang Diperlukan (Untuk Mentor Beasiswa)"}
     </h3>
-    <ul className="list-disc ml-5 mb-4">
+    <ol className="list-decimal ml-5 mb-4">
       <li>{langs ? "CV" : "CV"}</li>
       <li>
         {langs
@@ -209,7 +207,7 @@ const Oprec = ({ text }) => {
           ? "Language certificate (HSK/IELTS/TOEFL)"
           : "Sertifikat bahasa (HSK/IELTS/TOEFL)"}
       </li>
-    </ul>
+    </ol>
 
     <h3 className="font-semibold mt-4">
       {langs ? "Mentor Criteria" : "Kriteria Mentor"}
@@ -217,7 +215,7 @@ const Oprec = ({ text }) => {
     <p className="mt-2 font-semibold">
       {langs ? "For Tutors:" : "Untuk Tutor:"}
     </p>
-    <ul className="list-disc ml-5 mb-4">
+    <ol className="list-decimal ml-5 mb-4">
       <li>
         {langs
           ? "Fluent in Mandarin"
@@ -241,12 +239,12 @@ const Oprec = ({ text }) => {
           ? "Patience and effective teaching abilities"
           : "Kesabaran dan kemampuan mengajar yang efektif"}
       </li>
-    </ul>
+    </ol>
 
     <p className="mt-2 font-semibold">
       {langs ? "For Scholarship Mentors:" : "Untuk Mentor Beasiswa:"}
     </p>
-    <ul className="list-disc ml-5 mb-4">
+    <ol className="list-decimal ml-5 mb-4">
       <li>
         {langs
           ? "Minimum education level: Bachelor’s degree"
@@ -265,10 +263,10 @@ const Oprec = ({ text }) => {
           ? "Analytical and problem-solving skills"
           : "Kemampuan analisis dan pemecahan masalah"}
       </li>
-    </ul>
+    </ol>
 
     <h3 className="font-semibold mt-4">{langs ? "Tips" : "Tips"}</h3>
-    <ul className="list-disc ml-5 mb-4">
+    <ol className="list-decimal ml-5 mb-4">
       <li>
         {langs
           ? "Ensure documents are complete and accurate."
@@ -289,7 +287,7 @@ const Oprec = ({ text }) => {
           ? "Ask questions about the program."
           : "Tanyakan pertanyaan tentang program."}
       </li>
-    </ul>
+    </ol>
 
     <div className="text-center mt-12">
       <a

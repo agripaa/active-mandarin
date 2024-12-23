@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 const Heros = ({ text }) => {
     return(
-        <div className="container mt-4 min-h-screen mx-auto px-5 md:px-0">
+        <div className="container mt-4 mx-auto px-5 md:px-0">
             <Space align="center" direction="vertical" className="py-3">
                 <div className="flex justify-center items-center w-full">
                     <div className="flex justify-center items-center flex-col text-center w-full md:w-4/5">

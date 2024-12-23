@@ -60,9 +60,9 @@ const Affiliate = ({ text }) => {
   footer={null}
   className="rounded-lg"
   width={800}
-  title={langs ? "Affiliate Program by Active Mandarin Indonesia" : "Program Afiliasi oleh Active Mandarin Indonesia"}
+  title={<span className='font-semibold text-xl'>{langs ? "Affiliate Program by Active Mandarin Indonesia" : "Program Afiliasi oleh Active Mandarin Indonesia"}</span>}
 >
-  <div className="p-6">
+  <div className='pt-6'>
     <p className="mb-4">
       <strong>
         {langs

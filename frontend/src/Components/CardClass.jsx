@@ -69,7 +69,7 @@ const CardClasses = ({ data }) => {
             <img
               src={data?.banner ? data?.banner : data?.image}
               alt={data?.title}
-              className="w-8/12 h-full object-fill rounded-lg mb-4"
+              className="w-11/12 h-full object-fill rounded-lg mb-4"
             />
           </div>
             <p className="text-gray-700 text-justify leading-relaxed">{data?.desc}</p>
@@ -121,7 +121,7 @@ const CardClasses = ({ data }) => {
             href="https://wa.me/+6282223369246"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-[#FFCC00] text-[#252525] font-semibold px-6 py-3 rounded-full shadow-lg transition duration-300"
+            className="bg-[#FFCC00] text-[#252525] font-semibold rounded-full shadow-lg transition duration-300 px-3 py-2 sm:px-6 sm:py-3"
           >
             Chat Admin
           </a>

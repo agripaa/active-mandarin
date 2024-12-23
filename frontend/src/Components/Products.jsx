@@ -327,7 +327,7 @@ const Products = ({ text }) => {
         speed: 500,
         slidesToShow: 3,
         slidesToScroll: 1,
-        autoplay: true,
+        autoplay: false,
         autoplaySpeed: 3000,
         cssEase: "linear",
         responsive: [
@@ -358,7 +358,7 @@ const Products = ({ text }) => {
     };
 
     return (
-        <div className="container mx-auto py-20" id="products">
+        <div className="container mx-auto xl:pb-10" id="products">
             <h1 className="text-4xl font-semibold text-center mb-2">{text.title}</h1>
             <p className="mb-10 text-center text-xl font-semibold tracking-wide text-[#AFB8CA]">
                 {text.desc}
@@ -367,9 +367,9 @@ const Products = ({ text }) => {
                 <div className="w-9/12">
                     <Slider {...settings}>
                         {translateProduct.map((item, index) => (
-                            <div key={index} className="p-0">
+                            <div key={index} className="pb-6 h-[90%]">
                                 <div
-                                    className="bg-white w-11/12 mx-auto rounded-2xl shadow-lg flex flex-col h-auto my-4 mb-8 cursor-pointer"
+                                    className="bg-white w-11/12 mx-auto rounded-2xl shadow-lg flex flex-col h-full my-4 mb-8 cursor-pointer"
                                     onClick={() => showModal(item)}
                                 >
                                     {/* Gambar Produk */}
@@ -378,11 +378,11 @@ const Products = ({ text }) => {
                                         alt={item.title}
                                         className="w-full h-auto object-contain"
                                     />
-                                    <div className="flex flex-col justify-start items-start px-4 py-5">
+                                    <div className="flex flex-col justify-start items-start px-4 py-5 h-full">
                                         <h2 className="text-lg font-semibold text-gray-800 mb-2">
                                             {item.title}
                                         </h2>
-                                        <p className="font-semibold text-lg mb-2">
+                                        <p className="font-semibold text-lg mb-2 mt-auto">
                                             Rp {item.price}
                                             <span className="font-light text-sm ml-1">/Item</span>
                                         </p>
