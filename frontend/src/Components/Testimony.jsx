@@ -109,7 +109,7 @@ const Testimony = ({text}) => {
             <div className="container mx-auto">
                 <div className="flex flex-col justify-between items-center px-5 py-12 gap-11 lg:flex-row">
                     {/* Kiri */}
-                    <div className="flex flex-col items-center justify-center gap-8 md:flex-row lg:w-[30%] lg:flex-col lg:gap-0">
+                    <div className="flex flex-col items-center justify-center gap-8 md:flex-row lg:w-[40%] lg:flex-col lg:gap-0">
                         <img
                             src="/assets/contact2x(white).png"
                             className="w-10/12 md:w-5/12 lg:w-9/12"
@@ -119,11 +119,11 @@ const Testimony = ({text}) => {
                             <h2 className="text-4xl font-semibold text-white tracking-wide my-6 mt-10">
                                 {text.tags}
                             </h2>
-                            <div className="flex justify-start items-start w-full">
-                                <Link className="bg-[#FFCC00] px-4 py-5 lg:px-8 lg:py-5 rounded-2xl lg:rounded-3xl font-semibold flex items-center mr-6" to="https://chat.whatsapp.com/FSQGLGPJjruKlhYueXz83K" target="_blank">
+                            <div className="flex justify-start items-start w-full gap-6">
+                                <Link className="bg-[#FFCC00] px-4 py-5 xl:px-8 2xl:py-5 rounded-2xl lg:rounded-3xl font-semibold flex items-center" to="https://chat.whatsapp.com/FSQGLGPJjruKlhYueXz83K" target="_blank">
                                     <FaWhatsapp className="mr-4 text-2xl"/> Join Now
                                 </Link>
-                                <Link className="bg-[#FFCC00] px-4 py-5 lg:px-8 lg:py-5 rounded-2xl lg:rounded-3xl font-semibold flex items-center mr-6" to="https://t.me/+TJzEXxdKA2EyOTQ9" target="_blank">
+                                <Link className="bg-[#FFCC00] px-4 py-5 xl:px-8 2xl:py-5 rounded-2xl lg:rounded-3xl font-semibold flex items-center" to="https://t.me/+TJzEXxdKA2EyOTQ9" target="_blank">
                                     <FaTelegramPlane className="mr-4 text-2xl"/> Join Now
                                 </Link>
                             </div>

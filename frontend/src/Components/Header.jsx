@@ -120,7 +120,7 @@ const Headers = ({ collapse, funcs }) => {
     <div
         className={`bg-white backdrop-blur-md bg-opacity-80`}
     >
-        <Row align="middle" className="py-5 container mx-auto px-5">
+        <Row align="middle" className="py-5 container mx-auto px-5 md:px-10 xl:px-5">
             <Col span={5}>
                 <Link to="/" className="flex items-center w-full">
                     <img
@@ -138,10 +138,10 @@ const Headers = ({ collapse, funcs }) => {
             <Col span={14} className="lg:block hidden">
                 <Row justify="center" gutter={24}>
                     {navs.map((item, index) => (
-                        <Col key={index}>
+                        <div key={index}>
                             <Link
                                 to={item.href}
-                                className={`relative no-underline nav-text font-medium text-lg text-[#9F9FA1] px-3 xl:px-4 hover:text-[#09072E] p-2 transition-all duration-300 xl:text-xl ${
+                                className={`relative no-underline nav-text font-medium text-lg text-[#9F9FA1] px-3 hover:text-[#09072E] p-2 transition-all duration-300 xl:text-xl xl:px-4 ${
                                     item.href === location.pathname
                                         ? "active-link"
                                         : ""
@@ -149,7 +149,7 @@ const Headers = ({ collapse, funcs }) => {
                             >
                                 {item.name}
                             </Link>
-                        </Col>
+                        </div>
                     ))}
                 </Row>
             </Col>
@@ -201,6 +201,30 @@ const Headers = ({ collapse, funcs }) => {
 
     <div className={`${collapse ? 'flex' : 'hidden'} h-screen w-screen bg-white backdrop-blur-md bg-opacity-70`}>
         <div className="container mx-auto px-5">
+            <div className="flex justify-end pt-3 gap-4">
+                <RiSearch2Line
+                    size={25}
+                    className="cursor-pointer mr-2"
+                    onClick={handleSearchIconClick}
+                />
+                <Dropdown
+                    menu={{ items }}
+                    trigger={["click"]}
+                    className="flex items-center text-2xl"
+                >
+                    <button
+                        onClick={(e) => e.preventDefault()}
+                        className="text-gray-400 text-center"
+                    >
+                        <div className="text-sm md:text-xl">
+                            <GlobalOutlined />
+                            <span className="ml-2 font-normal">
+                                {langs ? "ENG" : "ID"}
+                            </span>
+                        </div>
+                    </button>
+                </Dropdown>
+            </div>
             <Row align="middle" className="py-5">
                 <div className="flex flex-col">
                     {navs.map((item, index) => (

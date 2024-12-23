@@ -45,7 +45,7 @@ const Tags = ({text}) => {
     }, [startAnimation]);
 
   return (
-    <div ref={sectionRef} className='container mx-auto mb-24 -mt-16 md:mt-12 relative w-full'>
+    <div ref={sectionRef} className='container mx-auto mb-24 mt-36 md:mt-12 relative w-full px-5'>
         <div className='flex items-center justify-center w-full h-full'>
             <div className='w-9/12 flex max-h-auto bg-[#02264A] rounded-2xl py-10 px-8 sm:w-full lg:w-11/12 xl:w-9/12'>
                 <div className='flex flex-col justify-between items-start gap-5 text-white w-full sm:flex-row sm:items-center md:gap-0'>

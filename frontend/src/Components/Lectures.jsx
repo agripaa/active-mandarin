@@ -177,7 +177,7 @@ const Lectures = ({ text }) => {
       beforeChange: (current, next) => setCurrentSlide(next),
       responsive: [
         {
-          breakpoint: 768,
+          breakpoint: 640,
           settings: {
             slidesToShow: 1,
             centerMode: true,
@@ -206,16 +206,16 @@ const Lectures = ({ text }) => {
   return (
       <div className="bg-[#02264A] py-20" style={{ backgroundImage: "url('/assets/texture-card-big.png')", backgroundSize: "cover", backgroundPosition: "center" }}>
           <div className="container mx-auto text-start">
-            <div className="w-9/12 mx-auto mb-5">
+            <div className="w-full md:w-11/12 lg:w-10/12 xl:w-9/12 mx-auto mb-5 px-5">
               <h1 className="text-white text-4xl font-semibold">{text?.title}</h1>
             </div>
               <div className="my-8 flex justify-center">
-                <div className="w-full md:w-9/12">
+                <div className="w-full md:w-11/12 lg:w-10/12 xl:w-9/12">
                   <Slider {...settings} className="">
                     {lecture.map((item, index) => (
                         <div key={index} className="px-4 h-full">
-                            <div className="bg-white rounded-xl w-full h-full shadow-lg text-center p-6">
-                              <div className="relative w-48 h-fit mx-auto mb-4 flex justify-center items-center">
+                            <div className="flex flex-col bg-white rounded-xl w-full h-full shadow-lg text-center p-4 xl:p-6">
+                              <div className="relative w-10/12 h-fit mx-auto mb-4 flex justify-center items-center">
                                 <img
                                   src={item.profile}
                                   alt={item.name}
@@ -224,16 +224,18 @@ const Lectures = ({ text }) => {
                               </div>
                                 <div className="flex flex-col mt-6 justify-center items-center">
                                   <h2 className="text-lg font-semibold text-gray-800">{item.name}</h2>
-                                  <span className=" w-full py-1 text-center h-12 text-[#8493AC] font-medium text-sm">
+                                  <span className=" w-full py-1 text-center text-[#8493AC] font-medium text-sm">
                                       {item.university_name}
                                   </span>
                                 </div>
-                                <Button
-                                    className="mt-4 flex items-center font-semibold justify-center w-full bg-yellow-400 text-black border-none hover:text-black rounded-2xl py-6"
-                                    onClick={() => showModal(item)}
-                                >
-                                    View More
-                                </Button>
+                                <div className="mt-auto">
+                                  <Button
+                                      className="mt-4 flex items-center font-semibold justify-center w-full bg-yellow-400 text-black border-none hover:text-black rounded-2xl py-6"
+                                      onClick={() => showModal(item)}
+                                  >
+                                      View More
+                                  </Button>
+                                </div>
                             </div>
                         </div>
                     ))}

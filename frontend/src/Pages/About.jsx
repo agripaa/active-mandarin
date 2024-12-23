@@ -22,7 +22,7 @@ const About = () => {
           ? "The Story Behind Active Mandarin Indonesia"
           : "Kisah di Balik Active Mandarin Indonesia"}
       </h1>
-      <div className="font-light text-center capitalize mt-3 px-5 md:px-10">
+      <div className="font-light text-sm text-center capitalize mt-3 px-5 sm:text-base md:px-10">
         {langs
           ? "The history of the formation of Active Mandarin Indonesia which is now a place to grow together. #BeActiveWithActive"
           : "Sejarah terbentuknya Active Mandarin Indonesia yang kini menjadi tempat berkembang bersama. #BeActiveWithActive"}
@@ -30,7 +30,7 @@ const About = () => {
 
       <div className="container mx-auto px-5 md:px-10 py-10">
         <Row gutter={[32, 32]} align="middle">
-          <Col xs={24} md={10}>
+          <Col xs={24} md={11} lg={10} className="hidden md:block">
             <div className="relative rounded-xl overflow-hidden shadow-lg">
               <img
                 src="assets/about_1.png"
@@ -39,7 +39,7 @@ const About = () => {
               />
             </div>
           </Col>
-          <Col xs={24} md={14}>
+          <Col xs={24} md={13} lg={14}>
             <div className="sp">
               <h1 className="text-xl md:text-xl font-bold text-[#02264A]">
                 {langs
@@ -50,6 +50,15 @@ const About = () => {
                 <AiOutlineRight className="inline-block mr-2" />
                 2019
               </div>
+              <Col xs={24} md={11} lg={10} className="block md:hidden my-8">
+                <div className="relative rounded-[32px] overflow-hidden shadow-lg">
+                  <img
+                    src="assets/about_1.png"
+                    alt="About"
+                    className="w-full object-cover"
+                  />
+                </div>
+              </Col>
               <p
                 className="text-md md:text-lg text-gray-600 text-justify"
                 dangerouslySetInnerHTML={{
@@ -82,7 +91,7 @@ const About = () => {
           </Col>
 
           <Col xs={24} md={12}>
-            <div className="relative rounded-xl overflow-hidden shadow-lg">
+            <div className="relative rounded-[32px] overflow-hidden shadow-lg">
               <img
                 src="assets/about_2.png"
                 alt="About"
@@ -104,7 +113,7 @@ const About = () => {
           </Col>
 
           <Col xs={24} md={12}>
-            <div className="relative rounded-xl overflow-hidden shadow-lg">
+            <div className="relative rounded-[32px] overflow-hidden shadow-lg">
               <img
                 src="assets/about_3.png"
                 alt="About"
@@ -169,7 +178,7 @@ const About = () => {
           </Col>
 
           <Col xs={24} md={12}>
-            <div className="relative rounded-xl overflow-hidden shadow-lg">
+            <div className="relative rounded-[32px] overflow-hidden shadow-lg">
               <img
                 src="assets/about_5.png"
                 alt="About"

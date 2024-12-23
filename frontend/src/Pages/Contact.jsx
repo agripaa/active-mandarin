@@ -56,7 +56,7 @@ const Contact = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="w-full flex justify-center lg:w-6/12">
+                        <div className="w-full flex justify-center">
                             <img
                                 src="/assets/cont.png"
                                 alt="Contact Illustration"
