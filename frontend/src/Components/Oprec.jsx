@@ -289,7 +289,8 @@ const Oprec = ({ text }) => {
       </li>
     </ol>
 
-    <div className="text-center mt-12">
+    <div className="text-start mt-5 mb-4">
+      <h2 className='mb-6 font-semibold text-xl'>{langs ? "Join Our Team and Growth With Active Mandarin Indonesia" : "Bergabunglah dengan Tim Kami dan Berkembang Bersama Active Mandarin Indonesia"}</h2>
       <a
         href="https://forms.gle/s1DuHDGpyUiwPjXp8"
         target="_blank"

@@ -11,13 +11,13 @@ import { Rate } from "antd";
 const Catalog = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentProduct, setCurrentProduct] = useState({});
-  const { data, langs } = useSelector((state) => state.LangReducer);
+  const { _, langs } = useSelector((state) => state.LangReducer);
   const [activeSlide, setActiveSlide] = React.useState(0);
-  const [galleryData, setGalleryData] = useState([]); // State untuk menyimpan data dari API/sumber
+  const [galleryData, setGalleryData] = useState([]); 
   
   const dummyClasses = {
     indonesia: [{
-      title: "Mandarin Class Juara Next Level",
+      title: "Mandarin Juara Next Level",
       price: "4.499.000",
       image: "/assets/class/1.png",
       banner: "/assets/banner-juara-next.png",
@@ -54,7 +54,7 @@ const Catalog = () => {
       ]
   },
   {
-      title: "Mandarin Class Juara",
+      title: "Mandarin Juara",
       price: "3.000.000",
       image: "/assets/class/2.png",
       banner: "/assets/banner-juara.png",
@@ -91,7 +91,7 @@ const Catalog = () => {
       ]
   },
   {
-      title: "Mandarin General Class - Basic",
+      title: "Kelas Umum Basic Mandarin",
       price: "750.000",
       image: "/assets/class/3.png",
       banner: "",
@@ -114,7 +114,7 @@ const Catalog = () => {
       ]
   },
   {
-      title: "Mandarin Class Native",
+      title: "Mandarin Native",
       price: "Segera",
       image: "/assets/class/4.png",
       banner: "",
@@ -150,7 +150,7 @@ const Catalog = () => {
       ]
   }],
   english: [{
-      title: "Mandarin Class Juara Next Level",
+      title: "Mandarin Juara Next Level",
       price: "4.499.000",
       image: "/assets/class/1.png",
       banner: "/assets/banner-juara-next.png",
@@ -187,7 +187,7 @@ const Catalog = () => {
       ]
   },
   {
-      title: "Mandarin Class Juara",
+      title: "Mandarin Juara",
       price: "3.000.000",
       image: "/assets/class/2.png",
       banner: "/assets/banner-juara.png",
@@ -224,7 +224,7 @@ const Catalog = () => {
       ]
   },
   {
-      title: "Mandarin General Class - Basic",
+      title: "Mandarin General Class Basic",
       price: "750.000",
       image: "/assets/class/3.png",
       banner: "",
@@ -247,7 +247,7 @@ const Catalog = () => {
       ]
   },
   {
-      title: "Mandarin Class Native",
+      title: "Mandarin Native",
       price: "Soon",
       image: "/assets/class/4.png",
       banner: "",
@@ -702,7 +702,7 @@ const Catalog = () => {
             ]
         },
         {
-            title: "Degree Program D3-S3",
+            title: "Degree Program For Diploma - PhD",
             price: "Chat Admin",
             image: "/assets/degree/2.png",
             banner: "",
@@ -756,7 +756,7 @@ const Catalog = () => {
             ]
         },
         {
-            title: "Program Gelar D3-S3",
+            title: "Program Gelar D3 - S3",
             price: "Hubungi Admin",
             image: "/assets/degree/2.png",
             banner: "",
@@ -794,12 +794,26 @@ const Catalog = () => {
       dots: true,
       infinite: true,
       speed: 500,
-      slidesToShow: 3,
       slidesToScroll: 1,
+      slidesToShow: 3,
       autoplay: true,
       autoplaySpeed: 3000,
       cssEase: "linear",
       responsive: [
+        {
+          breakpoint: 1440,
+          settings: {
+              slidesToShow: 3,
+              slidesToScroll: 1,
+          },
+        },
+        {
+          breakpoint: 1280,
+          settings: {
+              slidesToShow: 2,
+              slidesToScroll: 1,
+          },
+        },
           {
               breakpoint: 1024,
               settings: {
@@ -810,10 +824,17 @@ const Catalog = () => {
           {
               breakpoint: 768,
               settings: {
-                  slidesToShow: 1,
+                  slidesToShow: 2,
                   slidesToScroll: 1,
               },
           },
+          {
+            breakpoint: 425,
+            settings: {
+                slidesToShow: 1,
+                slidesToScroll: 1,
+            },
+        },
       ],
   };
 
@@ -826,27 +847,27 @@ const Catalog = () => {
         },
         {
           image: "/assets/banner/Web Banne Act CTA-2.png",
-          link: "https://wa.me/+6282223369246"
+          link: "https://wa.me/+6282279506450"
         },
         {
           image: "/assets/banner/Web Banne Act CTA-3.png",
-          link: "https://wa.me/+6282223369246"
+          link: "https://wa.me/+6282279506450"
         },
         {
           image: "/assets/banner/Web Banne Act CTA-4.png",
-          link: "https://wa.me/+6282223369246"
+          link: "#scholarship"
         },
         {
           image: "/assets/banner/Web Banne Act CTA-5.png",
-          link: "https://wa.me/+6282223369246"
+          link: "/#products"
         },
         {
           image: "/assets/banner/Web Banne Act CTA-6.png",
-          link: "https://wa.me/+6282223369246"
+          link: "https://wa.me/+6282279506450"
         },
         {
           image: "/assets/banner/Web Banne Act CTA-7.png",
-          link: "https://wa.me/+6282223369246"
+          link: "https://wa.me/+6282279506450"
         }
       ];
       setGalleryData(images);
@@ -899,14 +920,14 @@ const Catalog = () => {
 
   return (
     <Mainlayouts>
-      <div className="container mx-auto px-5">
+      <div className="container mx-auto px-5 lg:px-0">
         <div className="h-auto">
         <Slider {...settingsCarousel} className="rounded-xl overflow-visible h-full">
           {galleryData.map((item, index) => (
             <div
               key={index}
-              className={`relative transition-transform duration-[1500ms] px-2 sm:px-8 my-8 md:my-12 md:px-10 lg:px-14 xl:px-16 ${
-                activeSlide === index ? "md:z-10 md:scale-125" : "md:z-0 md:scale-105"
+              className={`relative transition-transform duration-[1500ms] px-1 sm:px-8 my-8 md:my-12 md:px-10 lg:px-14 xl:px-16 ${
+                activeSlide === index ? "md:z-10 md:scale-125" : "md:z-0 md:scale-105 sm:scale-100"
               }`}
             >
               <a
@@ -972,7 +993,7 @@ const Catalog = () => {
                           <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.title}</h2>
                           <p className="font-semibold text-lg mb-2">
                             Rp {item.price}
-                            <span className="font-light text-sm ml-1">/Item</span>
+                            <span className="font-light text-sm ml-1">{langs ? "/Month" : "/Bulan"}</span>
                           </p>
                           <div className="flex items-center">
                             <Rate disabled defaultValue={item.star} />
@@ -1003,18 +1024,22 @@ const Catalog = () => {
                   {[
                     {
                       title: "Reading",
+                      judul: "Membaca",
                       iconPath: "M2 3.9934C2 3.44476 2.45531 3 2.9918 3H21.0082C21.556 3 22 3.44495 22 3.9934V20.0066C22 20.5552 21.5447 21 21.0082 21H2.9918C2.44405 21 2 20.5551 2 20.0066V3.9934ZM11 5H4V19H11V5ZM13 5V19H20V5H13ZM14 7H19V9H14V7ZM14 10H19V12H14V10Z",
                     },
                     {
                       title: "Speaking",
+                      judul: "Berbicara",
                       iconPath: "M14.45 19L12 22.5L9.55 19H3C2.73478 19 2.48043 18.8946 2.29289 18.7071C2.10536 18.5196 2 18.2652 2 18V4C2 3.73478 2.10536 3.48043 2.29289 3.29289C2.48043 3.10536 2.73478 3 3 3H21C21.2652 3 21.5196 3.10536 21.7071 3.29289C21.8946 3.48043 22 3.73478 22 4V18C22 18.2652 21.8946 18.5196 21.7071 18.7071C21.5196 18.8946 21.2652 19 21 19H14.45ZM13.409 17H20V5H4V17H10.591L12 19.012L13.409 17Z",
                     },
                     {
                       title: "Writing",
+                      judul: "Menulis",
                       iconPath: "M6.93912 14.0328C6.7072 14.6563 6.51032 15.2331 6.33421 15.8155C7.29345 15.1189 8.43544 14.6767 9.75193 14.5121C12.2652 14.198 14.4976 12.5385 15.6279 10.4537L14.1721 8.99888L15.5848 7.58417C15.9185 7.25004 16.2521 6.91614 16.5858 6.58248C17.0151 6.15312 17.5 5.35849 18.0129 4.2149C12.4197 5.08182 8.99484 8.50647 6.93912 14.0328ZM17 8.99739L18 9.99669C17 12.9967 14 15.9967 10 16.4967C7.33146 16.8303 5.66421 18.6636 4.99824 21.9967H3C4 15.9967 6 1.99669 21 1.99669C20.0009 4.99402 19.0018 6.99313 18.0027 7.99402C17.6662 8.33049 17.3331 8.66382 17 8.99739Z",
                     },
                     {
                       title: "Listening",
+                      judul: "Mendengar",
                       iconPath: "M12 4C7.58172 4 4 7.58172 4 12H7C8.10457 12 9 12.8954 9 14V19C9 20.1046 8.10457 21 7 21H4C2.89543 21 2 20.1046 2 19V12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12V19C22 20.1046 21.1046 21 20 21H17C15.8954 21 15 20.1046 15 19V14C15 12.8954 15.8954 12 17 12H20C20 7.58172 16.4183 4 12 4ZM4 14V19H7V14H4ZM17 14V19H20V14H17Z",
                     },
                   ].map((item, index) => (
@@ -1033,7 +1058,7 @@ const Catalog = () => {
                         </svg>
                       </span>
                       <div className="text-center font-semibold text-base mt-2">
-                        <h2>{item.title}</h2>
+                        <h2>{langs ? item.title : item.judul}</h2>
                       </div>
                     </div>
                   ))}
@@ -1041,7 +1066,7 @@ const Catalog = () => {
 
                 <div className="w-full">
                   <div>
-                    <h3 className="font-semibold text-lg mb-2">Free:</h3>
+                    <h3 className="font-semibold text-lg mb-2">{langs ? "Free:" : "Gratis:"}</h3>
                     <ul className="list-disc ml-5 text-gray-600">
                       {currentProduct.free?.map((free, index) => (
                         <li key={index}>{free}</li>
@@ -1049,7 +1074,7 @@ const Catalog = () => {
                     </ul>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg mt-4 mb-2">Facilities:</h3>
+                    <h3 className="font-semibold text-lg mt-4 mb-2">{langs ? "Facilities:" : "Fasilitas:"}</h3>
                     <ul className="list-disc ml-5 text-gray-600">
                       {currentProduct.facilities?.map((facility, index) => (
                         <li key={index}>{facility}</li>
@@ -1057,7 +1082,7 @@ const Catalog = () => {
                     </ul>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg mt-4 mb-2">Class Detail:</h3>
+                    <h3 className="font-semibold text-lg mt-4 mb-2">{langs ? "Class Detail:" : "Detail Kelas:"}</h3>
                     <ul className="list-disc ml-5 text-gray-600">
                       {currentProduct.detail_class?.map((detail, index) => (
                         <li key={index}>{detail}</li>
@@ -1068,23 +1093,22 @@ const Catalog = () => {
                 <div className="flex justify-between items-center mt-6">
                   <p className="font-semibold text-2xl">
                     Rp {currentProduct.price}
-                    <span className="font-light text-base ml-1">/Item</span>
+                    <span className="font-light text-base ml-1">{langs ? "/Month" : "/Bulan"}</span>
                   </p>
-                  <Button
-                    type="primary"
-                    href="https://wa.me/+6282223369246"
+                  <a
+                    href="https://wa.me/+6282279506450"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-[#FFCC00] text-black font-semibold h-12"
+                    className="bg-[#FFCC00] text-[#252525] font-semibold rounded-full shadow-lg transition duration-300 px-3 py-2 sm:px-6 sm:py-3"
                   >
                     Chat Admin
-                  </Button>
+                  </a>
                 </div>
               </Modal>
             </div>
           </div>
           
-          <div className="py-10">
+          <div className="py-10" id="scholarship">
             <div className="w-full mx-auto mb-6 lg:w-9/12">
               <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
                 {langs ? "Mentor Scholarship Program" : "Program Beasiswa Mentor"}

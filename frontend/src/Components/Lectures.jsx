@@ -69,42 +69,10 @@ const Lectures = ({ text }) => {
             ]
           },
           {
-            "name": "Kamila Yeta",
-            "profile": "/assets/Kamila Yeta.jpg",
-            "university_name": "Guangxi University",
-            "cat_certificate": "HSK 5 Certified",
-            "certificates": [
-              {
-                "english": "Awardee International Chinese Language Teachers Scholarship for one academic year from 2024 to 2025",
-                "chinese": "荣获国际中文教师奖学金自2024年至2025年"
-              },
-              {
-                "english": "Awardee Guangxi Government Scholarship for ASEAN Student by Guangxi Government from 2018 to 2023",
-                "chinese": "荣获广西政府东盟国家留学生奖学金自2018年至2023年"
-              },
-              {
-                "english": "First Winner of The 14th Chinese Classics Reading Competition and the 2021 Guangxi Campus Chinese Classics Reading Competition",
-                "chinese": "在广西第十四届中华经典朗读大赛暨2021广西校园中华经典朗读比赛中获得了外国学生个人组一等奖"
-              },
-              {
-                "english": "Outstanding International Student in Guangxi University - 2019",
-                "chinese": "广西大学优秀国际学生 - 2019"
-              },
-              {
-                "english": "Outstanding Volunteer for The School Anniversary – 2018",
-                "chinese": "学校周年庆优秀志愿者 - 2018"
-              },
-              {
-                "english": "HSK 5 Certified",
-                "chinese": "HSK 5 认证"
-              }
-            ]
-          },
-          {
             "name": "Vemas Alvieno Dian Saputra",
             "profile": "/assets/Vemas Alvieno.jpg",
             "university_name": "Nanjing University of Information Science and Technology",
-            "cat_certificate": "HSK 5 Certified",
+            "cat_certificate": "",
             "certificates": [
               {
                 "english": "Award for being Campus Ambassador for College of International Education by Nanjing University of Information Science and Technology from 2024 to 2025",
@@ -262,9 +230,11 @@ const Lectures = ({ text }) => {
                           <div className="flex w-full justify-between">
                               <h1 className="text-lg font-bold mx-auto md:text-2xl lg:tracking-wide md:mx-0">{currentLecturer.name}</h1>
                           </div>
-                          <span className="bg-[#3377FF] w-fit mx-auto py-1 px-3 text-center text-white font-medium rounded-full text-sm mt-auto md:mx-0">
-                              {currentLecturer.cat_certificate}
-                          </span>
+                          {currentLecturer?.cat_certificate !== "" &&(
+                            <span className="bg-[#3377FF] w-fit mx-auto py-1 px-3 text-center text-white font-medium rounded-full text-sm mt-auto md:mx-0">
+                                {currentLecturer.cat_certificate}
+                            </span>
+                          )}
                         </div>
                         <button
                             className="absolute text-white text-xl bg-transparent border-none cursor-pointer top-4 right-4 md:top-6 md:right-6"

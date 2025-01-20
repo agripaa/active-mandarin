@@ -136,14 +136,15 @@ const Affiliate = ({ text }) => {
           : "Dapatkan komisi berulang untuk setiap pendaftaran yang berhasil. Semakin banyak Anda merekomendasikan, semakin besar penghasilan Anda!"}
       </li>
     </ol>
-    <div className="text-center mt-10">
+    <div className="text-start mt-4 mb-4">
+      <h2 className='mb-6 font-semibold text-xl'>{langs ? "Join Our Affiliate By Active Mandarin Indonesia" : "Bergabunglah dengan Afiliasi Kami Dengan Active Mandarin Indonesia"}</h2>
       <a
-        href="https://wa.me/+6282223369246"
+        href="https://wa.me/+6282279506450"
         target="_blank"
         rel="noopener noreferrer"
         className="px-8 py-4 bg-[#FFCC00] text-base text-[#252525] font-semibold rounded-3xl hover:bg-yellow-500 transition-all duration-300"
       >
-        {langs ? "Join Now" : "Gabung Sekarang"}
+        {langs ? "Join Us" : "Gabung Sekarang"}
       </a>
     </div>
   </div>

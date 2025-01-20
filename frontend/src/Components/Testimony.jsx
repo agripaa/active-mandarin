@@ -1,6 +1,6 @@
 import React from "react";
 import Slider from "react-slick";
-import { FaWhatsapp, FaTelegramPlane } from "react-icons/fa";
+import { FaWhatsapp } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -82,7 +82,7 @@ const Testimony = ({text}) => {
         slidesToShow: 2,
         slidesToScroll: 1,
         autoplay: true,
-        speed: 4000,
+        speed: 18000,
         autoplaySpeed: 0,
         arrows: false,
         centerPadding: "60px",
@@ -122,9 +122,6 @@ const Testimony = ({text}) => {
                             <div className="flex justify-start items-start w-full gap-6">
                                 <Link className="bg-[#FFCC00] px-4 py-5 xl:px-8 2xl:py-5 rounded-2xl lg:rounded-3xl font-semibold flex items-center" to="https://chat.whatsapp.com/FSQGLGPJjruKlhYueXz83K" target="_blank">
                                     <FaWhatsapp className="mr-4 text-2xl"/> Join Now
-                                </Link>
-                                <Link className="bg-[#FFCC00] px-4 py-5 xl:px-8 2xl:py-5 rounded-2xl lg:rounded-3xl font-semibold flex items-center" to="https://t.me/+TJzEXxdKA2EyOTQ9" target="_blank">
-                                    <FaTelegramPlane className="mr-4 text-2xl"/> Join Now
                                 </Link>
                             </div>
                         </div>

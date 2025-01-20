@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Slider from "react-slick";
 import { Rate, Modal, Button } from "antd";
 import { useSelector } from "react-redux";
@@ -32,7 +32,7 @@ const Products = ({ text }) => {
                 "HSK 1: Rp. 249,000",
                 "HSK 2: Rp. 399,000",
                 "HSK 3: Rp. 549,000",
-                "HSK 4: Rp. 799,000",
+                "HSK 4: Rp. 699,000",
                 "HSK 5: Rp. 1,299,000",
             ]
         },
@@ -46,7 +46,7 @@ const Products = ({ text }) => {
                 "HSK 1: Rp. 249,000",
                 "HSK 2: Rp. 399,000",
                 "HSK 3: Rp. 549,000",
-                "HSK 4: Rp. 799,000",
+                "HSK 4: Rp. 699,000",
                 "HSK 5: Rp. 1,299,000",
             ]
         },
@@ -60,13 +60,13 @@ const Products = ({ text }) => {
                 "HSK 1: Rp. 249,000",
                 "HSK 2: Rp. 399,000",
                 "HSK 3: Rp. 549,000",
-                "HSK 4: Rp. 799,000",
+                "HSK 4: Rp. 699,000",
                 "HSK 5: Rp. 1,299,000",
             ]
         },
         {
             title: "E-Flashcard HSK 4",
-            price: "799.000",
+            price: "699.000",
             star: 4,
             image: "/assets/product2.png",
             desc: "Want to master Mandarin in a fun and effective way? Our HSK Flashcards are your perfect companion for learning Mandarin vocabulary. With an enjoyable and practical method, learning becomes easier and helps you achieve Mandarin fluency faster than ever!",
@@ -74,7 +74,7 @@ const Products = ({ text }) => {
                 "HSK 1: Rp. 249,000",
                 "HSK 2: Rp. 399,000",
                 "HSK 3: Rp. 549,000",
-                "HSK 4: Rp. 799,000",
+                "HSK 4: Rp. 699,000",
                 "HSK 5: Rp. 1,299,000",
             ]
         },
@@ -88,7 +88,7 @@ const Products = ({ text }) => {
                 "HSK 1: Rp. 249,000",
                 "HSK 2: Rp. 399,000",
                 "HSK 3: Rp. 549,000",
-                "HSK 4: Rp. 799,000",
+                "HSK 4: Rp. 699,000",
                 "HSK 5: Rp. 1,299,000",
             ]
         },
@@ -102,7 +102,7 @@ const Products = ({ text }) => {
                 "Level 1: Rp. 299,000",
                 "Level 2: Rp. 449,000",
                 "Level 3: Rp. 599,000",
-                "Level 4: Rp. 699,000",
+                "Level 4: Rp. 799,000",
                 "Level 5: Rp. 1,499,000",
             ]
         },
@@ -116,7 +116,7 @@ const Products = ({ text }) => {
                 "Level 1: Rp. 299,000",
                 "Level 2: Rp. 449,000",
                 "Level 3: Rp. 599,000",
-                "Level 4: Rp. 699,000",
+                "Level 4: Rp. 799,000",
                 "Level 5: Rp. 1,499,000",
             ]
         },
@@ -130,13 +130,13 @@ const Products = ({ text }) => {
                 "Level 1: Rp. 299,000",
                 "Level 2: Rp. 449,000",
                 "Level 3: Rp. 599,000",
-                "Level 4: Rp. 699,000",
+                "Level 4: Rp. 799,000",
                 "Level 5: Rp. 1,499,000",
             ]
         },
         {
             title: "Comprehensive Chinese Book Level 4",
-            price: "699.000",
+            price: "799.000",
             star: 4,
             image: "/assets/producta.png",
             desc: "Explore a variety of interesting Mandarin vocabulary in our book collection, ranging from HSK 1 to HSK 5. Each book is designed to support your learning with interactive practice questions and simple grammar explanations, making it easy to understand. Start your exciting learning journey with Comprehensive Chinese Book and experience satisfying progress!",
@@ -144,7 +144,7 @@ const Products = ({ text }) => {
                 "Level 1: Rp. 299,000",
                 "Level 2: Rp. 449,000",
                 "Level 3: Rp. 599,000",
-                "Level 4: Rp. 699,000",
+                "Level 4: Rp. 799,000",
                 "Level 5: Rp. 1,499,000",
             ]
         },
@@ -158,7 +158,7 @@ const Products = ({ text }) => {
                 "Level 1: Rp. 299,000",
                 "Level 2: Rp. 449,000",
                 "Level 3: Rp. 599,000",
-                "Level 4: Rp. 699,000",
+                "Level 4: Rp. 799,000",
                 "Level 5: Rp. 1,499,000",
             ]
         },
@@ -186,7 +186,7 @@ const Products = ({ text }) => {
                 "HSK 1: Rp. 249,000",
                 "HSK 2: Rp. 399,000",
                 "HSK 3: Rp. 549,000",
-                "HSK 4: Rp. 799,000",
+                "HSK 4: Rp. 699,000",
                 "HSK 5: Rp. 1,299,000",
             ]
         },
@@ -200,7 +200,7 @@ const Products = ({ text }) => {
                 "HSK 1: Rp. 249,000",
                 "HSK 2: Rp. 399,000",
                 "HSK 3: Rp. 549,000",
-                "HSK 4: Rp. 799,000",
+                "HSK 4: Rp. 699,000",
                 "HSK 5: Rp. 1,299,000",
             ]
         },
@@ -214,7 +214,7 @@ const Products = ({ text }) => {
                 "HSK 1: Rp. 249,000",
                 "HSK 2: Rp. 399,000",
                 "HSK 3: Rp. 549,000",
-                "HSK 4: Rp. 799,000",
+                "HSK 4: Rp. 699,000",
                 "HSK 5: Rp. 1,299,000",
             ]
         },
@@ -228,7 +228,7 @@ const Products = ({ text }) => {
                 "HSK 1: Rp. 249,000",
                 "HSK 2: Rp. 399,000",
                 "HSK 3: Rp. 549,000",
-                "HSK 4: Rp. 799,000",
+                "HSK 4: Rp. 699,000",
                 "HSK 5: Rp. 1,299,000",
             ]
         },
@@ -242,7 +242,7 @@ const Products = ({ text }) => {
                 "HSK 1: Rp. 249,000",
                 "HSK 2: Rp. 399,000",
                 "HSK 3: Rp. 549,000",
-                "HSK 4: Rp. 799,000",
+                "HSK 4: Rp. 699,000",
                 "HSK 5: Rp. 1,299,000",
             ]
         },
@@ -256,7 +256,7 @@ const Products = ({ text }) => {
                 "Level 1: Rp. 299,000",
                 "Level 2: Rp. 449,000",
                 "Level 3: Rp. 599,000",
-                "Level 4: Rp. 699,000",
+                "Level 4: Rp. 799,000",
                 "Level 5: Rp. 1,499,000",
             ]
         },
@@ -270,7 +270,7 @@ const Products = ({ text }) => {
                 "Level 1: Rp. 299,000",
                 "Level 2: Rp. 449,000",
                 "Level 3: Rp. 599,000",
-                "Level 4: Rp. 699,000",
+                "Level 4: Rp. 799,000",
                 "Level 5: Rp. 1,499,000",
             ]
         },
@@ -284,7 +284,7 @@ const Products = ({ text }) => {
                 "Level 1: Rp. 299,000",
                 "Level 2: Rp. 449,000",
                 "Level 3: Rp. 599,000",
-                "Level 4: Rp. 699,000",
+                "Level 4: Rp. 799,000",
                 "Level 5: Rp. 1,499,000",
             ]
         },
@@ -298,7 +298,7 @@ const Products = ({ text }) => {
                 "Level 1: Rp. 299,000",
                 "Level 2: Rp. 449,000",
                 "Level 3: Rp. 599,000",
-                "Level 4: Rp. 699,000",
+                "Level 4: Rp. 799,000",
                 "Level 5: Rp. 1,499,000",
             ]
         },
@@ -312,7 +312,7 @@ const Products = ({ text }) => {
                 "Level 1: Rp. 299,000",
                 "Level 2: Rp. 449,000",
                 "Level 3: Rp. 599,000",
-                "Level 4: Rp. 699,000",
+                "Level 4: Rp. 799,000",
                 "Level 5: Rp. 1,499,000",
             ]
         }
@@ -358,12 +358,12 @@ const Products = ({ text }) => {
     };
 
     return (
-        <div className="container mx-auto xl:pb-10" id="products">
+        <div className="container mx-auto xl:pb-10">
             <h1 className="text-4xl font-semibold text-center mb-2">{text.title}</h1>
             <p className="mb-10 text-center text-xl font-semibold tracking-wide text-[#AFB8CA]">
                 {text.desc}
             </p>
-            <div className="my-8 flex justify-center">
+            <div className="my-8 flex justify-center" id="products">
                 <div className="w-9/12">
                     <Slider {...settings}>
                         {translateProduct.map((item, index) => (
@@ -426,11 +426,11 @@ const Products = ({ text }) => {
                         Starting From: Rp {currentProduct.price}
                     </h3>
                     <a
-                        href="https://wa.me/+6282223369246"
+                        href="https://wa.me/+6282279506450"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        <button type="primary" size="large" className="bg-[#FFCC00] text-black px-6 py-3 border-none rounded-2xl" onClick="https://wa.me/+6282223369246">
+                        <button type="primary" size="large" className="bg-[#FFCC00] text-black px-6 py-3 border-none rounded-2xl" onClick="https://wa.me/+6282279506450">
                             Chat Admin
                         </button>
                     </a>

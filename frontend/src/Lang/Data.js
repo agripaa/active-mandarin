@@ -10,8 +10,8 @@ export const EngLang = {
     herosActionDesc: 'Join us now to try out the Experience!',
     herosListInformation: ['Education', 'Mentor Scholarship', 'Career Center'],
     sponsorsTags: 'Our Company & Organization Partners',
-    sponsorsCTA: 'Become a partner',
-    workflowTitle: 'Why we are different from others?',
+    sponsorsCTA: 'Become Our Partner',
+    workflowTitle: 'Why are we different from others?',
     workflowCards: [
         {
             title: 'Best Teachers',
@@ -93,7 +93,7 @@ export const IndLang = {
     donationTitle: 'Dukung Pendidikan Gratis Hari Ini',
     donationTag: 'Bantu Pembelajaran Mandarin, Pembimbingan Beasiswa, dan Pusat Karier Dapat Diakses oleh Semua!',
     donationBtn: 'Dukung Sekarang!',
-    navbar: ['Beranda', 'Tentang Kami', 'Program Kami', 'Hubungi kami'],
+    navbar: ['Beranda', 'Tentang Kami', 'Program Kami', 'Hubungi Kami'],
     getStarted: 'Mulai',
     herosTitle: 'Ubah Masa Depan Anda dengan Active Mandarin Indonesia',
     herosBtn: "Jelajahi Program Kami",
@@ -101,8 +101,8 @@ export const IndLang = {
     herosActionDesc: 'Bergabunglah dengan kami sekarang dan rasakan Pengalamannya!',
     herosListInformation: ['Pendidikan', 'Beasiswa Mentor', 'Pusat Karir'],
     sponsorsTags: 'Mitra Perusahaan & Organisasi Kami',
-    sponsorsCTA: 'menjadi mitra kami',
-    workflowTitle: 'Mengapa kami berbeda dari yang lain?',
+    sponsorsCTA: 'Menjadi Mitra Kami',
+    workflowTitle: 'Mengapa kita berbeda dari yang lain?',
     workflowCards: [
         {
             title: 'Guru Terbaik',

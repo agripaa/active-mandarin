@@ -104,6 +104,43 @@ const Gallery = ({ text }) => {
                         indonesia: "Hari Bahasa Mandarin Internasional",
                     },
                 },
+
+                {
+                    image: "/assets/gallery/Chinese Corner Language Department Academic Affairs Department NUIST.jpeg",
+                    activity: {
+                        english: "Chinese Corner Language Department Academic Affairs Department NUIST",
+                        indonesia: "Sudut Bahasa Cina Departemen Bahasa Departemen Akademik NUIST",
+                    },
+                },
+                {
+                    image: "/assets/gallery/English Teaching Volunteer by NUIST.jpeg",
+                    activity: {
+                        english: "English Teaching Volunteer by NUIST",
+                        indonesia: "Relawan Pengajaran Bahasa Inggris oleh NUIST",
+                    },
+                },
+                {
+                    image: "/assets/gallery/Volunteering to School by NUIST.jpeg",
+                    activity: {
+                        english: "Volunteering to School by NUIST",
+                        indonesia: "Relawan ke Sekolah oleh NUIST",
+                    },
+                },
+                {
+                    image: "/assets/gallery/Welcoming Indonesia Freshmen PPIT Nanjing.jpeg",
+                    activity: {
+                        english: "Welcoming Indonesia Freshmen PPIT Nanjing",
+                        indonesia: "Menyambut Mahasiswa Baru Indonesia PPIT Nanjing",
+                    },
+                },
+                {
+                    image: "/assets/gallery/World Aids Day Domestic Affairs Department NUIST.jpeg",
+                    activity: {
+                        english: "World Aids Day Domestic Affairs Department NUIST",
+                        indonesia: "Hari AIDS Sedunia Departemen Dalam Negeri NUIST",
+                    },
+                },
+                
             ];
             setGalleryData(images);
         };

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Mainlayouts from "../Layouts/MainLayouts";
 import Heros from "../Components/Heros";
 import Sponsors from "../Components/Sponsors";
@@ -15,11 +15,23 @@ import Supports from "../Components/Supports";
 import Faq from "../Components/FAQ";
 import { useSelector } from "react-redux";
 import Tags from "../Components/Tags";
+import { useLocation } from "react-router-dom";
 import Prospect from "../Components/ Prospect";
 
 const Homes = () => {
     const { data, langs } = useSelector(state => state.LangReducer)
     const text = langs ? data?.english : data?.indonesia
+    const location = useLocation();
+
+
+    useEffect(() => {
+        if (location.hash) {
+            const element = document.querySelector(location.hash);
+            if (element) {
+                element.scrollIntoView({ behavior: "smooth" });
+            }
+        }    
+    }, [location])
 
     return(
         <Mainlayouts>
