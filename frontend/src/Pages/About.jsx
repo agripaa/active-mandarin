@@ -186,6 +186,46 @@ const About = () => {
               />
             </div>
           </Col>
+
+          <Col xs={24} md={11} lg={10} className="hidden md:block">
+            <div className="relative rounded-xl overflow-hidden shadow-lg">
+              <img
+                src="assets/about_6.png"
+                alt="About"
+                className="w-full object-cover"
+              />
+            </div>
+          </Col>
+          <Col xs={24} md={13} lg={14}>
+            <div className="sp">
+              <h1 className="text-xl md:text-xl font-bold text-[#02264A]">
+                {langs
+                  ? "Spreading Wings to Focus on Active Indonesian Mandarin Language Program"
+                  : "Mengepakan Sayap Demi Fokus Terhadap Program Active Mandarin Indonesia"}
+              </h1>
+              <div className="bg-blue-500 text-slate-50 text-md font-semibold inline-block rounded-lg px-3 py-1 mt-3 mb-3">
+                <AiOutlineRight className="inline-block mr-2" />
+                2024
+              </div>
+              <Col xs={24} md={11} lg={10} className="block md:hidden my-8">
+                <div className="relative rounded-[32px] overflow-hidden shadow-lg">
+                  <img
+                    src="assets/about_6.png"
+                    alt="About"
+                    className="w-full object-cover"
+                  />
+                </div>
+              </Col>
+              <p
+                className="text-md md:text-lg text-gray-600 text-justify"
+                dangerouslySetInnerHTML={{
+                  __html: langs
+                    ? "Active Mandarin Indonesia Collaborates with Several Parties in China, This Collaboration Includes Collaboration in Scholarship Programs and Career Programs at Active Mandarin Indonesia, So That With This Program We Can Provide the Best Services and Solutions for Job Hunters, Especially in the Field of Mandarin and Also Scholarship Seekers in China and Taiwan"
+                    : "Active Mandarin Indonesia Melakukan Kerjasama Dengan Beberapa Pihak Yang Ada Di China, Kerjasama Ini Meliputi Kerjasama Dalam Program Scholarship Dan Juga Program Karier Yang Ada Di Active Mandarin Indonesia, Sehingga Dengan Program Ini Kami Dapat Memberikan Pelayanan Dan Juga Solusi Terbaik Bagi Para Pemburu Kerja Khususnya Di Bidang Bahasa Mandarin Dan Juga Pencari Beasiswa Di China Maupun Taiwan",
+                }}
+              ></p>
+            </div>
+          </Col>
         </Row>
       </div>
     </Mainlayouts>
