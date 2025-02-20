@@ -121,7 +121,7 @@ const Testimony = ({ text }) => {
           {/* Kiri */}
           <div className="flex flex-col items-center justify-center gap-8 md:flex-row lg:w-[40%] lg:flex-col lg:gap-0">
             <img
-              src="/assets/contact2x(white).png"
+              src="\assets\Testimony-ill.png"
               className="w-10/12 md:w-5/12 lg:w-9/12"
               alt="contact"
             />

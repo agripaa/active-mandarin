@@ -59,7 +59,7 @@ const Footers = () => {
                         <h1 className="text-2xl font-bold">{text?.general}</h1>
                         <Space direction="vertical" className="mt-5" size={15}>
                             <Link to='/about' className="md:text-xl text-md flex items-center gap-3">{text?.generalItem[0]}</Link>
-                            <Link to='#products' className="md:text-xl text-md flex items-center gap-3">{langs ? "Products" : "Produk Kami"}</Link>
+                            <Link to='/#products' className="md:text-xl text-md flex items-center gap-3">{langs ? "Products" : "Produk Kami"}</Link>
                             <Link to='/class' className="md:text-xl text-md flex items-center gap-3">{langs ? "Programs" : "Program Kami"}</Link>
                             <Link to='https://docs.google.com/forms/d/1t9Ti-EZBO0ZCHwvaj0lTfmI8yO-sibZV2DZXm10fpK8/edit' target="_blank" className="md:text-xl text-md flex items-center gap-3">{langs ? "Donation" : "Donasi"}</Link>
                             <Link to='https://docs.google.com/forms/d/14c32eKPuWFBfkXPRlS7cgWFBvfx0C_p3zZdhL0Kikzk/edit' target="_blank" className="md:text-xl text-md flex items-center gap-3">{langs ? "Become Our Partner" : "Kemitraan"}</Link>
