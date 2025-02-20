@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 const Sponsors = ({ text }) => {
     const data = [
         '/assets/1000 Startup Digital.png',
-        '/assets/KGM.png',
+        '/assets/kgm.png',
         '/assets/Kinrui New Energy 1.png',
         '/assets/MMA.png',
         '/assets/ANOA.png',

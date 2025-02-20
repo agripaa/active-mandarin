@@ -96,7 +96,7 @@ const Products = ({ text }) => {
         title: "Comprehensive Chinese Book Level 1",
         price: "80.000",
         star: 4,
-        image: "/assets/producta.png",
+        image: "/assets/comprensive.png",
         desc: "Explore a variety of interesting Mandarin vocabulary in our book collection, ranging from HSK 1 to HSK 5. Each book is designed to support your learning with interactive practice questions and simple grammar explanations, making it easy to understand. Start your exciting learning journey with Comprehensive Chinese Book and experience satisfying progress!",
         product_detail: [
           "Level 1: Rp. 80,000",
@@ -110,7 +110,7 @@ const Products = ({ text }) => {
         title: "Comprehensive Chinese Book Level 2",
         price: "100.000",
         star: 4,
-        image: "/assets/producta.png",
+        image: "/assets/comprensive.png",
         desc: "Explore a variety of interesting Mandarin vocabulary in our book collection, ranging from HSK 1 to HSK 5. Each book is designed to support your learning with interactive practice questions and simple grammar explanations, making it easy to understand. Start your exciting learning journey with Comprehensive Chinese Book and experience satisfying progress!",
         product_detail: [
           "Level 1: Rp. 80,000",
@@ -124,7 +124,7 @@ const Products = ({ text }) => {
         title: "Comprehensive Chinese Book Level 3",
         price: "150.000",
         star: 4,
-        image: "/assets/producta.png",
+        image: "/assets/comprensive.png",
         desc: "Explore a variety of interesting Mandarin vocabulary in our book collection, ranging from HSK 1 to HSK 5. Each book is designed to support your learning with interactive practice questions and simple grammar explanations, making it easy to understand. Start your exciting learning journey with Comprehensive Chinese Book and experience satisfying progress!",
         product_detail: [
           "Level 1: Rp. 80,000",
@@ -138,7 +138,7 @@ const Products = ({ text }) => {
         title: "Comprehensive Chinese Book Level 4",
         price: "210.000",
         star: 4,
-        image: "/assets/producta.png",
+        image: "/assets/comprensive.png",
         desc: "Explore a variety of interesting Mandarin vocabulary in our book collection, ranging from HSK 1 to HSK 5. Each book is designed to support your learning with interactive practice questions and simple grammar explanations, making it easy to understand. Start your exciting learning journey with Comprehensive Chinese Book and experience satisfying progress!",
         product_detail: [
           "Level 1: Rp. 80,000",
@@ -152,7 +152,7 @@ const Products = ({ text }) => {
         title: "Comprehensive Chinese Book Level 5",
         price: "300.000",
         star: 4,
-        image: "/assets/producta.png",
+        image: "/assets/comprensive.png",
         desc: "Explore a variety of interesting Mandarin vocabulary in our book collection, ranging from HSK 1 to HSK 5. Each book is designed to support your learning with interactive practice questions and simple grammar explanations, making it easy to understand. Start your exciting learning journey with Comprehensive Chinese Book and experience satisfying progress!",
         product_detail: [
           "Level 1: Rp. 80,000",
@@ -250,7 +250,7 @@ const Products = ({ text }) => {
         title: "Buku Komprehensif Bahasa Mandarin Level 1",
         price: "80.000",
         star: 4,
-        image: "/assets/producta.png",
+        image: "/assets/comprensive.png",
         desc: "Jelajahi berbagai kosakata Mandarin yang menarik dalam koleksi buku kami, mulai dari HSK 1 hingga HSK 5. Setiap buku dirancang untuk mendukung pembelajaran Anda dengan pertanyaan latihan interaktif dan penjelasan tata bahasa sederhana, sehingga mudah dipahami. Mulailah perjalanan belajar yang menyenangkan dengan Buku Komprehensif Mandarin dan rasakan kemajuan yang memuaskan!",
         product_detail: [
           "Level 1: Rp. 80,000",
@@ -264,7 +264,7 @@ const Products = ({ text }) => {
         title: "Buku Komprehensif Bahasa Mandarin Level 2",
         price: "100.000",
         star: 4,
-        image: "/assets/producta.png",
+        image: "/assets/comprensive.png",
         desc: "Jelajahi berbagai kosakata Mandarin yang menarik dalam koleksi buku kami, mulai dari HSK 1 hingga HSK 5. Setiap buku dirancang untuk mendukung pembelajaran Anda dengan pertanyaan latihan interaktif dan penjelasan tata bahasa sederhana, sehingga mudah dipahami. Mulailah perjalanan belajar yang menyenangkan dengan Buku Komprehensif Mandarin dan rasakan kemajuan yang memuaskan!",
         product_detail: [
           "Level 1: Rp. 80,000",
@@ -278,7 +278,7 @@ const Products = ({ text }) => {
         title: "Buku Komprehensif Bahasa Mandarin Level 3",
         price: "150.000",
         star: 4,
-        image: "/assets/producta.png",
+        image: "/assets/comprensive.png",
         desc: "Jelajahi berbagai kosakata Mandarin yang menarik dalam koleksi buku kami, mulai dari HSK 1 hingga HSK 5. Setiap buku dirancang untuk mendukung pembelajaran Anda dengan pertanyaan latihan interaktif dan penjelasan tata bahasa sederhana, sehingga mudah dipahami. Mulailah perjalanan belajar yang menyenangkan dengan Buku Komprehensif Mandarin dan rasakan kemajuan yang memuaskan!",
         product_detail: [
           "Level 1: Rp. 80,000",
@@ -292,7 +292,7 @@ const Products = ({ text }) => {
         title: "Buku Komprehensif Bahasa Mandarin Level 4",
         price: "210.000",
         star: 4,
-        image: "/assets/producta.png",
+        image: "/assets/comprensive.png",
         desc: "Jelajahi berbagai kosakata Mandarin yang menarik dalam koleksi buku kami, mulai dari HSK 1 hingga HSK 5. Setiap buku dirancang untuk mendukung pembelajaran Anda dengan pertanyaan latihan interaktif dan penjelasan tata bahasa sederhana, sehingga mudah dipahami. Mulailah perjalanan belajar yang menyenangkan dengan Buku Komprehensif Mandarin dan rasakan kemajuan yang memuaskan!",
         product_detail: [
           "Level 1: Rp. 80,000",
@@ -306,7 +306,7 @@ const Products = ({ text }) => {
         title: "Buku Komprehensif Bahasa Mandarin Level 5",
         price: "300.000",
         star: 4,
-        image: "/assets/producta.png",
+        image: "/assets/comprensive.png",
         desc: "Jelajahi berbagai kosakata Mandarin yang menarik dalam koleksi buku kami, mulai dari HSK 1 hingga HSK 5. Setiap buku dirancang untuk mendukung pembelajaran Anda dengan pertanyaan latihan interaktif dan penjelasan tata bahasa sederhana, sehingga mudah dipahami. Mulailah perjalanan belajar yang menyenangkan dengan Buku Komprehensif Mandarin dan rasakan kemajuan yang memuaskan!",
         product_detail: [
           "Level 1: Rp. 80,000",
