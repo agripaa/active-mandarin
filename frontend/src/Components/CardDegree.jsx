@@ -25,20 +25,25 @@ const CardDegree = ({ data }) => {
         </div>
 
         <div className="flex flex-col justify-between w-full lg:w-6/12">
-          <h1 className="text-xl font-semibold mb-4 md:text-2xl">{data?.title}</h1>
+          <h1 className="text-xl font-semibold mb-4 md:text-2xl">
+            {data?.title}
+          </h1>
 
           <ul className="space-y-2">
             {data?.bnefits?.map((bnefit, index) => (
-                <li key={index} className="flex items-start gap-2">
+              <li key={index} className="flex items-start gap-2">
                 {data?.bnefits?.length > 1 && (
-                    <FaCheckCircle className="text-green-500 flex-shrink-0" size={20} />
+                  <FaCheckCircle
+                    className="text-green-500 flex-shrink-0"
+                    size={20}
+                  />
                 )}
                 <span className="text-sm font-medium text-gray-700 leading-relaxed md:text-base">
-                    {bnefit}
+                  {bnefit}
                 </span>
-                </li>
+              </li>
             ))}
-            </ul>
+          </ul>
 
           <div className="flex justify-between items-center mt-6">
             <button
@@ -48,7 +53,17 @@ const CardDegree = ({ data }) => {
               Program Detail
             </button>
             <p className="font-semibold text-lg">
-              {data?.price === "Chat Admin" || data?.price === "Hubungi Admin" ? "Chat Admin" : <>Rp {addCommas(data?.price)}<span className="font-light text-xs ml-1 sm:text-sm">{langs ? '/Person' : "/Orang"}</span></>}
+              {data?.price === "Chat Admin" ||
+              data?.price === "Hubungi Admin" ? (
+                "Chat Admin"
+              ) : (
+                <>
+                  Rp {addCommas(data?.price)}
+                  <span className="font-light text-xs ml-1 sm:text-sm">
+                    {langs ? "/Person" : "/Orang"}
+                  </span>
+                </>
+              )}
             </p>
           </div>
         </div>
@@ -71,80 +86,124 @@ const CardDegree = ({ data }) => {
               className="w-full h-auto object-cover rounded-lg mb-4"
             />
           </div>
-          <div>
-            <h2 className="text-lg sm:text-xl font-semibold">{data?.title == "Non-Degree Program" ? "China Calling! Ready to Master Mandarin?" : "Pursue Higher Education with Scholarships in China"}</h2>
-            <p className="text-gray-700 leading-relaxed">{data?.desc}</p>
+          <div className="grid grid-cols-1 gap-x-8 gap-y-4">
+            <h2 className="text-lg sm:text-xl font-semibold">
+              {data?.title == "Non-Degree Program"
+                ? langs
+                  ? "China Calling! Ready to Master Mandarin?"
+                  : "China Memanggil! Siap Menguasai Mandarin?"
+                : langs
+                ? "Pursue Higher Education with a Scholarship in China"
+                : "Raih Pendidikan Tinggi dengan Beasiswa di Tiongkok"}
+            </h2>
+            {data?.desc.split("\n").map((line, index) => (
+              <p
+                key={index}
+                className="text-gray-900 text-justify leading-relaxed"
+              >
+                {line}
+              </p>
+            ))}
           </div>
           <div>
-          {data?.program_start?.length > 0 && (
-            <div>
-              <h3 className="font-semibold text-lg text-[#252525] mb-2">{langs ? "Program Start:" : "Mulai Program:"}</h3>
-              <ul className="ml-6 list-disc text-gray-600">
-                {data?.program_start?.map((date, index) => (
-                  <li key={index}>{date}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-        {data?.detail_class.length > 0 && (
-          <div className="mt-5"> 
-            <h3 className="font-semibold text-lg text-[#252525] mb-2">{langs ? "Detail:" : "Detail:"}</h3>
-            <ul className="list-disc ml-6 text-gray-600">
-              {data?.detail_class?.map((detail, index) => (
-                <li key={index}>{detail}</li>
-              ))}
-            </ul>
-          </div>
-         )}
+            {data?.program_start?.length > 0 && (
+              <div>
+                <h3 className="font-semibold text-lg text-[#252525] mb-2">
+                  {langs ? "Program Start:" : "Mulai Program:"}
+                </h3>
+                <ul className="ml-6 list-disc text-gray-900">
+                  {data?.program_start?.map((date, index) => (
+                    <li key={index}>{date}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {data?.detail_class.length > 0 && (
+              <div className="mt-5">
+                <h3 className="font-semibold text-lg text-[#252525] mb-2">
+                  {langs ? "Detail:" : "Detail:"}
+                </h3>
+                <ul className="list-disc ml-6 text-gray-900">
+                  {data?.detail_class?.map((detail, index) => (
+                    <li key={index}>{detail}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-         {data?.facilities.length > 0 && (
-          <div className="mt-5"> 
-            <h3 className="font-semibold text-lg text-[#252525] mb-2">{langs ? "Facilities" : "Fasilitas"}</h3>
-            <ul>
-              {data?.facilities?.map((fa, index) => (
-                <div className="ml-4">
-                    <h2 className="font-semibold text-gray-900">{langs ? "Professional Mentorship:" : "Bimbingan Profesional:"}</h2>
-                  <div className="list-disc ml-6 text-gray-600">  
-                    {fa.mentor.map((men, i) => (
-                      <li key={i}>{men}</li>
-                    ))}
-                  </div>
-                    <h2 className="mt-4 font-semibold text-gray-900">{langs ? "Application Assistance:" : "Bantuan Aplikasi:"} </h2>
-                  <div className="list-disc ml-6 text-gray-600">  
-                    {fa.assistance.map((ass, i) => (
-                      <li key={i}>{ass}</li>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </ul>
-          </div>
-         )}
-         {data?.free.length > 0 && (
-          <div className="mt-5"> 
-            <h3 className="font-semibold text-lg text-[#252525] mb-2">{langs ? "Why Choose This Program?" : "Mengapa Memilih Program Ini?"}</h3>
-            <ul className="list-disc ml-6 text-gray-60">
-              {data?.free?.map((fre, index) => (
-                <li key={index}>{fre}</li>
-              ))}
-            </ul>
-          </div>
-         )}
+            {data?.facilities.length > 0 && (
+              <div className="mt-5">
+                <h3 className="font-semibold text-lg text-[#252525] mb-2">
+                  {langs ? "Facilities" : "Fasilitas"}
+                </h3>
+                <ul>
+                  {data?.facilities?.map((fa, index) => (
+                    <div className="ml-4">
+                      <h2 className="font-semibold text-gray-900">
+                        {langs
+                          ? "Professional Mentoring:"
+                          : "Pendampingan Profesional:"}
+                      </h2>
+                      <div className="list-disc ml-6 text-gray-900">
+                        {fa.mentor.map((men, i) => (
+                          <li key={i}>{men}</li>
+                        ))}
+                      </div>
+                      <h2 className="mt-4 font-semibold text-gray-900">
+                        {langs
+                          ? "Registration Processing:"
+                          : "Pengurusan Pendaftaran:"}{" "}
+                      </h2>
+                      <div className="list-disc ml-6 text-gray-900">
+                        {fa.assistance.map((ass, i) => (
+                          <li key={i}>{ass}</li>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {data?.free.length > 0 && (
+              <div className="mt-5">
+                <h3 className="font-semibold text-lg text-[#252525] mb-2">
+                  {data?.title === "Non-Degree Program"
+                    ? langs
+                      ? "Facilities: "
+                      : "Fasilitas: "
+                    : langs
+                    ? "Why Should You Choose This Program?"
+                    : "Kenapa Harus Memilih Program Ini?"}
+                </h3>
+                <ul className="list-disc ml-6 text-gray-900">
+                  {data?.free?.map((fre, index) => (
+                    <li key={index}>{fre}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-        {data?.other !== "" && (
-          <div className="mt-5"> 
-            <p className=" text-gray-60">
-              {data?.other}
-            </p>
-          </div>
-         )}
+            {data?.other !== "" && (
+              <div className="mt-5">
+                <p className=" text-gray-60">{data?.other}</p>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Informasi Harga dan Chat Admin */}
         <div className="flex justify-between items-center mt-8 border-t pt-6">
           <p className="text-xl md:text-2xl font-bold text-gray-800">
-            {data?.price === "Chat Admin" || data?.price === "Hubungi Admin"  ? "Chat Admin" : <>Rp {addCommas(data?.price)} <span className="text-sm md:text-lg font-normal">{langs ? '/Person' : "/Orang"}</span></>}
+            {data?.price === "Chat Admin" || data?.price === "Hubungi Admin" ? (
+              "Chat Admin"
+            ) : (
+              <>
+                Rp {addCommas(data?.price)}{" "}
+                <span className="text-sm md:text-lg font-normal">
+                  {langs ? "/Person" : "/Orang"}
+                </span>
+              </>
+            )}
           </p>
           <a
             href="https://wa.me/+6282279506450"
