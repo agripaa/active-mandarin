@@ -697,7 +697,7 @@ const Catalog = () => {
         program_start: ["March 2025 & September 2025"],
       },
       {
-        title: "Degree Program Bachelor - PhD",
+        title: "Program Associate Degree - PhD Program",
         price: "Chat Admin",
         image: "/assets/degree/2.png",
         bnefits: [
@@ -751,7 +751,7 @@ const Catalog = () => {
         program_start: ["Tanggal: Maret 2025 dan September 2025"],
       },
       {
-        title: "Degree Program S1-S3",
+        title: "Program Gelar Ahli Madya - Program PhD",
         price: "Hubungi Admin",
         image: "/assets/degree/2.png",
         bnefits: [
