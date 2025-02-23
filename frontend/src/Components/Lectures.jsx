@@ -22,34 +22,46 @@ const Lectures = ({ text }) => {
         {
           english:
             "Best Academic Performance and Rank 2/39 in Bachelor Degree Class",
+          indonesian:
+            "Prestasi Akademik Terbaik dan Peringkat 2/39 di Kelas Sarjana",
           chinese: "最佳学习成绩，学士学位班排名 2/39",
         },
         {
           english:
             "Awardee of Chinese Scholarship by Nanjing University of Information Science and Technology",
+          indonesian:
+            "Penerima Beasiswa Pemerintah Tiongkok dari Universitas Ilmu dan Teknologi Informasi Nanjing",
           chinese: "南京信息工程大学中国政府奖学金获得者",
         },
         {
           english:
             "Awardee of TSP Scholarship by Nanjing Polytechnic Institute",
+          indonesian:
+            "Penerima Beasiswa TSP dari Nanjing Polytechnic Institute",
           chinese: "南京科技职业学院TSP奖学金获得者",
         },
         {
           english:
             "Awardee of Representatives Perhimpunan Pelajar Indonesia Tiongkok Nanjing Branch on Indonesia Consulate General in Shanghai",
+          indonesian:
+            "Perwakilan Perhimpunan Pelajar Indonesia Tiongkok Cabang Nanjing di Konsulat Jenderal Indonesia di Shanghai",
           chinese:
             "印尼留学生联合会南京分会代表，出席印度尼西亚驻上海总领事馆活动",
         },
         {
           english: "3rd Chinese Speech Competition 2019",
+          indonesian: "Juara 3 Lomba Pidato Bahasa Mandarin 2019",
           chinese: "2019年第三名中文演讲比赛",
         },
         {
           english: "3rd Chinese Listening and Speaking Competition 2019",
+          indonesian:
+            "Juara 3 Lomba Mendengarkan dan Berbicara Bahasa Mandarin 2019",
           chinese: "2019年第三名中文听说比赛",
         },
         {
           english: "HSK 5 Certified",
+          indonesian: "Bersertifikat HSK 5",
           chinese: "HSK 5 认证",
         },
       ],
@@ -62,14 +74,17 @@ const Lectures = ({ text }) => {
       certificates: [
         {
           english: "HSK 4 Certified",
+          indonesian: "Bersertifikat HSK 4",
           chinese: "HSK 4 认证",
         },
         {
           english: "Awardee the President’s Scholarship",
+          indonesian: "Penerima Beasiswa Presiden",
           chinese: "校长奖学金得奖者",
         },
         {
           english: "Author of the book Comprehensive Chinese Book",
+          indonesian: "Penulis buku 'Komprehensif Bahasa Mandarin'",
           chinese: "著有《综合汉语书》",
         },
       ],
@@ -84,23 +99,31 @@ const Lectures = ({ text }) => {
         {
           english:
             "Award for being Campus Ambassador for College of International Education by Nanjing University of Information Science and Technology from 2024 to 2025",
+          indonesian:
+            "Penghargaan sebagai Duta Kampus untuk College of International Education oleh Universitas Ilmu dan Teknologi Informasi Nanjing dari 2024 hingga 2025",
           chinese: "荣获2024-2025年南京信息工程大学国际教育学院校园大使称号",
         },
         {
           english:
             "Awardee Longshan Type B (1st Prize) Scholarship for International Student by Nanjing University of Information Science and Technology from 2024 to 2025",
+          indonesian:
+            "Penerima Beasiswa Longshan Tipe B (Juara 1) untuk Mahasiswa Internasional oleh Universitas Ilmu dan Teknologi Informasi Nanjing dari 2024 hingga 2025",
           chinese:
             "获奖者 南京信息工程大学2024年至2025年龙山B类留学生奖学金（一等奖）",
         },
         {
           english:
             "Awardee for The 4th Stories of China Retold in English Challenge for International Student by Jiangsu Government in Intermediate round, May 2024",
+          indonesian:
+            "Penerima Penghargaan dalam Lomba 'Stories of China Retold in English' ke-4 untuk Mahasiswa Internasional oleh Pemerintah Jiangsu pada babak menengah, Mei 2024",
           chinese:
             "2024 年 5 月江苏省第四届留学生英文讲述中国故事大赛中级赛获奖者",
         },
         {
           english:
             "Awardee NUIST Excellent Freshmen Scholarship (1st Prize) Scholarship for International Student by Nanjing University of Information Science and Technology from 2023 to 2024",
+          indonesian:
+            "Penerima Beasiswa Mahasiswa Baru Berprestasi NUIST (Juara 1) untuk Mahasiswa Internasional oleh Universitas Ilmu dan Teknologi Informasi Nanjing dari 2023 hingga 2024",
           chinese:
             "获奖者 南京信息工程大学优秀新生奖学金（一等奖） 南京信息工程大学留学生奖学金2023年至2024年",
         },
@@ -112,45 +135,59 @@ const Lectures = ({ text }) => {
       university_name: "Nanjing Polytechnic Institute",
       cat_certificate: "HSK 5 Certified",
       certificates: [
-        {
-          english:
-            "Awardee Jiangsu Government Scholarship for Excellent Student by Jiangsu Government 2024",
-          chinese: "2024年留学江苏政府优秀学生奖学金",
-        },
-        {
-          english:
-            "Awardee Jiangsu Government Scholarship for Excellent Student by Jiangsu Government 2023",
-          chinese: "2023年留学江苏政府优秀学生奖学金",
-        },
-        {
-          english: "Awardee NJPI President’s Scholarship from 2021 to 2024",
-          chinese: "南京科技职业学院奖学金自2021年至2024年",
-        },
-        {
-          english:
-            "Second Prize in the International Student Group of the 2nd 'Chinese Language plus Logistics Vocational Skills' International Contest 2023",
-          chinese: "2023年在第二届“中文+物流职业技能”国际赛二等奖",
-        },
-        {
-          english:
-            "Second Prize in the SFLEP Cup National College Students Intercultural Competence Contest",
-          chinese: "2023年在第六届“外教社杯”江苏省跨文化能力大赛二等奖",
-        },
-        {
-          english:
-            "Awardee for Award of Excellence in 'Portraying Jiangsu From a Different Angle' Writing Competition for Foreign Friends in Jiangsu",
-          chinese: "2023年在“洋笔江苏”在江苏外国人正文大赛中荣获优秀奖",
-        },
-        {
-          english:
-            "Excellence Award in the International Student Group 2023 'A New Era of Book Fragrance, Classics Illuminating a New Journey' Chinese Classics Recitation Competition",
-          chinese:
-            "在2023年 “书香新时代, ‘典’ 亮新征程” 中华经典诵读大赛中获留学生组优秀奖",
-        },
-        {
-          english: "HSK 5 Certified",
-          chinese: "HSK 5 认证",
-        },
+          {
+            english:
+              "Awardee Jiangsu Government Scholarship for Excellent Student by Jiangsu Government 2024",
+            indonesian:
+              "Penerima Beasiswa Pemerintah Jiangsu untuk Mahasiswa Berprestasi oleh Pemerintah Jiangsu 2024",
+            chinese: "2024年留学江苏政府优秀学生奖学金",
+          },
+          {
+            english:
+              "Awardee Jiangsu Government Scholarship for Excellent Student by Jiangsu Government 2023",
+            indonesian:
+              "Penerima Beasiswa Pemerintah Jiangsu untuk Mahasiswa Berprestasi oleh Pemerintah Jiangsu 2023",
+            chinese: "2023年留学江苏政府优秀学生奖学金",
+          },
+          {
+            english: "Awardee NJPI President’s Scholarship from 2021 to 2024",
+            indonesian: "Penerima Beasiswa Presiden NJPI dari 2021 hingga 2024",
+            chinese: "南京科技职业学院奖学金自2021年至2024年",
+          },
+          {
+            english:
+              "Second Prize in the International Student Group of the 2nd 'Chinese Language plus Logistics Vocational Skills' International Contest 2023",
+            indonesian:
+              "Juara Kedua Kategori Mahasiswa Internasional dalam Lomba Internasional 'Bahasa Mandarin plus Keterampilan Kejuruan Logistik' ke-2 tahun 2023",
+            chinese: "2023年在第二届“中文+物流职业技能”国际赛二等奖",
+          },
+          {
+            english:
+              "Second Prize in the SFLEP Cup National College Students Intercultural Competence Contest",
+            indonesian:
+              "Juara Kedua dalam Lomba Kompetensi Antarbudaya Mahasiswa Nasional Piala SFLEP",
+            chinese: "2023年在第六届“外教社杯”江苏省跨文化能力大赛二等奖",
+          },
+          {
+            english:
+              "Awardee for Award of Excellence in 'Portraying Jiangsu From a Different Angle' Writing Competition for Foreign Friends in Jiangsu",
+            indonesian:
+              "Penerima Penghargaan Keunggulan dalam Lomba Menulis 'Melukiskan Jiangsu dari Sudut Pandang Berbeda' untuk Teman Asing di Jiangsu",
+            chinese: "2023年在“洋笔江苏”在江苏外国人正文大赛中荣获优秀奖",
+          },
+          {
+            english:
+              "Excellence Award in the International Student Group 2023 'A New Era of Book Fragrance, Classics Illuminating a New Journey' Chinese Classics Recitation Competition",
+            indonesian:
+              "Penghargaan Keunggulan Kategori Mahasiswa Internasional dalam Lomba Resitasi Klasik Mandarin 2023 'Era Baru yang Harum dengan Buku, Klasik Menerangi Perjalanan Baru'",
+            chinese:
+              "在2023年 “书香新时代, ‘典’ 亮新征程” 中华经典诵读大赛中获留学生组优秀奖",
+          },
+          {
+            english: "HSK 5 Certified",
+            indonesian: "Bersertifikat HSK 5",
+            chinese: "HSK 5 认证",
+          },
       ],
     },
   ];
@@ -162,7 +199,7 @@ const Lectures = ({ text }) => {
     slidesToShow: 3,
     slidesToScroll: 1,
     centerMode: false, // Nonaktifkan centerMode
-    arrows: false, // Nonaktifkan tombol next dan prev
+    arrows: true, // Nonaktifkan tombol next dan prev
     beforeChange: (current, next) => setCurrentSlide(next),
     responsive: [
       {
@@ -261,9 +298,11 @@ const Lectures = ({ text }) => {
                   {currentLecturer.name}
                 </h1>
               </div>
-              <span className="bg-[#3377FF] w-fit mx-auto py-1 px-3 text-center text-white font-medium rounded-full text-sm mt-auto md:mx-0">
-                {currentLecturer.cat_certificate}
-              </span>
+              {currentLecturer.name === "Vemas Alvieno Dian Saputra" ? null :
+                <span className="bg-[#3377FF] w-fit mx-auto py-1 px-3 text-center text-white font-medium rounded-full text-sm mt-auto md:mx-0">
+                  {currentLecturer.cat_certificate}
+                </span>
+              }
             </div>
             <button
               className="absolute text-white text-xl bg-transparent border-none cursor-pointer top-4 right-4 md:top-6 md:right-6"
@@ -278,7 +317,11 @@ const Lectures = ({ text }) => {
           <ul className="list-disc ml-5">
             {currentCertificates.map((cert, index) => (
               <li key={index} className="mb-2">
-                <p className="text-black text-lg">{cert.english}</p>
+                <p className="text-black text-lg">
+                  {langs 
+                  ? cert.english
+                  : cert.indonesian
+                  }</p>
                 <p className="text-gray-500">{cert.chinese}</p>
               </li>
             ))}
