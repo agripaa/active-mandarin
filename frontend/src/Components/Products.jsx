@@ -33,7 +33,7 @@ const Products = ({ text }) => {
           "HSK 2: Rp. 250,000",
           "HSK 3: Rp. 350,000",
           "HSK 4: Rp. 450,000",
-          "HSK 5: Rp. 750,000",
+          "HSK 5: Rp. 550,000",
         ],
       },
       {
@@ -47,7 +47,7 @@ const Products = ({ text }) => {
           "HSK 2: Rp. 250,000",
           "HSK 3: Rp. 350,000",
           "HSK 4: Rp. 450,000",
-          "HSK 5: Rp. 750,000",
+          "HSK 5: Rp. 550,000",
         ],
       },
       {
@@ -61,7 +61,7 @@ const Products = ({ text }) => {
           "HSK 2: Rp. 250,000",
           "HSK 3: Rp. 350,000",
           "HSK 4: Rp. 450,000",
-          "HSK 5: Rp. 750,000",
+          "HSK 5: Rp. 550,000",
         ],
       },
       {
@@ -75,12 +75,12 @@ const Products = ({ text }) => {
           "HSK 2: Rp. 250,000",
           "HSK 3: Rp. 350,000",
           "HSK 4: Rp. 450,000",
-          "HSK 5: Rp. 750,000",
+          "HSK 5: Rp. 550,000",
         ],
       },
       {
         title: "E-Flashcard HSK 5",
-        price: "750.000",
+        price: "550.000",
         star: 4,
         image: "/assets/product2.png",
         desc: "Want to master Mandarin in a fun and effective way? Our HSK Flashcards are here to be your best companion in learning Mandarin vocabulary. With an enjoyable and practical method, learning becomes easier and helps you achieve Mandarin fluency faster than you imagined!",
@@ -89,7 +89,7 @@ const Products = ({ text }) => {
           "HSK 2: Rp. 250,000",
           "HSK 3: Rp. 350,000",
           "HSK 4: Rp. 450,000",
-          "HSK 5: Rp. 750,000",
+          "HSK 5: Rp. 550,000",
         ],
       },
       {
@@ -187,7 +187,7 @@ const Products = ({ text }) => {
           "HSK 2: Rp. 250,000",
           "HSK 3: Rp. 350,000",
           "HSK 4: Rp. 450,000",
-          "HSK 5: Rp. 750,000",
+          "HSK 5: Rp. 550,000",
         ],
       },
       {
@@ -201,7 +201,7 @@ const Products = ({ text }) => {
           "HSK 2: Rp. 250,000",
           "HSK 3: Rp. 350,000",
           "HSK 4: Rp. 450,000",
-          "HSK 5: Rp. 750,000",
+          "HSK 5: Rp. 550,000",
         ],
       },
       {
@@ -215,7 +215,7 @@ const Products = ({ text }) => {
           "HSK 2: Rp. 250,000",
           "HSK 3: Rp. 350,000",
           "HSK 4: Rp. 450,000",
-          "HSK 5: Rp. 750,000",
+          "HSK 5: Rp. 550,000",
         ],
       },
       {
@@ -229,12 +229,12 @@ const Products = ({ text }) => {
           "HSK 2: Rp. 250,000",
           "HSK 3: Rp. 350,000",
           "HSK 4: Rp. 450,000",
-          "HSK 5: Rp. 750,000",
+          "HSK 5: Rp. 550,000",
         ],
       },
       {
         title: "E-Flashcard HSK 5",
-        price: "750.000",
+        price: "550.000",
         star: 4,
         image: "/assets/product2.png",
         desc: "Ingin menguasai bahasa Mandarin dengan cara seru dan efektif? Kartu Flashcard HSK kami siap menjadi sahabat terbaik Anda dalam belajar kosakata Mandarin. Dengan metode yang menyenangkan dan praktis, belajar jadi lebih mudah dan membantu Anda mencapai kemahiran berbahasa Mandarin lebih cepat dari yang Anda bayangkan!",
@@ -243,7 +243,7 @@ const Products = ({ text }) => {
           "HSK 2: Rp. 250,000",
           "HSK 3: Rp. 350,000",
           "HSK 4: Rp. 450,000",
-          "HSK 5: Rp. 750,000",
+          "HSK 5: Rp. 550,000",
         ],
       },
       {
