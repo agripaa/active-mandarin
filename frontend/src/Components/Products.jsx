@@ -11,7 +11,7 @@ const Products = ({ text }) => {
   const products = {
     english: [
       {
-        title: "Mandarin Notebook",
+        title: "Hanzi Grid Notebook",
         price: "24.999",
         star: 4,
         image: "/assets/product1.png",
@@ -165,7 +165,7 @@ const Products = ({ text }) => {
     ],
     indonesia: [
       {
-        title: "Buku Tulis Mandarin",
+        title: "Buku Tulis Kotak Kotak Hanzi",
         price: "24.999",
         star: 4,
         image: "/assets/product1.png",
