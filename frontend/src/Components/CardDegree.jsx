@@ -88,7 +88,7 @@ const CardDegree = ({ data }) => {
           </div>
           <div className="grid grid-cols-1 gap-x-8 gap-y-4">
             <h2 className="text-lg sm:text-xl font-semibold">
-              {data?.title == "Non-Degree Program"
+              {data?.title === "Non-Degree Program"
                 ? langs
                   ? "China Calling! Ready to Master Mandarin?"
                   : "China Memanggil! Siap Menguasai Mandarin?"
