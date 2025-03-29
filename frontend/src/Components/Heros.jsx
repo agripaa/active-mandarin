@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 const Heros = ({ text }) => {
   return (
-    <div className="container mt-4 mx-auto px-5 md:px-0">
+    <div className="mt-4 mx-auto px-5 md:px-0">
       <Space align="center" direction="vertical" className="py-3">
         <div className="flex justify-center items-center w-full">
           <div className="flex justify-center items-center flex-col text-center w-full md:w-4/5">
@@ -42,10 +42,11 @@ const Heros = ({ text }) => {
           <img
             src="/assets/hero3.png"
             alt="img"
-            className="sm:w-3/4 mt-12 mx-auto w-full"
+            className="sm:w-8/12 mt-0 mx-auto w-full"
           />
         </picture>
       </Space>
+      <a href="/contact" className="fixed z-50 bg-[#57D163] hover:bg-[#4bad55] transition-all duration-300 right-[5%] text-white bottom-[6%] py-3 px-6 rounded-xl">Chat Mintive</a>
     </div>
   );
 };

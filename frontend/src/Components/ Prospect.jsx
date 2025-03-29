@@ -3,9 +3,9 @@ import React from 'react'
 const  Prospect = ({text}) => {
 
   return (
-    <div className='container mx-auto mt-16 mb-24 relative w-full px-5'>
+    <div className='mx-auto px-20 mt-16 mb-24 relative w-full'>
         <div className='flex items-center justify-center w-full h-full'>
-            <div className='w-full p-6 flex max-h-auto gap-12 rounded-[32px] sm:p-8 lg:w-11/12 xl:w-9/12' style={{ backgroundImage: "url('/assets/texture-prospect.png')", backgroundSize: "cover", backgroundPosition: "center", boxShadow: "0px 1px 3px 0px #0000004D, 0px 4px 8px 3px #00000026" }}>
+            <div className='w-full p-6 flex max-h-auto gap-12 rounded-[32px] sm:p-8 lg:w-11/12 xl:w-11/12' style={{ backgroundImage: "url('/assets/texture-prospect.png')", backgroundSize: "cover", backgroundPosition: "center", boxShadow: "0px 1px 3px 0px #0000004D, 0px 4px 8px 3px #00000026" }}>
                 <div className='w-4/12 hidden items-center justify-start lg:flex'>
                     <img src="/assets/prospect3.png" alt="" className='w-full' />
                 </div>

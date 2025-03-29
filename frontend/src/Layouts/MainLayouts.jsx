@@ -7,7 +7,6 @@ import { useLocation } from "react-router-dom";
 import Donation from "../Components/Donation";
 import { useDispatch, useSelector } from "react-redux";
 import { getLanguage } from "../Store/Action/LangAction";
-import ButtonWhatsapp from "../Components/ButtonWhatsapp";
 
 const Mainlayouts = ({ children }) => {
     const [collapse, setCollapse] = useState(false)
@@ -34,7 +33,6 @@ const Mainlayouts = ({ children }) => {
              }} />
             <Headers collapse={collapse} funcs={onClose}/>
             <main style={{ minHeight: '60vh'}}>{children}</main>
-            <ButtonWhatsapp />
             <Footers/>
             { !collapse ? <FloatButton.BackTop icon={<UpOutlined />}/> : null}
         </>

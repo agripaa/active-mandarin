@@ -17,6 +17,42 @@ const About = () => {
 
   return (
     <Mainlayouts>
+    <div className="container mx-auto px-5 md:px-10 py-24">
+      <Row gutter={[32, 32]} align="middle">
+        <Col xs={24} md={13} lg={14}>
+          <div className="flex flex-col gap-4 justify-start">
+            <h1 className="text-xl md:text-4xl font-bold text-[#02264A]">
+              Active Mandarin Indonesia
+            </h1>
+            <Col xs={24} md={11} lg={10} className="block md:hidden my-8">
+              <div className="relative rounded-[32px] overflow-hidden shadow-lg">
+                <img
+                  src="assets/about_1.png"
+                  alt="About"
+                  className="w-full object-cover"
+                />
+              </div>
+            </Col>
+            <p
+              className="text-md md:text-lg text-gray-600 text-justify"
+              dangerouslySetInnerHTML={{
+                __html: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum mollis nunc a molestie dictum. Mauris venenatis, felis scelerisque aliquet lacinia, nulla nisi venenatis odio, id blandit mauris ipsum id sapien. Vestibulum malesuada orci sit amet pretium facilisis. In lobortis congue augue, a commodo libero tincidunt scelerisque. Donec tempus congue lacinia. Phasellus lacinia felis est, placerat commodo odio tincidunt iaculis. Sed felis magna, iaculis a metus id, ullamcorper suscipit nulla. Fusce facilisis, nunc ultricies posuere porttitor, nisl lacus tincidunt diam, vel feugiat nisi elit id massa. Proin nulla augue, dapibus non justo in, laoreet commodo nunc. Maecenas faucibus neque in nulla mollis interdum. Quisque quis pellentesque enim, vitae pulvinar purus. Quisque vitae suscipit risus. Curabitur scelerisque magna a interdum pretium. Integer sodales metus ut placerat viverra. Curabitur accumsan, odio quis vehicula imperdiet, tellus ex venenatis nisl, a dignissim lectus augue tincidunt arcu."
+              }}
+            ></p>
+          </div>
+        </Col>
+        <Col xs={24} md={11} lg={10} className="hidden md:block">
+          <div className="relative rounded-xl overflow-hidden shadow-lg">
+            <img
+              src="assets/about_1.png"
+              alt="About"
+              className="w-full object-cover"
+            />
+          </div>
+        </Col>
+      </Row>
+      </div>
+      
       <h1 className="text-2xl md:text-4xl text-center mt-11 px-5 md:px-10">
         {langs
           ? "The Story Behind Active Mandarin Indonesia"

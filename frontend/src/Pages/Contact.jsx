@@ -24,7 +24,7 @@ const Contact = () => {
                   <div className="flex flex-col w-full justify-between gap-5 py-8 md:flex-row">
                     <span className="w-full xl:w-5/12">
                       <h2 className="font-semibold text-xl">
-                        {langs ? "Phone Number" : "Nomor telepon"}
+                        {langs ? "Whatsapp Number" : "Nomor Whatsapp"}
                       </h2>
                       <p className="text-base mt-2 lg:text-lg">
                         +62 822-7950-6450

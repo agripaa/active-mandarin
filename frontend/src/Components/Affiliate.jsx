@@ -16,10 +16,10 @@ const Affiliate = ({ text }) => {
   }
 
   return (
-    <div className='container mx-auto my-24 relative w-full px-5'>
+    <div className='mx-auto my-24 relative w-full px-20'>
       <div className='flex items-center justify-center w-full h-full'>
         <div
-          className='relative w-full lg:w-11/12 xl:w-10/12 2xl:w-9/12 flex bg-[#02264A] rounded-2xl p-10 md:p-14'
+          className='relative w-full lg:w-11/12 xl:w-11/12 2xl:w-11/12 flex bg-[#02264A] rounded-2xl p-10 md:p-14'
           style={{
             backgroundImage: "url('/assets/card-texture.png')",
             backgroundSize: "cover",
@@ -29,7 +29,7 @@ const Affiliate = ({ text }) => {
           <img
             src="/assets/affiliate-cropped.png"
             alt="Affiliate"
-            className='absolute bottom-0 left-0 h-auto w-[43%] object-cover z-30 hidden lg:block'
+            className='absolute bottom-0 left-0 h-auto w-[35%] object-cover z-30 hidden lg:block'
           />
 
           <img

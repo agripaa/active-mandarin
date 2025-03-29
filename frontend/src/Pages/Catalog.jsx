@@ -543,7 +543,7 @@ const Catalog = () => {
         title: "Mentor Scholarship Group",
         price: "3.499.000",
         image: "/assets/scholarship/1.png",
-        banner: "/assets/banner/scholarship.png",
+        banner: "/assets/banner/scholarship-program.png",
         category: "scholarship",
         bnefits: [
           "Group chat with mentors to share information and experiences.",
@@ -586,7 +586,7 @@ const Catalog = () => {
         title: "One Step Closer to Chinese Scholarship",
         price: "6.499.000",
         image: "/assets/scholarship/3.png",
-        banner: "/assets/banner/scholarship.png",
+        banner: "/assets/banner/scholarship-program.png",
         category: "scholarship",
         bnefits: [
           "Your scholarship application is fully assisted by Education Consultant Active Mandarin Indonesia.",
@@ -609,7 +609,7 @@ const Catalog = () => {
         title: "Mentor Scholarship Group",
         price: "3.499.000",
         image: "/assets/scholarship/1.png",
-        banner: "/assets/banner/scholarship.png",
+        banner: "/assets/banner/scholarship-program.png",
         category: "beasiswa",
         bnefits: [
           "Group chat bersama mentor untuk berbagi informasi dan pengalaman",
@@ -652,7 +652,7 @@ const Catalog = () => {
         title: "One Step Closer to Chinese Scholarship",
         price: "6.499.000",
         image: "/assets/scholarship/3.png",
-        banner: "/assets/banner/scholarship.png",
+        banner: "/assets/banner/scholarship-program.png",
         category: "beasiswa",
         bnefits: [
           "⁠Pendaftaran beasiswa Anda sepenuhnya dibantu oleh Education Consultant Active Mandarin Indonesia",
@@ -930,31 +930,10 @@ const Catalog = () => {
             ))}
           </Slider>
         </div>
-        <div className="md:py-10" id="start">
-          <div className="w-full mx-auto mb-6 lg:w-9/12">
-            <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
-              {langs
-                ? "Premium Mandarin Learning"
-                : "Pembelajaran Mandarin Premium"}
-            </h2>
-            <span className="font-semibold text-[#8493AC] text-lg">
-              {langs
-                ? "For your bright future starts here"
-                : "Untuk masa depan cerah Anda dimulai di sini"}
-            </span>
-          </div>
-          <div className="w-full flex flex-col justify-center items-center">
-            {translateClass.map((item, index) => (
-              <div key={index} className="w-full flex flex-col mb-6 lg:w-9/12">
-                <CardClasses data={item} />
-              </div>
-            ))}
-          </div>
-        </div>
 
         <div className="pt-10 pb-1">
           <div>
-            <div className="w-full mx-auto mb-6 lg:w-9/12">
+            <div className="w-full mx-auto mb-6">
               <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
                 {langs ? "From Zero To Hero" : "Dari Nol Menjadi Pahlawan"}
               </h2>
@@ -964,16 +943,15 @@ const Catalog = () => {
                   : "Temukan kelas premium dan peluang di sepanjang prosesnya"}
               </span>
             </div>
-            <div className="my-8 flex justify-center">
-              <div className="w-full lg:w-9/12">
-                <Slider {...settings}>
+            <div className="my-8 flex justify-start">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
                   {translateProduct.map((item, index) => (
                     <div
                       key={index}
-                      className="p-0 m-4"
+                      className="p-0 m-0"
                       onClick={() => showModal(item)}
                     >
-                      <div className="bg-white rounded-2xl shadow flex flex-col w-11/12 h-full">
+                      <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
                         <img
                           src={item.image}
                           alt={item.title}
@@ -991,15 +969,13 @@ const Catalog = () => {
                                 : "/Bulan"}
                             </span>
                           </p>
-                          <div className="flex items-center">
-                            <Rate disabled defaultValue={item.star} />
-                            <span className="ml-3 text-base">(138)</span>
+                          <div className="flex mt-2">
+                            <span className="text-sm text-[#3377FF]">Dapatkan komisi Rp Rp224.950</span>
                           </div>
                         </div>
                       </div>
                     </div>
                   ))}
-                </Slider>
               </div>
               {/* Modal */}
               <Modal
@@ -1104,7 +1080,7 @@ const Catalog = () => {
                     href="https://wa.me/+6282279506450"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-[#FFCC00] text-[#252525] font-semibold rounded-full shadow-lg transition duration-300 px-3 py-2 sm:px-6 sm:py-3"
+                    className="bg-[#FFCC00] text-[#252525] font-semibold rounded-full border border-neutral-300-lg transition duration-300 px-3 py-2 sm:px-6 sm:py-3"
                   >
                     Chat Admin
                   </a>
@@ -1113,8 +1089,56 @@ const Catalog = () => {
             </div>
           </div>
 
+          <div className="md:py-10" id="start">
+            <div className="w-full mx-auto mb-6">
+              <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
+                {langs
+                  ? "Premium Mandarin Learning"
+                  : "Pembelajaran Mandarin Premium"}
+              </h2>
+              <span className="font-semibold text-[#8493AC] text-lg">
+                {langs
+                  ? "For your bright future starts here"
+                  : "Untuk masa depan cerah Anda dimulai di sini"}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
+              {translateClass.map((item, index) => (
+                  <div
+                  key={index}
+                  className="p-0 m-0"
+                  onClick={() => showModal(item)}
+                >
+                  <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-56 object-cover rounded-t-2xl"
+                    />
+                    <div className="flex flex-col justify-between items-start px-4 py-5">
+                      <h2 className="text-lg font-semibold text-gray-800 mb-2">
+                        {item.title}
+                      </h2>
+                      <p className="font-semibold text-lg mb-2">
+                        Rp {item.price}
+                        <span className="font-light text-sm ml-1">
+                          {langs
+                            ? "/Month"
+                            : "/Bulan"}
+                        </span>
+                      </p>
+                      <div className="flex mt-2">
+                        <span className="text-sm text-[#3377FF]">Dapatkan komisi Rp Rp224.950</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div className="py-10" id="Mentor">
-            <div className="w-full mx-auto mb-6 lg:w-9/12">
+            <div className="w-full mx-auto mb-6">
               <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
                 {langs
                   ? "Mentor Scholarship Program"
@@ -1127,24 +1151,47 @@ const Catalog = () => {
               </span>
             </div>
 
-            <div className="w-full flex flex-col justify-center items-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
               {translateScholarship.map((item, index) => (
-                <div
+                  <div
                   key={index}
-                  className="w-full flex flex-col mb-6 lg:w-9/12"
+                  className="p-0 m-0"
+                  onClick={() => showModal(item)}
                 >
-                  <CardClasses data={item} />
+                  <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-56 object-cover rounded-t-2xl"
+                    />
+                    <div className="flex flex-col justify-between items-start px-4 py-5">
+                      <h2 className="text-lg font-semibold text-gray-800 mb-2">
+                        {item.title}
+                      </h2>
+                      <p className="font-semibold text-lg mb-2">
+                        Rp {item.price}
+                        <span className="font-light text-sm ml-1">
+                          {langs
+                            ? "/Month"
+                            : "/Bulan"}
+                        </span>
+                      </p>
+                      <div className="flex mt-2">
+                        <span className="text-sm text-[#3377FF]">Dapatkan komisi Rp Rp224.950</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
 
           <div className="py-10">
-            <div className="w-full mx-auto mb-6 lg:w-9/12">
+            <div className="w-full mx-auto mb-6">
               <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
                 {langs
-                  ? "Non Degree / Degree Program"
-                  : "Program Non Gelar/Gelar"}
+                  ? "Degree Program"
+                  : "Program Gelar"}
               </h2>
               <span className="font-semibold text-[#8493AC] text-lg">
                 {langs
@@ -1152,17 +1199,99 @@ const Catalog = () => {
                   : "Untuk menjamin masa depanmu, carilah ilmu sampai ke Tiongkok."}
               </span>
             </div>
-            <div className="w-full flex flex-col justify-center items-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
               {translateDegree.map((item, index) => (
                 <div
                   key={index}
-                  className="w-full flex flex-col mb-6 lg:w-9/12"
+                  className="w-full flex flex-col mb-6"
                 >
-                  <CardDegree data={item} />
+                <div
+                  key={index}
+                  className="p-0 m-0"
+                  onClick={() => showModal(item)}
+                >
+                  <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-56 object-cover rounded-t-2xl"
+                    />
+                    <div className="flex flex-col justify-between items-start px-4 py-5">
+                      <h2 className="text-lg font-semibold text-gray-800 mb-2">
+                        {item.title}
+                      </h2>
+                      <p className="font-semibold text-lg mb-2">
+                        Rp {item.price}
+                        <span className="font-light text-sm ml-1">
+                          {langs
+                            ? "/Month"
+                            : "/Bulan"}
+                        </span>
+                      </p>
+                      <div className="flex mt-2">
+                        <span className="text-sm text-[#3377FF]">Dapatkan komisi Rp Rp224.950</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 </div>
               ))}
             </div>
           </div>
+
+          <div className="py-10">
+            <div className="w-full mx-auto mb-6">
+              <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
+                {langs
+                  ? "Non - Degree Program"
+                  : "Program Non-Gelar"}
+              </h2>
+              <span className="font-semibold text-[#8493AC] text-lg">
+                {langs
+                  ? "To secure your future, seek knowledge even as far as China."
+                  : "Untuk menjamin masa depanmu, carilah ilmu sampai ke Tiongkok."}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
+              {translateDegree.map((item, index) => (
+                <div
+                  key={index}
+                  className="w-full flex flex-col mb-6"
+                >
+                <div
+                  key={index}
+                  className="p-0 m-0"
+                  onClick={() => showModal(item)}
+                >
+                  <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-56 object-cover rounded-t-2xl"
+                    />
+                    <div className="flex flex-col justify-between items-start px-4 py-5">
+                      <h2 className="text-lg font-semibold text-gray-800 mb-2">
+                        {item.title}
+                      </h2>
+                      <p className="font-semibold text-lg mb-2">
+                        Rp {item.price}
+                        <span className="font-light text-sm ml-1">
+                          {langs
+                            ? "/Month"
+                            : "/Bulan"}
+                        </span>
+                      </p>
+                      <div className="flex mt-2">
+                        <span className="text-sm text-[#3377FF]">Dapatkan komisi Rp Rp224.950</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
       </div>
     </Mainlayouts>

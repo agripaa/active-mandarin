@@ -196,7 +196,7 @@ const Lectures = ({ text }) => {
     dots: true,
     infinite: false,
     speed: 500,
-    slidesToShow: 3,
+    slidesToShow: 4,
     slidesToScroll: 1,
     centerMode: false, // Nonaktifkan centerMode
     arrows: true, // Nonaktifkan tombol next dan prev
@@ -230,19 +230,14 @@ const Lectures = ({ text }) => {
 
   return (
     <div
-      className="bg-[#02264A] py-20"
-      style={{
-        backgroundImage: "url('/assets/texture-card-big.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
+      className="my-20 mx-20"
     >
-      <div className="container mx-auto text-start">
-        <div className="w-full md:w-11/12 lg:w-10/12 xl:w-9/12 mx-auto mb-5 px-5">
-          <h1 className="text-white text-4xl font-semibold">{text?.title}</h1>
+      <div className="mx-auto text-start">
+        <div className="w-full md:w-11/12 lg:w-10/12 xl:w-full mx-auto mb-5 px-5">
+          <h1 className="text-black text-4xl font-semibold">{text?.title}</h1>
         </div>
-        <div className="my-8 flex justify-center">
-          <div className="w-full md:w-11/12 lg:w-10/12 xl:w-9/12">
+        <div className="my-14 flex justify-center">
+          <div className="w-full md:w-11/12 lg:w-10/12 xl:w-full">
             <Slider {...settings} className="">
               {lecture.map((item, index) => (
                 <div key={index} className="px-4 h-full">
