@@ -1,14 +1,18 @@
 import { Collapse } from "antd";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { RiArrowDownSLine, RiArrowUpSLine } from "@remixicon/react";
 
 const Faq = ({ text }) => {
     const { Panel } = Collapse;
     const { langs } = useSelector((state) => state.LangReducer);
-    const [activeKey, setActiveKey] = useState(null); // Track single active panel
+    const [activeKey, setActiveKey] = useState([]); // Track single active panel
 
-    const faq = [
+    useEffect(() => {
+        console.log(activeKey)
+    }, [activeKey])
+
+    const faq = useMemo(() => [
         {
             question: {
                 english: "What are the Programs and Products at Active Mandarin Indonesia?",
@@ -261,55 +265,73 @@ const Faq = ({ text }) => {
                 `,
             },
         },
-    ];
-    
-    
-    
+    ], []);
 
-    const handleExpandIcon = (panelKey) => {
-        return activeKey === panelKey ? (
+    const handleExpandIcon = (isActive) => {
+        return isActive ? (
             <RiArrowUpSLine className="text-xl" />
         ) : (
             <RiArrowDownSLine className="text-xl" />
         );
     };
 
-    const onChange = (key) => {
+    const onChange = useCallback((key) => {
         setActiveKey(key); 
-    };
+    }, []);
 
     return (
-        <div className="grid grid-cols-1 container m-auto py-16 px-5 lg:px-10 lg:grid-cols-2 gap-10">
-            <div className="text-center md:text-start w-full">
-                <h1 className="text-5xl font-semibold text-[#252525]">{text.title}</h1>
-                <h2 className="text-lg font-normal text-[#252525] mt-6 lg:w-5/6">"{text.tags}"</h2>
-                <h2 className="text-lg font-normal text-[#252525] mt-1 lg:w-5/6">- Frank Smith</h2>
-                <div className="mt-8">
-                    <a  href="/contact" className="bg-[#FFCC00] py-4 px-8 rounded-full">Help & Support</a>
-                </div>
+        <div className="container flex flex-col gap-8 items-center m-auto py-16 px-5 lg:px-10">
+            <div className="text-center w-full">
+                <h1 className="2xl:text-5xl text-4xl font-semibold text-[#252525]">{text.title}</h1>
+                <h2 className="text-lg font-normal text-[#252525] mt-4">"{text.tags}"</h2>
+                <h2 className="text-lg font-normal text-[#252525] mt-1">- Frank Smith</h2>
             </div>
-            <Collapse
-                accordion
-                activeKey={activeKey}
-                onChange={(key) => onChange(key)}
-                size="large"
-                ghost
-                expandIcon={({ isActive, panelKey }) => handleExpandIcon(panelKey)}
-                expandIconPosition="end"
-            >
-                {faq.map((item, index) => (
-                    <Panel
-                        className="mb-10 px-2 py-3 shadow-md rounded-lg"
-                        header={<span className="text-xl md:text-2xl font-semibold">{item.question[langs ? 'english' : 'indonesia']}</span>}
-                        key={index.toString()}
-                    >
-                        <p
-                            className="text-lg py-2 text-[#505e79] faq-content"
-                            dangerouslySetInnerHTML={{ __html: item.answer[langs ? 'english' : 'indonesia'] }}
-                        ></p>
-                    </Panel>
-                ))}
-            </Collapse>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
+                <Collapse
+                    accordion
+                    activeKey={activeKey}
+                    onChange={(key) => onChange(key)}
+                    size="large"
+                    ghost
+                    expandIcon={({ isActive }) => handleExpandIcon(isActive)}
+                    expandIconPosition="end"
+                >
+                    {faq.slice(0, faq.length / 2).map((item, index) => (
+                        <Panel
+                            className="mb-10 px-2 py-3 shadow-md rounded-lg bg-white"
+                            header={<span className={`text-xl md:text-2xl font-semibold ${index.toString() === activeKey[0] ? '' : 'line-clamp-1'}`}>{item.question[langs ? 'english' : 'indonesia']}</span>}
+                            key={index.toString()}
+                        >
+                            <p
+                                className="text-lg py-2 text-[#505e79] faq-content"
+                                dangerouslySetInnerHTML={{ __html: item.answer[langs ? 'english' : 'indonesia'] }}
+                            />
+                        </Panel>
+                    ))}
+                </Collapse>
+                <Collapse
+                    accordion
+                    activeKey={activeKey}
+                    onChange={(key) => onChange(key)}
+                    size="large"
+                    ghost
+                    expandIcon={({ isActive }) => handleExpandIcon(isActive)}
+                    expandIconPosition="end"
+                >
+                    {faq.slice(faq.length / 2, faq.length).map((item, index) => (
+                        <Panel
+                            className="mb-10 px-2 py-3 shadow-md rounded-lg bg-white"
+                            header={<span className={`text-xl md:text-2xl font-semibold ${(index + faq.length / 2).toString() === activeKey[0] ? '' : 'line-clamp-1'}`}>{item.question[langs ? 'english' : 'indonesia']}</span>}
+                            key={(index + faq.length / 2).toString()}
+                        >
+                            <p
+                                className="text-lg py-2 text-[#505e79] faq-content"
+                                dangerouslySetInnerHTML={{ __html: item.answer[langs ? 'english' : 'indonesia'] }}
+                            />
+                        </Panel>
+                    ))}
+                </Collapse>
+            </div>
         </div>
     );
 };

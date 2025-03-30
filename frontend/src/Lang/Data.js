@@ -61,14 +61,14 @@ export const EngLang = {
     socmed: 'Social Media',
     general: 'General',
     generalItem: ['About Us', 'Careers'],
-    help: 'FAQ',
+    help: 'Frequently Asked Questions',
     chatAdmin: 'Chat Admin',
     flashCardDesc: 'Play everywhere, Study anywhere. Our learning will be have a lot of fun with our flashcard. Our products are the best in the market and special for you, to have fun while you learn. Grab it fast!',
     aboutTitle: 'The story behind Active Mandarin',
 
     prospectTitle: 'Earn a Higher Salary by Learning Mandarin',
     prospectTags: 'Rp8-30 Million',
-    proespectSource: 'Source: Jobstreet',
+    prospectSource: 'Source: Jobstreet',
     prospectheadCareer: "As a",
     careers: [
         'Asistant Manager',

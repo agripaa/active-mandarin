@@ -32,7 +32,7 @@ const Homes = () => {
     }, [location])
 
     return(
-        <Mainlayouts>
+        <Mainlayouts className="bg-[#F5F8FF]">
             <Heros text={{
                 title: text?.herosTitle, 
                 desc: text?.herosDesc, 
