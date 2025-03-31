@@ -15,6 +15,20 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+exports.validateReveralCode = async (req, res) => {
+    try {
+        const { reveral_code } = req.query;
+        
+        const affiliator = await User.findOne({where: {reveral_code}});
+        if(!affiliator) return res.status(404).json({status: false, message: "reveral code invalid!"});
+
+        res.status(200).json({status: true, message: "affiliator defined!", data: affiliator});
+    } catch (error) {
+        console.error("🔥 ERROR:", error);
+        res.status(500).json({ error: error.message });
+    }
+}
+
 exports.getTotalAffiliateRevenue = async (req, res) => {
     try {
         const totalRevenue = await Transaction.findOne({

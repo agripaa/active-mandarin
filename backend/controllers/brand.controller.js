@@ -4,6 +4,24 @@ const fs = require('fs');
 
 const { Brand } = db;
 
+const turunanProgram = [
+  "Non Degree (Kelas Bahasa di China)",
+  "Degree",
+  "Mentor Scholarship",
+  "Kelas HSK",
+  "Premium Mandarin Learning",
+  "Educonsult S1-S3 Full Cover"
+];
+
+const turunanProduct = [
+  "Comprehensive Chinese Book",
+  "E-Flashcard/HSK",
+  "Buku Tulis Hanzi",
+  "Buku Panduan",
+];
+
+const categoryBrandOption = ["program", "product"];
+
 exports.createBrand = async (req, res) => {
     try {
       let brand_img = null;
@@ -79,6 +97,83 @@ exports.createBrand = async (req, res) => {
     } catch (error) {
       res.status(500).json({ status: false, error: error.message });
     }
+};
+
+exports.getGroupedBrands = async (req, res) => {
+  try { 
+    const brands = await Brand.findAll({
+      where: { isDelete: false },
+      order: [['createdAt', 'DESC']],
+    });
+
+    if (brands.length === 0) {
+      return res.status(404).json({ status: false, message: "Data Brand tidak ditemukan!" });
+    }
+
+    const groupedBrands = brands.reduce((acc, brand) => {
+      if (turunanProduct.includes(brand.turunan)) {
+        if (!acc[brand.turunan]) {
+          acc[brand.turunan] = [];
+        }
+        acc[brand.turunan].push(brand);
+      }
+      return acc;
+    }, {});
+
+    
+    const formattedResponse = Object.keys(groupedBrands).map((turunan_brand) => {
+      const brandList = groupedBrands[turunan_brand];
+
+      return {
+        turunan_brand,
+        image: brandList[0].brand_img, 
+        start_from_price: Math.min(...brandList.map(brand => parseFloat(brand.discount_price || brand.price))), 
+        commission: brandList[0].commission, 
+        total_items: brandList.length, 
+        brands: brandList, 
+      };
+    });
+
+    res.status(200).json({ status: true, data: formattedResponse });
+
+  } catch (error) {
+    console.error("🔥 ERROR:", error);
+    res.status(500).json({ status: false, error: error.message });
+  }
+};
+
+exports.getCategoryTurunanBrand = async (req, res) => {
+  const { category_brand, turunan_brand } = req.query;
+
+  try {
+    if (!category_brand || !turunan_brand) {
+      return res.status(400).json({ status: false, message: "category_brand dan turunan_brand harus diisi!" });
+    }
+
+    const category = category_brand.toLowerCase();
+    if (!categoryBrandOption.includes(category)) {
+      return res.status(400).json({ status: false, message: "Category Brand tidak ditemukan dalam daftar yang tersedia." });
+    }
+
+    if (category === "program" && !turunanProgram.includes(turunan_brand)) {
+      return res.status(400).json({ status: false, message: "Turunan Brand tidak ditemukan dalam daftar turunan program." });
+    }
+
+    if (category === "product" && !turunanProduct.includes(turunan_brand)) {
+      return res.status(400).json({ status: false, message: "Turunan Brand tidak ditemukan dalam daftar turunan produk." });
+    }
+
+    const brand = await Brand.findAll({ where: { turunan: turunan_brand, isDelete: false } });
+
+    if (brand.length === 0) {
+      return res.status(404).json({ status: false, message: "Data Brand untuk kategori ini tidak ditemukan!" });
+    }
+
+    res.status(200).json({ status: true, data: brand });
+  } catch (error) {
+    console.error("🔥 ERROR:", error);
+    res.status(500).json({ status: false, error: error.message });
+  }
 };
 
 exports.updateBrand = async (req, res) => {

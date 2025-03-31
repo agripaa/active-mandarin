@@ -18,4 +18,24 @@ export const getBrandById = async (id) => {
       console.error("Error fetching transactions:", error);
       throw error.response ? error.response.data : error.message;
     }
-  };
+};
+
+export const getBrandCategoryTurunan = async (category_brand, turunan_brand) => {
+  try {
+    const response = await api.get(`/brand/category?category_brand=${category_brand}&turunan_brand=${turunan_brand}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching transactions:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const getGroupedBrands = async () => {
+  try {
+    const response = await api.get(`/brand/grouped`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching transactions:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
