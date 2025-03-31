@@ -63,6 +63,7 @@ const Oprec = ({ text }) => {
             alt="Oprec"
             className='absolute bottom-0 right-[56%] transform h-auto w-[40%] object-cover z-10 hidden lg:block xl:right-[57%] xl:w-[38%] 2xl:right-[56%] max-w-md'
           />
+          <div className='hidden absolute bottom-0 right-[62%] h-[70%] aspect-square rounded-full bg-[#FFCC00] lg:block xl:right-[63%] xl:h-[90%] 2xl:right-[61%]' />
         </div>
       </div>
 

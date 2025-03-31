@@ -30,8 +30,11 @@ const Affiliate = ({ text }) => {
           <img
             src="/assets/affiliate-cropped.png"
             alt="Affiliate"
-            className='absolute bottom-0 left-[-2%] h-auto w-[50%] object-cover z-30 hidden lg:block xl:w-[46%]'
+            className='absolute bottom-0 left-[-2%] h-auto w-[50%] object-cover z-10 hidden lg:block xl:w-[46%]'
           />
+          <div className='absolute overflow-hidden w-full h-full top-0 left-0'>
+            <div className='hidden absolute left-[-3%] -bottom-[19%] h-[83%] aspect-square rounded-full bg-[#FFCC00] lg:block xl:-bottom-[32%] xl:h-[112%] 2xl:-bottom-[50%] 2xl:h-[140%]' />
+          </div>
 
           <div className='w-0 lg:w-[48%] xl:w-[45%]' />
 

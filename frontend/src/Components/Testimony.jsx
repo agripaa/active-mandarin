@@ -116,120 +116,334 @@ const Testimony = ({ text }) => {
         backgroundPosition: "center",
       }}
     >
-      <div className="container mx-auto">
-        <div className="flex flex-col justify-between items-center px-5 py-12 gap-11 lg:flex-row md:px-16">
-          {/* Kiri */}
-          <div className="flex flex-col items-center justify-center gap-8 w-72 md:flex-row lg:flex-col lg:gap-0">
-            <img
-              src="/assets/community.png"
-              className="w-full"
-              alt="contact"
-            />
-            <div className="flex flex-col items-center justify-center">
-              <h2 className="text-[32px] font-semibold text-white mb-4 mt-8">
-                {text.tags}
-              </h2>
-              <div className="flex justify-start items-start w-full gap-6">
-                <Link
-                  className="bg-[#FFCC00] px-4 py-4 xl:px-8 2xl:py-5 rounded-2xl lg:rounded-3xl flex items-center w-full justify-center"
-                  to="https://chat.whatsapp.com/FSQGLGPJjruKlhYueXz83K"
-                  target="_blank"
-                >
-                  {langs ? "Join Now" : "Gabung Sekarang"}
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          <div className="w-full h-full mt-8 block lg:hidden">
-            <Slider {...settings} className="w-full">
-              {translate.map((item, index) => (
-                <div key={index} className="h-full px-2">
-                  <div className="bg-white p-4 rounded-2xl flex flex-col shadow-md h-full">
-                    <div className="flex items-center mb-4">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-12 h-12 rounded-full object-cover"
-                      />
-                      <div className="ml-4">
-                        <h4 className="text-base font-medium mb-1">
-                          {item.name}
-                        </h4>
-                        <span className="bg-[#3377FF] text-sm text-white px-4 py-1 rounded-full">
-                          {item.class}
-                        </span>
-                      </div>
-                    </div>
-                    <p className="text-sm xl:text-base text-[#252525] font-[400] mt-2">
-                      {item.testi}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </Slider>
-          </div>
-
-          {/* Kanan: Loop Testimonies */}
-          <div className="w-full max-w-[712px] hidden gap-4 lg:flex">
-            <div className="flex flex-col w-1/2 h-auto items-center justify-center gap-6">
-              {translate.slice(0, 2).map((item, index) => (
-                <div
-                  key={index}
-                  className="bg-white p-6 rounded-2xl flex flex-col shadow-md"
-                >
-                  <div className="flex items-center mb-4">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-12 h-12 rounded-full object-cover"
-                    />
-                    <div className="ml-4">
-                      <h4 className="text-base font-medium mb-1">
-                        {item.name}
-                      </h4>
-                      <span className="bg-[#3377FF] text-sm text-white px-4 py-1 rounded-full">
-                        {item.class}
-                      </span>
-                    </div>
-                  </div>
-                  <p className="text-sm xl:text-base text-[#252525] font-[400] mt-2">
-                    {item.testi}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            {/* Column 2: 3 Cards */}
-            <div className="flex flex-col w-1/2 gap-6">
-              {translate.slice(2).map((item, index) => (
-                <div
-                  key={index}
-                  className="bg-white p-6 rounded-2xl flex flex-col shadow-md"
-                >
-                  <div className="flex items-center mb-4">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-12 h-12 rounded-full object-cover"
-                    />
-                    <div className="ml-4">
-                      <h4 className="text-base font-medium mb-1">
-                        {item.name}
-                      </h4>
-                      <span className="bg-[#3377FF] text-sm text-white px-4 py-1 rounded-full">
-                        {item.class}
-                      </span>
-                    </div>
-                  </div>
-                  <p className="text-sm xl:text-base text-[#252525] font-[400] mt-2">
-                    {item.testi}
-                  </p>
-                </div>
-              ))}
+      <div className="container mx-auto relative px-5 md:px-16 overflow-hidden flex flex-col justify-between items-center gap-11 lg:flex-row">
+        {/* Kiri */}
+        <div className="flex flex-col items-center justify-center gap-8 w-[400px] lg:w-[280px] xl:w-[400px] py-12 md:flex-row lg:flex-col lg:gap-0">
+          <img
+            src="/assets/community.png"
+            className="w-full"
+            alt="contact"
+          />
+          <div className="flex flex-col items-center justify-center">
+            <h2 className="text-[32px] font-semibold text-white mb-4 mt-8">
+              {text.tags}
+            </h2>
+            <div className="flex justify-start items-start w-full gap-6">
+              <Link
+                className="bg-[#FFCC00] px-4 py-4 xl:px-8 2xl:py-5 rounded-2xl lg:rounded-3xl flex items-center w-full justify-center"
+                to="https://chat.whatsapp.com/FSQGLGPJjruKlhYueXz83K"
+                target="_blank"
+              >
+                {langs ? "Join Now" : "Gabung Sekarang"}
+              </Link>
             </div>
           </div>
         </div>
+
+        <div className="h-80 lg:h-0"></div>
+
+        <div className="flex-col gap-4 hidden absolute bottom-0 right-5 lg:flex md:right-16">
+          <div className="flex flex-col gap-4 h-max animate-scroll-vertical-infinite-reverse">
+            {translate.map((item, index) => (
+              <div key={index} className="h-auto w-[346px]">
+                <div className="bg-white p-4 rounded-2xl flex flex-col shadow-md h-full">
+                  <div className="flex items-center mb-4">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                    <div className="ml-4">
+                      <h4 className="text-base font-medium mb-1">
+                        {item.name}
+                      </h4>
+                      <span className="bg-[#3377FF] text-sm text-white px-4 py-1 rounded-full">
+                        {item.class}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-sm xl:text-base text-[#252525] font-[400] mt-2">
+                    {item.testi}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-col gap-4 h-max animate-scroll-vertical-infinite-reverse">
+            {translate.map((item, index) => (
+              <div key={index} className="h-auto w-[346px]">
+                <div className="bg-white p-4 rounded-2xl flex flex-col shadow-md h-full">
+                  <div className="flex items-center mb-4">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                    <div className="ml-4">
+                      <h4 className="text-base font-medium mb-1">
+                        {item.name}
+                      </h4>
+                      <span className="bg-[#3377FF] text-sm text-white px-4 py-1 rounded-full">
+                        {item.class}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-sm xl:text-base text-[#252525] font-[400] mt-2">
+                    {item.testi}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-col gap-4 h-max animate-scroll-vertical-infinite-reverse">
+            {translate.map((item, index) => (
+              <div key={index} className="h-auto w-[346px]">
+                <div className="bg-white p-4 rounded-2xl flex flex-col shadow-md h-full">
+                  <div className="flex items-center mb-4">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                    <div className="ml-4">
+                      <h4 className="text-base font-medium mb-1">
+                        {item.name}
+                      </h4>
+                      <span className="bg-[#3377FF] text-sm text-white px-4 py-1 rounded-full">
+                        {item.class}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-sm xl:text-base text-[#252525] font-[400] mt-2">
+                    {item.testi}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="flex-col gap-4 hidden absolute bottom-0 right-[180px] xl:flex xl:right-[426px]">
+          <div className="flex flex-col gap-4 h-max animate-scroll-vertical-infinite">
+            {translate.map((item, index) => (
+              <div key={index} className="h-auto w-[346px]">
+                <div className="bg-white p-4 rounded-2xl flex flex-col shadow-md h-full">
+                  <div className="flex items-center mb-4">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                    <div className="ml-4">
+                      <h4 className="text-base font-medium mb-1">
+                        {item.name}
+                      </h4>
+                      <span className="bg-[#3377FF] text-sm text-white px-4 py-1 rounded-full">
+                        {item.class}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-sm xl:text-base text-[#252525] font-[400] mt-2">
+                    {item.testi}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-col gap-4 h-max animate-scroll-vertical-infinite">
+            {translate.map((item, index) => (
+              <div key={index} className="h-auto w-[346px]">
+                <div className="bg-white p-4 rounded-2xl flex flex-col shadow-md h-full">
+                  <div className="flex items-center mb-4">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                    <div className="ml-4">
+                      <h4 className="text-base font-medium mb-1">
+                        {item.name}
+                      </h4>
+                      <span className="bg-[#3377FF] text-sm text-white px-4 py-1 rounded-full">
+                        {item.class}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-sm xl:text-base text-[#252525] font-[400] mt-2">
+                    {item.testi}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-col gap-4 h-max animate-scroll-vertical-infinite">
+            {translate.map((item, index) => (
+              <div key={index} className="h-auto w-[346px]">
+                <div className="bg-white p-4 rounded-2xl flex flex-col shadow-md h-full">
+                  <div className="flex items-center mb-4">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                    <div className="ml-4">
+                      <h4 className="text-base font-medium mb-1">
+                        {item.name}
+                      </h4>
+                      <span className="bg-[#3377FF] text-sm text-white px-4 py-1 rounded-full">
+                        {item.class}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-sm xl:text-base text-[#252525] font-[400] mt-2">
+                    {item.testi}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-row gap-4 absolute right-0 bottom-20 md:bottom-20 lg:hidden">
+          <div className="flex gap-4 w-max animate-scroll-horizontal-infinite-reverse">
+            {translate.map((item, index) => (
+              <div key={index} className="h-auto w-[346px]">
+                <div className="bg-white p-4 rounded-2xl flex flex-col shadow-md h-full">
+                  <div className="flex items-center mb-4">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                    <div className="ml-4">
+                      <h4 className="text-base font-medium mb-1">
+                        {item.name}
+                      </h4>
+                      <span className="bg-[#3377FF] text-sm text-white px-4 py-1 rounded-full">
+                        {item.class}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-sm xl:text-base text-[#252525] font-[400] mt-2">
+                    {item.testi}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-4 w-max animate-scroll-horizontal-infinite-reverse">
+            {translate.map((item, index) => (
+              <div key={index} className="h-auto w-[346px]">
+                <div className="bg-white p-4 rounded-2xl flex flex-col shadow-md h-full">
+                  <div className="flex items-center mb-4">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                    <div className="ml-4">
+                      <h4 className="text-base font-medium mb-1">
+                        {item.name}
+                      </h4>
+                      <span className="bg-[#3377FF] text-sm text-white px-4 py-1 rounded-full">
+                        {item.class}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-sm xl:text-base text-[#252525] font-[400] mt-2">
+                    {item.testi}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* <div className="w-full h-full mt-8 block lg:hidden">
+          <Slider {...settings} className="w-full">
+            {translate.map((item, index) => (
+              <div key={index} className="h-full px-2">
+                <div className="bg-white p-4 rounded-2xl flex flex-col shadow-md h-full">
+                  <div className="flex items-center mb-4">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                    <div className="ml-4">
+                      <h4 className="text-base font-medium mb-1">
+                        {item.name}
+                      </h4>
+                      <span className="bg-[#3377FF] text-sm text-white px-4 py-1 rounded-full">
+                        {item.class}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-sm xl:text-base text-[#252525] font-[400] mt-2">
+                    {item.testi}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </Slider>
+        </div> */}
+
+        {/* <div className="w-full max-w-[712px] hidden gap-4 lg:flex">
+          <div className="flex flex-col w-1/2 h-auto items-center justify-center gap-6">
+            {translate.slice(0, 2).map((item, index) => (
+              <div
+                key={index}
+                className="bg-white p-6 rounded-2xl flex flex-col shadow-md"
+              >
+                <div className="flex items-center mb-4">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                  <div className="ml-4">
+                    <h4 className="text-base font-medium mb-1">
+                      {item.name}
+                    </h4>
+                    <span className="bg-[#3377FF] text-sm text-white px-4 py-1 rounded-full">
+                      {item.class}
+                    </span>
+                  </div>
+                </div>
+                <p className="text-sm xl:text-base text-[#252525] font-[400] mt-2">
+                  {item.testi}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex flex-col w-1/2 gap-6">
+            {translate.slice(2).map((item, index) => (
+              <div
+                key={index}
+                className="bg-white p-6 rounded-2xl flex flex-col shadow-md"
+              >
+                <div className="flex items-center mb-4">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                  <div className="ml-4">
+                    <h4 className="text-base font-medium mb-1">
+                      {item.name}
+                    </h4>
+                    <span className="bg-[#3377FF] text-sm text-white px-4 py-1 rounded-full">
+                      {item.class}
+                    </span>
+                  </div>
+                </div>
+                <p className="text-sm xl:text-base text-[#252525] font-[400] mt-2">
+                  {item.testi}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div> */}
       </div>
     </div>
   );

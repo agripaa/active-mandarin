@@ -157,7 +157,7 @@ const Lectures = ({ text }) => {
       profile: "/assets/Vemas Alvieno.jpg",
       university_name:
         "Nanjing University of Information Science and Technology",
-      cat_certificate: "HSK 5 Certified",
+      // cat_certificate: "HSK 5 Certified",
       certificates: [
         {
           english:
@@ -277,10 +277,12 @@ const Lectures = ({ text }) => {
                       />
                     </div>
                     <div className="flex flex-col mt-4 justify-center items-center">
-                      {item.cat_certificate && (
+                      {item.cat_certificate ? (
                         <span className="bg-[#3377FF] w-fit mx-auto py-1 px-4 mb-6 text-center text-white font-medium rounded-full text-sm md:text-base">
                           {item.cat_certificate}
                         </span>
+                      ) : (
+                        <div className="h-8 mb-6" />
                       )}
                       <h2 className="text-lg font-semibold text-gray-800">
                         {item.name}

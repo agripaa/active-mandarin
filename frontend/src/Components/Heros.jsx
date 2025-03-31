@@ -7,25 +7,25 @@ import { Link } from "react-router-dom";
 const Heros = ({ text }) => {
   const { langs } = useSelector((state) => state.LangReducer);
   return (
-    <div className="container flex justify-between relative overflow-y-hidden mx-auto px-5 md:px-16">
-      <div className="pt-24 pb-48 max-w-[658px] sm:pb-36">
+    <div className="container flex flex-col justify-between relative overflow-hidden mx-auto px-5 md:px-16 lg:flex-row">
+      <div className="pt-10 md:pt-24 pb-48 max-w-[658px] sm:pb-36">
         <h1 className="text-2xl font-semibold md:text-3xl lg:text-[32px]">
           {text.title}
         </h1>
         <p className="mt-6">
           {text.desc}
         </p>
-        <div className='flex items-center mt-6 gap-4'>
+        <div className='flex items-center justify-center mt-6 gap-4 md:justify-start'>
           <Link to='/class'>
             <button
-              className="px-8 py-4 w-fit bg-[#FFCC00] tracking-wide mt-2 text-xs text-[#252525] font-semibold rounded-3xl transition-all duration-300 hover:bg-yellow-500 hover:text-black sm:text-sm lg:text-base"
+              className="px-6 py-3 md:px-8 md:py-4 w-fit bg-[#FFCC00] tracking-wide mt-2 text-xs text-[#252525] font-semibold rounded-3xl transition-all duration-300 hover:bg-yellow-500 hover:text-black sm:text-sm lg:text-base"
             >
               {langs ? "Explore Our Program" : "Jelajahi Program Kami"}
             </button>
           </Link>
           <Link to='/products'>
             <button
-              className="px-8 py-4 w-fit border-2 border-[#8493AC] tracking-wide mt-2 text-xs text-[#252525] font-semibold rounded-3xl transition-all duration-300 hover:bg-yellow-500 hover:text-black sm:text-sm lg:text-base"
+              className="px-6 py-3 md:px-8 md:py-4 w-fit border-2 border-[#8493AC] tracking-wide mt-2 text-xs text-[#252525] font-semibold rounded-3xl transition-all duration-300 hover:bg-yellow-500 hover:text-black sm:text-sm lg:text-base"
             >
               {langs ? "Explore Our Product" : "Jelajahi Produk Kami"}
             </button>
@@ -33,89 +33,78 @@ const Heros = ({ text }) => {
         </div>
       </div>
       <div className="hidden absolute bottom-0 right-0 lg:block">
-        <div className="flex flex-col w-[207px] animate-scroll-vertical-infinite-reverse">
-          <img src="/assets/hero-6.png" alt="img" className="w-full" />
-          <img src="/assets/hero-7.png" alt="img" className="w-full" />
-          <img src="/assets/hero-8.png" alt="img" className="w-full" />
-          <img src="/assets/hero-9.png" alt="img" className="w-full" />
-          <img src="/assets/hero-10.png" alt="img" className="w-full" />
+        <div className="flex flex-col h-max animate-scroll-vertical-infinite-reverse">
+          <img src="/assets/hero-6.png" alt="img" className="h-[230px] xl:h-[300px]" />
+          <img src="/assets/hero-7.png" alt="img" className="h-[230px] xl:h-[300px]" />
+          <img src="/assets/hero-8.png" alt="img" className="h-[230px] xl:h-[300px]" />
+          <img src="/assets/hero-9.png" alt="img" className="h-[230px] xl:h-[300px]" />
+          <img src="/assets/hero-10.png" alt="img" className="h-[230px] xl:h-[300px]" />
         </div>
-        <div className="flex flex-col w-[207px] animate-scroll-vertical-infinite-reverse">
-          <img src="/assets/hero-6.png" alt="img" className="w-full" />
-          <img src="/assets/hero-7.png" alt="img" className="w-full" />
-          <img src="/assets/hero-8.png" alt="img" className="w-full" />
-          <img src="/assets/hero-9.png" alt="img" className="w-full" />
-          <img src="/assets/hero-10.png" alt="img" className="w-full" />
+        <div className="flex flex-col h-max animate-scroll-vertical-infinite-reverse">
+          <img src="/assets/hero-6.png" alt="img" className="h-[230px] xl:h-[300px]" />
+          <img src="/assets/hero-7.png" alt="img" className="h-[230px] xl:h-[300px]" />
+          <img src="/assets/hero-8.png" alt="img" className="h-[230px] xl:h-[300px]" />
+          <img src="/assets/hero-9.png" alt="img" className="h-[230px] xl:h-[300px]" />
+          <img src="/assets/hero-10.png" alt="img" className="h-[230px] xl:h-[300px]" />
         </div>
-        <div className="flex flex-col w-[207px] animate-scroll-vertical-infinite-reverse">
-          <img src="/assets/hero-6.png" alt="img" className="w-full" />
-          <img src="/assets/hero-7.png" alt="img" className="w-full" />
-          <img src="/assets/hero-8.png" alt="img" className="w-full" />
-          <img src="/assets/hero-9.png" alt="img" className="w-full" />
-          <img src="/assets/hero-10.png" alt="img" className="w-full" />
-        </div>
-      </div>
-      <div className="hidden absolute bottom-0 right-[239px] lg:block">
-        <div className="flex flex-col w-[207px] animate-scroll-vertical-infinite">
-          <img src="/assets/hero-1.png" alt="img" className="w-full" />
-          <img src="/assets/hero-2.png" alt="img" className="w-full" />
-          <img src="/assets/hero-3.png" alt="img" className="w-full" />
-          <img src="/assets/hero-4.png" alt="img" className="w-full" />
-          <img src="/assets/hero-5.png" alt="img" className="w-full" />
-        </div>
-        <div className="flex flex-col w-[207px] animate-scroll-vertical-infinite">
-          <img src="/assets/hero-1.png" alt="img" className="w-full" />
-          <img src="/assets/hero-2.png" alt="img" className="w-full" />
-          <img src="/assets/hero-3.png" alt="img" className="w-full" />
-          <img src="/assets/hero-4.png" alt="img" className="w-full" />
-          <img src="/assets/hero-5.png" alt="img" className="w-full" />
-        </div>
-        <div className="flex flex-col w-[207px] animate-scroll-vertical-infinite">
-          <img src="/assets/hero-1.png" alt="img" className="w-full" />
-          <img src="/assets/hero-2.png" alt="img" className="w-full" />
-          <img src="/assets/hero-3.png" alt="img" className="w-full" />
-          <img src="/assets/hero-4.png" alt="img" className="w-full" />
-          <img src="/assets/hero-5.png" alt="img" className="w-full" />
+        <div className="flex flex-col h-max animate-scroll-vertical-infinite-reverse">
+          <img src="/assets/hero-6.png" alt="img" className="h-[230px] xl:h-[300px]" />
+          <img src="/assets/hero-7.png" alt="img" className="h-[230px] xl:h-[300px]" />
+          <img src="/assets/hero-8.png" alt="img" className="h-[230px] xl:h-[300px]" />
+          <img src="/assets/hero-9.png" alt="img" className="h-[230px] xl:h-[300px]" />
+          <img src="/assets/hero-10.png" alt="img" className="h-[230px] xl:h-[300px]" />
         </div>
       </div>
-      <div className="flex absolute left-0 lg:hidden animate-scroll-horizontal-infinite">
-        <div className="flex gap-4 h-[300px]">
-          <img src="/assets/hero-1.png" alt="img" className="w-full" />
-          <img src="/assets/hero-2.png" alt="img" className="w-full" />
-          <img src="/assets/hero-3.png" alt="img" className="w-full" />
-          <img src="/assets/hero-4.png" alt="img" className="w-full" />
-          <img src="/assets/hero-5.png" alt="img" className="w-full" />
-          <img src="/assets/hero-6.png" alt="img" className="w-full" />
-          <img src="/assets/hero-7.png" alt="img" className="w-full" />
-          <img src="/assets/hero-8.png" alt="img" className="w-full" />
-          <img src="/assets/hero-9.png" alt="img" className="w-full" />
-          <img src="/assets/hero-10.png" alt="img" className="w-full" />
+      <div className="hidden absolute bottom-0 right-[180px] lg:block xl:right-[239px]">
+        <div className="flex flex-col h-max animate-scroll-vertical-infinite">
+          <img src="/assets/hero-1.png" alt="img" className="h-[230px] xl:h-[300px]" />
+          <img src="/assets/hero-2.png" alt="img" className="h-[230px] xl:h-[300px]" />
+          <img src="/assets/hero-3.png" alt="img" className="h-[230px] xl:h-[300px]" />
+          <img src="/assets/hero-4.png" alt="img" className="h-[230px] xl:h-[300px]" />
+          <img src="/assets/hero-5.png" alt="img" className="h-[230px] xl:h-[300px]" />
         </div>
-        <div className="flex gap-4 h-[300px]">
-          <img src="/assets/hero-1.png" alt="img" className="w-full" />
-          <img src="/assets/hero-2.png" alt="img" className="w-full" />
-          <img src="/assets/hero-3.png" alt="img" className="w-full" />
-          <img src="/assets/hero-4.png" alt="img" className="w-full" />
-          <img src="/assets/hero-5.png" alt="img" className="w-full" />
-          <img src="/assets/hero-6.png" alt="img" className="w-full" />
-          <img src="/assets/hero-7.png" alt="img" className="w-full" />
-          <img src="/assets/hero-8.png" alt="img" className="w-full" />
-          <img src="/assets/hero-9.png" alt="img" className="w-full" />
-          <img src="/assets/hero-10.png" alt="img" className="w-full" />
+        <div className="flex flex-col h-max animate-scroll-vertical-infinite">
+          <img src="/assets/hero-1.png" alt="img" className="h-[230px] xl:h-[300px]" />
+          <img src="/assets/hero-2.png" alt="img" className="h-[230px] xl:h-[300px]" />
+          <img src="/assets/hero-3.png" alt="img" className="h-[230px] xl:h-[300px]" />
+          <img src="/assets/hero-4.png" alt="img" className="h-[230px] xl:h-[300px]" />
+          <img src="/assets/hero-5.png" alt="img" className="h-[230px] xl:h-[300px]" />
         </div>
-        <div className="flex gap-4 h-[300px]">
-          <img src="/assets/hero-1.png" alt="img" className="w-full" />
-          <img src="/assets/hero-2.png" alt="img" className="w-full" />
-          <img src="/assets/hero-3.png" alt="img" className="w-full" />
-          <img src="/assets/hero-4.png" alt="img" className="w-full" />
-          <img src="/assets/hero-5.png" alt="img" className="w-full" />
-          <img src="/assets/hero-6.png" alt="img" className="w-full" />
-          <img src="/assets/hero-7.png" alt="img" className="w-full" />
-          <img src="/assets/hero-8.png" alt="img" className="w-full" />
-          <img src="/assets/hero-9.png" alt="img" className="w-full" />
-          <img src="/assets/hero-10.png" alt="img" className="w-full" />
+        <div className="flex flex-col h-max animate-scroll-vertical-infinite">
+          <img src="/assets/hero-1.png" alt="img" className="h-[230px] xl:h-[300px]" />
+          <img src="/assets/hero-2.png" alt="img" className="h-[230px] xl:h-[300px]" />
+          <img src="/assets/hero-3.png" alt="img" className="h-[230px] xl:h-[300px]" />
+          <img src="/assets/hero-4.png" alt="img" className="h-[230px] xl:h-[300px]" />
+          <img src="/assets/hero-5.png" alt="img" className="h-[230px] xl:h-[300px]" />
         </div>
       </div>
+      <div className="flex flex-row gap-4 absolute right-0 bottom-40 md:bottom-20 lg:hidden">
+        <div className="flex gap-4 w-max animate-scroll-horizontal-infinite-reverse">
+          <img src="/assets/hero-1.png" alt="img" className="w-[207px]" />
+          <img src="/assets/hero-2.png" alt="img" className="w-[207px]" />
+          <img src="/assets/hero-3.png" alt="img" className="w-[207px]" />
+          <img src="/assets/hero-4.png" alt="img" className="w-[207px]" />
+          <img src="/assets/hero-5.png" alt="img" className="w-[207px]" />
+          <img src="/assets/hero-6.png" alt="img" className="w-[207px]" />
+          <img src="/assets/hero-7.png" alt="img" className="w-[207px]" />
+          <img src="/assets/hero-8.png" alt="img" className="w-[207px]" />
+          <img src="/assets/hero-9.png" alt="img" className="w-[207px]" />
+          <img src="/assets/hero-10.png" alt="img" className="w-[207px]" />
+        </div>
+        <div className="flex gap-4 w-max animate-scroll-horizontal-infinite-reverse">
+          <img src="/assets/hero-1.png" alt="img" className="w-[207px]" />
+          <img src="/assets/hero-2.png" alt="img" className="w-[207px]" />
+          <img src="/assets/hero-3.png" alt="img" className="w-[207px]" />
+          <img src="/assets/hero-4.png" alt="img" className="w-[207px]" />
+          <img src="/assets/hero-5.png" alt="img" className="w-[207px]" />
+          <img src="/assets/hero-6.png" alt="img" className="w-[207px]" />
+          <img src="/assets/hero-7.png" alt="img" className="w-[207px]" />
+          <img src="/assets/hero-8.png" alt="img" className="w-[207px]" />
+          <img src="/assets/hero-9.png" alt="img" className="w-[207px]" />
+          <img src="/assets/hero-10.png" alt="img" className="w-[207px]" />
+        </div>
+      </div>
+      <div className="h-72 block lg:hidden" />
       {/* <Space align="center" direction="vertical" className="py-3">
         <div className="flex justify-center items-center w-full">
           <div className="flex justify-center items-center flex-col text-center w-full md:w-4/5">
