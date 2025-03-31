@@ -31,6 +31,7 @@ module.exports = {
         'scroll-vertical-infinite-reverse' : 'scrollVertical2 30s linear infinite',
         'scroll-horizontal-infinite' : 'scrollHorizontal 30s linear infinite',
         'scroll-horizontal-infinite-reverse' : 'scrollHorizontal2 30s linear infinite',
+        'scroll-horizontal-infinite-reverse-50' : 'scrollHorizontal2 50s linear infinite',
       },
     },
   },
