@@ -280,13 +280,13 @@ const Faq = ({ text }) => {
     }, []);
 
     return (
-        <div className="container flex flex-col gap-8 items-center m-auto py-16 px-5 lg:px-10">
+        <div className="container flex flex-col gap-8 items-center m-auto py-16 px-5 lg:px-10 lg:mt-10">
             <div className="text-center w-full">
-                <h1 className="2xl:text-5xl text-4xl font-semibold text-[#252525]">{text.title}</h1>
-                <h2 className="text-lg font-normal text-[#252525] mt-4">"{text.tags}"</h2>
-                <h2 className="text-lg font-normal text-[#252525] mt-1">- Frank Smith</h2>
+                <h1 className="text-2xl font-semibold text-[#252525] md:text-3xl lg:text-[32px] 2xl:text-5xl">{text.title}</h1>
+                <h2 className="text-base font-normal text-[#252525] mt-4 lg:text-lg">"{text.tags}"</h2>
+                <h2 className="text-base font-normal text-[#252525] mt-1 lg:text-lg">- Frank Smith</h2>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
+            <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-4 w-full">
                 <Collapse
                     accordion
                     activeKey={activeKey}
@@ -298,8 +298,8 @@ const Faq = ({ text }) => {
                 >
                     {faq.slice(0, faq.length / 2).map((item, index) => (
                         <Panel
-                            className="mb-10 px-2 py-3 shadow-md rounded-lg bg-white"
-                            header={<span className={`text-xl md:text-2xl font-semibold ${index.toString() === activeKey[0] ? '' : 'line-clamp-1'}`}>{item.question[langs ? 'english' : 'indonesia']}</span>}
+                            className="mb-4 pl-2 py-2 !rounded-2xl bg-white lg:mb-6"
+                            header={<span className={`text-base font-semibold ${index.toString() === activeKey[0] ? '' : 'line-clamp-1'}`}>{item.question[langs ? 'english' : 'indonesia']}</span>}
                             key={index.toString()}
                         >
                             <p
@@ -320,8 +320,8 @@ const Faq = ({ text }) => {
                 >
                     {faq.slice(faq.length / 2, faq.length).map((item, index) => (
                         <Panel
-                            className="mb-10 px-2 py-3 shadow-md rounded-lg bg-white"
-                            header={<span className={`text-xl md:text-2xl font-semibold ${(index + faq.length / 2).toString() === activeKey[0] ? '' : 'line-clamp-1'}`}>{item.question[langs ? 'english' : 'indonesia']}</span>}
+                            className="mb-4 pl-2 py-2 !rounded-2xl bg-white lg:mb-6"
+                            header={<span className={`text-base font-semibold ${(index + faq.length / 2).toString() === activeKey[0] ? '' : 'line-clamp-1'}`}>{item.question[langs ? 'english' : 'indonesia']}</span>}
                             key={(index + faq.length / 2).toString()}
                         >
                             <p

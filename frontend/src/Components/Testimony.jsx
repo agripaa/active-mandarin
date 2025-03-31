@@ -117,31 +117,31 @@ const Testimony = ({ text }) => {
       }}
     >
       <div className="container mx-auto">
-        <div className="flex flex-col justify-between items-center px-5 py-12 gap-11 lg:flex-row">
+        <div className="flex flex-col justify-between items-center px-5 py-12 gap-11 lg:flex-row md:px-16">
           {/* Kiri */}
-          <div className="flex flex-col items-center justify-center gap-8 md:flex-row lg:w-[40%] lg:flex-col lg:gap-0">
+          <div className="flex flex-col items-center justify-center gap-8 w-72 md:flex-row lg:flex-col lg:gap-0">
             <img
               src="/assets/community.png"
-              className="w-10/12 md:w-5/12 lg:w-9/12"
+              className="w-full"
               alt="contact"
             />
             <div className="flex flex-col items-center justify-center">
-              <h2 className="text-4xl font-semibold text-white tracking-wide my-6 mt-10">
+              <h2 className="text-[32px] font-semibold text-white mb-4 mt-8">
                 {text.tags}
               </h2>
               <div className="flex justify-start items-start w-full gap-6">
                 <Link
-                  className="bg-[#FFCC00] px-4 py-5 xl:px-8 2xl:py-5 rounded-2xl lg:rounded-3xl font-semibold flex items-center"
+                  className="bg-[#FFCC00] px-4 py-4 xl:px-8 2xl:py-5 rounded-2xl lg:rounded-3xl flex items-center w-full justify-center"
                   to="https://chat.whatsapp.com/FSQGLGPJjruKlhYueXz83K"
                   target="_blank"
                 >
-                  <FaWhatsapp className="mr-4 text-2xl" /> Join Now
+                  {langs ? "Join Now" : "Gabung Sekarang"}
                 </Link>
               </div>
             </div>
           </div>
 
-          <div className="w-full mt-8 block lg:hidden h-full">
+          <div className="w-full h-full mt-8 block lg:hidden">
             <Slider {...settings} className="w-full">
               {translate.map((item, index) => (
                 <div key={index} className="h-full px-2">
@@ -171,7 +171,7 @@ const Testimony = ({ text }) => {
           </div>
 
           {/* Kanan: Loop Testimonies */}
-          <div className="w-[70%] hidden gap-4 lg:flex">
+          <div className="w-full max-w-[712px] hidden gap-4 lg:flex">
             <div className="flex flex-col w-1/2 h-auto items-center justify-center gap-6">
               {translate.slice(0, 2).map((item, index) => (
                 <div

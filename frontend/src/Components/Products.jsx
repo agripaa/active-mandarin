@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import Slider from "react-slick";
 import { Rate, Modal, Button } from "antd";
 import { useSelector } from "react-redux";
+import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 
 const Products = ({ text }) => {
   const { data, langs } = useSelector((state) => state.LangReducer);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentProduct, setCurrentProduct] = useState({});
+  let sliderRef = useRef(null);
 
-  const products = {
+  const products = useMemo(() => ({
     english: [
       {
         title: "Hanzi Grid Notebook",
@@ -317,12 +319,12 @@ const Products = ({ text }) => {
         ],
       },
     ],
-  };
+  }), []);
 
   const translateProduct = langs ? products?.english : products?.indonesia;
 
   const settings = {
-    dots: true,
+    dots: false,
     infinite: true,
     speed: 500,
     slidesToShow: 3,
@@ -330,7 +332,7 @@ const Products = ({ text }) => {
     autoplay: true,
     autoplaySpeed: 2500,
     cssEase: "linear",
-    arrows:true,
+    arrows: false,
     responsive: [
       {
         breakpoint: 1024,
@@ -358,22 +360,34 @@ const Products = ({ text }) => {
     setIsModalVisible(false);
   };
 
+  const handleNext = () => {
+    if (sliderRef) {
+      sliderRef.slickNext();
+    }
+  };
+
+  const handlePrev = () => {
+    if (sliderRef) {
+      sliderRef.slickPrev();
+    }
+  };
+
   return (
-    <div className="mx-auto px-20 my-24 xl:pb-10" id="products">
-      <h1 className="text-4xl font-semibold text-start mb-2">{text.title}</h1>
-      <p className="mb-10 text-start text-xl font-semibold tracking-wide text-[#AFB8CA]">
+    <div className="container mx-auto px-5 py-16 md:px-16" id="products">
+      <h1 className="text-2xl font-semibold text-start md:text-3xl lg:text-[32px]">{text.title}</h1>
+      <p className="mb-6 text-start text-base font-medium tracking-wide text-[#8493AC] md:text-lg lg:text-xl">
         {text.desc}
       </p>
-      <div className="my-8 flex justify-center">
-        <div className="w-full">
-          <Slider {...settings}>
+      <div className="flex flex-col">
+        <div className="home-slider product-slider w-full">
+          <Slider {...settings} ref={(slider) => sliderRef = slider}>
             {translateProduct.map((item, index) => (
-              <div key={index} className="pb-6 h-[90%]">
+              <div key={index} className="h-full">
                 <div
-                  className="bg-white w-11/12 mx-auto rounded-2xl shadow-lg flex flex-col h-full my-4 mb-8 cursor-pointer"
+                  className="bg-white w-full mx-auto border border-[#D5DAE2] rounded-3xl flex flex-col h-full cursor-pointer"
                   onClick={() => showModal(item)}
                 >
-                  {/* Gambar Produk */}
+                  {/* Gambar Program */}
                   <img
                     src={item.image}
                     alt={item.title}
@@ -383,19 +397,30 @@ const Products = ({ text }) => {
                     <h2 className="text-lg font-semibold text-gray-800 mb-2">
                       {item.title}
                     </h2>
-                    <p className="font-semibold text-lg mb-2 mt-auto">
+                    <p className="font-semibold text-base mb-2 mt-auto">
                       Rp {item.price}
-                      <span className="font-light text-sm ml-1">/Item</span>
+                      <span className="font-light text-sm ml-1 text-[#657692]">/Month</span>
                     </p>
-                    <span className="flex items-center">
-                      <Rate disabled defaultValue={item.star} />
-                      <h2 className="ml-3 mt-1 text-base">(138)</h2>
-                    </span>
+                    <p className="mt-2 text-[#3377FF] text-xs">Dapatkan komisi Rp Rp224.950</p>
                   </div>
                 </div>
               </div>
             ))}
           </Slider>
+        </div>
+        <div className="flex flex-row gap-2 mt-4 items-center justify-center w-full md:justify-start">
+          <button
+            className="border-2 border-[#8493AC] p-2 rounded-xl"
+            onClick={handlePrev}
+          >
+            <RiArrowLeftSLine className="text-[#1A1A1A]" />
+          </button>
+          <button
+            className="border-2 border-[#8493AC] p-2 rounded-xl"
+            onClick={handleNext}
+          >
+            <RiArrowRightSLine className="text-[#1A1A1A]" />
+          </button>
         </div>
       </div>
 

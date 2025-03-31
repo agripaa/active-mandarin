@@ -232,3 +232,19 @@ svg { vertical-align: baseline; }
 {
     height: 100% !important;
 }
+
+.product-slider .slick-list {
+  padding: 0 20% 0 0 !important;
+}
+
+.home-slider .slick-track .slick-slide {
+  padding: 0 12px;
+}
+
+.home-slider .slick-track .slick-slide:first-child {
+  padding-left: 0;
+}
+
+.home-slider .slick-track .slick-slide:last-child {
+  padding-right: 0;
+}

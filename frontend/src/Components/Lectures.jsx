@@ -1,14 +1,16 @@
-import React, { useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import Slider from "react-slick";
 import { Modal, Button } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
+import { RiArrowLeftLine, RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 
 const Lectures = ({ text }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentLecturer, setCurrentLecturer] = useState({});
   const [currentSlide, setCurrentSlide] = useState(1);
   const [currentCertificates, setCurrentCertificates] = useState([]);
+  let sliderRef = useRef(null);
   const { data, langs } = useSelector((state) => state.LangReducer);
 
   const lecture = [
@@ -64,6 +66,67 @@ const Lectures = ({ text }) => {
           indonesian: "Bersertifikat HSK 5",
           chinese: "HSK 5 认证",
         },
+      ],
+    },
+    {
+      name: "Anisa Nur Hasanah",
+      profile: "/assets/Anisa Nur Hasanah.jpg",
+      university_name: "Nanjing Polytechnic Institute",
+      cat_certificate: "HSK 5 Certified",
+      certificates: [
+          {
+            english:
+              "Awardee Jiangsu Government Scholarship for Excellent Student by Jiangsu Government 2024",
+            indonesian:
+              "Penerima Beasiswa Pemerintah Jiangsu untuk Mahasiswa Berprestasi oleh Pemerintah Jiangsu 2024",
+            chinese: "2024年留学江苏政府优秀学生奖学金",
+          },
+          {
+            english:
+              "Awardee Jiangsu Government Scholarship for Excellent Student by Jiangsu Government 2023",
+            indonesian:
+              "Penerima Beasiswa Pemerintah Jiangsu untuk Mahasiswa Berprestasi oleh Pemerintah Jiangsu 2023",
+            chinese: "2023年留学江苏政府优秀学生奖学金",
+          },
+          {
+            english: "Awardee NJPI President’s Scholarship from 2021 to 2024",
+            indonesian: "Penerima Beasiswa Presiden NJPI dari 2021 hingga 2024",
+            chinese: "南京科技职业学院奖学金自2021年至2024年",
+          },
+          {
+            english:
+              "Second Prize in the International Student Group of the 2nd 'Chinese Language plus Logistics Vocational Skills' International Contest 2023",
+            indonesian:
+              "Juara Kedua Kategori Mahasiswa Internasional dalam Lomba Internasional 'Bahasa Mandarin plus Keterampilan Kejuruan Logistik' ke-2 tahun 2023",
+            chinese: "2023年在第二届“中文+物流职业技能”国际赛二等奖",
+          },
+          {
+            english:
+              "Second Prize in the SFLEP Cup National College Students Intercultural Competence Contest",
+            indonesian:
+              "Juara Kedua dalam Lomba Kompetensi Antarbudaya Mahasiswa Nasional Piala SFLEP",
+            chinese: "2023年在第六届“外教社杯”江苏省跨文化能力大赛二等奖",
+          },
+          {
+            english:
+              "Awardee for Award of Excellence in 'Portraying Jiangsu From a Different Angle' Writing Competition for Foreign Friends in Jiangsu",
+            indonesian:
+              "Penerima Penghargaan Keunggulan dalam Lomba Menulis 'Melukiskan Jiangsu dari Sudut Pandang Berbeda' untuk Teman Asing di Jiangsu",
+            chinese: "2023年在“洋笔江苏”在江苏外国人正文大赛中荣获优秀奖",
+          },
+          {
+            english:
+              "Excellence Award in the International Student Group 2023 'A New Era of Book Fragrance, Classics Illuminating a New Journey' Chinese Classics Recitation Competition",
+            indonesian:
+              "Penghargaan Keunggulan Kategori Mahasiswa Internasional dalam Lomba Resitasi Klasik Mandarin 2023 'Era Baru yang Harum dengan Buku, Klasik Menerangi Perjalanan Baru'",
+            chinese:
+              "在2023年 “书香新时代, ‘典’ 亮新征程” 中华经典诵读大赛中获留学生组优秀奖",
+          },
+          {
+            english: "HSK 5 Certified",
+            indonesian: "Bersertifikat HSK 5",
+            chinese: "HSK 5 认证",
+          },
       ],
     },
     {
@@ -129,78 +192,24 @@ const Lectures = ({ text }) => {
         },
       ],
     },
-    {
-      name: "Anisa Nur Hasanah",
-      profile: "/assets/Anisa Nur Hasanah.jpg",
-      university_name: "Nanjing Polytechnic Institute",
-      cat_certificate: "HSK 5 Certified",
-      certificates: [
-          {
-            english:
-              "Awardee Jiangsu Government Scholarship for Excellent Student by Jiangsu Government 2024",
-            indonesian:
-              "Penerima Beasiswa Pemerintah Jiangsu untuk Mahasiswa Berprestasi oleh Pemerintah Jiangsu 2024",
-            chinese: "2024年留学江苏政府优秀学生奖学金",
-          },
-          {
-            english:
-              "Awardee Jiangsu Government Scholarship for Excellent Student by Jiangsu Government 2023",
-            indonesian:
-              "Penerima Beasiswa Pemerintah Jiangsu untuk Mahasiswa Berprestasi oleh Pemerintah Jiangsu 2023",
-            chinese: "2023年留学江苏政府优秀学生奖学金",
-          },
-          {
-            english: "Awardee NJPI President’s Scholarship from 2021 to 2024",
-            indonesian: "Penerima Beasiswa Presiden NJPI dari 2021 hingga 2024",
-            chinese: "南京科技职业学院奖学金自2021年至2024年",
-          },
-          {
-            english:
-              "Second Prize in the International Student Group of the 2nd 'Chinese Language plus Logistics Vocational Skills' International Contest 2023",
-            indonesian:
-              "Juara Kedua Kategori Mahasiswa Internasional dalam Lomba Internasional 'Bahasa Mandarin plus Keterampilan Kejuruan Logistik' ke-2 tahun 2023",
-            chinese: "2023年在第二届“中文+物流职业技能”国际赛二等奖",
-          },
-          {
-            english:
-              "Second Prize in the SFLEP Cup National College Students Intercultural Competence Contest",
-            indonesian:
-              "Juara Kedua dalam Lomba Kompetensi Antarbudaya Mahasiswa Nasional Piala SFLEP",
-            chinese: "2023年在第六届“外教社杯”江苏省跨文化能力大赛二等奖",
-          },
-          {
-            english:
-              "Awardee for Award of Excellence in 'Portraying Jiangsu From a Different Angle' Writing Competition for Foreign Friends in Jiangsu",
-            indonesian:
-              "Penerima Penghargaan Keunggulan dalam Lomba Menulis 'Melukiskan Jiangsu dari Sudut Pandang Berbeda' untuk Teman Asing di Jiangsu",
-            chinese: "2023年在“洋笔江苏”在江苏外国人正文大赛中荣获优秀奖",
-          },
-          {
-            english:
-              "Excellence Award in the International Student Group 2023 'A New Era of Book Fragrance, Classics Illuminating a New Journey' Chinese Classics Recitation Competition",
-            indonesian:
-              "Penghargaan Keunggulan Kategori Mahasiswa Internasional dalam Lomba Resitasi Klasik Mandarin 2023 'Era Baru yang Harum dengan Buku, Klasik Menerangi Perjalanan Baru'",
-            chinese:
-              "在2023年 “书香新时代, ‘典’ 亮新征程” 中华经典诵读大赛中获留学生组优秀奖",
-          },
-          {
-            english: "HSK 5 Certified",
-            indonesian: "Bersertifikat HSK 5",
-            chinese: "HSK 5 认证",
-          },
-      ],
-    },
   ];
 
   const settings = {
-    dots: true,
+    className: "slider variable-width",
+    dots: false,
     infinite: false,
     speed: 500,
     slidesToShow: 4,
     slidesToScroll: 1,
     centerMode: false, // Nonaktifkan centerMode
-    arrows: true, // Nonaktifkan tombol next dan prev
-    beforeChange: (current, next) => setCurrentSlide(next),
+    arrows: false, // Nonaktifkan tombol next dan prev
+    // variableWidth: true,
+    beforeChange: (current, next) => {
+      console.log("Current slide:", current);
+      console.log("Next slide:", next);
+      setCurrentSlide(next);
+      console.log(sliderRef);
+    },
     responsive: [
       {
         breakpoint: 640,
@@ -213,6 +222,12 @@ const Lectures = ({ text }) => {
         breakpoint: 1024,
         settings: {
           slidesToShow: 2,
+        },
+      },
+      {
+        breakpoint: 1536,
+        settings: {
+          slidesToShow: 3,
         },
       },
     ],
@@ -228,28 +243,45 @@ const Lectures = ({ text }) => {
     setIsModalVisible(false);
   };
 
+  const handleNext = () => {
+    if (sliderRef) {
+      sliderRef.slickNext();
+    }
+  };
+
+  const handlePrev = () => {
+    if (sliderRef) {
+      sliderRef.slickPrev();
+    }
+  };
+
   return (
     <div
-      className="my-20 mx-20"
+      className="container py-11 px-5 mx-auto md:px-16"
     >
       <div className="mx-auto text-start">
-        <div className="w-full md:w-11/12 lg:w-10/12 xl:w-full mx-auto mb-5 px-5">
-          <h1 className="text-black text-4xl font-semibold">{text?.title}</h1>
+        <div className="w-full">
+          <h1 className="text-black text-2xl font-semibold md:text-3xl lg:text-[32px]">{text?.title}</h1>
         </div>
-        <div className="my-14 flex justify-center">
-          <div className="w-full md:w-11/12 lg:w-10/12 xl:w-full">
-            <Slider {...settings} className="">
+        <div className="mt-9">
+          <div className="home-slider w-full overflow-visible">
+            <Slider {...settings} ref={(slider) => sliderRef = slider}>
               {lecture.map((item, index) => (
-                <div key={index} className="px-4 h-full">
-                  <div className="flex flex-col bg-white rounded-xl w-full h-full shadow-lg text-center p-4 xl:p-6">
-                    <div className="relative w-10/12 h-fit mx-auto mb-4 flex justify-center items-center">
+                <div key={index} className="h-full">
+                  <div className="flex flex-col bg-white border border-[#D5DAE2] rounded-3xl w-full h-full text-center p-4 xl:p-6">
+                    <div className="relative w-48 mx-auto mb-4 flex justify-center items-center aspect-square rounded-full overflow-hidden">
                       <img
                         src={item.profile}
                         alt={item.name}
-                        className="relative shadow-lg p-[2px] w-full aspect-square object-cover rounded-full"
+                        className="relative w-full aspect-square object-cover"
                       />
                     </div>
-                    <div className="flex flex-col mt-6 justify-center items-center">
+                    <div className="flex flex-col mt-4 justify-center items-center">
+                      {item.cat_certificate && (
+                        <span className="bg-[#3377FF] w-fit mx-auto py-1 px-4 mb-6 text-center text-white font-medium rounded-full text-sm md:text-base">
+                          {item.cat_certificate}
+                        </span>
+                      )}
                       <h2 className="text-lg font-semibold text-gray-800">
                         {item.name}
                       </h2>
@@ -262,13 +294,27 @@ const Lectures = ({ text }) => {
                         className="mt-4 flex items-center font-semibold justify-center w-full bg-yellow-400 text-black border-none hover:text-black rounded-2xl py-6"
                         onClick={() => showModal(item)}
                       >
-                        View More
+                        {langs ? 'View Achievement' : 'Lihat Prestasi'}
                       </Button>
                     </div>
                   </div>
                 </div>
               ))}
             </Slider>
+          </div>
+          <div className="flex flex-row gap-2 mt-4 items-center justify-center w-full sm:justify-start 2xl:hidden">
+            <button
+              className="border-2 border-[#8493AC] p-2 rounded-xl"
+              onClick={handlePrev}
+            >
+              <RiArrowLeftSLine className="text-[#1A1A1A]" />
+            </button>
+            <button
+              className="border-2 border-[#8493AC] p-2 rounded-xl"
+              onClick={handleNext}
+            >
+              <RiArrowRightSLine className="text-[#1A1A1A]" />
+            </button>
           </div>
         </div>
       </div>

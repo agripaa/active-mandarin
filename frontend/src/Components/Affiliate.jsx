@@ -17,7 +17,7 @@ const Affiliate = ({ text }) => {
   }, [])
 
   return (
-    <div className='container mx-auto py-16 px-5 relative w-full md:px-20'>
+    <div className='container mx-auto py-16 px-5 relative w-full md:px-16'>
       <div className='flex items-center justify-center w-full h-full'>
         <div
           className='relative w-full flex justify-center bg-[#02264A] rounded-2xl p-10 md:p-14 lg:px-20'

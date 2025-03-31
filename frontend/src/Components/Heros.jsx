@@ -1,11 +1,122 @@
 import { Space } from "antd";
 import React from "react";
+import { FaWhatsapp } from "react-icons/fa";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const Heros = ({ text }) => {
+  const { langs } = useSelector((state) => state.LangReducer);
   return (
-    <div className="mt-4 mx-auto px-5 md:px-0">
-      <Space align="center" direction="vertical" className="py-3">
+    <div className="container flex justify-between relative overflow-y-hidden mx-auto px-5 md:px-16">
+      <div className="pt-24 pb-48 max-w-[658px] sm:pb-36">
+        <h1 className="text-2xl font-semibold md:text-3xl lg:text-[32px]">
+          {text.title}
+        </h1>
+        <p className="mt-6">
+          {text.desc}
+        </p>
+        <div className='flex items-center mt-6 gap-4'>
+          <Link to='/class'>
+            <button
+              className="px-8 py-4 w-fit bg-[#FFCC00] tracking-wide mt-2 text-xs text-[#252525] font-semibold rounded-3xl transition-all duration-300 hover:bg-yellow-500 hover:text-black sm:text-sm lg:text-base"
+            >
+              {langs ? "Explore Our Program" : "Jelajahi Program Kami"}
+            </button>
+          </Link>
+          <Link to='/products'>
+            <button
+              className="px-8 py-4 w-fit border-2 border-[#8493AC] tracking-wide mt-2 text-xs text-[#252525] font-semibold rounded-3xl transition-all duration-300 hover:bg-yellow-500 hover:text-black sm:text-sm lg:text-base"
+            >
+              {langs ? "Explore Our Product" : "Jelajahi Produk Kami"}
+            </button>
+          </Link>
+        </div>
+      </div>
+      <div className="hidden absolute bottom-0 right-0 lg:block">
+        <div className="flex flex-col w-[207px] animate-scroll-vertical-infinite-reverse">
+          <img src="/assets/hero-6.png" alt="img" className="w-full" />
+          <img src="/assets/hero-7.png" alt="img" className="w-full" />
+          <img src="/assets/hero-8.png" alt="img" className="w-full" />
+          <img src="/assets/hero-9.png" alt="img" className="w-full" />
+          <img src="/assets/hero-10.png" alt="img" className="w-full" />
+        </div>
+        <div className="flex flex-col w-[207px] animate-scroll-vertical-infinite-reverse">
+          <img src="/assets/hero-6.png" alt="img" className="w-full" />
+          <img src="/assets/hero-7.png" alt="img" className="w-full" />
+          <img src="/assets/hero-8.png" alt="img" className="w-full" />
+          <img src="/assets/hero-9.png" alt="img" className="w-full" />
+          <img src="/assets/hero-10.png" alt="img" className="w-full" />
+        </div>
+        <div className="flex flex-col w-[207px] animate-scroll-vertical-infinite-reverse">
+          <img src="/assets/hero-6.png" alt="img" className="w-full" />
+          <img src="/assets/hero-7.png" alt="img" className="w-full" />
+          <img src="/assets/hero-8.png" alt="img" className="w-full" />
+          <img src="/assets/hero-9.png" alt="img" className="w-full" />
+          <img src="/assets/hero-10.png" alt="img" className="w-full" />
+        </div>
+      </div>
+      <div className="hidden absolute bottom-0 right-[239px] lg:block">
+        <div className="flex flex-col w-[207px] animate-scroll-vertical-infinite">
+          <img src="/assets/hero-1.png" alt="img" className="w-full" />
+          <img src="/assets/hero-2.png" alt="img" className="w-full" />
+          <img src="/assets/hero-3.png" alt="img" className="w-full" />
+          <img src="/assets/hero-4.png" alt="img" className="w-full" />
+          <img src="/assets/hero-5.png" alt="img" className="w-full" />
+        </div>
+        <div className="flex flex-col w-[207px] animate-scroll-vertical-infinite">
+          <img src="/assets/hero-1.png" alt="img" className="w-full" />
+          <img src="/assets/hero-2.png" alt="img" className="w-full" />
+          <img src="/assets/hero-3.png" alt="img" className="w-full" />
+          <img src="/assets/hero-4.png" alt="img" className="w-full" />
+          <img src="/assets/hero-5.png" alt="img" className="w-full" />
+        </div>
+        <div className="flex flex-col w-[207px] animate-scroll-vertical-infinite">
+          <img src="/assets/hero-1.png" alt="img" className="w-full" />
+          <img src="/assets/hero-2.png" alt="img" className="w-full" />
+          <img src="/assets/hero-3.png" alt="img" className="w-full" />
+          <img src="/assets/hero-4.png" alt="img" className="w-full" />
+          <img src="/assets/hero-5.png" alt="img" className="w-full" />
+        </div>
+      </div>
+      <div className="flex absolute left-0 lg:hidden animate-scroll-horizontal-infinite">
+        <div className="flex gap-4 h-[300px]">
+          <img src="/assets/hero-1.png" alt="img" className="w-full" />
+          <img src="/assets/hero-2.png" alt="img" className="w-full" />
+          <img src="/assets/hero-3.png" alt="img" className="w-full" />
+          <img src="/assets/hero-4.png" alt="img" className="w-full" />
+          <img src="/assets/hero-5.png" alt="img" className="w-full" />
+          <img src="/assets/hero-6.png" alt="img" className="w-full" />
+          <img src="/assets/hero-7.png" alt="img" className="w-full" />
+          <img src="/assets/hero-8.png" alt="img" className="w-full" />
+          <img src="/assets/hero-9.png" alt="img" className="w-full" />
+          <img src="/assets/hero-10.png" alt="img" className="w-full" />
+        </div>
+        <div className="flex gap-4 h-[300px]">
+          <img src="/assets/hero-1.png" alt="img" className="w-full" />
+          <img src="/assets/hero-2.png" alt="img" className="w-full" />
+          <img src="/assets/hero-3.png" alt="img" className="w-full" />
+          <img src="/assets/hero-4.png" alt="img" className="w-full" />
+          <img src="/assets/hero-5.png" alt="img" className="w-full" />
+          <img src="/assets/hero-6.png" alt="img" className="w-full" />
+          <img src="/assets/hero-7.png" alt="img" className="w-full" />
+          <img src="/assets/hero-8.png" alt="img" className="w-full" />
+          <img src="/assets/hero-9.png" alt="img" className="w-full" />
+          <img src="/assets/hero-10.png" alt="img" className="w-full" />
+        </div>
+        <div className="flex gap-4 h-[300px]">
+          <img src="/assets/hero-1.png" alt="img" className="w-full" />
+          <img src="/assets/hero-2.png" alt="img" className="w-full" />
+          <img src="/assets/hero-3.png" alt="img" className="w-full" />
+          <img src="/assets/hero-4.png" alt="img" className="w-full" />
+          <img src="/assets/hero-5.png" alt="img" className="w-full" />
+          <img src="/assets/hero-6.png" alt="img" className="w-full" />
+          <img src="/assets/hero-7.png" alt="img" className="w-full" />
+          <img src="/assets/hero-8.png" alt="img" className="w-full" />
+          <img src="/assets/hero-9.png" alt="img" className="w-full" />
+          <img src="/assets/hero-10.png" alt="img" className="w-full" />
+        </div>
+      </div>
+      {/* <Space align="center" direction="vertical" className="py-3">
         <div className="flex justify-center items-center w-full">
           <div className="flex justify-center items-center flex-col text-center w-full md:w-4/5">
             <h1 className="text-2xl font-bold tracking-wide text-[#02264A] md:text-4xl">
@@ -33,20 +144,25 @@ const Heros = ({ text }) => {
               {text.btn}
             </Link>
           </div>
-        </div>
+        </div> */}
         {/* Responsive Image */}
-        <picture>
+        {/* <picture> */}
           {/* Mobile Image */}
-          <source srcSet="/assets/hero-mobile.png" media="(max-width: 425px)" />
+          {/* <source srcSet="/assets/hero-mobile.png" media="(max-width: 425px)" /> */}
           {/* Default Image */}
-          <img
+          {/* <img
             src="/assets/hero3.png"
             alt="img"
             className="sm:w-8/12 mt-0 mx-auto w-full"
           />
         </picture>
-      </Space>
-      <a href="/contact" className="fixed z-50 bg-[#57D163] hover:bg-[#4bad55] transition-all duration-300 right-[5%] text-white bottom-[6%] py-3 px-6 rounded-xl">Chat Mintive</a>
+      </Space> */}
+      <Link to='https://wa.me/+6282279506450' target="_blank" className="absolute z-20">
+        <button className="flex items-center gap-2.5 fixed right-[5%] bottom-[6%] bg-[#57D163] hover:bg-[#4bad55] text-white font-normal text-xs md:text-base lg:text-lg py-3 px-6 rounded-2xl transition duration-300 ease-in-out">
+          <FaWhatsapp className="text-lg md:text-2xl lg:text-3xl"/>
+          Chat Mintive
+        </button>
+      </Link>
     </div>
   );
 };
