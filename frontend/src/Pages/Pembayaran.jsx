@@ -1,11 +1,64 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Mainlayouts from "../Layouts/MainLayouts";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { RiArrowLeftLine } from "react-icons/ri";
+import { getBrandById } from "../api/brand";
+import { createTransaction } from "../api/transaksi";
+import Swal from "sweetalert2";
 
 const Pembayaran = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [metode, setMetode] = useState("QRIS");
-  const [showQRIS, setShowQRIS] = useState(false); // State untuk modal QRIS
+  const [brandData, setBrandData] = useState({});
+  const [showQRIS, setShowQRIS] = useState(false);
+  const [proof, setProof] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const reveralCode = localStorage.getItem("reveral_code");
+
+  useEffect(() => {
+    fetchBrand();
+  }, [id]);
+
+  const fetchBrand = async () => {
+    try {
+      const response = await getBrandById(id);
+      setBrandData(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProof(file);
+      setPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!proof) {
+      Swal.fire("Error!", "Bukti pembayaran wajib diunggah!", "error");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("brand_id", id);
+    formData.append("payment_method", metode); // Sesuai metode yang dipilih
+    formData.append("proof_transaction", proof);
+    if (reveralCode) formData.append("reveral_code", reveralCode);
+
+    try {
+      const response = await createTransaction(formData);
+      Swal.fire("Berhasil!", "Transaksi berhasil dibuat!", "success").then(() => {
+        localStorage.removeItem("reveral_code");
+        navigate("/invoice");
+      });
+    } catch (error) {
+      Swal.fire("Error!", error.message || "Terjadi kesalahan", "error");
+    }
+  };
 
   return (
     <Mainlayouts>
@@ -18,12 +71,12 @@ const Pembayaran = () => {
         <div className="grid grid-cols-1 md:flex md:items-start md:justify-between gap-10 w-full">
           {/* Detail Produk */}
           <div className="bg-white rounded-lg md:w-5/12">
-            <img src="/assets/product1.png" alt="Product" className="w-full h-auto rounded-md" />
-            <h1 className="text-2xl font-semibold mt-6">Comprehensive Book Level 1</h1>
-            <p className="text-gray-600 mt-2 leading-relaxed">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum mollis nunc a molestie dictum.
-              Mauris venenatis, felis scelerisque aliquet lacinia, nulla nisi venenatis odio, id blandit mauris ipsum id sapien.
-            </p>
+            <img src={`${process.env.REACT_APP_API_IMG}${brandData.brand_img}`} alt="Product" className="w-full h-auto border-b pb-4" />
+            <h1 className="text-2xl font-semibold mt-6">{brandData.variant}</h1>
+            <div 
+              className="text-gray-600 mt-2 leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: brandData.detail_brand }}
+            />
           </div>
 
           {/* Metode Pembayaran */}
@@ -37,8 +90,8 @@ const Pembayaran = () => {
                 QRIS
               </button>
               <button
-                className={`px-4 py-2 rounded-lg font-medium border-2 ${metode === "Bank" ? "bg-yellow-400 text-black" : "border-gray-300"}`}
-                onClick={() => setMetode("Bank")}
+                className={`px-4 py-2 rounded-lg font-medium border-2 ${metode === "Transfer Bank" ? "bg-yellow-400 text-black" : "border-gray-300"}`}
+                onClick={() => setMetode("Transfer Bank")}
               >
                 Transfer Bank
               </button>
@@ -64,12 +117,21 @@ const Pembayaran = () => {
               </div>
             )}
 
+            {/* Input Bukti Pembayaran */}
             <div className="mt-6">
-              <h2 className="text-lg font-semibold mb-2">Bukti Pembayaran</h2>
-              <button className="border px-4 py-2 rounded-lg">Upload Gambar</button>
+              <h2 className="text-lg font-semibold mb-2">Unggah Bukti Pembayaran</h2>
+              <input 
+                type="file" 
+                accept="image/*" 
+                onChange={handleFileChange} 
+                className="mt-3 p-2 border rounded w-full"
+              />
+              {preview && (
+                <img src={preview} alt="Preview" className="mt-4 w-32 h-auto border rounded-md" />
+              )}
             </div>
 
-            <button className="mt-6 w-full bg-[#FFCC00] hover:bg-yellow-500 text-black font-semibold py-3 rounded-xl">
+            <button onClick={handleSubmit} className="mt-6 w-full bg-[#FFCC00] hover:bg-yellow-500 text-black font-semibold py-3 rounded-xl">
               Buat Pesanan
             </button>
           </div>

@@ -71,3 +71,14 @@ export const getUserTransactions = async (page = 1, limit = 5) => {
       throw error.response ? error.response.data : error.message;
   }
 };
+
+
+export const validateReveralCode = async (reveral_code) => {
+  try {
+      const response = await api.get(`/affiliate/validate?reveral_code=${encodeURIComponent(reveral_code)}`);
+      return response.data;
+  } catch (error) {
+      console.error("Error fetching transactions:", error);
+      throw error.response ? error.response.data : error.message;
+  }
+};

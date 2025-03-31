@@ -11,7 +11,8 @@ const turunanOptions = [
   "Degree",
   "Mentor Scholarship",
   "Kelas HSK",
-  "Premium Mandarin Learning"
+  "Premium Mandarin Learning",
+  "Educonsult S1-S3 Full Cover"
 ];
 
 const CreateProgramModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {

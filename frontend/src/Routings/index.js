@@ -24,16 +24,20 @@ const Routings = () => {
     return(
         <BrowserRouter>
             <Routes>
+                {/* Landing Page */}
                 <Route path="/" element={<Homes/>}/>
                 <Route path="/about" element={<About/>}/>
                 <Route path="/flash" element={<Flashcard/>}/>
                 <Route path="/class" element={<Catalog/>}/>
                 <Route path="/products" element={<CatalogProduct/>}/>
-                <Route path="/detail" element={<DetailPage/>}/>
-                <Route path="/checkout" element={<Checkout/>}/>
-                <Route path="/pembayaran" element={<Pembayaran/>}/>
-                <Route path="/events" element={<Event/>}/>
                 <Route path="/contact" element={<Contact/>}/>
+
+                {/* Transaction User Page */}
+                <Route path="/detail/:id" element={<DetailPage/>}/>
+                <Route path="/checkout/:id" element={<Checkout/>}/>
+                <Route path="/pembayaran/:id" element={<Pembayaran/>}/>
+
+                {/* Dashboard */}
                 <Route path="/dashboard" element={<Dashboard/>}/>
                 <Route path="/dashboard/products" element={<DashboardProduct/>}/>
                 <Route path="/dashboard/programs" element={<DashboardProgram/>}/>
@@ -43,6 +47,9 @@ const Routings = () => {
                 <Route path="/rekrutmen" element={<Rekrutmen/>}/>
                 <Route path="/donasi" element={<Donation/>}/>
                 <Route path="/profile" element={<Profile/>}/>
+
+                {/* IDK */}
+                <Route path="/events" element={<Event/>}/>
             </Routes>
         </BrowserRouter>
     )
