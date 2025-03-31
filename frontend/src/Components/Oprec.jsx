@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Modal, Button } from 'antd'
 import { useSelector } from "react-redux";
+import { RiCheckboxCircleFill } from 'react-icons/ri';
 
 const Oprec = ({ text }) => {
     const {data, langs} = useSelector(state => state.LangReducer);
@@ -15,25 +16,44 @@ const Oprec = ({ text }) => {
   }
 
   return (
-    <div className='mx-auto my-24 relative w-full px-20'>
+    <div className='container mx-auto py-16 px-5 relative w-full md:px-16'>
       <div className='flex items-center justify-center w-full h-full'>
         <div
-          className='relative w-full flex bg-[#02264A] rounded-2xl p-10 md:p-14 lg:w-11/12 xl:w-11/12 2xl:w-11/12'
+          className='relative w-full flex justify-center bg-[#02264A] rounded-2xl p-10 md:p-14 lg:px-20'
           style={{
             backgroundImage: "url('/assets/card-texture.png')",
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
         >
-          <div className='flex flex-col justify-center text-white w-full ml-auto lg:w-7/12'>
+          <div className='w-0 lg:w-[48%] xl:w-[45%]' />
+
+          <div className='flex flex-col justify-center text-white w-full lg:max-w-lg lg:w-7/12'>
             <h2 className='font-semibold text-2xl md:text-[32px]'>{text.title}</h2>
-            <p className='mt-4 text-lg font-light'>{text.desc}</p>
-            <div className='mt-12'>
+            <ul className='flex flex-col gap-4 mt-6'>
+              <li className='flex gap-2.5 items-center'>
+                <RiCheckboxCircleFill color='#57D163' className='w-5 h-5 min-w-5 min-h-5' />
+                <p>{langs ? "Personal Development" : "Pengembangan Diri"}</p>
+              </li>
+              <li className='flex gap-2.5 items-center'>
+                <RiCheckboxCircleFill color='#57D163' className='w-5 h-5 min-w-5 min-h-5' />
+                <p>{langs ? "Fresh Money" : "Pendapatan Tambahan"}</p>
+              </li>
+              <li className='flex gap-2.5 items-center'>
+                <RiCheckboxCircleFill color='#57D163' className='w-5 h-5 min-w-5 min-h-5' />
+                <p>{langs ? "Networking" : "Jaringan Relasi"}</p>
+              </li>
+              <li className='flex gap-2.5 items-center'>
+                <RiCheckboxCircleFill color='#57D163' className='w-5 h-5 min-w-5 min-h-5' />
+                <p>{langs ? "Career Development" : "Pengembangan Karir"}</p>
+              </li>
+            </ul>
+            <div className='mt-6'>
               <button
                 onClick={showModal}
-                className="px-8 py-4 bg-[#FFCC00] tracking-wide mt-2 text-base text-[#252525] font-semibold rounded-3xl transition-all duration-300 hover:bg-yellow-500 hover:text-black"
+                className="px-8 py-4 bg-[#FFCC00] tracking-wide mt-2 text-base text-[#252525] font-semibold rounded-3xl transition-all duration-300 hover:bg-yellow-500 hover:text-black w-full"
               >
-                Learn More
+                {langs ? "Join Us" : "Gabung Sekarang"}
               </button>
             </div>
           </div>
@@ -41,8 +61,9 @@ const Oprec = ({ text }) => {
           <img
             src="/assets/oprec.png"
             alt="Oprec"
-            className='absolute bottom-0 left-10 transform h-auto w-[28%] object-cover z-10 hidden lg:block lg:w-[28%]'
+            className='absolute bottom-0 right-[56%] transform h-auto w-[40%] object-cover z-10 hidden lg:block xl:right-[57%] xl:w-[38%] 2xl:right-[56%] max-w-md'
           />
+          <div className='hidden absolute bottom-0 right-[62%] h-[70%] aspect-square rounded-full bg-[#FFCC00] lg:block xl:right-[63%] xl:h-[90%] 2xl:right-[61%]' />
         </div>
       </div>
 

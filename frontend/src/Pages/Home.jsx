@@ -32,19 +32,21 @@ const Homes = () => {
     }, [location])
 
     return(
-        <Mainlayouts>
-            <Heros text={{
-                title: text?.herosTitle, 
-                desc: text?.herosDesc, 
-                btn: text?.herosBtn,
-                actionDesc: text?.herosActionDesc,
-                listInformation: text?.herosListInformation
-            }}/>
-            <Tags text={{ 
-                regist: text?.tagsRegistrant,
-                participants: text?.tagsParticipant,
-                skill: text?.tagsEnhancement
-             }}/>
+        <Mainlayouts className="bg-[#F5F8FF]">
+            <div className="w-full relative">
+                <Heros text={{
+                    title: text?.herosTitle, 
+                    desc: text?.herosDesc, 
+                    btn: text?.herosBtn,
+                    actionDesc: text?.herosActionDesc,
+                    listInformation: text?.herosListInformation
+                }}/>
+                <Tags text={{ 
+                    regist: text?.tagsRegistrant,
+                    participants: text?.tagsParticipant,
+                    skill: text?.tagsEnhancement
+                }}/>
+            </div>
             <Sponsors 
                 text={{ 
                     tags: text?.sponsorsTags, 

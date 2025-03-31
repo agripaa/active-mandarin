@@ -22,9 +22,9 @@ const Works = ({ text, cards }) => {
     ];
 
     return (
-        <div className="py-10 w-full" style={{ backgroundImage: "url('/assets/texture.png')", backgroundSize: "cover", backgroundPosition: "center" }}>
+        <div className="py-10 w-full bg-white" style={{ backgroundImage: "url('/assets/texture.png')", backgroundSize: "cover", backgroundPosition: "center" }}>
             <div className="container mx-auto relative w-full">
-            <h1 className="text-center mt-4 font-semibold text-4xl text-[#252525] px-3">
+            <h1 className="text-center mt-4 font-semibold text-2xl text-[#252525] px-3 md:text-3xl lg:text-[32px]">
                 {text?.title}
             </h1>
             <h2 className="text-4xl text-center font-semibold my-5">{text?.desc}</h2>

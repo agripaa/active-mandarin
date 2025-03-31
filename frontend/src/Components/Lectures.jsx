@@ -1,14 +1,16 @@
-import React, { useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import Slider from "react-slick";
 import { Modal, Button } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
+import { RiArrowLeftLine, RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 
 const Lectures = ({ text }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentLecturer, setCurrentLecturer] = useState({});
   const [currentSlide, setCurrentSlide] = useState(1);
   const [currentCertificates, setCurrentCertificates] = useState([]);
+  let sliderRef = useRef(null);
   const { data, langs } = useSelector((state) => state.LangReducer);
 
   const lecture = [
@@ -63,69 +65,6 @@ const Lectures = ({ text }) => {
           english: "HSK 5 Certified",
           indonesian: "Bersertifikat HSK 5",
           chinese: "HSK 5 认证",
-        },
-      ],
-    },
-    {
-      name: "Nasy-ah Nur Firdousi",
-      profile: "/assets/Nasy-ah Nur Firdousi.jpg",
-      university_name: "Nanjing Polytechnic Institute",
-      cat_certificate: "HSK 4 Certified",
-      certificates: [
-        {
-          english: "HSK 4 Certified",
-          indonesian: "Bersertifikat HSK 4",
-          chinese: "HSK 4 认证",
-        },
-        {
-          english: "Awardee the President’s Scholarship",
-          indonesian: "Penerima Beasiswa Presiden",
-          chinese: "校长奖学金得奖者",
-        },
-        {
-          english: "Author of the book Comprehensive Chinese Book",
-          indonesian: "Penulis buku 'Komprehensif Bahasa Mandarin'",
-          chinese: "著有《综合汉语书》",
-        },
-      ],
-    },
-    {
-      name: "Vemas Alvieno Dian Saputra",
-      profile: "/assets/Vemas Alvieno.jpg",
-      university_name:
-        "Nanjing University of Information Science and Technology",
-      cat_certificate: "HSK 5 Certified",
-      certificates: [
-        {
-          english:
-            "Award for being Campus Ambassador for College of International Education by Nanjing University of Information Science and Technology from 2024 to 2025",
-          indonesian:
-            "Penghargaan sebagai Duta Kampus untuk College of International Education oleh Universitas Ilmu dan Teknologi Informasi Nanjing dari 2024 hingga 2025",
-          chinese: "荣获2024-2025年南京信息工程大学国际教育学院校园大使称号",
-        },
-        {
-          english:
-            "Awardee Longshan Type B (1st Prize) Scholarship for International Student by Nanjing University of Information Science and Technology from 2024 to 2025",
-          indonesian:
-            "Penerima Beasiswa Longshan Tipe B (Juara 1) untuk Mahasiswa Internasional oleh Universitas Ilmu dan Teknologi Informasi Nanjing dari 2024 hingga 2025",
-          chinese:
-            "获奖者 南京信息工程大学2024年至2025年龙山B类留学生奖学金（一等奖）",
-        },
-        {
-          english:
-            "Awardee for The 4th Stories of China Retold in English Challenge for International Student by Jiangsu Government in Intermediate round, May 2024",
-          indonesian:
-            "Penerima Penghargaan dalam Lomba 'Stories of China Retold in English' ke-4 untuk Mahasiswa Internasional oleh Pemerintah Jiangsu pada babak menengah, Mei 2024",
-          chinese:
-            "2024 年 5 月江苏省第四届留学生英文讲述中国故事大赛中级赛获奖者",
-        },
-        {
-          english:
-            "Awardee NUIST Excellent Freshmen Scholarship (1st Prize) Scholarship for International Student by Nanjing University of Information Science and Technology from 2023 to 2024",
-          indonesian:
-            "Penerima Beasiswa Mahasiswa Baru Berprestasi NUIST (Juara 1) untuk Mahasiswa Internasional oleh Universitas Ilmu dan Teknologi Informasi Nanjing dari 2023 hingga 2024",
-          chinese:
-            "获奖者 南京信息工程大学优秀新生奖学金（一等奖） 南京信息工程大学留学生奖学金2023年至2024年",
         },
       ],
     },
@@ -190,17 +129,87 @@ const Lectures = ({ text }) => {
           },
       ],
     },
+    {
+      name: "Nasy-ah Nur Firdousi",
+      profile: "/assets/Nasy-ah Nur Firdousi.jpg",
+      university_name: "Nanjing Polytechnic Institute",
+      cat_certificate: "HSK 4 Certified",
+      certificates: [
+        {
+          english: "HSK 4 Certified",
+          indonesian: "Bersertifikat HSK 4",
+          chinese: "HSK 4 认证",
+        },
+        {
+          english: "Awardee the President’s Scholarship",
+          indonesian: "Penerima Beasiswa Presiden",
+          chinese: "校长奖学金得奖者",
+        },
+        {
+          english: "Author of the book Comprehensive Chinese Book",
+          indonesian: "Penulis buku 'Komprehensif Bahasa Mandarin'",
+          chinese: "著有《综合汉语书》",
+        },
+      ],
+    },
+    {
+      name: "Vemas Alvieno Dian Saputra",
+      profile: "/assets/Vemas Alvieno.jpg",
+      university_name:
+        "Nanjing University of Information Science and Technology",
+      // cat_certificate: "HSK 5 Certified",
+      certificates: [
+        {
+          english:
+            "Award for being Campus Ambassador for College of International Education by Nanjing University of Information Science and Technology from 2024 to 2025",
+          indonesian:
+            "Penghargaan sebagai Duta Kampus untuk College of International Education oleh Universitas Ilmu dan Teknologi Informasi Nanjing dari 2024 hingga 2025",
+          chinese: "荣获2024-2025年南京信息工程大学国际教育学院校园大使称号",
+        },
+        {
+          english:
+            "Awardee Longshan Type B (1st Prize) Scholarship for International Student by Nanjing University of Information Science and Technology from 2024 to 2025",
+          indonesian:
+            "Penerima Beasiswa Longshan Tipe B (Juara 1) untuk Mahasiswa Internasional oleh Universitas Ilmu dan Teknologi Informasi Nanjing dari 2024 hingga 2025",
+          chinese:
+            "获奖者 南京信息工程大学2024年至2025年龙山B类留学生奖学金（一等奖）",
+        },
+        {
+          english:
+            "Awardee for The 4th Stories of China Retold in English Challenge for International Student by Jiangsu Government in Intermediate round, May 2024",
+          indonesian:
+            "Penerima Penghargaan dalam Lomba 'Stories of China Retold in English' ke-4 untuk Mahasiswa Internasional oleh Pemerintah Jiangsu pada babak menengah, Mei 2024",
+          chinese:
+            "2024 年 5 月江苏省第四届留学生英文讲述中国故事大赛中级赛获奖者",
+        },
+        {
+          english:
+            "Awardee NUIST Excellent Freshmen Scholarship (1st Prize) Scholarship for International Student by Nanjing University of Information Science and Technology from 2023 to 2024",
+          indonesian:
+            "Penerima Beasiswa Mahasiswa Baru Berprestasi NUIST (Juara 1) untuk Mahasiswa Internasional oleh Universitas Ilmu dan Teknologi Informasi Nanjing dari 2023 hingga 2024",
+          chinese:
+            "获奖者 南京信息工程大学优秀新生奖学金（一等奖） 南京信息工程大学留学生奖学金2023年至2024年",
+        },
+      ],
+    },
   ];
 
   const settings = {
-    dots: true,
+    className: "slider variable-width",
+    dots: false,
     infinite: false,
     speed: 500,
     slidesToShow: 4,
     slidesToScroll: 1,
     centerMode: false, // Nonaktifkan centerMode
-    arrows: true, // Nonaktifkan tombol next dan prev
-    beforeChange: (current, next) => setCurrentSlide(next),
+    arrows: false, // Nonaktifkan tombol next dan prev
+    // variableWidth: true,
+    beforeChange: (current, next) => {
+      console.log("Current slide:", current);
+      console.log("Next slide:", next);
+      setCurrentSlide(next);
+      console.log(sliderRef);
+    },
     responsive: [
       {
         breakpoint: 640,
@@ -213,6 +222,12 @@ const Lectures = ({ text }) => {
         breakpoint: 1024,
         settings: {
           slidesToShow: 2,
+        },
+      },
+      {
+        breakpoint: 1536,
+        settings: {
+          slidesToShow: 3,
         },
       },
     ],
@@ -228,28 +243,47 @@ const Lectures = ({ text }) => {
     setIsModalVisible(false);
   };
 
+  const handleNext = () => {
+    if (sliderRef) {
+      sliderRef.slickNext();
+    }
+  };
+
+  const handlePrev = () => {
+    if (sliderRef) {
+      sliderRef.slickPrev();
+    }
+  };
+
   return (
     <div
-      className="my-20 mx-20"
+      className="container py-11 px-5 mx-auto md:px-16"
     >
       <div className="mx-auto text-start">
-        <div className="w-full md:w-11/12 lg:w-10/12 xl:w-full mx-auto mb-5 px-5">
-          <h1 className="text-black text-4xl font-semibold">{text?.title}</h1>
+        <div className="w-full">
+          <h1 className="text-black text-2xl font-semibold md:text-3xl lg:text-[32px]">{text?.title}</h1>
         </div>
-        <div className="my-14 flex justify-center">
-          <div className="w-full md:w-11/12 lg:w-10/12 xl:w-full">
-            <Slider {...settings} className="">
+        <div className="mt-9">
+          <div className="home-slider w-full overflow-visible">
+            <Slider {...settings} ref={(slider) => sliderRef = slider}>
               {lecture.map((item, index) => (
-                <div key={index} className="px-4 h-full">
-                  <div className="flex flex-col bg-white rounded-xl w-full h-full shadow-lg text-center p-4 xl:p-6">
-                    <div className="relative w-10/12 h-fit mx-auto mb-4 flex justify-center items-center">
+                <div key={index} className="h-full">
+                  <div className="flex flex-col bg-white border border-[#D5DAE2] rounded-3xl w-full h-full text-center p-4 xl:p-6">
+                    <div className="relative w-48 mx-auto mb-4 flex justify-center items-center aspect-square rounded-full overflow-hidden">
                       <img
                         src={item.profile}
                         alt={item.name}
-                        className="relative shadow-lg p-[2px] w-full aspect-square object-cover rounded-full"
+                        className="relative w-full aspect-square object-cover"
                       />
                     </div>
-                    <div className="flex flex-col mt-6 justify-center items-center">
+                    <div className="flex flex-col mt-4 justify-center items-center">
+                      {item.cat_certificate ? (
+                        <span className="bg-[#3377FF] w-fit mx-auto py-1 px-4 mb-6 text-center text-white font-medium rounded-full text-sm md:text-base">
+                          {item.cat_certificate}
+                        </span>
+                      ) : (
+                        <div className="h-8 mb-6" />
+                      )}
                       <h2 className="text-lg font-semibold text-gray-800">
                         {item.name}
                       </h2>
@@ -262,13 +296,27 @@ const Lectures = ({ text }) => {
                         className="mt-4 flex items-center font-semibold justify-center w-full bg-yellow-400 text-black border-none hover:text-black rounded-2xl py-6"
                         onClick={() => showModal(item)}
                       >
-                        View More
+                        {langs ? 'View Achievement' : 'Lihat Prestasi'}
                       </Button>
                     </div>
                   </div>
                 </div>
               ))}
             </Slider>
+          </div>
+          <div className="flex flex-row gap-2 mt-4 items-center justify-center w-full sm:justify-start 2xl:hidden">
+            <button
+              className="border-2 border-[#8493AC] p-2 rounded-xl"
+              onClick={handlePrev}
+            >
+              <RiArrowLeftSLine className="text-[#1A1A1A]" />
+            </button>
+            <button
+              className="border-2 border-[#8493AC] p-2 rounded-xl"
+              onClick={handleNext}
+            >
+              <RiArrowRightSLine className="text-[#1A1A1A]" />
+            </button>
           </div>
         </div>
       </div>

@@ -149,13 +149,13 @@ const Gallery = ({ text }) => {
     }, []);
 
     return (
-        <div className="container mx-auto py-20 px-5">
+        <div className="w-full mx-auto py-16 pb-28 px-5 md:px-0">
             <div className="text-center flex flex-col items-center mb-10">
                 <h1 className="text-2xl w-full capitalize font-semibold text-[#02264A] md:text-3xl lg:w-9/12 lg:text-4xl">
                     {text.title}
                 </h1>
             </div>
-            <div className="h-full">
+            <div className="h-full max-h-[440px]">
                 <Slider {...settings} className="rounded-xl overflow-hidden h-full">
                     {galleryData.map((item, index) => (
                         <div
@@ -167,7 +167,7 @@ const Gallery = ({ text }) => {
                             <img
                                 src={item.image}
                                 alt={`Gallery ${index + 1}`}
-                                className="w-full h-[50vh] object-cover rounded-xl cursor-pointer"
+                                className="w-full h-[440px] object-cover rounded-xl cursor-pointer"
                                 draggable="false"
                             />
                             {activeSlide === index && (
