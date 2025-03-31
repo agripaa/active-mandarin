@@ -4,26 +4,11 @@ import { Bar } from 'react-chartjs-2';
 import DashboardLayout from '../Layouts/DashboardLayout';
 import { RiMoneyDollarCircleFill, RiFileTextFill, RiArrowLeftLine } from "react-icons/ri";
 import 'chart.js/auto';
+import { getDashboardData } from '../api/transaksi';
 import ProgramTable from '../Components/dashboard/DashboardProgramTable';
+import { formatRupiah } from '../utils/rupiahFormat';
 
 const years = [2025, 2026];
-
-const generateChartData = () => {
-    return {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-        datasets: [
-            {
-                label: '',
-                backgroundColor: '#3377FF',
-                borderColor: '#3377FF',
-                borderWidth: 1,
-                hoverBackgroundColor: '#3377FF',
-                borderRadius: 15,
-                data: Array.from({ length: 12 }, () => Math.floor(Math.random() * 100) + 1),
-            },
-        ],
-    };
-};
 
 const chartOptions = {
     plugins: {
@@ -43,20 +28,53 @@ const chartOptions = {
 
 const DashboardProgram = () => {
     const [selectedYear, setSelectedYear] = useState(years[0]);
-    const [chartData, setChartData] = useState(generateChartData());
-    const chartContainerRef = useRef(null);
-    const [chartHeight, setChartHeight] = useState(300); 
+    const [chartData, setChartData] = useState(null);
+    const [totalTransactions, setTotalTransactions] = useState(0);
+    const [totalRevenue, setTotalRevenue] = useState(0);
+    const [programList, setProgramList] = useState([]);
 
+    const chartContainerRef = useRef(null);
+    const [chartHeight, setChartHeight] = useState(300);
+    
     const handleYearChange = (year) => {
         setSelectedYear(year);
-        setChartData(generateChartData());
+        fetchDashboardData();
     };
-
     useEffect(() => {
         if (chartContainerRef.current) {
             setChartHeight(chartContainerRef.current.clientHeight);
         }
     }, [chartData]);
+
+    useEffect(() => {
+        fetchDashboardData();
+    }, []);
+
+    const fetchDashboardData = async () => {
+        try {
+            const response = await getDashboardData();
+            setTotalTransactions(response.programs.total_transactions);
+            setTotalRevenue(response.programs.total_revenue);
+            setProgramList(response.programs.data);
+            setChartData({
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                datasets: [{
+                    label: 'Jumlah Transaksi Produk',
+                    backgroundColor: '#3377FF',
+                    borderColor: '#3377FF',
+                    borderWidth: 1,
+                    hoverBackgroundColor: '#3377FF',
+                    borderRadius: 15,
+                    data: response.programs.transactions_by_month || new Array(12).fill(0),
+                }]
+            });
+        } catch (error) {
+            console.error("Error fetching product dashboard data:", error);
+        }
+    };
+
+    console.log(programList)
+
 
     return (
         <DashboardLayout>
@@ -92,7 +110,7 @@ const DashboardProgram = () => {
                                 className="rounded-xl overflow-hidden"
                                 style={{ height: '350px' }} 
                             >
-                                <Bar data={chartData} options={{ ...chartOptions, height: 350 }} />
+                                {chartData ? <Bar data={chartData} options={chartOptions} /> : "Belum Ada Transaksi"}
                             </motion.div>
                         </motion.div>
                     </div>
@@ -104,7 +122,7 @@ const DashboardProgram = () => {
                                 <RiMoneyDollarCircleFill className="text-4xl" />
                             </div>
                             <div className='w-full flex flex-col gap-2'>
-                                <h2 className='text-gray-900 text-3xl font-semibold'>Rp 10.000.000</h2>
+                                <h2 className='text-gray-900 text-3xl font-semibold'>{formatRupiah(totalRevenue)}</h2>
                                 <h4 className='text-gray-400'>Pendapatan</h4>
                             </div>
                         </div>
@@ -113,14 +131,14 @@ const DashboardProgram = () => {
                                 <RiFileTextFill className="text-4xl" />
                             </div>
                             <div className='w-full flex flex-col gap-2'>
-                                <h2 className='text-gray-900 text-3xl font-semibold'>123</h2>
+                                <h2 className='text-gray-900 text-3xl font-semibold'>{totalTransactions}</h2>
                                 <h4 className='text-gray-400'>Jumlah Transaksi</h4>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div className='flex w-full min-h-[480px] gap-4 p-4'>
-                    <ProgramTable />
+                    <ProgramTable dataProgram={programList} />
                 </div>
             </section>
         </DashboardLayout>

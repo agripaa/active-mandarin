@@ -1,91 +1,39 @@
-import React, { useState } from "react";
-import { Table, Button, Modal, Form, Input, InputNumber, Upload } from "antd";
-import { EditOutlined, DeleteOutlined, UploadOutlined } from "@ant-design/icons";
-import { RiSearchLine } from "react-icons/ri";
+import React, { useState, useEffect } from "react";
+import { Table, Button, Input } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import Swal from "sweetalert2";
+import CreateProductModal from "./modal/CreateProductModal";
+import EditProductModal from "./modal/EditProductModal";
+import { getBrandById, softDeleteBrand } from "../../api/brand"; 
+import { getDashboardData } from "../../api/transaksi";
+import { stripHtml } from "../../utils/stripHtml";
+import { truncateText } from "../../utils/truncateText";
+import { formatRupiah } from "../../utils/rupiahFormat";
 
-const initialData = [
-  {
-    key: "1",
-    image: "/assets/product2.png",
-    name: "E-Flashcard HSK 1",
-    normalPrice: "Rp 50.000",
-    promoPrice: "Rp 40.000",
-    totalSold: 17,
-    details: "Lorem ipsum d...",
-    commission: "Rp 10.000",
-  },
-  {
-    key: "2",
-    image: "/assets/product2.png",
-    name: "E-Flashcard HSK 2",
-    normalPrice: "Rp 50.000",
-    promoPrice: "Rp 40.000",
-    totalSold: 17,
-    details: "Lorem ipsum d...",
-    commission: "Rp 10.000",
-  },
-  {
-    key: "3",
-    image: "/assets/product2.png",
-    name: "Buku Kotak-Kotak",
-    normalPrice: "Rp 50.000",
-    promoPrice: "Rp 40.000",
-    totalSold: 17,
-    details: "Lorem ipsum d...",
-    commission: "Rp 10.000",
-  },
-];
-
-const ProductTable = () => {
-  const [data, setData] = useState(initialData);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+const ProductTable = ({ dataProduct }) => {
+  const [data, setData] = useState(dataProduct);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [searchText, setSearchText] = useState("");
-  const [form] = Form.useForm();
 
-  const showModal = (product) => {
-    Swal.fire({
-      title: "Edit Produk?",
-      text: "Apakah Anda yakin ingin mengedit produk ini?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonColor: "#FFCC00",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Ya, Edit",
-      cancelButtonText: "Batal",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        setEditingProduct(product);
-        form.setFieldsValue(product || {});
-        setIsModalOpen(true);
-      }
-    });
+  useEffect(() => {
+    setData(dataProduct || []);
+  }, [dataProduct]);
+
+  // 🔹 Handle Edit Modal
+  const showEditModal = async (productId) => {
+    try {
+      const { data } = await getBrandById(productId);
+      setEditingProduct(data);
+      setIsEditModalOpen(true);
+    } catch (error) {
+      console.error("Error fetching product details:", error);
+    }
   };
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
-    setEditingProduct(null);
-    form.resetFields();
-  };
-
-  const handleSave = () => {
-    form.validateFields().then((values) => {
-      if (editingProduct) {
-        setData((prevData) =>
-          prevData.map((item) =>
-            item.key === editingProduct.key ? { ...item, ...values } : item
-          )
-        );
-      } else {
-        const newKey = (data.length + 1).toString();
-        setData([...data, { key: newKey, image: "/assets/product2.png", ...values }]);
-      }
-      handleCancel();
-    });
-  };
-
-  const handleDelete = (key) => {
+  // 🔹 Handle Delete
+  const handleDelete = async (id) => {
     Swal.fire({
       title: "Hapus Produk?",
       text: "Produk ini akan dihapus secara permanen.",
@@ -93,56 +41,76 @@ const ProductTable = () => {
       showCancelButton: true,
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
-      confirmButtonText: "Ya, Hapus!",
+      confirmButtonText: "Ya, Hapus",
       cancelButtonText: "Batal",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        setData((prevData) => prevData.filter((item) => item.key !== key));
-        Swal.fire("Dihapus!", "Produk telah dihapus.", "success");
+        try {
+          await softDeleteBrand(id);
+          getDashboardData();
+          Swal.fire("Dihapus!", "Produk telah dihapus.", "success");
+        } catch (error) {
+          Swal.fire("Gagal!", "Terjadi kesalahan saat menghapus.", "error");
+        }
       }
     });
   };
 
+  console.log({data})
+
+  // 🔹 Filter Data berdasarkan input pencarian
   const filteredData = data.filter((item) =>
-    item.name.toLowerCase().includes(searchText.toLowerCase())
+    item.variant?.toLowerCase().includes(searchText.toLowerCase())
   );
 
+  console.log({filteredData})
+
+  // 🔹 Table Columns
   const columns = [
     {
       title: "Gambar",
-      dataIndex: "image",
-      key: "image",
-      render: (image) => <img src={image} alt="Product" className="w-18 h-12 rounded-md" />,
+      dataIndex: "brand_img",
+      key: "brand_img",
+      render: (brand_img) => (
+        <img src={`${process.env.REACT_APP_API_IMG}${brand_img}`} alt="Product" className="w-18 h-12 rounded-md" />
+      ),
     },
     {
       title: "Nama Produk",
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "variant",
+      key: "variant",
     },
     {
       title: "Harga Normal",
-      dataIndex: "normalPrice",
-      key: "normalPrice",
+      dataIndex: "price",
+      key: "price",
+      render: (price) => `Rp ${parseInt(price).toLocaleString()}`,
     },
     {
       title: "Harga Promo",
-      dataIndex: "promoPrice",
-      key: "promoPrice",
+      dataIndex: "discount_price",
+      key: "discount_price",
+      render: (price) => price ? `Rp ${parseInt(price).toLocaleString()}` : "-",
     },
     {
       title: "Total Terjual",
-      dataIndex: "totalSold",
-      key: "totalSold",
-    },
-    {
-      title: "Detail Produk",
-      dataIndex: "details",
-      key: "details",
+      dataIndex: "sold_sum",
+      key: "sold_sum",
     },
     {
       title: "Komisi",
       dataIndex: "commission",
       key: "commission",
+      render: (komisi) => komisi ? formatRupiah(komisi) : "-"
+    },
+    {
+      title: "Detail Produk",
+      dataIndex: "detail_brand",
+      key: "detail_brand",
+      render: (detail) => {
+        const cleanText = stripHtml(detail || "-");
+        return <span title={cleanText}>{truncateText(cleanText)}</span>;
+      },
     },
     {
       title: "Aksi",
@@ -151,12 +119,12 @@ const ProductTable = () => {
         <div className="flex gap-2">
           <Button
             icon={<EditOutlined />}
-            onClick={() => showModal(record)}
+            onClick={() => showEditModal(record.id)}
             className="bg-[#FFCC00] text-black"
           />
           <Button
             icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record.key)}
+            onClick={() => handleDelete(record.id)}
             className="bg-red-500 text-white"
           />
         </div>
@@ -165,70 +133,40 @@ const ProductTable = () => {
   ];
 
   return (
-    <div className="p-4 bg-white shadow-lg rounded-xl w-full">
-      <div className="flex justify-between w-full items-center mb-4">
-        <h4 className="text-lg font-semibold">List Produk</h4>
+    <>
+      <div className="p-4 bg-white shadow-lg rounded-xl w-full">
+        <div className="flex justify-between w-full items-center mb-4">
+          <h4 className="text-lg font-semibold">List Produk</h4>
           <Input
             placeholder="Cari Produk, cth: E-Flashcard"
-            prefix={<RiSearchLine className="text-2xl mr-2" />}
             onChange={(e) => setSearchText(e.target.value)}
             className="w-1/2 py-2 px-4"
           />
-        <div className="flex items-center gap-2">
           <Button
             className="text-black bg-[#FFCC00] border-none px-5 py-6 font-medium rounded-2xl"
-            onClick={() => showModal(null)}
+            onClick={() => setIsCreateModalOpen(true)}
           >
             Tambah Produk
           </Button>
         </div>
+        <Table columns={columns} dataSource={filteredData} pagination={false} />
       </div>
-      <Table columns={columns} dataSource={filteredData} pagination={false} />
 
-      <Modal
-        title={editingProduct ? "Ubah Produk" : "Tambahkan Produk"}
-        open={isModalOpen}
-        onCancel={handleCancel}
-        onOk={handleSave}
-        okText={editingProduct ? "Edit Produk" : "Tambah Produk"}
-        cancelButtonProps={{ style: { display: "none" } }} 
-        okButtonProps={{ style: { backgroundColor: "#FFCC00", border: "none", color: "black", fontWeight: "600", width: "100%", padding: "20px" } }} 
-      >
-        <Form form={form} layout="vertical">
-          <Form.Item name="name" label="Nama Produk" rules={[{ required: true, message: "Nama produk wajib diisi" }]}>
-            <Input placeholder="Masukkan Nama Produk" className="w-full py-2"/>
-          </Form.Item>
+      {/* Modal Create */}
+      <CreateProductModal
+        isModalOpen={isCreateModalOpen}
+        setIsModalOpen={setIsCreateModalOpen}
+        refreshData={getDashboardData}
+      />
 
-          <Form.Item name="normalPrice" label="Harga Normal" rules={[{ required: true, message: "Harga normal wajib diisi" }]}>
-            <InputNumber placeholder="Masukkan Harga Normal, cth: Rp. 50.000" className="w-full py-2" />
-          </Form.Item>
-
-          <Form.Item name="promoPrice" label="Harga Promo" rules={[{ required: true, message: "Harga promo wajib diisi" }]}>
-            <InputNumber placeholder="Masukkan Harga Promo, cth: Rp. 50.000" className="w-full py-2" />
-          </Form.Item>
-
-          <Form.Item name="commission" label="Komisi" rules={[{ required: true, message: "Komisi wajib diisi" }]}>
-            <InputNumber placeholder="Masukkan Komisi Affiliator, cth: Rp. 50.000" className="w-full py-2" />
-          </Form.Item>
-
-          <Form.Item name="details" label="Detail Produk">
-            <Input.TextArea rows={3} placeholder="Masukkan deskripsi produk" />
-          </Form.Item>
-
-          <Form.Item name="image" label="File Produk">
-            <Upload>
-              <Button icon={<UploadOutlined />}>Upload File</Button>
-            </Upload>
-          </Form.Item>
-
-          <Form.Item name="image" label="Upload Gambar">
-            <Upload>
-              <Button icon={<UploadOutlined />}>Upload Gambar</Button>
-            </Upload>
-          </Form.Item>
-        </Form>
-      </Modal>
-    </div>
+      {/* Modal Edit */}
+      <EditProductModal
+        isModalOpen={isEditModalOpen}
+        setIsModalOpen={setIsEditModalOpen}
+        productData={editingProduct}
+        refreshData={getDashboardData}
+      />
+    </>
   );
 };
 

@@ -4,25 +4,15 @@ import { Bar } from 'react-chartjs-2';
 import { RiMoneyDollarCircleFill, RiFileTextFill } from "react-icons/ri";
 import 'chart.js/auto';
 import { ListCard } from './ListCard';
+import {
+    getTransactionSummary,
+    getTransactionsByMonthAdmin,
+    getTopSellingProductsAndPrograms
+} from "../../api/transaksi";
 
-const years = [2025, 2026];
+import { formatRupiah } from '../../utils/rupiahFormat';
 
-const generateChartData = () => {
-    return {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-        datasets: [
-            {
-                label: '',
-                backgroundColor: '#3377FF',
-                borderColor: '#3377FF',
-                borderWidth: 1,
-                hoverBackgroundColor: '#3377FF',
-                borderRadius: 15,
-                data: Array.from({ length: 12 }, () => Math.floor(Math.random() * 100) + 1),
-            },
-        ],
-    };
-};
+const years = [2025];
 
 const chartOptions = {
     plugins: {
@@ -40,33 +30,23 @@ const chartOptions = {
     maintainAspectRatio: false, 
 };
 
-const topProducts = [
-    { rank: 1, name: "Comprehensive Book 1", sold: 76 },
-    { rank: 2, name: "E-Flashcard HSK 1", sold: 20 },
-    { rank: 3, name: "E-Flashcard HSK 2", sold: 10 },
-    { rank: 4, name: "Buku Kotak-Kotak Hanzi", sold: 9 },
-    { rank: 5, name: "Comprehensive Book 5", sold: 7 }
-];
-
-const topPrograms = [
-    { rank: 1, name: "Mandarin Juara", sold: 76 },
-    { rank: 2, name: "HSK 1", sold: 20 },
-    { rank: 3, name: "Mandarin Native", sold: 10 },
-    { rank: 4, name: "Kelas Umum Basic Mandarin", sold: 9 },
-    { rank: 5, name: "HSK 5", sold: 7 }
-];
-
 
 const DashboardAdmin = () => {
     const [selectedYear, setSelectedYear] = useState(years[0]);
-    const [chartData, setChartData] = useState(generateChartData());
+    const [chartData, setChartData] = useState(null);
+    const [totalTransactions, setTotalTransactions] = useState(0);
+    const [totalRevenue, setTotalRevenue] = useState(0);
+    const [topProducts, setTopProducts] = useState([]);
+    const [topPrograms, setTopPrograms] = useState([]);
+
     const chartContainerRef = useRef(null);
     const [chartHeight, setChartHeight] = useState(300); // Default height
 
     const handleYearChange = (year) => {
         setSelectedYear(year);
-        setChartData(generateChartData());
+        fetchTransactionsByMonth(); // Fetch data ulang jika tahun berubah
     };
+
 
     useEffect(() => {
         if (chartContainerRef.current) {
@@ -74,15 +54,63 @@ const DashboardAdmin = () => {
         }
     }, [chartData]);
 
+
+  useEffect(() => {
+    fetchTransactionSummary();
+    fetchTransactionsByMonth();
+    fetchTopSellingProductsAndPrograms();
+  }, []);
+
+  const fetchTransactionSummary = async () => {
+        try {
+            const response = await getTransactionSummary();
+            setTotalTransactions(response.total_transactions);
+            setTotalRevenue(response.total_revenue);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const fetchTransactionsByMonth = async () => {
+        try {
+            const response = await getTransactionsByMonthAdmin();
+            setChartData({
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                datasets: [
+                    {
+                        label: 'Jumlah Transaksi Sukses',
+                        backgroundColor: '#3377FF',
+                        borderColor: '#3377FF',
+                        borderWidth: 1,
+                        hoverBackgroundColor: '#3377FF',
+                        borderRadius: 15,
+                        data: response.transactions_by_month,
+                    },
+                ],
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const fetchTopSellingProductsAndPrograms = async () => {
+        try {
+            const response = await getTopSellingProductsAndPrograms();
+            setTopProducts(response.top_products);
+            setTopPrograms(response.top_programs);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     return (
         <section className='flex flex-col'>
             <div className="w-full flex p-4">
-                {/* CHART SECTION */}
                 <div className="w-[75%]">
                     <motion.div 
                         initial={{ opacity: 0, y: -20 }} 
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5 }}
+                        transition={{ duration: 1 }}
                         className="bg-white p-4 rounded-xl shadow-lg"
                         ref={chartContainerRef}
                     >
@@ -107,7 +135,7 @@ const DashboardAdmin = () => {
                             className="rounded-xl overflow-hidden"
                             style={{ height: '350px' }} 
                         >
-                            <Bar data={chartData} options={{ ...chartOptions, height: 350 }} />
+                            {chartData ? <Bar data={chartData} options={{ ...chartOptions, height: 350 }} /> : "Belum Ada Transaksi"}
                         </motion.div>
                     </motion.div>
                 </div>
@@ -118,7 +146,7 @@ const DashboardAdmin = () => {
                             <RiMoneyDollarCircleFill className="text-4xl" />
                         </div>
                         <div className='w-full flex flex-col gap-2'>
-                            <h2 className='text-gray-900 text-3xl font-semibold'>Rp 10.000.000</h2>
+                            <h2 className='text-gray-900 text-3xl font-semibold'>{formatRupiah(totalRevenue)}</h2>
                             <h4 className='text-gray-400'>Pendapatan</h4>
                         </div>
                     </div>
@@ -127,7 +155,7 @@ const DashboardAdmin = () => {
                             <RiFileTextFill className="text-4xl" />
                         </div>
                         <div className='w-full flex flex-col gap-2'>
-                            <h2 className='text-gray-900 text-3xl font-semibold'>123</h2>
+                            <h2 className='text-gray-900 text-3xl font-semibold'>{totalTransactions}</h2>
                             <h4 className='text-gray-400'>Jumlah Transaksi</h4>
                         </div>
                     </div>

@@ -9,5 +9,6 @@ router.post('/register/affiliate', authController.registerAffiliate);
 router.post('/login', authController.login);
 router.post('/verify-otp', authController.verifyOTP);
 router.get('/profile', middleware.authenticateUser, authController.getProfile);
+router.patch('/edit/profile', middleware.authenticateUser, authController.editUser);
 
 module.exports = router;

@@ -1,7 +1,6 @@
 const express = require('express');
 require("dotenv").config();
 const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload');
 const cors = require('cors');
 const router = require('./routes/index.js');
@@ -9,12 +8,13 @@ const { enableCORS, setSecurityHeaders } = require('./middleware/security.middle
 const { connectDB } = require('./config/Database.js');
 const { createFolderIfNotExists } = require('./helpers/createFolderIfNotExists.js')
 const path = require('path')
-const fs = require('fs');
 
 const app = express();
 
 app.use(fileUpload({
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB file size limit
+    useTempFiles: true,
+    tempFileDir: '/tmp/',
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
     abortOnLimit: true,
     responseOnLimit: "File size is too large!",
 }));
@@ -25,9 +25,17 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/public/brand', express.static(path.join(__dirname, 'public/brand')));
 app.use('/public/products', express.static(path.join(__dirname, 'public/products')));
+app.use('/public/proofs', express.static(path.join(__dirname, 'public/proofs')));
+app.use('/public/cv', express.static(path.join(__dirname, 'public/cv')));
+app.use('/public/proof_donation', express.static(path.join(__dirname, 'public/proof_donation')));
+app.use('/public/profile-user', express.static(path.join(__dirname, 'public/profile-user')));
 
 createFolderIfNotExists(path.join(__dirname, 'public/brand'));
 createFolderIfNotExists(path.join(__dirname, 'public/products'));
+createFolderIfNotExists(path.join(__dirname, 'public/proofs'));
+createFolderIfNotExists(path.join(__dirname, 'public/cv'));
+createFolderIfNotExists(path.join(__dirname, 'public/proof_donation'));
+createFolderIfNotExists(path.join(__dirname, 'public/profile-user'));
 
 app.use(cors({ credentials:true, origin:true }));
 

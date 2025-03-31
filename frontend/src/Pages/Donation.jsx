@@ -1,0 +1,140 @@
+import React, { useState, useEffect } from "react";
+import { Table, Input, Modal, Button, Spin } from "antd";
+import { RiSearchLine } from "react-icons/ri";
+import DashboardLayout from "../Layouts/DashboardLayout";
+import { getAllDonation } from "../api/donation";
+
+const Donation = () => {
+  const [searchText, setSearchText] = useState("");
+  const [selectedDonation, setSelectedDonation] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [donationData, setDonationData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null); // State untuk modal gambar
+
+  useEffect(() => {
+    fetchDonations();
+  }, []);
+
+  const fetchDonations = async () => {
+    setLoading(true);
+    try {
+      const response = await getAllDonation();
+      setDonationData(response.data);
+    } catch (error) {
+      console.error("Error fetching donation data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const showModal = (donation) => {
+    setSelectedDonation(donation);
+    setIsModalOpen(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    setSelectedDonation(null);
+  };
+
+  const showImagePreview = (imageSrc) => {
+    setImagePreview(imageSrc);
+  };
+
+  const closeImagePreview = () => {
+    setImagePreview(null);
+  };
+
+  const filteredData = donationData.filter((item) =>
+    item.nama.toLowerCase().includes(searchText.toLowerCase())
+  );
+
+  const columns = [
+    { title: "Nama", dataIndex: "nama", key: "nama" },
+    { title: "Email", dataIndex: "email", key: "email" },
+    {
+      title: "Aksi",
+      key: "action",
+      render: (_, record) => (
+        <span
+          className="text-blue-500 cursor-pointer"
+          onClick={() => showModal(record)}
+        >
+          Selengkapnya
+        </span>
+      ),
+    },
+  ];
+
+  return (
+    <DashboardLayout>
+      <section className="flex flex-col w-full p-4">
+        <div className="bg-white p-6 shadow-lg rounded-xl w-full">
+          <div className="flex justify-between items-center mb-4">
+            <h4 className="text-lg font-semibold">Data Donation</h4>
+            <Input
+              placeholder="Cari donatur..."
+              prefix={<RiSearchLine className="text-2xl mr-2" />}
+              onChange={(e) => setSearchText(e.target.value)}
+              className="w-96 py-2 px-4"
+            />
+          </div>
+
+          {loading ? (
+            <div className="text-center py-10">
+              <Spin size="large" />
+            </div>
+          ) : (
+            <Table columns={columns} dataSource={filteredData} pagination={false} rowKey="id" />
+          )}
+        </div>
+
+        {/* MODAL DETAIL DONASI */}
+        <Modal
+          title="Detail Donation"
+          open={isModalOpen}
+          onCancel={handleCancel}
+          footer={null}
+        >
+          {selectedDonation && (
+            <div className="flex flex-col gap-4">
+              <div>
+                <h4 className="text-gray-600">Nama</h4>
+                <div className="border rounded-md p-2">{selectedDonation.nama}</div>
+              </div>
+              <div>
+                <h4 className="text-gray-600">Email</h4>
+                <div className="border rounded-md p-2">{selectedDonation.email}</div>
+              </div>
+              <div>
+                <h4 className="text-gray-600">Metode Pembayaran</h4>
+                <div className="border rounded-md p-2">{selectedDonation.payment_method}</div>
+              </div>
+              <div>
+                <h4 className="text-gray-600">Bukti Transfer</h4>
+                <img
+                  src={`${process.env.REACT_APP_API_IMG}/public/proof_donation/${selectedDonation.proof_payment}`}
+                  className="w-20 h-20 cursor-pointer rounded-md border"
+                  onClick={() =>
+                    showImagePreview(
+                      `${process.env.REACT_APP_API_IMG}/public/proof_donation/${selectedDonation.proof_payment}`
+                    )
+                  }
+                  alt="Bukti Transfer"
+                />
+              </div>
+            </div>
+          )}
+        </Modal>
+
+        {/* MODAL PREVIEW GAMBAR */}
+        <Modal open={!!imagePreview} footer={null} onCancel={closeImagePreview} centered>
+          {imagePreview && <img src={imagePreview} alt="Preview" className="w-full" />}
+        </Modal>
+      </section>
+    </DashboardLayout>
+  );
+};
+
+export default Donation;

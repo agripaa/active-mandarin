@@ -1,30 +1,61 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Recruitment extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      // Jika ada relasi, tambahkan di sini
     }
   }
-  Recruitment.init({
-    nama: DataTypes.STRING,
-    email: DataTypes.STRING,
-    telepon: DataTypes.STRING,
-    domisili: DataTypes.STRING,
-    posisi: DataTypes.STRING,
-    portofolio: DataTypes.STRING,
-    cv_file: DataTypes.STRING,
-    isDelete: {type: DataTypes.BOOLEAN, defaultValue: false},
-  }, {
-    sequelize,
-    modelName: 'Recruitment',
-  });
+
+  Recruitment.init(
+    {
+      nama: {
+        type: DataTypes.STRING(125),
+        allowNull: false,
+      },
+      email: {
+        type: DataTypes.STRING(125),
+        allowNull: false,
+        validate: {
+          isEmail: true,
+        },
+      },
+      telepon: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+      },
+      domisili: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+      },
+      posisi: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      portofolio: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      cv_file: {
+        type: DataTypes.STRING(255),
+        allowNull: false,
+        validate: {
+          is: /(\.pdf)$/i, // Pastikan hanya file PDF
+        },
+      },
+      isDelete: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+    },
+    {
+      sequelize,
+      modelName: 'Recruitment',
+      tableName: 'recruitments',
+      timestamps: true,
+    }
+  );
+
   return Recruitment;
 };

@@ -1,51 +1,31 @@
-import React, { useState } from "react";
-import { Table, Input, Modal, Button, Checkbox, Upload } from "antd";
+import React, { useState, useEffect } from "react";
+import { Table, Input, Modal, Button, Spin } from "antd";
 import { RiSearchLine } from "react-icons/ri";
-import { UploadOutlined } from "@ant-design/icons";
 import DashboardLayout from "../Layouts/DashboardLayout";
-
-const recruitmentData = [
-  {
-    key: "1",
-    name: "Mohammed Hussein",
-    email: "nancy.brooks@gmail.com",
-    phone: "+62 (648) 958-7603",
-    domicile: "Kota Bekasi",
-  },
-  {
-    key: "2",
-    name: "Aleksander Nowak",
-    email: "woodworkers_51@gmail.com",
-    phone: "+62 (510) 432-8766",
-    domicile: "Kota Bogor",
-  },
-  {
-    key: "3",
-    name: "Cynthia Stewart",
-    email: "lisa.jones@gmail.com",
-    phone: "+62 (230) 161-1127",
-    domicile: "Kabupaten Bogor",
-  },
-  {
-    key: "4",
-    name: "Josh Stewart",
-    email: "ola.ad6b6y@gmail.com",
-    phone: "+62 (826) 587-5118",
-    domicile: "Kota Depok",
-  },
-  {
-    key: "5",
-    name: "仝思",
-    email: "jesús.rodriguez@gmail.com",
-    phone: "+62 (423) 937-3835",
-    domicile: "Surabaya",
-  },
-];
+import { getAllRecruitment } from "../api/recruitment";
 
 const Rekrutmen = () => {
   const [searchText, setSearchText] = useState("");
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [recruitmentData, setRecruitmentData] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchRecruitments();
+  }, []);
+
+  const fetchRecruitments = async () => {
+    setLoading(true);
+    try {
+      const response = await getAllRecruitment();
+      setRecruitmentData(response.data);
+    } catch (error) {
+      console.error("Error fetching recruitment data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const showModal = (candidate) => {
     setSelectedCandidate(candidate);
@@ -58,14 +38,14 @@ const Rekrutmen = () => {
   };
 
   const filteredData = recruitmentData.filter((item) =>
-    item.name.toLowerCase().includes(searchText.toLowerCase())
+    item.nama.toLowerCase().includes(searchText.toLowerCase())
   );
 
   const columns = [
-    { title: "Nama", dataIndex: "name", key: "name" },
+    { title: "Nama", dataIndex: "nama", key: "nama" },
     { title: "Email", dataIndex: "email", key: "email" },
-    { title: "No Telpon", dataIndex: "phone", key: "phone" },
-    { title: "Domisili", dataIndex: "domicile", key: "domicile" },
+    { title: "No Telpon", dataIndex: "telepon", key: "telepon" },
+    { title: "Domisili", dataIndex: "domisili", key: "domisili" },
     {
       title: "Aksi",
       key: "action",
@@ -87,18 +67,24 @@ const Rekrutmen = () => {
           <div className="flex justify-between items-center mb-4">
             <h4 className="text-lg font-semibold">Data Rekrutmen</h4>
             <Input
-              placeholder="Cari Affiliator, cth: Josh Steward"
+              placeholder="Cari kandidat..."
               prefix={<RiSearchLine className="text-2xl mr-2" />}
               onChange={(e) => setSearchText(e.target.value)}
               className="w-96 py-2 px-4"
             />
           </div>
 
-          <Table columns={columns} dataSource={filteredData} pagination={false} />
+          {loading ? (
+            <div className="text-center py-10">
+              <Spin size="large" />
+            </div>
+          ) : (
+            <Table columns={columns} dataSource={filteredData} pagination={false} rowKey="id" />
+          )}
         </div>
 
         <Modal
-          title="Data Rekrutmen"
+          title="Detail Rekrutmen"
           open={isModalOpen}
           onCancel={handleCancel}
           footer={null}
@@ -107,7 +93,7 @@ const Rekrutmen = () => {
             <div className="flex flex-col gap-4">
               <div>
                 <h4 className="text-gray-600">Nama</h4>
-                <div className="border rounded-md p-2">{selectedCandidate.name}</div>
+                <div className="border rounded-md p-2">{selectedCandidate.nama}</div>
               </div>
               <div>
                 <h4 className="text-gray-600">Email</h4>
@@ -115,42 +101,41 @@ const Rekrutmen = () => {
               </div>
               <div>
                 <h4 className="text-gray-600">No Telpon</h4>
-                <div className="border rounded-md p-2">{selectedCandidate.phone}</div>
+                <div className="border rounded-md p-2">{selectedCandidate.telepon}</div>
               </div>
               <div>
                 <h4 className="text-gray-600">Domisili</h4>
-                <div className="border rounded-md p-2">{selectedCandidate.domicile}</div>
+                <div className="border rounded-md p-2">{selectedCandidate.domisili}</div>
               </div>
-
               <div>
-                <h4 className="text-gray-600 font-semibold">Posisi Pekerjaan Yang Dilamar</h4>
-                <div className="flex flex-col gap-2">
-                  <Checkbox>Product Development Officer</Checkbox>
-                  <Checkbox>Project Officer</Checkbox>
-                  <Checkbox>Education Consultant Officer</Checkbox>
-                  <Checkbox>Finance Officer</Checkbox>
-                  <Checkbox>Mandarin Translator</Checkbox>
-                  <Checkbox>Mandarin Tutor</Checkbox>
-                  <Checkbox>Mandarin Interpreter</Checkbox>
-                </div>
+                <h4 className="text-gray-600">Posisi Dilamar</h4>
+                <div className="border rounded-md p-2">{selectedCandidate.posisi}</div>
               </div>
-
               <div>
-                <h4 className="text-gray-600 font-semibold">Portofolio/Sertifikasi (Jika Ada)</h4>
-                <Input
-                  placeholder="Kirim Dalam Bentuk Link, GDrive, One drive, dll"
-                  className="border rounded-md p-2"
-                />
+                <h4 className="text-gray-600">Portofolio</h4>
+                {selectedCandidate.portofolio ? (
+                  <a
+                    href={selectedCandidate.portofolio}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500"
+                  >
+                    Lihat Portofolio
+                  </a>
+                ) : (
+                  <div className="border rounded-md p-2 text-gray-400">Tidak ada</div>
+                )}
               </div>
-
-              <div className="flex flex-col">
-                <h4 className="text-gray-600 font-semibold">Upload CV/Resume</h4>
-                <div className="flex items-center mt-2 gap-2">
-                  <Upload>
-                    <Button icon={<UploadOutlined />}>Upload File</Button>
-                  </Upload>
-                  <a href="/cv-sample.pdf" className="text-blue-500">CV.pdf</a>
-                </div>
+              <div>
+                <h4 className="text-gray-600">CV/Resume</h4>
+                <a
+                  href={`${process.env.REACT_APP_API_IMG}/public/cv/${selectedCandidate.cv_file}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500"
+                >
+                  Lihat CV
+                </a>
               </div>
             </div>
           )}

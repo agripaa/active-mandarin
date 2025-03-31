@@ -1,11 +1,12 @@
 import { Col, Row, Space, Dropdown, Menu, Modal, Input, Button } from "antd";
 import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { GlobalOutlined } from "@ant-design/icons";
 import { RiArrowDownSFill, RiMenu3Line } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
+import Swal from "sweetalert2";
 import { HandleLang } from "../Store/Action/LangAction";
-import { loginUser, registerUser, verifyOTP } from "../api/auth";
+import { getProfile, loginUser, registerUser, verifyOTP } from "../api/auth";
 
 const Headers = ({ collapse, funcs }) => {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -19,52 +20,77 @@ const Headers = ({ collapse, funcs }) => {
     const [name, setName] = useState("");
     const [otpCode, setOtpCode] = useState("");
     const [userEmail, setUserEmail] = useState("");
+    const [user, setUser] = useState(null)
+    const navigate = useNavigate(); 
 
     const handleRegister = async () => {
-      try {
-        const response = await registerUser({ name, email, password });
-        if (response.data.status) {
-          setOpenSignUp(false);
-          setOpenSignIn(true);
-        } else {
-          alert(response.data.message);
+        try {
+          const response = await registerUser({ name, email, password });
+          if (response.data.status) {
+            setOpenSignUp(false);
+            setOpenSignIn(true);
+            Swal.fire("Registrasi Berhasil!", "Silakan login untuk melanjutkan.", "success");
+          } else {
+            Swal.fire("Error", response.data.message, "error");
+          }
+        } catch (error) {
+          Swal.fire("Error", error.response?.data?.message || "Registrasi gagal", "error");
         }
-      } catch (error) {
-        alert("Error: " + error.response?.data?.message || "Registration failed");
-      }
-    };
+      };
+  
 
     const handleLogin = async () => {
-      try {
-        const response = await loginUser({ email, password });
-        if (response.data.status) {
-          setOpenSignIn(false);
-          setOpenVerification(true);
-          setUserEmail(email);
-        } else {
-          alert(response.data.message);
+        try {
+          const response = await loginUser({ email, password });
+          if (response.data.status) {
+            setOpenSignIn(false);
+            setOpenVerification(true);
+            setUserEmail(email);
+          } else {
+            Swal.fire("Error", response.data.message, "error");
+          }
+        } catch (error) {
+          Swal.fire("Error", error.response?.data?.message || "Login gagal", "error");
         }
-      } catch (error) {
-        alert("Error: " + error.response?.data?.message || "Login failed");
-      }
-    };
+      };
     
     const handleVerifyOTP = async () => {
-      try {
-        const response = await verifyOTP({ email: userEmail, otp_code: otpCode });
-        if (response.data.status) {
-          localStorage.setItem("token", response.data.token); // Simpan token setelah login sukses
-          setOpenVerification(false);
-          alert("Login successful!");
-        } else {
-          alert(response.data.message);
+        try {
+          const response = await verifyOTP({ email: userEmail, otp_code: otpCode });
+          if (response.data.status) {
+            localStorage.setItem("token", response.data.token); // Simpan token setelah login sukses
+            setOpenVerification(false);
+            Swal.fire({
+              title: "Login Berhasil!",
+              text: "Anda akan diarahkan ke dashboard.",
+              icon: "success",
+              timer: 2000,
+              showConfirmButton: false
+            }).then(() => navigate("/dashboard"));
+          } else {
+            Swal.fire("Error", response.data.message, "error");
+          }
+        } catch (error) {
+          Swal.fire("Error", error.response?.data?.message || "OTP verifikasi gagal", "error");
         }
-      } catch (error) {
-        alert("Error: " + error.response?.data?.message || "OTP verification failed");
-      }
-    };
+      };
+  
+
+    const handleProfileUser = async () => {
+        try {
+            const response = await getProfile();
+            if (response.status) {
+                setUser(response.data);
+            }
+          } catch (error) {
+            console.error("Error: " + error.response?.data?.message || "Login failed");
+            setUser(null);
+          }
+    }
       
-      
+     useEffect(() => {
+        handleProfileUser();
+     }, []) 
 
     const dispatch = useDispatch();
     const { data, langs } = useSelector((state) => state.LangReducer);
@@ -99,17 +125,39 @@ const Headers = ({ collapse, funcs }) => {
         },
     ];
 
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        window.location.reload();
+    };
+
     const profileMenu = (
         <Menu className="w-48 shadow-md">
             <Menu.Item key="1">
-                <Link to="/dashboard">Dashboard</Link>
+                <div
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        navigate("/dashboard");
+                    }}
+                    className="cursor-pointer"
+                >
+                    Dashboard
+                </div>
             </Menu.Item>
             <Menu.Item key="2">
-                <button onClick={() => console.log("Logout...")}>Logout</button>
+                <div
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handleLogout();
+                    }}
+                    className="cursor-pointer"
+                >
+                    Logout
+                </div>
             </Menu.Item>
         </Menu>
     );
-
+    
+    
     return (
         <div className="sticky top-0 z-50">
             {/* Navbar */}
@@ -149,16 +197,18 @@ const Headers = ({ collapse, funcs }) => {
                             </Dropdown>
                         </Space>
                         
-                        {process.env.REACT_APP_LOGIN === "true" ? (
-                            <Dropdown overlay={profileMenu} trigger={["click"]} open={openProfileDropdown} onOpenChange={setOpenProfileDropdown}>
+                        {user ? (
+                            <Dropdown overlay={profileMenu} trigger={["click"]} onOpenChange={setOpenProfileDropdown}>
                                 <div className="flex items-center gap-4 font-medium cursor-pointer">
-                                    <h4 className="text-md lg:text-lg">Hallo, Dicka</h4>
+                                    <h4 className="text-md xl:text-lg">Hallo, {user.name}</h4>
                                     <div className="flex items-center">
-                                        <img src="/assets/profile-dummy.png" alt="" className="w-14 h-14 rounded-full mr-1" />
-                                        <RiArrowDownSFill size={25} className="cursor-pointer" />
+                                        <img src={`${user.profile_img ? `${process.env.REACT_APP_API_IMG}${user.profile_img}` : "/assets/profile-dummy.webp"}`} 
+                                            alt="" className="w-14 h-14 rounded-full mr-1 flex-shrink-0" />
+                                        <RiArrowDownSFill size={25} className="cursor-pointer flex-shrink-0" />
                                     </div>
                                 </div>
                             </Dropdown>
+
                         ) : (
                             <div className="flex items-center gap-4 font-medium">
                                 <button className="text-lg" onClick={() => setOpenSignUp(true)}>Daftar</button>
@@ -186,16 +236,18 @@ const Headers = ({ collapse, funcs }) => {
                                 </div>
                             </button>
                         </Dropdown>
-                        {process.env.REACT_APP_LOGIN === "true" ? (
-                            <Dropdown overlay={profileMenu} trigger={["click"]} open={openProfileDropdown} onOpenChange={setOpenProfileDropdown}>
+                        {user ? (
+                            <Dropdown overlay={profileMenu} trigger={["click"]} onOpenChange={setOpenProfileDropdown}>
                                 <div className="flex items-center gap-4 font-medium cursor-pointer">
-                                    <h4 className="text-md lg:text-lg">Hallo, Dicka</h4>
+                                    <h4 className="text-md xl:text-lg">Hallo, {user.name}</h4>
                                     <div className="flex items-center">
-                                        <img src="/assets/profile-dummy.png" alt="" className="w-14 h-14 rounded-full mr-1" />
-                                        <RiArrowDownSFill size={25} className="cursor-pointer" />
+                                        <img src={`${user.profile_img ? `${process.env.REACT_APP_API_IMG}${user.profile_img}` : "/assets/profile-dummy.webp"}`} 
+                                            alt="" className="w-14 h-14 rounded-full mr-1 flex-shrink-0" />
+                                        <RiArrowDownSFill size={25} className="cursor-pointer flex-shrink-0" />
                                     </div>
                                 </div>
                             </Dropdown>
+
                         ) : (
                             <div className="flex items-center gap-4 font-medium">
                                 <button className="text-lg" onClick={() => setOpenSignUp(true)}>Daftar</button>

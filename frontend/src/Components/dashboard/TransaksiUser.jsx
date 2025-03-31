@@ -1,68 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { getAllUserTransactions } from "../../api/user";
+import { Spin } from "antd";
+import { formatRupiah } from "../../utils/rupiahFormat";
+import { formatDate } from "../../utils/formatDate";
 
 const TransaksiUser = () => {
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 5;
+  const [totalPages, setTotalPages] = useState(1);
 
-  // Data transaksi dummy
-  const transactions = [
-    {
-      id: 1,
-      image: "/assets/product1.png",
-      item: "E-Flashcard HSK 1",
-      price: "Rp 50.000",
-      date: "25 Mar 2025",
-      commission: "Rp 10.000",
-      status: "Success",
-    },
-    {
-      id: 2,
-      image: "/assets/product1.png",
-      item: "Mandarin Juara",
-      price: "Rp 3.000.000",
-      date: "25 Mar 2025",
-      commission: "Rp 10.000",
-      status: "Canceled",
-    },
-    {
-      id: 3,
-      image: "/assets/product1.png",
-      item: "HSK 1",
-      price: "Rp 1.000.000",
-      date: "25 Mar 2025",
-      commission: "Rp 10.000",
-      status: "Process",
-    },
-    {
-      id: 4,
-      image: "/assets/product1.png",
-      item: "Kelas Umum Basic Mandarin",
-      price: "Rp 750.000",
-      date: "25 Mar 2025",
-      commission: "Rp 10.000",
-      status: "Success",
-    },
-    {
-      id: 5,
-      image: "/assets/product1.png",
-      item: "Buku Kotak-Kotak",
-      price: "Rp 50.000",
-      date: "25 Mar 2025",
-      commission: "Rp 10.000",
-      status: "Success",
-    },
-  ];
+  useEffect(() => {
+    fetchTransactions();
+  }, [currentPage]);
 
-  // Simulasi total halaman
-  const totalTransactions = 10;
-  const totalPages = Math.ceil(totalTransactions / pageSize);
+  const fetchTransactions = async () => {
+    try {
+      const response = await getAllUserTransactions(currentPage, pageSize);
+      setTransactions(response.data);
+      setTotalPages(response.total_pages);
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // Fungsi untuk mengganti halaman
   const goToPage = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
     }
   };
+
+  if (loading) {
+    return <Spin size="large" className="flex justify-center items-center h-screen" />;
+  }
 
   return (
       <div className="p-6 bg-gray-50 min-h-screen">
@@ -82,20 +55,24 @@ const TransaksiUser = () => {
               </tr>
             </thead>
             <tbody>
-              {transactions.map((transaction, index) => (
+              {transactions.length > 0 ? transactions.map((transaction, index) => (
                 <tr key={transaction.id} className="border-b">
                   <td className="p-3">
-                    <img src={transaction.image} alt={transaction.item} className="w-42 h-28 rounded-md" />
+                    <img src={transaction.brand_image ? `${process.env.REACT_APP_API_IMG}${transaction.brand_image}` : "/assets/product-default.png"} alt={transaction.item} className="w-42 h-28 rounded-md" />
                   </td>
                   <td className="p-3">{transaction.item}</td>
-                  <td className="p-3">{transaction.price}</td>
-                  <td className="p-3">{transaction.date}</td>
-                  <td className="p-3">{transaction.commission}</td>
-                  <td className={`p-3 font-semibold ${transaction.status === "Success" ? "text-green-500" : transaction.status === "Canceled" ? "text-red-500" : "text-yellow-500"}`}>
-                    {transaction.status}
+                  <td className="p-3">{transaction.discount_price ? formatRupiah(transaction.discount_price) : formatRupiah(transaction.price)}</td>
+                  <td className="p-3">{formatDate(transaction.transaction_date)}</td>
+                  <td className="p-3">{formatRupiah(transaction.commission) || "-"}</td>
+                  <td className={`p-3 font-semibold ${
+                    transaction.status_transaction === "success" ? "text-green-500" 
+                    : transaction.status_transaction === "cancel" ? "text-red-500" 
+                    : "text-yellow-500"
+                  }`}>
+                    {transaction.status_transaction}
                   </td>
                 </tr>
-              ))}
+              )) : <tr><td colSpan="6" className="p-4 text-center">Tidak ada transaksi ditemukan.</td></tr>}
             </tbody>
           </table>
         </div>

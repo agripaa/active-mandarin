@@ -18,6 +18,7 @@ import CatalogProduct from "../Pages/CatalogProduct";
 import DetailPage from "../Pages/DetailPage";
 import Checkout from "../Pages/Checkout";
 import Pembayaran from "../Pages/Pembayaran";
+import Donation from "../Pages/Donation";
 
 const Routings = () => {
     return(
@@ -40,6 +41,7 @@ const Routings = () => {
                 <Route path="/notifikasi" element={<Notifikasi/>}/>
                 <Route path="/affiliate" element={<Affiliate/>}/>
                 <Route path="/rekrutmen" element={<Rekrutmen/>}/>
+                <Route path="/donasi" element={<Donation/>}/>
                 <Route path="/profile" element={<Profile/>}/>
             </Routes>
         </BrowserRouter>

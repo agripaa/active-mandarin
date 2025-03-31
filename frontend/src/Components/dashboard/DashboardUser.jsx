@@ -1,32 +1,63 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { RiLink } from "react-icons/ri";
+import { getUserTransactionsByCategory } from "../../api/user";
+import { Spin } from "antd";
 
 const DashboardUser = () => {
+  const [programs, setPrograms] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchUserTransactions();
+  }, []);
+
+  const fetchUserTransactions = async () => {
+    try {
+      const programData = await getUserTransactionsByCategory("program");
+      const productData = await getUserTransactionsByCategory("product");
+      setPrograms(programData.data);
+      setProducts(productData.data);
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <Spin size="large" className="flex justify-center items-center h-screen" />;
+  }
+
   return (
       <div className="flex flex-col w-full min-h-screen p-6">
         {/* Program Saya */}
         <section className="mb-8 bg-white p-4 rounded-xl">
           <h2 className="text-xl font-semibold mb-4">Program Saya</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-            {[1, 2, 3, 4].map((_, index) => (
+            {programs.length > 0 ? programs.map((program, index) => (
               <div
                 key={index}
                 className="bg-white p-4 rounded-xl shadow-md flex flex-col items-start"
               >
                 <img
-                  src="/assets/class/1.png"
+                  src={program.brand_image ? `${process.env.REACT_APP_API_IMG}${program.brand_image}` : "/assets/product-default.png"}
                   alt="Program"
                   className="rounded-lg mb-4"
                 />
                 <div className="gap-2 flex flex-col w-full">
-                    <h3 className="md:text-lg text-2xl font-semibold">General Class HSK 2</h3>
-                    <p className="text-[#3377FF] flex items-center gap-2 text-sm"><RiLink /> Class Room</p>
+                    <h3 className="md:text-lg text-2xl font-semibold">{program.item}</h3>
+                    <p className="text-[#3377FF] flex items-center gap-2 text-sm">
+                        <RiLink /> <a href={program.link_classroom} target="_blank" rel="noopener noreferrer">Class Room</a>
+                    </p>
                     <button className="mt-3 w-40 bg-[#FFCC00] text-black px-3 py-3 rounded-xl">
                         Kerjakan Ujian
                     </button>
                 </div>
               </div>
-            ))}
+            )) : (<div>
+                  <p className="text-red-500">Tidak ada Program yang ditemukan.</p>
+                </div>)}
           </div>
         </section>
 
@@ -34,29 +65,28 @@ const DashboardUser = () => {
         <section className="bg-white p-4 rounded-xl">
           <h2 className="text-xl font-semibold mb-4">Produk Saya</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {[
-              { title: "E-Flashcard HSK 2", image: "/assets/product1.png" },
-              { title: "Buku Tulis Mandarin", image: "/assets/product2.png" },
-              { title: "E-Flashcard HSK 1", image: "/assets/product1.png" },
-              { title: "E-Flashcard HSK 1", image: "/assets/product1.png" },
-            ].map((product, index) => (
+            {products.length > 0 ? products.map((product, index) => (
               <div
                 key={index}
                 className="bg-white p-4 rounded-xl shadow-md flex flex-col items-start"
               >
                 <img
-                  src={product.image}
-                  alt={product.title}
+                  src={product.brand_image ? `${process.env.REACT_APP_API_IMG}${product.brand_image}` : "/assets/product-default.png"}
+                  alt={product.item}
                   className="rounded-lg mb-4"
                 />
                 <div className="gap-2 flex flex-col w-full">
-                    <h3 className="text-lg font-semibold">{product.title}</h3>
+                    <h3 className="text-lg font-semibold">{product.item}</h3>
                     <button className="mt-3 w-40 bg-[#FFCC00] text-black px-3 py-3 rounded-xl">
-                        Buka Produk
+                        <a href={process.env.REACT_APP_API_IMG + product.file_product} target="_blank" rel="noopener noreferrer">
+                          Buka Produk
+                        </a>
                     </button>
                 </div>
               </div>
-            ))}
+            )) :(<div>
+              <p className="text-red-500">Tidak ada Produk yang ditemukan.</p>
+            </div>)}
           </div>
         </section>
       </div>

@@ -11,11 +11,11 @@ export const ListCard = ({ title, data, link }) => {
                         <div className="flex items-center gap-3">
                             <span className={`text-lg font-semibold flex justify-center items-center w-10 h-10 rounded-full 
                                 ${index === 0 ? 'bg-[#FFF5CC] border border-[#FFCC00] text-black' : 'text-black'}`}>
-                                {item.rank}
+                                {index + 1}
                             </span>
                             <div>
-                                <h5 className="text-lg font-medium">{item.name}</h5>
-                                <p className="text-gray-500 text-sm">{item.sold} Terjual</p>
+                                <h5 className="text-lg font-medium">{item.name || "-"}</h5>
+                                <p className="text-gray-500 text-sm">{item.sold || "-"} Terjual</p>
                             </div>
                         </div>
                     </div>

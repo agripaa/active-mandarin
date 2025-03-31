@@ -7,8 +7,8 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       User.belongsTo(models.Role, { foreignKey: 'role_id' });
       User.belongsTo(models.AffiliateDetail, { foreignKey: 'detail_affiliate' });
-      User.hasMany(models.Transaction, { foreignKey: 'user_id' });
-      User.hasMany(models.Transaction, { foreignKey: 'affiliator_id' });
+      User.hasMany(models.Transaction, { foreignKey: 'user_id', as: 'User' });
+      User.hasMany(models.Transaction, { foreignKey: 'affiliator_id', as: 'Affiliator' });
     }
 
     // Fungsi untuk memvalidasi password saat login

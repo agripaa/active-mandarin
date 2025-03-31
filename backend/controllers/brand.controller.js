@@ -34,7 +34,7 @@ exports.createBrand = async (req, res) => {
         file_product = `/public/products/${productName}`;
       }
   
-      const { name_brand, price, detail_brand, link_classroom, commission, category_brand, variant, discount_price } = req.body;
+      const { turunan, price, detail_brand, link_classroom, commission, category_brand, variant, discount_price } = req.body;
 
       if (!category_brand) {
         return res.status(400).json({ status: false, message: "Category brand is required!" });
@@ -50,7 +50,7 @@ exports.createBrand = async (req, res) => {
         return res.status(400).json({ status: false, message: "Only image files are allowed for brand_img!" });
       }
   
-      const requiredFields = { name_brand, price, detail_brand, category_brand };
+      const requiredFields = { variant, turunan, price, detail_brand, category_brand, discount_price, commission };
       const missingFields = Object.keys(requiredFields).filter(key => !requiredFields[key]);
   
       if (missingFields.length > 0) {
@@ -62,7 +62,7 @@ exports.createBrand = async (req, res) => {
       }
   
       const newBrand = await Brand.create({
-        name_brand,
+        turunan,
         price,
         sold_sum: 0,
         detail_brand,
@@ -131,7 +131,7 @@ exports.updateBrand = async (req, res) => {
         file_product = `/public/products/${productName}`;
       }
   
-      const { name_brand, price, detail_brand, link_classroom, commission, category_brand, variant, discount_price } = req.body;
+      const { turunan, price, detail_brand, link_classroom, commission, category_brand, variant, discount_price } = req.body;
   
       if (category_brand) {
         const category_brand_lower = category_brand.toLowerCase();
@@ -143,7 +143,7 @@ exports.updateBrand = async (req, res) => {
       }
   
       await brand.update({
-        name_brand: name_brand || brand.name_brand,
+        turunan: turunan || brand.turunan,
         price: price || brand.price,
         detail_brand: detail_brand || brand.detail_brand,
         link_classroom: link_classroom || brand.link_classroom,

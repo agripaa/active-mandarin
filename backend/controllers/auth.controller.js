@@ -1,4 +1,6 @@
 const db = require('../models');
+const path = require('path');
+const fs = require('fs');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { generateOTP } = require('../helpers/otpHelper');
@@ -194,6 +196,72 @@ exports.getProfile = async (req, res) => {
 
     res.json({ status: true, data: user });
   } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.editUser = async (req, res) => {
+  const { userId } = req;
+  const { name, email, number, oldPassword, newPassword } = req.body;
+
+  try {
+    const user = await User.findOne({ where: { id: userId } });
+    if (!user) return res.status(404).json({ status: false, message: "User not found!" });
+
+    let profile_img = user.profile_img;
+
+    if (req.files && req.files.profile_img) {
+      const uploadedFile = req.files.profile_img;
+      const fileExt = path.extname(uploadedFile.name).toLowerCase();
+      const allowedExt = ['.png', '.jpg', '.webp', '.jpeg'];
+
+      if (!allowedExt.includes(fileExt)) {
+        return res.status(400).json({ error: 'Only PNG, JPG, WEBP, and JPEG files are allowed!' });
+      }
+
+      const fileName = `${Date.now()}_${uploadedFile.name}`;
+      const filePath = path.join(__dirname, '../public/profile-user', fileName);
+
+      await uploadedFile.mv(filePath);
+
+      if (user.profile_img) {
+        const oldFilePath = path.join(__dirname, '../', user.profile_img);
+        if (fs.existsSync(oldFilePath)) {
+          fs.unlinkSync(oldFilePath);
+        }
+      }
+
+      profile_img = `/public/profile-user/${fileName}`;
+    }
+
+    if (email && email !== user.email) {
+      const emailExists = await User.findOne({ where: { email } });
+      if (emailExists) {
+        return res.status(400).json({ error: 'Email is already in use!' });
+      }
+    }
+
+    // **Edit Password Logic**
+    if (oldPassword && newPassword) {
+      const passwordMatch = await bcrypt.compare(oldPassword, user.password);
+      if (!passwordMatch) {
+        return res.status(400).json({ error: "Old password is incorrect!" });
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await user.update({ password: hashedPassword });
+    }
+
+    await user.update({ name, email, number, profile_img });
+
+    res.status(200).json({
+      status: true,
+      message: "User updated successfully",
+      data: { id: user.id, name: user.name, number: user.number, email: user.email, profile_img }
+    });
+
+  } catch (error) {
+    console.error("🔥 ERROR:", error);
     res.status(500).json({ error: error.message });
   }
 };
