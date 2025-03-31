@@ -12,7 +12,7 @@ import {
 
 import { formatRupiah } from '../../utils/rupiahFormat';
 
-const years = [2025];
+const years = [2025, 2026];
 
 const chartOptions = {
     plugins: {

@@ -1,17 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Table, Input, Pagination, Spin } from "antd";
 import { Bar } from "react-chartjs-2";
+import { motion } from 'framer-motion';
 import { RiSearchLine, RiMoneyDollarCircleFill, RiFileTextFill } from "react-icons/ri";
 import DashboardLayout from "../Layouts/DashboardLayout";
 import { getAffiliatorStatusTrue, getTotalAffiliateRevenue } from "../api/affiliate";
 import "chart.js/auto";
 
+const years = [2025, 2026];
+
 const Affiliate = () => {
+    const [selectedYear, setSelectedYear] = useState(years[0]);
     const [affiliators, setAffiliators] = useState([]);
     const [totalCommission, setTotalCommission] = useState(0);
     const [monthlyRevenue, setMonthlyRevenue] = useState(new Array(12).fill(0));
     const [loading, setLoading] = useState(false);
     const [searchText, setSearchText] = useState("");
+    const chartContainerRef = useRef(null);
+    const [chartHeight, setChartHeight] = useState(300); // Default height
     const [totalItems, setTotalItems] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 10;
@@ -20,6 +26,17 @@ const Affiliate = () => {
         fetchAffiliators(currentPage);
         fetchAffiliateRevenue();
     }, []);
+
+    const handleYearChange = (year) => {
+        setSelectedYear(year);
+        fetchAffiliateRevenue(); // Fetch data ulang jika tahun berubah
+    };
+
+        useEffect(() => {
+            if (chartContainerRef.current) {
+                setChartHeight(chartContainerRef.current.clientHeight);
+            }
+        }, [monthlyRevenue]);
 
     const fetchAffiliators = async (page) => {
         setLoading(true);
@@ -100,16 +117,41 @@ const Affiliate = () => {
                 <div className="w-full flex my-4">
                     {/* CHART SECTION */}
                     <div className="w-[75%]">
-                        <div className="bg-white p-4 rounded-xl shadow-lg">
-                            <h2 className="text-lg font-semibold mb-4">Pendapatan Bulanan</h2>
-                            <div style={{ height: "350px" }}>
-                                <Bar data={chartData} options={chartOptions} />
-                            </div>
+                    <motion.div 
+                        initial={{ opacity: 0, y: -20 }} 
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 1 }}
+                        className="bg-white p-4 rounded-xl shadow-lg"
+                        ref={chartContainerRef}
+                    >
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-lg font-semibold">Performa Pembelian</h2>
+                            <select 
+                                className="border-none p-2 rounded-md text-sm"
+                                onChange={(e) => handleYearChange(parseInt(e.target.value))}
+                                value={selectedYear}
+                            >
+                                {years.map((year) => (
+                                    <option key={year} value={year}>{year}</option>
+                                ))}
+                            </select>
                         </div>
+                        
+                        <motion.div
+                            key={selectedYear}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5 }}
+                            className="rounded-xl overflow-hidden"
+                            style={{ height: '350px' }} 
+                        >
+                            {chartData ? <Bar data={chartData} options={{ ...chartOptions, height: 350 }} /> : "Belum Ada Transaksi"}
+                        </motion.div>
+                    </motion.div>
                     </div>
 
                     {/* RIGHT CARD SECTION */}
-                    <div className="flex flex-col w-[25%] gap-4 ml-4">
+                    <div className='flex flex-col w-[25%] gap-4 ml-4' style={{ height: `${chartHeight}px` }}>
                         <div className="flex flex-col rounded-xl bg-white px-4 shadow-lg flex-1 justify-center gap-4">
                             <div className="flex items-center justify-center bg-[#F9CA24] text-white rounded-full w-14 h-14">
                                 <RiMoneyDollarCircleFill className="text-4xl" />

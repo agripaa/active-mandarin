@@ -50,7 +50,7 @@ exports.createBrand = async (req, res) => {
         return res.status(400).json({ status: false, message: "Only image files are allowed for brand_img!" });
       }
   
-      const requiredFields = { variant, turunan, price, detail_brand, category_brand, discount_price, commission };
+      const requiredFields = { variant, turunan, price, detail_brand, category_brand, commission };
       const missingFields = Object.keys(requiredFields).filter(key => !requiredFields[key]);
   
       if (missingFields.length > 0) {

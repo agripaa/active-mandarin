@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Form, Input, InputNumber, Upload, Button } from "antd";
+import { Modal, Form, Input, InputNumber, Upload, Button, Select } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import Swal from "sweetalert2";
 import axios from "axios";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; 
+
+const turunanOptions = [
+  "Non Degree (Kelas Bahasa di China)",
+  "Degree",
+  "Mentor Scholarship",
+  "Kelas HSK",
+  "Premium Mandarin Learning"
+];
 
 const EditProgramModal = ({ isModalOpen, setIsModalOpen, programData, refreshData }) => {
   const [form] = Form.useForm();
@@ -109,8 +117,15 @@ const EditProgramModal = ({ isModalOpen, setIsModalOpen, programData, refreshDat
           <Input placeholder="Masukkan Nama Program" className="w-full py-2" />
         </Form.Item>
 
+        {/* Turunan Program sebagai Select Option */}
         <Form.Item name="turunan" label="Turunan Program" rules={[{ required: true, message: "Turunan program wajib diisi!" }]}>
-          <Input placeholder="Masukkan Turunan Program" className="w-full py-2" />
+          <Select placeholder="Pilih Turunan Program" className="w-full">
+            {turunanOptions.map((option) => (
+              <Select.Option key={option} value={option}>
+                {option}
+              </Select.Option>
+            ))}
+          </Select>
         </Form.Item>
 
         <Form.Item name="price" label="Harga Normal" rules={[{ required: true, message: "Harga normal wajib diisi!" }]}>

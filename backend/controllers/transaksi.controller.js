@@ -426,7 +426,7 @@ exports.getAllTransactions = async (req, res) => {
 
         const programList = await Brand.findAll({
             where: { category_brand: "program", isDelete: false },
-            attributes: ['id', 'variant', 'turunan', 'price', 'discount_price', 'sold_sum', 'brand_img', 'detail_brand']
+            attributes: ['id', 'variant', 'turunan', 'price', 'discount_price', 'sold_sum', 'brand_img', 'detail_brand', 'commission']
         });
 
         res.json({

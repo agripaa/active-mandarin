@@ -73,7 +73,7 @@ const DashboardProgram = () => {
         }
     };
 
-    console.log(programList)
+    console.log({programList})
 
 
     return (

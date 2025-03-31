@@ -1,10 +1,17 @@
 import React, { useState } from "react";
-import { Modal, Form, Input, InputNumber, Upload, Button } from "antd";
+import { Modal, Form, Input, InputNumber, Upload, Button, Select } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import Swal from "sweetalert2";
 import axios from "axios";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+
+const turunanOptions = [
+  "Comprehensive Chinese Book",
+  "E-Flashcard/HSK",
+  "Buku Tulis Hanzi",
+  "Buku Panduan",
+];
 
 const CreateProductModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
   const [form] = Form.useForm();
@@ -95,7 +102,13 @@ const CreateProductModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
         </Form.Item>
 
         <Form.Item name="turunan" label="Turunan Produk" rules={[{ required: true, message: "Nama produk wajib diisi!" }]}>
-          <Input placeholder="Masukkan Turunan Produk" className="py-3" />
+          <Select placeholder="Pilih Turunan Product" className="w-full">
+            {turunanOptions.map((option) => (
+              <Select.Option key={option} value={option}>
+                {option}
+              </Select.Option>
+            ))}
+          </Select>
         </Form.Item>
 
         <Form.Item name="price" label="Harga Normal" rules={[{ required: true, message: "Harga normal wajib diisi!" }]}>

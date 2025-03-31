@@ -68,8 +68,10 @@ const ProgramTable = ({ dataProgram }) => {
 
   // **🔹 Filter Data**
   const filteredData = data.filter((item) =>
-    item.turunan?.toLowerCase().includes(searchText.toLowerCase())
+    item.variant?.toLowerCase().includes(searchText.toLowerCase())
   );
+
+  console.log({filteredData})
 
   // **🔹 Table Columns**
   const columns = [
@@ -112,7 +114,7 @@ const ProgramTable = ({ dataProgram }) => {
       title: "Komisi",
       dataIndex: "commission",
       key: "commission",
-      render: (komisi) => komisi ? formatRupiah(komisi) : "-"
+      render: (komisi) => (komisi ? formatRupiah(komisi) : "-")
     },
     {
       title: "Detail Program",
