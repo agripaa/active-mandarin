@@ -3,6 +3,7 @@ import DashboardLayout from "../Layouts/DashboardLayout";
 import TransaksiAdmin from "../Components/dashboard/TransaksiAdmin";
 import TransaksiUser from "../Components/dashboard/TransaksiUser";
 import { getProfile } from "../api/auth";
+import { Spin } from "antd";
 
 const Transaksi = () => {
     const [user, setUser] = useState(null);
@@ -26,7 +27,13 @@ const Transaksi = () => {
     }, []);
 
     if (loading) {
-        return <DashboardLayout><p>Loading...</p></DashboardLayout>;
+        return (
+            <DashboardLayout>
+                <div className="flex justify-center items-center h-[80vh]">
+                    <Spin size="large" />
+                </div>
+            </DashboardLayout>
+        );
     }
 
     return (

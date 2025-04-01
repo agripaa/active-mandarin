@@ -72,7 +72,7 @@ const TransaksiUser = () => {
                     {transaction.status_transaction}
                   </td>
                 </tr>
-              )) : <tr><td colSpan="6" className="p-4 text-center">Tidak ada transaksi ditemukan.</td></tr>}
+              )) : <tr><td colSpan="6" className="p-4 text-center">Anda Belum Melakukan Transaksi!.</td></tr>}
             </tbody>
           </table>
         </div>

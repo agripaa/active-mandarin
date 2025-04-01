@@ -3,16 +3,19 @@ import Mainlayouts from "../Layouts/MainLayouts";
 import { Col, Row } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { getPost } from "../Store/Action/getAllDatas";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { url } from "../Store/Config/url";
 
 const Event = () => {
     const { data, langs } = useSelector(state => state.LangReducer)
     const { post } = useSelector(state => state.postReducer)
     const dispatch = useDispatch()
+    const navigate = useNavigate();
+
     const text = langs ? data?.english : data?.indonesia
     useEffect(() => {
-        dispatch(getPost())
+        dispatch(getPost());
+        navigate('/', {replace:true});
     }, [dispatch])
     return(
         <Mainlayouts>

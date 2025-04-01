@@ -86,27 +86,6 @@ const Testimony = ({ text }) => {
 
   const translate = langs ? testimonies?.english : testimonies?.indonesia;
 
-  const settings = {
-    dots: false,
-    infinite: true,
-    slidesToShow: 2,
-    slidesToScroll: 1,
-    autoplay: true,
-    speed: 4000,
-    autoplaySpeed: 0,
-    arrows: false,
-    centerPadding: "60px",
-    cssEase: "linear",
-    responsive: [
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 1,
-        },
-      },
-    ],
-  };
-
   return (
     <div
       className="bg-[#02264A]"

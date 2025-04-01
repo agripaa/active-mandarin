@@ -10,5 +10,8 @@ router.post('/login', authController.login);
 router.post('/verify-otp', authController.verifyOTP);
 router.get('/profile', middleware.authenticateUser, authController.getProfile);
 router.patch('/edit/profile', middleware.authenticateUser, authController.editUser);
+router.patch('/handle-forgot', authController.forgotPassword);
+router.patch('/change-password', authController.changePassword);
+router.patch('/resend-otp', authController.resendOTPCode);
 
 module.exports = router;

@@ -5,10 +5,12 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { RiArrowLeftLine } from "react-icons/ri";
 import { getBrandById, getBrandCategoryTurunan } from "../api/brand";
 import { formatRupiah } from "../utils/rupiahFormat";
+import { Spin } from "antd";
 
 const DetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
   const [brandData, setBrandData] = useState({});
   const [similarData, setSimilarData] = useState([]);
   const [showFullDesc, setShowFullDesc] = useState(false);
@@ -25,6 +27,9 @@ const DetailPage = () => {
       setBrandData(response.data);
     } catch (error) {
       console.error(error);
+      navigate("/", {replace: true})
+    } finally{
+      setLoading(false)
     }
   };
 
@@ -33,24 +38,38 @@ const DetailPage = () => {
       if (!brandData.category_brand || !brandData.turunan) return;
 
       const response = await getBrandCategoryTurunan(brandData.category_brand, brandData.turunan);
-      // ❌ Filter produk yang memiliki id yang sama
       const filteredData = response.data.filter((item) => item.id !== parseInt(id));
 
       setSimilarData(filteredData);
     } catch (error) {
       console.error(error);
+      if(error.status == 400 || error.status == 403) {
+        navigate("/", {replace: true})
+        return;
+      }
     }
   };
 
+  
   useEffect(() => {
     fetchBrand();
   }, [id]);
-
+  
   useEffect(() => {
     if (brandData.category_brand && brandData.turunan) {
       fetchSimilarBrand();
     }
   }, [brandData]);
+  
+  if (loading) {
+    return (
+        <Mainlayouts>
+            <div className="flex justify-center items-center h-[80vh]">
+                <Spin size="large" />
+            </div>
+        </Mainlayouts>
+    );
+  }
 
   const MAX_LENGTH = 200;
   const detailBrandText = brandData.detail_brand || "";
@@ -59,9 +78,9 @@ const DetailPage = () => {
     <Mainlayouts>
       <div className="container mx-auto px-6 md:px-12 lg:px-20 py-10">
         {/* Kembali */}
-        <Link to="/products" className="text-[#3377FF] text-lg font-medium flex gap-2 items-center mb-6">
+        <button onClick={() => navigate(-1)} className="text-[#3377FF] text-lg font-medium flex gap-2 items-center mb-6">
           <RiArrowLeftLine /> Kembali
-        </Link>
+        </button>
 
         <div className="grid grid-cols-1 md:flex md:justify-between items-start gap-6">
           {/* Detail Produk */}

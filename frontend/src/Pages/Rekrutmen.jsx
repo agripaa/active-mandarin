@@ -60,6 +60,16 @@ const Rekrutmen = () => {
     },
   ];
 
+  if (loading) {
+    return (
+            <DashboardLayout>
+                <div className="flex justify-center items-center h-[80vh]">
+                    <Spin size="large" />
+                </div>
+            </DashboardLayout>
+        );
+    }
+
   return (
     <DashboardLayout>
       <section className="flex flex-col w-full p-4">
@@ -73,14 +83,7 @@ const Rekrutmen = () => {
               className="w-96 py-2 px-4"
             />
           </div>
-
-          {loading ? (
-            <div className="text-center py-10">
-              <Spin size="large" />
-            </div>
-          ) : (
             <Table columns={columns} dataSource={filteredData} pagination={false} rowKey="id" />
-          )}
         </div>
 
         <Modal

@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { generateOTP } = require('../helpers/otpHelper');
 const { generateUniqueReveralCode } = require('../helpers/generateReveralCode');
+const { sendLinkForgotPassword } = require('../helpers/sendEmail');
 require('dotenv').config();
 
 const { User, OTP, Role, AffiliateDetail } = db;
@@ -63,7 +64,7 @@ exports.registerAffiliate = async (req, res) => {
   try {
     const { name, email, type_affiliate, number, reason, platform, know_program } = req.body;
 
-    // Validasi field yang kosong
+    
     const requiredFields = { name, email, type_affiliate, number, reason, platform, know_program };
     const missingFields = Object.keys(requiredFields).filter(key => !requiredFields[key]);
 
@@ -75,20 +76,20 @@ exports.registerAffiliate = async (req, res) => {
       });
     }
     
-    // Cek apakah email sudah ada
+    
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ status: false, message: 'Email already exists' });
     }
 
-    // Ambil role affiliator
+    
     const roleUser = await Role.findOne({ where: { role_name: "affiliator" } });
     if (!roleUser) return res.status(400).json({ status: false, message: 'Role affiliator is not defined!' });
 
-    // Generate unique referral code
+    
     const reveral_code = await generateUniqueReveralCode();
 
-    // Buat data affiliate detail
+    
     const newAffiliateDetail = await AffiliateDetail.create({
       type_affiliate,
       reason,
@@ -96,7 +97,7 @@ exports.registerAffiliate = async (req, res) => {
       know_program
     });
 
-    // Buat user baru sebagai affiliator
+    
     const newUser = await User.create({
       name,
       email,
@@ -122,7 +123,6 @@ exports.login = async (req, res) => {
     if (!user) {
       return res.status(401).json({ status: false, message: 'Email not registered!'});
     }
-
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
@@ -241,7 +241,6 @@ exports.editUser = async (req, res) => {
       }
     }
 
-    // **Edit Password Logic**
     if (oldPassword && newPassword) {
       const passwordMatch = await bcrypt.compare(oldPassword, user.password);
       if (!passwordMatch) {
@@ -265,3 +264,83 @@ exports.editUser = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(404).json({ status: false, message: "Email tidak ditemukan!" });
+    }
+
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const resetLink = `${process.env.FRONTEND_URL}/?reset_password_token=${token}`;
+
+    await sendLinkForgotPassword(email, user, resetLink);
+
+    res.status(200).json({ status: true, message: "Link reset password telah dikirim ke email Anda." });
+  } catch (error) {
+    console.error("🔥 ERROR:", error);
+    res.status(500).json({ status: false, error: error.message });
+  }
+};
+
+exports.changePassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  try {
+    if (!token || !newPassword) {
+      return res.status(400).json({ status: false, message: "Token dan password baru diperlukan" });
+    }
+
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.id;
+
+    const user = await User.findOne({ where: { id: userId } });
+    if (!user) {
+      return res.status(404).json({ status: false, message: "User tidak ditemukan!" });
+    }
+
+    
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    
+    await user.update({ password: hashedPassword });
+
+    return res.status(200).json({ status: true, message: "Password berhasil diubah!" });
+  } catch (error) {
+    console.error("🔥 ERROR:", error);
+
+    if (error.name === "TokenExpiredError") {
+      return res.status(400).json({ status: false, message: "Token sudah kadaluarsa!" });
+    }
+
+    if (error.name === "JsonWebTokenError") {
+      return res.status(400).json({ status: false, message: "Token tidak valid!" });
+    }
+
+    res.status(500).json({ status: false, error: error.message });
+  }
+};
+
+exports.resendOTPCode = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(401).json({ status: false, message: 'Email not registered!'});
+    }
+
+    const otpResponse = await generateOTP(user.id, email);
+    if (!otpResponse.success) {
+      return res.status(500).json({ status: false, message: "Failed to generate OTP" });
+    }
+
+    res.json({ status: true, message: 'OTP resent to email. Please verify to complete login.' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}

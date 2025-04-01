@@ -1,4 +1,4 @@
-import { Col, Row, Space, Dropdown, Menu, Modal, Input, Button } from "antd";
+import { Col, Row, Space, Dropdown, Menu, Modal, Input, Button, Spin} from "antd";
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { GlobalOutlined } from "@ant-design/icons";
@@ -6,7 +6,7 @@ import { RiArrowDownSFill, RiMenu3Line } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { HandleLang } from "../Store/Action/LangAction";
-import { getProfile, loginUser, registerUser, verifyOTP } from "../api/auth";
+import { changePassword, getProfile, handleForgot, loginUser, registerUser, resendOTPCode, verifyOTP } from "../api/auth";
 
 const Headers = ({ collapse, funcs }) => {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -23,7 +23,62 @@ const Headers = ({ collapse, funcs }) => {
     const [user, setUser] = useState(null)
     const navigate = useNavigate(); 
 
+    const [openHandleResetPassword, setOpenHandleResetPassword] = useState(false);
+    const [resetEmail, setResetEmail] = useState("");
+
+    const [openResetPassword, setOpenResetPassword] = useState(false);
+    const [resetToken, setResetToken] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+
+    const [loadingLogin, setLoadingLogin] = useState(false);
+    const [loadingRegister, setLoadingRegister] = useState(false);
+    const [loadingReset, setLoadingReset] = useState(false);
+    const [loadingChangePass, setLoadingChangePass] = useState(false);
+    const [loadingOTP, setLoadingOTP] = useState(false);
+    const [loadingResendOTP, setLoadingResendOTP] = useState(false);
+
+
+    const handleResetPassword = async () => {
+        setLoadingReset(true);
+
+        try {
+            const res = await handleForgot(resetEmail);
+            
+            if (res.status) {
+                Swal.fire("Berhasil!", "Silahkan Untuk Check Email Anda!", "success");
+                setOpenHandleResetPassword(false);
+            } else {
+                Swal.fire("Error", res.data.message, "error");
+            }
+        } catch (err) {
+            Swal.fire("Error", err.response?.data?.message || "Gagal send token reset password", "error");
+        } finally{
+            setLoadingReset(false);
+        }
+    };
+
+    const handleChangePassword = async () => {
+        setLoadingChangePass(true)
+        try {
+            const res = await changePassword(resetToken, newPassword);
+            
+            if (res.status) {
+                Swal.fire("Berhasil!", "Password Anda Berhasil Di ubah!", "success");
+                window.history.replaceState(null, "", window.location.pathname);
+                setOpenResetPassword(false);
+                setOpenSignIn(true)
+            } else {
+                Swal.fire("Error", res.data.message, "error");
+            }
+        } catch (err) {
+            Swal.fire("Error", err.response?.data?.message || "Gagal send token reset password", "error");
+        } finally{
+            setLoadingChangePass(false);
+        }
+    };
+
     const handleRegister = async () => {
+        setLoadingRegister(true)
         try {
           const response = await registerUser({ name, email, password });
           if (response.data.status) {
@@ -35,30 +90,51 @@ const Headers = ({ collapse, funcs }) => {
           }
         } catch (error) {
           Swal.fire("Error", error.response?.data?.message || "Registrasi gagal", "error");
+        } finally{
+            setLoadingRegister(false)
         }
-      };
+    };
+
+    const handleResendOTPCode = async () => {
+        setLoadingResendOTP(true);
+        try {
+            const res = await resendOTPCode(userEmail);
+            
+            if(res.status) {
+                Swal.fire("OTP Berhasil Dikirim!", "Silakan Check Email Anda!.", "success");
+            }
+        } catch (error) {
+          Swal.fire("Error", error.response?.data?.message || "OTP Gagal Dikirim!", "error");
+        } finally{
+            setLoadingResendOTP(false)
+        }
+    }
   
 
     const handleLogin = async () => {
+        setLoadingLogin(true);
         try {
-          const response = await loginUser({ email, password });
-          if (response.data.status) {
-            setOpenSignIn(false);
-            setOpenVerification(true);
-            setUserEmail(email);
-          } else {
-            Swal.fire("Error", response.data.message, "error");
-          }
+            const response = await loginUser({ email, password });
+            if (response.data.status) {
+                setOpenSignIn(false);
+                setOpenVerification(true);
+                setUserEmail(email);
+            } else {
+                Swal.fire("Error", response.data.message, "error");
+            }
         } catch (error) {
-          Swal.fire("Error", error.response?.data?.message || "Login gagal", "error");
+            Swal.fire("Error", error.response?.data?.message || "Login gagal", "error");
+        } finally {
+            setLoadingLogin(false);
         }
-      };
+    };
     
     const handleVerifyOTP = async () => {
+        setLoadingOTP(true)
         try {
           const response = await verifyOTP({ email: userEmail, otp_code: otpCode });
           if (response.data.status) {
-            localStorage.setItem("token", response.data.token); // Simpan token setelah login sukses
+            localStorage.setItem("token", response.data.token); 
             setOpenVerification(false);
             Swal.fire({
               title: "Login Berhasil!",
@@ -72,8 +148,12 @@ const Headers = ({ collapse, funcs }) => {
           }
         } catch (error) {
           Swal.fire("Error", error.response?.data?.message || "OTP verifikasi gagal", "error");
+        }finally {
+            setLoadingOTP(false)
         }
       };
+
+
   
 
     const handleProfileUser = async () => {
@@ -156,7 +236,27 @@ const Headers = ({ collapse, funcs }) => {
             </Menu.Item>
         </Menu>
     );
+
+    useEffect(() => {
+        const openModalListener = () => {
+          setOpenSignIn(true);
+        };
+        window.addEventListener("triggerLoginModal", openModalListener);
+      
+        return () => {
+          window.removeEventListener("triggerLoginModal", openModalListener);
+        };
+      }, []);    
+
+    useEffect(() => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const resetToken = urlParams.get("reset_password_token");
     
+      if (resetToken) {
+        setResetToken(resetToken);
+        setOpenResetPassword(true);
+      }
+    }, []);
     
     return (
         <div className="sticky top-0 z-50">
@@ -272,6 +372,64 @@ const Headers = ({ collapse, funcs }) => {
                 </div>
             </div>
 
+            {/* Modal Reset Password */}
+            <Modal
+                title="Reset Password"
+                open={openResetPassword}
+                onCancel={() => setOpenResetPassword(false)}
+                footer={null}
+                centered
+                >
+                <hr className="mb-6" />
+                <p className="text-sm text-gray-600 mb-2">
+                    Masukkan password baru Anda.
+                </p>
+                <Input.Password
+                    placeholder="Password baru"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="mb-3 py-2"
+                />
+                <Button
+                    type="primary"
+                    className="w-full bg-[#FFCC00] text-black py-2"
+                    onClick={handleChangePassword}
+                    loading={loadingChangePass}
+                >
+                    Reset Password
+                </Button>
+            </Modal>
+
+            {/* Modal Handle Reset Password */}
+            <Modal
+                title="Reset Password"
+                open={openHandleResetPassword}
+                onCancel={() => {
+                    setOpenHandleResetPassword(false)
+                    setOpenSignIn(true)
+                }}
+                footer={null}
+                centered
+                >
+                <hr className="mb-6" />
+                <p className="text-sm text-gray-600 mb-2">
+                    Masukkan Email Anda.
+                </p>
+                <Input
+                    placeholder="johndoe@example.com"
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                    className="mb-3 py-2"
+                />
+                <Button
+                    type="primary"
+                    className="w-full bg-[#FFCC00] text-black py-2"
+                    onClick={handleResetPassword}
+                    loading={loadingReset}
+                >
+                    Send Token Reset Password
+                </Button>
+            </Modal>
 
             {/* Modal Sign In */}
             <Modal title="Sign In" open={openSignIn} onCancel={() => setOpenSignIn(false)} footer={null} centered>
@@ -288,10 +446,22 @@ const Headers = ({ collapse, funcs }) => {
                     value={password} 
                     onChange={(e) => setPassword(e.target.value)} 
                 />
-                <Link to="#" className="text-blue-500 text-end text-sm mb-4 inline-block">Forgot Password?</Link>
-                <Button type="primary" className="w-full bg-[#FFCC00] text-black py-2" onClick={handleLogin}>
+                <Button onClick={() => {
+                    setOpenHandleResetPassword(true)
+                    setOpenSignIn(false)
+                }} 
+                className="text-blue-500 text-end text-sm mb-4 inline-block border-none p-0">
+                    Forgot Password?
+                </Button>
+                <Button
+                    type="primary"
+                    className="w-full bg-[#FFCC00] text-black py-2"
+                    onClick={handleLogin}
+                    loading={loadingLogin}
+                    >
                     Sign In
                 </Button>
+
 
                 <Button className="w-full mt-2 py-4" onClick={() => { setOpenSignIn(false); setOpenSignUp(true); }}>Create New Account</Button>
             </Modal>
@@ -317,7 +487,7 @@ const Headers = ({ collapse, funcs }) => {
                     value={password} 
                     onChange={(e) => setPassword(e.target.value)} 
                 />
-                <Button type="primary" className="w-full bg-[#FFCC00] text-black py-4" onClick={handleRegister}>
+                <Button type="primary" className="w-full bg-[#FFCC00] text-black py-4" onClick={handleRegister} loading={loadingRegister}>
                     Sign Up
                 </Button>
                 <Button className="w-full mt-2 py-4" onClick={() => { setOpenSignUp(false); setOpenSignIn(true); }}>Sign In</Button>
@@ -333,7 +503,13 @@ const Headers = ({ collapse, funcs }) => {
                     value={otpCode} 
                     onChange={(e) => setOtpCode(e.target.value)} 
                 />
-                <Button type="primary" className="w-full bg-[#FFCC00] text-black py-2" onClick={handleVerifyOTP}>
+                <Button 
+                    onClick={() => {handleResendOTPCode()}}  
+                    loading={loadingResendOTP}
+                    className="text-blue-500 text-end text-sm mb-4 inline-block border-none p-0">
+                    Resend OTP Code
+                </Button>
+                <Button type="primary" className="w-full bg-[#FFCC00] text-black py-2" onClick={handleVerifyOTP} loading={loadingOTP}>
                   Submit
                 </Button>
 

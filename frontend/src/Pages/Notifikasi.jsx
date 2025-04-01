@@ -6,10 +6,12 @@ import { getPendingTransactions, updateTransaction } from "../api/transaksi";
 import { getAffiliatorStatusFalse, approveAffiliator, rejectAffiliator } from "../api/affiliate";
 import { formatRupiah } from "../utils/rupiahFormat";
 import { formatDate } from "../utils/formatDate";
+import { Spin } from "antd";
 
 const Notifikasi = () => {
   const [transactions, setTransactions] = useState([]);
   const [affiliators, setAffiliators] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchTransactions();
@@ -124,6 +126,8 @@ const Notifikasi = () => {
       setTransactions(response.data);
     } catch (error) {
       console.error("Error fetching transactions:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -221,6 +225,16 @@ const Notifikasi = () => {
       ),
     },
   ];
+
+  if (loading) {
+      return (
+          <DashboardLayout>
+              <div className="flex justify-center items-center h-[80vh]">
+                  <Spin size="large" />
+              </div>
+          </DashboardLayout>
+      );
+  }
 
   return (
     <DashboardLayout>

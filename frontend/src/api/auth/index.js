@@ -27,3 +27,33 @@ export const editProfile = async (payload) => {
     throw error.response ? error.response.data : error.message;
   }
 };
+
+export const handleForgot = async (email) => {
+  try {
+    const response = await api.patch("/auth/handle-forgot", {email});
+    return response.data;
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const changePassword = async (token, newPassword) => {
+  try {
+    const response = await api.patch("/auth/change-password", {token, newPassword});
+    return response.data;
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const resendOTPCode = async (email) => {
+  try {
+    const response = await api.patch("/auth/resend-otp", {email});
+    return response.data;
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};

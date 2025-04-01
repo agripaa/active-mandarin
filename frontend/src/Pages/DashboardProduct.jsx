@@ -7,8 +7,9 @@ import "chart.js/auto";
 import ProductTable from "../Components/dashboard/DashboardProductTable";
 import { getDashboardData } from "../api/transaksi";
 import { formatRupiah } from "../utils/rupiahFormat";
+import { Spin } from "antd";
 
-const years = [2025];
+const years = [2025, 2026];
 
 const chartOptions = {
   plugins: {
@@ -27,24 +28,10 @@ const DashboardProduct = () => {
   const [totalTransactions, setTotalTransactions] = useState(0);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [productList, setProductList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const chartContainerRef = useRef(null);
   const [chartHeight, setChartHeight] = useState(300);
-
-  const handleYearChange = (year) => {
-    setSelectedYear(year);
-    fetchDashboardData();
-  };
-
-  useEffect(() => {
-    if (chartContainerRef.current) {
-      setChartHeight(chartContainerRef.current.clientHeight);
-    }
-  }, [chartData]);
-
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
 
   const fetchDashboardData = async () => {
     try {
@@ -68,10 +55,35 @@ const DashboardProduct = () => {
       });
     } catch (error) {
       console.error("Error fetching product dashboard data:", error);
+    } finally {
+      setLoading(false)
     }
   };
 
-  console.log(productList)
+  const handleYearChange = (year) => {
+    setSelectedYear(year);
+    fetchDashboardData();
+  };
+
+  useEffect(() => {
+    if (chartContainerRef.current) {
+      setChartHeight(chartContainerRef.current.clientHeight);
+    }
+  }, [chartData]);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  if (loading) {
+    return (
+        <DashboardLayout>
+            <div className="flex justify-center items-center h-[80vh]">
+                <Spin size="large" />
+            </div>
+        </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
