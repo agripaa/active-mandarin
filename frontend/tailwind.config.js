@@ -5,6 +5,16 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        background: "#F5F8FF",
+        fiord: {
+          50: "#FFFFFF",
+          200: "#D5DAE2",
+          300: "#AFB8CA",
+          600: "#505E79",
+          950: "#22262F",
+        }
+      },
       keyframes: {
         scrollVertical: {
           '0%': { transform: 'translateY(0%)' },

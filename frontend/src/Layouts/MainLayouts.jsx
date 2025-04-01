@@ -8,7 +8,7 @@ import Donation from "../Components/Donation";
 import { useDispatch, useSelector } from "react-redux";
 import { getLanguage } from "../Store/Action/LangAction";
 
-const Mainlayouts = ({ children, className }) => {
+const Mainlayouts = ({ children, className, footerClassName }) => {
     const [collapse, setCollapse] = useState(false)
     const { data, langs } = useSelector(state => state.LangReducer)
     const text = langs ? data?.english : data?.indonesia
@@ -33,7 +33,7 @@ const Mainlayouts = ({ children, className }) => {
              }} />
             <Headers collapse={collapse} funcs={onClose}/>
             <main style={{ minHeight: '60vh'}} className={className}>{children}</main>
-            <Footers/>
+            <Footers footerClassName={footerClassName} />
             { !collapse ? <FloatButton.BackTop icon={<UpOutlined />}/> : null}
         </>
     )
