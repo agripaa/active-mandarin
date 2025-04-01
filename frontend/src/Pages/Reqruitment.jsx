@@ -183,11 +183,11 @@ const AffiliateForm = () => {
           window.location.href = "/";
         });
       } else {
-        Swal.fire("Gagal!", response.data.message, "error");
+        Swal.fire("Gagal!", response.data.error, "error");
       }
     } catch (error) {
       setLoading(false);
-      Swal.fire("Error!", error?.response?.data?.message ?? "Terjadi kesalahan saat menyimpan data!", "error");
+      Swal.fire("Error!", error?.response?.data?.error ?? "Terjadi kesalahan saat menyimpan data!", "error");
     }
   };
 
