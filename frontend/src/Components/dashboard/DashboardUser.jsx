@@ -56,7 +56,7 @@ const DashboardUser = () => {
                 </div>
               </div>
             )) : (<div>
-                  <p className="text-red-500">Tidak ada Program yang ditemukan.</p>
+                  <p className="text-red-500">Program Belum Tersedia!.</p>
                 </div>)}
           </div>
         </section>
@@ -85,7 +85,7 @@ const DashboardUser = () => {
                 </div>
               </div>
             )) :(<div>
-              <p className="text-red-500">Tidak ada Produk yang ditemukan.</p>
+              <p className="text-red-500">Produk Belum Tersedia!.</p>
             </div>)}
           </div>
         </section>

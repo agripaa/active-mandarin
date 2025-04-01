@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import Mainlayouts from "../Layouts/MainLayouts";
 import { useSelector } from "react-redux";
 import Slider from "react-slick";
-import { Rate } from "antd";
 import { getBrandCategoryTurunan } from "../api/brand";
 import { formatRupiah } from "../utils/rupiahFormat";
+import { Spin } from "antd";
 
 const Catalog = () => {
   const { _, langs } = useSelector((state) => state.LangReducer);
@@ -40,69 +40,71 @@ const Catalog = () => {
       setKelasHSK(responses[3].status === "fulfilled" ? responses[3].value.data || [] : []);
       setPremiumMandarin(responses[4].status === "fulfilled" ? responses[4].value.data || [] : []);
       setEduconsult(responses[5].status === "fulfilled" ? responses[5].value.data || [] : []);
-  
-      console.log("Fetched data successfully:", {
-        nonDegree,
-        degree,
-        mentorScholarship,
-        kelasHSK,
-        premiumMandarin,
-        educonsult
-      });
-  
     } catch (error) {
       console.error("🔥 ERROR fetching data:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
-  
 
-  console.log({
-    nonDegree,
-    degree,
-    mentorScholarship,
-    kelasHSK,
-    premiumMandarin,
-    educonsult
-  })
+  const fetchData = () => {
+    const images = [
+      {
+        image: "/assets/banner/Web Banne Act CTA-1.png",
+        link: "#start",
+      },
+      {
+        image: "/assets/banner/Web Banne Act CTA-2.png",
+        link: "https://wa.me/+6282279506450",
+      },
+      {
+        image: "/assets/banner/Web Banne Act CTA-3.png",
+        link: "https://wa.me/+6282279506450",
+      },
+      {
+        image: "/assets/banner/Web Banne Act CTA-4.png",
+        link: "#Mentor",
+      },
+      {
+        image: "/assets/banner/Web Banne Act CTA-5.png",
+        link: "https://wa.me/+6282279506450",
+      },
+      {
+        image: "/assets/banner/Web Banne Act CTA-6.png",
+        link: "https://wa.me/+6282279506450",
+      },
+      {
+        image: "/assets/banner/Web Banne Act CTA-7.png",
+        link: "https://wa.me/+6282279506450",
+      },
+    ];
+    setGalleryData(images);
+  };
 
   useEffect(() => {
-    const fetchData = () => {
-      const images = [
-        {
-          image: "/assets/banner/Web Banne Act CTA-1.png",
-          link: "#start",
-        },
-        {
-          image: "/assets/banner/Web Banne Act CTA-2.png",
-          link: "https://wa.me/+6282279506450",
-        },
-        {
-          image: "/assets/banner/Web Banne Act CTA-3.png",
-          link: "https://wa.me/+6282279506450",
-        },
-        {
-          image: "/assets/banner/Web Banne Act CTA-4.png",
-          link: "#Mentor",
-        },
-        {
-          image: "/assets/banner/Web Banne Act CTA-5.png",
-          link: "https://wa.me/+6282279506450",
-        },
-        {
-          image: "/assets/banner/Web Banne Act CTA-6.png",
-          link: "https://wa.me/+6282279506450",
-        },
-        {
-          image: "/assets/banner/Web Banne Act CTA-7.png",
-          link: "https://wa.me/+6282279506450",
-        },
-      ];
-      setGalleryData(images);
-    };
-
     fetchData();
   }, []);
+
+  if (loading) {
+    return (
+        <Mainlayouts>
+            <div className="flex justify-center items-center h-[80vh]">
+                <Spin size="large" />
+            </div>
+        </Mainlayouts>
+    );
+  }
+
+
+const handleClickItem = (id) => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    const openModalEvent = new CustomEvent("triggerLoginModal");
+    window.dispatchEvent(openModalEvent); // trigger modal dari Header
+  } else {
+    window.location.href = `/detail/${id}`;
+  }
+};
 
   const settingsCarousel = {
     dots: false,
@@ -176,11 +178,7 @@ const Catalog = () => {
             <div className="my-8 flex justify-start">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
                   {kelasHSK.map((item, index) => (
-                    <a
-                      href={`/detail/${item.id}`}
-                      key={index}
-                      className="p-0 m-0"
-                    >
+                    <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
                       <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
                         <img
                           src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
@@ -188,23 +186,17 @@ const Catalog = () => {
                           className="w-full h-56 object-cover rounded-t-2xl"
                         />
                         <div className="flex flex-col justify-between items-start px-4 py-5">
-                          <h2 className="text-lg font-semibold text-gray-800 mb-2">
-                            {item.variant}
-                          </h2>
+                          <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
                           <p className="font-semibold text-lg mb-2">
                             {item.discount_price ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                            <span className="font-light text-sm ml-1">
-                              {langs
-                                ? "/Month"
-                                : "/Bulan"}
-                            </span>
+                            <span className="font-light text-sm ml-1">{langs ? "/Month" : "/Bulan"}</span>
                           </p>
-                          <div className="flex mt-2">
-                            <span className="text-sm text-[#3377FF]">{langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission) || formatRupiah(0)}</span>
-                          </div>
+                          <span className="text-sm text-[#3377FF]">
+                            {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
+                          </span>
                         </div>
                       </div>
-                    </a>
+                    </div>
                   ))}
               </div>
             </div>
@@ -225,11 +217,7 @@ const Catalog = () => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
                   {premiumMandarin.map((item, index) => (
-                    <a
-                      href={`/detail/${item.id}`}
-                      key={index}
-                      className="p-0 m-0"
-                    >
+                    <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
                       <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
                         <img
                           src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
@@ -237,23 +225,17 @@ const Catalog = () => {
                           className="w-full h-56 object-cover rounded-t-2xl"
                         />
                         <div className="flex flex-col justify-between items-start px-4 py-5">
-                          <h2 className="text-lg font-semibold text-gray-800 mb-2">
-                            {item.variant}
-                          </h2>
+                          <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
                           <p className="font-semibold text-lg mb-2">
                             {item.discount_price ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                            <span className="font-light text-sm ml-1">
-                              {langs
-                                ? "/Month"
-                                : "/Bulan"}
-                            </span>
+                            <span className="font-light text-sm ml-1">{langs ? "/Month" : "/Bulan"}</span>
                           </p>
-                          <div className="flex mt-2">
-                            <span className="text-sm text-[#3377FF]">{langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission) || formatRupiah(0)}</span>
-                          </div>
+                          <span className="text-sm text-[#3377FF]">
+                            {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
+                          </span>
                         </div>
                       </div>
-                    </a>
+                    </div>
                   ))}
               </div>
           </div>
@@ -274,11 +256,7 @@ const Catalog = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
                   {mentorScholarship.map((item, index) => (
-                    <a
-                      href={`/detail/${item.id}`}
-                      key={index}
-                      className="p-0 m-0"
-                    >
+                    <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
                       <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
                         <img
                           src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
@@ -286,23 +264,17 @@ const Catalog = () => {
                           className="w-full h-56 object-cover rounded-t-2xl"
                         />
                         <div className="flex flex-col justify-between items-start px-4 py-5">
-                          <h2 className="text-lg font-semibold text-gray-800 mb-2">
-                            {item.variant}
-                          </h2>
+                          <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
                           <p className="font-semibold text-lg mb-2">
                             {item.discount_price ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                            <span className="font-light text-sm ml-1">
-                              {langs
-                                ? "/Month"
-                                : "/Bulan"}
-                            </span>
+                            <span className="font-light text-sm ml-1">{langs ? "/Month" : "/Bulan"}</span>
                           </p>
-                          <div className="flex mt-2">
-                            <span className="text-sm text-[#3377FF]">{langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission) || formatRupiah(0)}</span>
-                          </div>
+                          <span className="text-sm text-[#3377FF]">
+                            {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
+                          </span>
                         </div>
                       </div>
-                    </a>
+                    </div>
                   ))}
               </div>
           </div>
@@ -322,11 +294,7 @@ const Catalog = () => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
                   {degree.map((item, index) => (
-                    <a
-                      href={`/detail/${item.id}`}
-                      key={index}
-                      className="p-0 m-0"
-                    >
+                    <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
                       <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
                         <img
                           src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
@@ -334,23 +302,17 @@ const Catalog = () => {
                           className="w-full h-56 object-cover rounded-t-2xl"
                         />
                         <div className="flex flex-col justify-between items-start px-4 py-5">
-                          <h2 className="text-lg font-semibold text-gray-800 mb-2">
-                            {item.variant}
-                          </h2>
+                          <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
                           <p className="font-semibold text-lg mb-2">
                             {item.discount_price ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                            <span className="font-light text-sm ml-1">
-                              {langs
-                                ? "/Month"
-                                : "/Bulan"}
-                            </span>
+                            <span className="font-light text-sm ml-1">{langs ? "/Month" : "/Bulan"}</span>
                           </p>
-                          <div className="flex mt-2">
-                            <span className="text-sm text-[#3377FF]">{langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission) || formatRupiah(0)}</span>
-                          </div>
+                          <span className="text-sm text-[#3377FF]">
+                            {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
+                          </span>
                         </div>
                       </div>
-                    </a>
+                    </div>
                   ))}
               </div>
           </div>
@@ -370,11 +332,7 @@ const Catalog = () => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
                   {nonDegree.map((item, index) => (
-                    <a
-                      href={`/detail/${item.id}`}
-                      key={index}
-                      className="p-0 m-0"
-                    >
+                    <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
                       <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
                         <img
                           src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
@@ -382,23 +340,17 @@ const Catalog = () => {
                           className="w-full h-56 object-cover rounded-t-2xl"
                         />
                         <div className="flex flex-col justify-between items-start px-4 py-5">
-                          <h2 className="text-lg font-semibold text-gray-800 mb-2">
-                            {item.variant}
-                          </h2>
+                          <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
                           <p className="font-semibold text-lg mb-2">
                             {item.discount_price ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                            <span className="font-light text-sm ml-1">
-                              {langs
-                                ? "/Month"
-                                : "/Bulan"}
-                            </span>
+                            <span className="font-light text-sm ml-1">{langs ? "/Month" : "/Bulan"}</span>
                           </p>
-                          <div className="flex mt-2">
-                            <span className="text-sm text-[#3377FF]">{langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission) || formatRupiah(0)}</span>
-                          </div>
+                          <span className="text-sm text-[#3377FF]">
+                            {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
+                          </span>
                         </div>
                       </div>
-                    </a>
+                    </div>
                   ))}
               </div>
           </div>

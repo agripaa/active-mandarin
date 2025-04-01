@@ -3,6 +3,7 @@ import DashboardLayout from "../Layouts/DashboardLayout";
 import { editProfile, getProfile } from "../api/auth";
 import { RiLockPasswordFill, RiEyeLine, RiEyeOffLine } from "react-icons/ri";
 import Swal from "sweetalert2";
+import { Spin } from "antd";
 
 const Profile = () => {
   const [name, setName] = useState("");
@@ -15,6 +16,7 @@ const Profile = () => {
   const [newPassword, setNewPassword] = useState("");
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchProfile();
@@ -31,8 +33,20 @@ const Profile = () => {
       }
     } catch (error) {
       Swal.fire("Error", "Gagal mengambil data profil", "error");
+    } finally {
+      setLoading(false); 
     }
   };
+
+  if (loading) {
+    return (
+        <DashboardLayout>
+            <div className="flex justify-center items-center h-[80vh]">
+                <Spin size="large" />
+            </div>
+        </DashboardLayout>
+    );
+  }
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];

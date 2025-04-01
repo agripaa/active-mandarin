@@ -4,10 +4,11 @@ import DashboardAdmin from "../Components/dashboard/DashboardAdmin";
 import DashboardAffiliator from "../Components/dashboard/DashboardAffiliator";
 import DashboardUser from "../Components/dashboard/DashboardUser";
 import { getProfile } from "../api/auth";
+import { Spin } from "antd";
 
 const Dashboard = () => {
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true); // Tambahkan state loading
+    const [loading, setLoading] = useState(true);
 
     const handleGetProfile = async () => {
         try {
@@ -18,7 +19,7 @@ const Dashboard = () => {
         } catch (error) {
             console.error("Error fetching profile:", error);
         } finally {
-            setLoading(false); // Set loading selesai
+            setLoading(false); 
         }
     };
 
@@ -26,11 +27,19 @@ const Dashboard = () => {
         handleGetProfile();
     }, []);
 
-    if (loading) return <DashboardLayout><p>Loading...</p></DashboardLayout>;
+    if (loading) {
+        return (
+            <DashboardLayout>
+                <div className="flex justify-center items-center h-[80vh]">
+                    <Spin size="large" />
+                </div>
+            </DashboardLayout>
+        );
+    }
 
     return (
         <DashboardLayout>
-            {user && user.Role ? ( // ✅ Cek dulu apakah user dan Role ada
+            {user && user.Role ? ( // ✅ Cek apakah user dan Role ada
                 user.Role.role_name === "admin" ? (
                     <DashboardAdmin />
                 ) : user.Role.role_name === "affiliator" ? (

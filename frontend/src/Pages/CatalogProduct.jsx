@@ -3,6 +3,7 @@ import Mainlayouts from "../Layouts/MainLayouts";
 import { useSelector } from "react-redux";
 import { getGroupedBrands } from "../api/brand";
 import { formatRupiah } from "../utils/rupiahFormat";
+import { Spin } from "antd";
 
 const CatalogProduct = () => {
   const { _, langs } = useSelector((state) => state.LangReducer);
@@ -18,12 +19,31 @@ const CatalogProduct = () => {
     try {
       setLoading(true);
       const response = await getGroupedBrands();
-      console.log(response.data)
       setProducts(response.data);
     } catch (error) {
       setError(error.message || "Gagal mengambil data produk.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+        <Mainlayouts>
+            <div className="flex justify-center items-center h-[80vh]">
+                <Spin size="large" />
+            </div>
+        </Mainlayouts>
+    );
+  }
+
+  const handleClickItem = (id) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      const openModalEvent = new CustomEvent("triggerLoginModal");
+      window.dispatchEvent(openModalEvent); // trigger modal dari Header
+    } else {
+      window.location.href = `/detail/${id}`;
     }
   };
 
@@ -53,7 +73,7 @@ const CatalogProduct = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full gap-6">
                     {products.map((item, index) => (
                       <div key={index} className="p-0 m-0">
-                        <a href={`/detail/${item?.brands[0].id}`} className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
+                        <div onClick={() => handleClickItem(item?.brands[0].id)}className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
                           <img
                             src={`${process.env.REACT_APP_API_IMG}${item.image}`}
                             alt={`${item.turunan_brand}`}
@@ -77,7 +97,7 @@ const CatalogProduct = () => {
                               </span>
                             </div>
                           </div>
-                        </a>
+                        </div>
                       </div>
                     ))}
                   </div>

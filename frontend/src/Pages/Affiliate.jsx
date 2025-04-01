@@ -32,11 +32,11 @@ const Affiliate = () => {
         fetchAffiliateRevenue(); // Fetch data ulang jika tahun berubah
     };
 
-        useEffect(() => {
-            if (chartContainerRef.current) {
-                setChartHeight(chartContainerRef.current.clientHeight);
-            }
-        }, [monthlyRevenue]);
+    useEffect(() => {
+        if (chartContainerRef.current) {
+            setChartHeight(chartContainerRef.current.clientHeight);
+        }
+    }, [monthlyRevenue]);
 
     const fetchAffiliators = async (page) => {
         setLoading(true);
@@ -69,8 +69,6 @@ const Affiliate = () => {
     const filteredAffiliators = affiliators.filter((item) =>
         item.name.toLowerCase().includes(searchText)
     );
-
-    console.log({filteredAffiliators})
 
     const columns = [
       { title: "Nama", dataIndex: "name", key: "name", render: (text) => text || "-" },
@@ -110,6 +108,16 @@ const Affiliate = () => {
         },
         maintainAspectRatio: false,
     };
+
+    if (loading) {
+        return (
+            <DashboardLayout>
+                <div className="flex justify-center items-center h-[80vh]">
+                    <Spin size="large" />
+                </div>
+            </DashboardLayout>
+        );
+    }
 
     return (
         <DashboardLayout>
@@ -184,13 +192,7 @@ const Affiliate = () => {
                             className="w-96 py-2 px-4"
                         />
                     </div>
-                    {loading ? (
-                        <div className="text-center py-10">
-                            <Spin size="large" />
-                        </div>
-                    ) : (
-                        <Table columns={columns} dataSource={filteredAffiliators} pagination={false} rowKey="id" />
-                    )}
+                    <Table columns={columns} dataSource={filteredAffiliators} pagination={false} rowKey="id" />
                     <div className="flex justify-end mt-4">
                         <Pagination
                             current={currentPage}

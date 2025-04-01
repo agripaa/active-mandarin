@@ -5,6 +5,7 @@ import { RiArrowLeftLine } from "react-icons/ri";
 import { getBrandById } from "../api/brand";
 import { createTransaction } from "../api/transaksi";
 import Swal from "sweetalert2";
+import { Spin } from "antd";
 
 const Pembayaran = () => {
   const { id } = useParams();
@@ -14,6 +15,7 @@ const Pembayaran = () => {
   const [showQRIS, setShowQRIS] = useState(false);
   const [proof, setProof] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [loading, setLoading] = useState(true);
   const reveralCode = localStorage.getItem("reveral_code");
 
   useEffect(() => {
@@ -26,6 +28,12 @@ const Pembayaran = () => {
       setBrandData(response.data);
     } catch (error) {
       console.error(error);
+      if(error.status == 400 || error.status == 401 || error.status == 403) {
+        navigate('/', {replace: true});
+        return;
+      }
+    } finally{
+      setLoading(false);
     }
   };
 
@@ -60,13 +68,29 @@ const Pembayaran = () => {
     }
   };
 
+  const token = localStorage.getItem("token");
+  if(!token) {
+    navigate('/', {replace: true});
+    return;
+  }
+
+  if (loading) {
+    return (
+      <Mainlayouts>
+        <div className="flex justify-center items-center h-[100vh]">
+            <Spin size="large" />
+        </div>
+    </Mainlayouts>
+    );
+  }
+
   return (
     <Mainlayouts>
       <div className="container mx-auto px-6 md:px-12 lg:px-20 py-10 md:py-20">
         {/* Kembali */}
-        <Link to="/products" className="text-[#3377FF] text-lg font-medium flex gap-2 items-center mb-6">
+        <button onClick={() => navigate(-1)} className="text-[#3377FF] text-lg font-medium flex gap-2 items-center mb-6">
           <RiArrowLeftLine /> Kembali
-        </Link>
+        </button>
 
         <div className="grid grid-cols-1 md:flex md:items-start md:justify-between gap-10 w-full">
           {/* Detail Produk */}
