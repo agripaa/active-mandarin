@@ -3,325 +3,71 @@ import Slider from "react-slick";
 import { Rate, Modal, Button } from "antd";
 import { useSelector } from "react-redux";
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
+import { getBrandCategoryTurunan } from "../api/brand";
+import { formatRupiah } from "../utils/rupiahFormat";
 
 const Products = ({ text }) => {
   const { data, langs } = useSelector((state) => state.LangReducer);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentProduct, setCurrentProduct] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [products, setProducts] = useState([]);
   let sliderRef = useRef(null);
 
-  const products = useMemo(() => ({
-    english: [
-      {
-        title: "Hanzi Grid Notebook",
-        price: "24.999",
-        star: 4,
-        image: "/assets/product1.png",
-        desc: "Hanzi Grid Notebook: The best partner to practice your Mandarin character writing skills! Designed with special grids, this notebook helps you refine your Hanzi writing technique to be neat and proportional. Suitable for beginners to advanced learners, start your Mandarin learning journey in a more structured and enjoyable way!",
-        product_detail: [
-          "1 Book: Rp. 24,999",
-          "3 Books: Rp. 64,999",
-          "5 Books: Rp. 99,999",
-        ],
-      },
-      {
-        title: "E-Flashcard HSK 1",
-        price: "100.000",
-        star: 4,
-        image: "/assets/product2.png",
-        desc: "Want to master Mandarin in a fun and effective way? Our HSK Flashcards are here to be your best companion in learning Mandarin vocabulary. With an enjoyable and practical method, learning becomes easier and helps you achieve Mandarin fluency faster than you imagined!",
-        product_detail: [
-          "HSK 1: Rp. 100,000",
-          "HSK 2: Rp. 120,000",
-          "HSK 3: Rp. 150,000",
-          "HSK 4: Rp. 200,000",
-          "HSK 5: Rp. 300,000",
-        ],
-      },
-      {
-        title: "E-Flashcard HSK 2",
-        price: "120.000",
-        star: 4,
-        image: "/assets/product2.png",
-        desc: "Want to master Mandarin in a fun and effective way? Our HSK Flashcards are here to be your best companion in learning Mandarin vocabulary. With an enjoyable and practical method, learning becomes easier and helps you achieve Mandarin fluency faster than you imagined!",
-        product_detail: [
-          "HSK 1: Rp. 100,000",
-          "HSK 2: Rp. 120,000",
-          "HSK 3: Rp. 150,000",
-          "HSK 4: Rp. 200,000",
-          "HSK 5: Rp. 300,000",
-        ],
-      },
-      {
-        title: "E-Flashcard HSK 3",
-        price: "150.000",
-        star: 4,
-        image: "/assets/product2.png",
-        desc: "Want to master Mandarin in a fun and effective way? Our HSK Flashcards are here to be your best companion in learning Mandarin vocabulary. With an enjoyable and practical method, learning becomes easier and helps you achieve Mandarin fluency faster than you imagined!",
-        product_detail: [
-          "HSK 1: Rp. 100,000",
-          "HSK 2: Rp. 120,000",
-          "HSK 3: Rp. 150,000",
-          "HSK 4: Rp. 200,000",
-          "HSK 5: Rp. 300,000",
-        ],
-      },
-      {
-        title: "E-Flashcard HSK 4",
-        price: "200.000",
-        star: 4,
-        image: "/assets/product2.png",
-        desc: "Want to master Mandarin in a fun and effective way? Our HSK Flashcards are here to be your best companion in learning Mandarin vocabulary. With an enjoyable and practical method, learning becomes easier and helps you achieve Mandarin fluency faster than you imagined!",
-        product_detail: [
-          "HSK 1: Rp. 100,000",
-          "HSK 2: Rp. 120,000",
-          "HSK 3: Rp. 150,000",
-          "HSK 4: Rp. 200,000",
-          "HSK 5: Rp. 300,000",
-        ],
-      },
-      {
-        title: "E-Flashcard HSK 5",
-        price: "300.000",
-        star: 4,
-        image: "/assets/product2.png",
-        desc: "Want to master Mandarin in a fun and effective way? Our HSK Flashcards are here to be your best companion in learning Mandarin vocabulary. With an enjoyable and practical method, learning becomes easier and helps you achieve Mandarin fluency faster than you imagined!",
-        product_detail: [
-          "HSK 1: Rp. 100,000",
-          "HSK 2: Rp. 120,000",
-          "HSK 3: Rp. 150,000",
-          "HSK 4: Rp. 200,000",
-          "HSK 5: Rp. 300,000",
-        ],
-      },
-      {
-        title: "Comprehensive Chinese E-Book Level 1",
-        price: "50.000",
-        star: 4,
-        image: "/assets/comprensive.png",
-        desc: "Explore a variety of interesting Mandarin vocabulary in our book collection, ranging from HSK 1 to HSK 5. Each book is designed to support your learning with interactive practice questions and simple grammar explanations, making it easy to understand. Start your exciting learning journey with Comprehensive Chinese Book and experience satisfying progress!",
-        product_detail: [
-          "Level 1: Rp. 50,000",
-          "Level 2: Rp. 70,000",
-          "Level 3: Rp. 100,000",
-          "Level 4: Rp. 150,000",
-          "Level 5: Rp. 200,000",
-        ],
-      },
-      {
-        title: "Comprehensive Chinese E-Book Level 2",
-        price: "70.000",
-        star: 4,
-        image: "/assets/comprensive.png",
-        desc: "Explore a variety of interesting Mandarin vocabulary in our book collection, ranging from HSK 1 to HSK 5. Each book is designed to support your learning with interactive practice questions and simple grammar explanations, making it easy to understand. Start your exciting learning journey with Comprehensive Chinese Book and experience satisfying progress!",
-        product_detail: [
-          "Level 1: Rp. 50,000",
-          "Level 2: Rp. 70,000",
-          "Level 3: Rp. 100,000",
-          "Level 4: Rp. 150,000",
-          "Level 5: Rp. 200,000",
-        ],
-      },
-      {
-        title: "Comprehensive Chinese E-Book Level 3",
-        price: "100.000",
-        star: 4,
-        image: "/assets/comprensive.png",
-        desc: "Explore a variety of interesting Mandarin vocabulary in our book collection, ranging from HSK 1 to HSK 5. Each book is designed to support your learning with interactive practice questions and simple grammar explanations, making it easy to understand. Start your exciting learning journey with Comprehensive Chinese Book and experience satisfying progress!",
-        product_detail: [
-          "Level 1: Rp. 50,000",
-          "Level 2: Rp. 70,000",
-          "Level 3: Rp. 100,000",
-          "Level 4: Rp. 150,000",
-          "Level 5: Rp. 200,000",
-        ],
-      },
-      {
-        title: "Comprehensive Chinese E-Book Level 4",
-        price: "150.000",
-        star: 4,
-        image: "/assets/comprensive.png",
-        desc: "Explore a variety of interesting Mandarin vocabulary in our book collection, ranging from HSK 1 to HSK 5. Each book is designed to support your learning with interactive practice questions and simple grammar explanations, making it easy to understand. Start your exciting learning journey with Comprehensive Chinese Book and experience satisfying progress!",
-        product_detail: [
-          "Level 1: Rp. 50,000",
-          "Level 2: Rp. 70,000",
-          "Level 3: Rp. 100,000",
-          "Level 4: Rp. 150,000",
-          "Level 5: Rp. 200,000",
-        ],
-      },
-      {
-        title: "Comprehensive Chinese E-Book Level 5",
-        price: "200.000",
-        star: 4,
-        image: "/assets/comprensive.png",
-        desc: "Explore a variety of interesting Mandarin vocabulary in our book collection, ranging from HSK 1 to HSK 5. Each book is designed to support your learning with interactive practice questions and simple grammar explanations, making it easy to understand. Start your exciting learning journey with Comprehensive Chinese Book and experience satisfying progress!",
-        product_detail: [
-          "Level 1: Rp. 50,000",
-          "Level 2: Rp. 70,000",
-          "Level 3: Rp. 100,000",
-          "Level 4: Rp. 150,000",
-          "Level 5: Rp. 200,000",
-        ],
-      },
-    ],
-    indonesia: [
-      {
-        title: "Buku Tulis Kotak Kotak Hanzi",
-        price: "24.999",
-        star: 4,
-        image: "/assets/product1.png",
-        desc: "Buku Kotak-Kotak Hanzi: Partner terbaik untuk melatih keterampilan menulis karakter Mandarin Anda! Dengan desain khusus kotak-kotak, buku ini membantu Anda mengasah teknik menulis Hanzi yang rapi dan proporsional. Cocok untuk pemula hingga tingkat lanjut, mari mulai perjalanan belajar Mandarin Anda dengan cara yang lebih terstruktur dan menyenangkan",
-        product_detail: [
-          "1 Buku: Rp. 24,999",
-          "3 Buku: Rp. 64,999",
-          "5 Buku: Rp. 99,999",
-        ],
-      },
-      {
-        title: "E-Flashcard HSK 1",
-        price: "100.000",
-        star: 4,
-        image: "/assets/product2.png",
-        desc: "Ingin menguasai bahasa Mandarin dengan cara seru dan efektif? Kartu Flashcard HSK kami siap menjadi sahabat terbaik Anda dalam belajar kosakata Mandarin. Dengan metode yang menyenangkan dan praktis, belajar jadi lebih mudah dan membantu Anda mencapai kemahiran berbahasa Mandarin lebih cepat dari yang Anda bayangkan!",
-        product_detail: [
-          "HSK 1: Rp. 100,000",
-          "HSK 2: Rp. 120,000",
-          "HSK 3: Rp. 150,000",
-          "HSK 4: Rp. 200,000",
-          "HSK 5: Rp. 300,000",
-        ],
-      },
-      {
-        title: "E-Flashcard HSK 2",
-        price: "120.000",
-        star: 4,
-        image: "/assets/product2.png",
-        desc: "Ingin menguasai bahasa Mandarin dengan cara seru dan efektif? Kartu Flashcard HSK kami siap menjadi sahabat terbaik Anda dalam belajar kosakata Mandarin. Dengan metode yang menyenangkan dan praktis, belajar jadi lebih mudah dan membantu Anda mencapai kemahiran berbahasa Mandarin lebih cepat dari yang Anda bayangkan!",
-        product_detail: [
-          "HSK 1: Rp. 100,000",
-          "HSK 2: Rp. 120,000",
-          "HSK 3: Rp. 150,000",
-          "HSK 4: Rp. 200,000",
-          "HSK 5: Rp. 300,000",
-        ],
-      },
-      {
-        title: "E-Flashcard HSK 3",
-        price: "150.000",
-        star: 4,
-        image: "/assets/product2.png",
-        desc: "Ingin menguasai bahasa Mandarin dengan cara seru dan efektif? Kartu Flashcard HSK kami siap menjadi sahabat terbaik Anda dalam belajar kosakata Mandarin. Dengan metode yang menyenangkan dan praktis, belajar jadi lebih mudah dan membantu Anda mencapai kemahiran berbahasa Mandarin lebih cepat dari yang Anda bayangkan!",
-        product_detail: [
-          "HSK 1: Rp. 100,000",
-          "HSK 2: Rp. 120,000",
-          "HSK 3: Rp. 150,000",
-          "HSK 4: Rp. 200,000",
-          "HSK 5: Rp. 300,000",
-        ],
-      },
-      {
-        title: "E-Flashcard HSK 4",
-        price: "200.000",
-        star: 4,
-        image: "/assets/product2.png",
-        desc: "Ingin menguasai bahasa Mandarin dengan cara seru dan efektif? Kartu Flashcard HSK kami siap menjadi sahabat terbaik Anda dalam belajar kosakata Mandarin. Dengan metode yang menyenangkan dan praktis, belajar jadi lebih mudah dan membantu Anda mencapai kemahiran berbahasa Mandarin lebih cepat dari yang Anda bayangkan!",
-        product_detail: [
-          "HSK 1: Rp. 100,000",
-          "HSK 2: Rp. 120,000",
-          "HSK 3: Rp. 150,000",
-          "HSK 4: Rp. 200,000",
-          "HSK 5: Rp. 300,000",
-        ],
-      },
-      {
-        title: "E-Flashcard HSK 5",
-        price: "300.000",
-        star: 4,
-        image: "/assets/product2.png",
-        desc: "Ingin menguasai bahasa Mandarin dengan cara seru dan efektif? Kartu Flashcard HSK kami siap menjadi sahabat terbaik Anda dalam belajar kosakata Mandarin. Dengan metode yang menyenangkan dan praktis, belajar jadi lebih mudah dan membantu Anda mencapai kemahiran berbahasa Mandarin lebih cepat dari yang Anda bayangkan!",
-        product_detail: [
-          "HSK 1: Rp. 100,000",
-          "HSK 2: Rp. 120,000",
-          "HSK 3: Rp. 150,000",
-          "HSK 4: Rp. 200,000",
-          "HSK 5: Rp. 300,000",
-        ],
-      },
-      {
-        title: "E-Book Komprehensif Bahasa Mandarin Level 1",
-        price: "50.000",
-        star: 4,
-        image: "/assets/comprensive.png",
-        desc: "Jelajahi berbagai kosakata Mandarin yang menarik dalam koleksi buku kami, mulai dari HSK 1 hingga HSK 5. Setiap buku dirancang untuk mendukung pembelajaran Anda dengan pertanyaan latihan interaktif dan penjelasan tata bahasa sederhana, sehingga mudah dipahami. Mulailah perjalanan belajar yang menyenangkan dengan Buku Komprehensif Mandarin dan rasakan kemajuan yang memuaskan!",
-        product_detail: [
-          "Level 1: Rp. 50,000",
-          "Level 2: Rp. 70,000",
-          "Level 3: Rp. 100,000",
-          "Level 4: Rp. 150,000",
-          "Level 5: Rp. 200,000",
-        ],
-      },
-      {
-        title: "E-Book Komprehensif Bahasa Mandarin Level 2",
-        price: "70.000",
-        star: 4,
-        image: "/assets/comprensive.png",
-        desc: "Jelajahi berbagai kosakata Mandarin yang menarik dalam koleksi buku kami, mulai dari HSK 1 hingga HSK 5. Setiap buku dirancang untuk mendukung pembelajaran Anda dengan pertanyaan latihan interaktif dan penjelasan tata bahasa sederhana, sehingga mudah dipahami. Mulailah perjalanan belajar yang menyenangkan dengan Buku Komprehensif Mandarin dan rasakan kemajuan yang memuaskan!",
-        product_detail: [
-          "Level 1: Rp. 50,000",
-          "Level 2: Rp. 70,000",
-          "Level 3: Rp. 100,000",
-          "Level 4: Rp. 150,000",
-          "Level 5: Rp. 200,000",
-        ],
-      },
-      {
-        title: "E-Book Komprehensif Bahasa Mandarin Level 3",
-        price: "100.000",
-        star: 4,
-        image: "/assets/comprensive.png",
-        desc: "Jelajahi berbagai kosakata Mandarin yang menarik dalam koleksi buku kami, mulai dari HSK 1 hingga HSK 5. Setiap buku dirancang untuk mendukung pembelajaran Anda dengan pertanyaan latihan interaktif dan penjelasan tata bahasa sederhana, sehingga mudah dipahami. Mulailah perjalanan belajar yang menyenangkan dengan Buku Komprehensif Mandarin dan rasakan kemajuan yang memuaskan!",
-        product_detail: [
-          "Level 1: Rp. 50,000",
-          "Level 2: Rp. 70,000",
-          "Level 3: Rp. 100,000",
-          "Level 4: Rp. 150,000",
-          "Level 5: Rp. 200,000",
-        ],
-      },
-      {
-        title: "E-Book Komprehensif Bahasa Mandarin Level 4",
-        price: "150.000",
-        star: 4,
-        image: "/assets/comprensive.png",
-        desc: "Jelajahi berbagai kosakata Mandarin yang menarik dalam koleksi buku kami, mulai dari HSK 1 hingga HSK 5. Setiap buku dirancang untuk mendukung pembelajaran Anda dengan pertanyaan latihan interaktif dan penjelasan tata bahasa sederhana, sehingga mudah dipahami. Mulailah perjalanan belajar yang menyenangkan dengan Buku Komprehensif Mandarin dan rasakan kemajuan yang memuaskan!",
-        product_detail: [
-          "Level 1: Rp. 50,000",
-          "Level 2: Rp. 70,000",
-          "Level 3: Rp. 100,000",
-          "Level 4: Rp. 150,000",
-          "Level 5: Rp. 200,000",
-        ],
-      },
-      {
-        title: "E-Book Komprehensif Bahasa Mandarin Level 5",
-        price: "200.000",
-        star: 4,
-        image: "/assets/comprensive.png",
-        desc: "Jelajahi berbagai kosakata Mandarin yang menarik dalam koleksi buku kami, mulai dari HSK 1 hingga HSK 5. Setiap buku dirancang untuk mendukung pembelajaran Anda dengan pertanyaan latihan interaktif dan penjelasan tata bahasa sederhana, sehingga mudah dipahami. Mulailah perjalanan belajar yang menyenangkan dengan Buku Komprehensif Mandarin dan rasakan kemajuan yang memuaskan!",
-        product_detail: [
-          "Level 1: Rp. 50,000",
-          "Level 2: Rp. 70,000",
-          "Level 3: Rp. 100,000",
-          "Level 4: Rp. 150,000",
-          "Level 5: Rp. 200,000",
-        ],
-      },
-    ],
-  }), []);
+  useEffect(() => {
+    fetchAllData();
+  }, []);
 
-  const translateProduct = langs ? products?.english : products?.indonesia;
+  const fetchAllData = async () => {
+    setIsLoading(true);
+    try {
+      const responses = await Promise.allSettled([
+        getBrandCategoryTurunan("program", "Non Degree (Kelas Bahasa di China)"),
+        getBrandCategoryTurunan("program", "Degree"),
+        getBrandCategoryTurunan("program", "Mentor Scholarship"),
+        getBrandCategoryTurunan("program", "Kelas HSK"),
+        getBrandCategoryTurunan("program", "Premium Mandarin Learning"),
+        getBrandCategoryTurunan("program", "Educonsult S1-S3 Full Cover")
+      ]);
+
+      console.log("Responses:", responses);
+
+      const allProgram = responses?.map((response) => {
+        if (response.status === "fulfilled") {
+          return response.value.data || [];
+        } else {
+          console.error("Error fetching data:", response.reason);
+          return [];
+        }
+      });
+
+      setProducts(allProgram.flat());
+    } catch (error) {
+      console.error("🔥 ERROR fetching data:", error);
+    }
+    setIsLoading(false);
+  };
+
+  const showModal = (product) => {
+    setCurrentProduct(product);
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleNext = () => {
+    if (sliderRef) {
+      sliderRef.slickNext();
+    }
+  };
+
+  const handlePrev = () => {
+    if (sliderRef) {
+      sliderRef.slickPrev();
+    }
+  };
 
   const settings = {
     dots: false,
@@ -351,27 +97,6 @@ const Products = ({ text }) => {
     ],
   };
 
-  const showModal = (product) => {
-    setCurrentProduct(product);
-    setIsModalVisible(true);
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
-
-  const handleNext = () => {
-    if (sliderRef) {
-      sliderRef.slickNext();
-    }
-  };
-
-  const handlePrev = () => {
-    if (sliderRef) {
-      sliderRef.slickPrev();
-    }
-  };
-
   return (
     <div className="container mx-auto px-5 py-16 md:px-16" id="products">
       <h1 className="text-2xl font-semibold text-start md:text-3xl lg:text-[32px]">{text.title}</h1>
@@ -381,30 +106,36 @@ const Products = ({ text }) => {
       <div className="flex flex-col">
         <div className="home-slider product-slider w-full">
           <Slider {...settings} ref={(slider) => sliderRef = slider}>
-            {translateProduct.map((item, index) => (
-              <div key={index} className="h-full">
-                <div
-                  className="bg-white w-full mx-auto border border-[#D5DAE2] rounded-3xl flex flex-col h-full cursor-pointer"
-                  onClick={() => showModal(item)}
-                >
-                  {/* Gambar Program */}
+            {products.map((item, index) => (
+              <a
+                href={`/detail/${item.id}`}
+                key={index}
+                className="p-0 m-0"
+              >
+                <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
                   <img
-                    src={item.image}
-                    alt={item.title}
-                    className="w-full h-auto object-contain"
+                    src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
+                    alt={item.variant}
+                    className="w-full h-56 object-cover rounded-t-2xl"
                   />
-                  <div className="flex flex-col justify-start items-start px-4 py-5 h-full">
+                  <div className="flex flex-col justify-between items-start px-4 py-5">
                     <h2 className="text-lg font-semibold text-gray-800 mb-2">
-                      {item.title}
+                      {item.variant}
                     </h2>
-                    <p className="font-semibold text-base mb-2 mt-auto">
-                      Rp {item.price}
-                      <span className="font-light text-sm ml-1 text-[#657692]">/Month</span>
+                    <p className="font-semibold text-lg mb-2">
+                      {item.discount_price && item.discount_price !== '0' ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
+                      <span className="font-light text-sm ml-1">
+                        {langs
+                          ? "/Month"
+                          : "/Bulan"}
+                      </span>
                     </p>
-                    <p className="mt-2 text-[#3377FF] text-xs">Dapatkan komisi Rp Rp224.950</p>
+                    <div className="flex mt-2">
+                      <span className="text-sm text-[#3377FF]">{langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission) || formatRupiah(0)}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </a>
             ))}
           </Slider>
         </div>
