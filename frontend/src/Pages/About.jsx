@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Mainlayouts from "../Layouts/MainLayouts";
 import { Row, Col } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { getAbout } from "../Store/Action/getAllDatas";
 import { url } from "../Store/Config/url";
 import { AiOutlineRight } from "react-icons/ai";
+import { RiCheckboxCircleFill, RiFocus2Fill, RiFocus3Fill } from "react-icons/ri";
 
 const About = () => {
   const { data, langs } = useSelector((state) => state.LangReducer);
@@ -15,43 +16,78 @@ const About = () => {
     dispatch(getAbout("2023"));
   }, [dispatch]);
 
+  const missions = useMemo(() => (
+    langs ? [
+      "Provide structured, effective, and accessible Mandarin learning programs.",
+      "Facilitate learning with native tutors to enhance fluency and cultural understanding.",
+      "Help students prepare for study and career opportunities in Mandarin-speaking environments.",
+      "Offer mentorship programs to support academic and professional growth.",
+      "Provide guidance and resources for those pursuing higher education in China.",
+      "Build an active, collaborative, and supportive learning community to help  students achieve their goals.",
+    ] : [
+      "Menyediakan program pembelajaran bahasa mandarin yang terstruktur, efektif, dan mudah diakses.",
+      "Memfasilitasi pembelajaran dengan tutor penutur asli untuk meningkatkan kefasihan dan pemahaman budaya.",
+      "Membantu siswa mempersiapkan peluang studi dan karir di lingkungan berbahasa mandarin.",
+      "Menawarkan program bimbingan untuk mendukung pertumbuhan akademis dan profesional.",
+      "Memberikan panduan dan sumber daya bagi mereka yang mengejar pendidikan tinggi di Tiongkok.",
+      "Membangun komunitas belajar yang aktif, kolaboratif, dan mendukung untuk membantu siswa mencapai tujuan mereka.",
+    ]
+  ), [langs])
+
   return (
     <Mainlayouts>
-    <div className="container mx-auto px-5 md:px-10 py-24">
-      <Row gutter={[32, 32]} align="middle">
-        <Col xs={24} md={13} lg={14}>
-          <div className="flex flex-col gap-4 justify-start">
-            <h1 className="text-xl md:text-4xl font-bold text-[#02264A]">
-              Active Mandarin Indonesia
-            </h1>
-            <Col xs={24} md={11} lg={10} className="block md:hidden my-8">
-              <div className="relative rounded-[32px] overflow-hidden shadow-lg">
-                <img
-                  src="assets/about_1.png"
-                  alt="About"
-                  className="w-full object-cover"
-                />
-              </div>
-            </Col>
-            <p
-              className="text-md md:text-lg text-gray-600 text-justify"
-              dangerouslySetInnerHTML={{
-                __html: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum mollis nunc a molestie dictum. Mauris venenatis, felis scelerisque aliquet lacinia, nulla nisi venenatis odio, id blandit mauris ipsum id sapien. Vestibulum malesuada orci sit amet pretium facilisis. In lobortis congue augue, a commodo libero tincidunt scelerisque. Donec tempus congue lacinia. Phasellus lacinia felis est, placerat commodo odio tincidunt iaculis. Sed felis magna, iaculis a metus id, ullamcorper suscipit nulla. Fusce facilisis, nunc ultricies posuere porttitor, nisl lacus tincidunt diam, vel feugiat nisi elit id massa. Proin nulla augue, dapibus non justo in, laoreet commodo nunc. Maecenas faucibus neque in nulla mollis interdum. Quisque quis pellentesque enim, vitae pulvinar purus. Quisque vitae suscipit risus. Curabitur scelerisque magna a interdum pretium. Integer sodales metus ut placerat viverra. Curabitur accumsan, odio quis vehicula imperdiet, tellus ex venenatis nisl, a dignissim lectus augue tincidunt arcu."
-              }}
-            ></p>
+    <div className="flex flex-col mx-auto bg-[#F5F8FF] gap-8 py-8 px-5 md:px-16 lg:flex-row">
+      <div className="w-full lg:w-[54%]">
+        <h1 className="text-2xl font-semibold md:text-3xl lg:text-[32px]">
+          Active Mandarin Indonesia
+        </h1>
+        <p className="mt-6 text-[#201F1F]">
+          {langs
+            ? "Active Mandarin Indonesia is a Mandarin education platform that connects students with academic opportunities, global careers, and mentorship. We provide high-quality learning programs with professional tutors, including native speakers, and a supportive community to help students grow."
+            : "Active Mandarin Indonesia adalah platform pendidikan bahasa mandarin yang menghubungkan siswa dengan peluang akademis, karir global, dan bimbingan. Kami menyediakan program pembelajaran berkualitas tinggi dengan tutor profesional, termasuk penutur asli, dan komunitas yang mendukung untuk membantu siswa tumbuh."}
+        </p>
+        <div className="flex mt-6 gap-4 w-full p-4 rounded-2xl bg-white">
+          <div className="p-2.5 bg-[#3377FF] h-fit rounded-full">
+            <RiFocus3Fill className="w-6 h-6 min-w-6 min-h-6" color="#FFFFFF" />
           </div>
-        </Col>
-        <Col xs={24} md={11} lg={10} className="hidden md:block">
-          <div className="relative rounded-xl overflow-hidden shadow-lg">
-            <img
-              src="assets/about_1.png"
-              alt="About"
-              className="w-full object-cover"
-            />
+          <div className="w-full">
+            <h3 className="text-xl text-[#2B313B] font-semibold">Our Vision</h3>
+            <p className="text-[#201F1F] mt-1">
+              {langs
+                ? "To become the leading Mandarin education platform that not only equips students with language skills but also opens doors to academic opportunities, global careers, and mentorship for professional development."
+                : "Menjadi platform pendidikan bahasa mandarin terdepan yang tidak hanya membekali siswa dengan keterampilan bahasa tetapi juga membuka pintu untuk peluang akademis, karir global, dan bimbingan untuk pengembangan profesional."}
+            </p>
           </div>
-        </Col>
-      </Row>
+        </div>
+        <div className="flex mt-6 gap-4 w-full p-4 rounded-2xl bg-white">
+          <div className="p-2.5 bg-[#FFCC00] h-fit rounded-full">
+            <RiFocus2Fill className="w-6 h-6 min-w-6 min-h-6" color="#22262F" />
+          </div>
+          <div className="w-full">
+            <h3 className="text-xl text-[#2B313B] font-semibold">Our Mission</h3>
+            <div className="mt-1 flex flex-col gap-4">
+              {missions.map((mission, index) => (
+                <div key={index} className="flex gap-2 items-center">
+                  <RiCheckboxCircleFill className="w-6 h-6 min-w-6 min-h-6" color="#57D163" />
+                  <p className="text-[#201F1F]">{mission}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
+      <div className="w-full lg:w-[46%] grid grid-cols-12 gap-4 items-start justify-start">
+        <img src="assets/about-top-1.png" alt="about 1" className="col-span-12 w-full rounded-2xl order-2 lg:order-1" />
+        <div className="grid grid-cols-12 col-span-12 gap-4 order-1 lg:order-2">
+          <img src="assets/about-top-3.png" alt="about 3" className="col-span-5 w-full h-full object-cover rounded-2xl" />
+          <img src="assets/about-top-2.png" alt="about 2" className="col-span-7 w-full h-full object-cover rounded-2xl" />
+        </div>
+        <div className="grid grid-cols-12 col-span-12 gap-4 order-3">
+          <img src="assets/about-top-5.png" alt="about 5" className="col-span-7 w-full h-full object-cover rounded-2xl" />
+          <img src="assets/about-top-4.png" alt="about 4" className="col-span-5 w-full h-full object-cover rounded-2xl" />
+        </div>
+      </div>
+    </div>
       
       <h1 className="text-2xl md:text-4xl text-center mt-11 px-5 md:px-10">
         {langs
