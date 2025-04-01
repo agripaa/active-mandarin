@@ -19,6 +19,10 @@ import DetailPage from "../Pages/DetailPage";
 import Checkout from "../Pages/Checkout";
 import Pembayaran from "../Pages/Pembayaran";
 import Donation from "../Pages/Donation";
+import JoinAffiliate from "../Pages/JoinAffiliate";
+import Reqruitment from "../Pages/Reqruitment";
+import GiveDonation from "../Pages/GiveDonation";
+import Invoice from "../Pages/Invoice";
 
 const Routings = () => {
     return(
@@ -31,11 +35,15 @@ const Routings = () => {
                 <Route path="/class" element={<Catalog/>}/>
                 <Route path="/products" element={<CatalogProduct/>}/>
                 <Route path="/contact" element={<Contact/>}/>
+                <Route path="/join-affiliate" element={<JoinAffiliate/>}/>
+                <Route path="/join-team" element={<Reqruitment/>}/>
+                <Route path="/donate" element={<GiveDonation/>}/>
 
                 {/* Transaction User Page */}
                 <Route path="/detail/:id" element={<DetailPage/>}/>
                 <Route path="/checkout/:id" element={<Checkout/>}/>
                 <Route path="/pembayaran/:id" element={<Pembayaran/>}/>
+                <Route path="/invoice/:id" element={<Invoice/>}/>
 
                 {/* Dashboard */}
                 <Route path="/dashboard" element={<Dashboard/>}/>

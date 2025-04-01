@@ -5,6 +5,16 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        background: "#F5F8FF",
+        fiord: {
+          50: "#FFFFFF",
+          200: "#D5DAE2",
+          300: "#AFB8CA",
+          600: "#505E79",
+          950: "#22262F",
+        }
+      },
       keyframes: {
         scrollVertical: {
           '0%': { transform: 'translateY(0%)' },
@@ -28,7 +38,9 @@ module.exports = {
         'spin-slow-25': 'spin 25s linear infinite',
         'spin-slow-10': 'spin 10s linear infinite',
         'scroll-vertical-infinite' : 'scrollVertical 30s linear infinite',
+        'scroll-vertical-infinite-50' : 'scrollVertical 50s linear infinite',
         'scroll-vertical-infinite-reverse' : 'scrollVertical2 30s linear infinite',
+        'scroll-vertical-infinite-reverse-50' : 'scrollVertical2 50s linear infinite',
         'scroll-horizontal-infinite' : 'scrollHorizontal 30s linear infinite',
         'scroll-horizontal-infinite-reverse' : 'scrollHorizontal2 30s linear infinite',
         'scroll-horizontal-infinite-reverse-50' : 'scrollHorizontal2 50s linear infinite',
