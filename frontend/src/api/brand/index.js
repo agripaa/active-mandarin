@@ -50,3 +50,13 @@ export const getGroupedBrands = async () => {
     throw error.response ? error.response.data : error.message;
   }
 };
+
+export const getLatestPrograms = async () => {
+  try {
+    const response = await api.get(`/brand/latest-programs`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching transactions:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+}

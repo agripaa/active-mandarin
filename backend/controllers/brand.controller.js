@@ -331,3 +331,21 @@ exports.deleteBrand = async (req, res) => {
     res.status(500).json({ status: false, error: error.message });
   }
 };
+
+exports.getLatestPrograms = async (req, res) => {
+  try {
+    const latestPrograms = await Brand.findAll({
+      where: { isDelete: false, category_brand: "program" },
+      order: [['createdAt', 'DESC']],
+      limit: 5,
+    });
+
+    if (latestPrograms.length === 0) {
+      return res.status(404).json({ status: false, message: "No latest programs found" });
+    }
+
+    res.json({ status: true, data: latestPrograms });
+  } catch (error) {
+    res.status(500).json({ status: false, error: error.message });
+  }
+}
