@@ -37,6 +37,7 @@ const CreateProductModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
   };
 
   const handleSave = async () => {
+    setLoading(true);
     try {
       const values = await form.validateFields();
       const formData = new FormData();
@@ -63,23 +64,22 @@ const CreateProductModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
         Swal.fire("Error!", "Gambar produk wajib diunggah!", "error");
         return;
       }
-
-      setLoading(true);
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/brand`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      setLoading(false);
-
       if (response.data.status) {
         Swal.fire("Sukses!", "Produk berhasil ditambahkan!", "success");
         refreshData();
+        handleCancel(); 
       } else {
         Swal.fire("Gagal!", response.data.message, "error");
       }
     } catch (error) {
       setLoading(false);
       Swal.fire("Error!", "Terjadi kesalahan saat menyimpan data!", "error");
+    } finally{
+      setLoading(false);
     }
   };
 

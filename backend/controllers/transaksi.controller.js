@@ -2,6 +2,7 @@ const db = require('../models');
 const path = require('path');
 const fs = require('fs');
 const { Op, Sequelize } = require('sequelize');
+const { sendTransactionStatusEmail, sendNewTransactionNotificationToAdmin } = require('../helpers/sendEmail');
 
 const { Transaction, User, Brand } = db;
 
@@ -57,6 +58,10 @@ exports.createTransaction = async (req, res) => {
       transaction_date: new Date(),
       expired_date,
     });
+
+    const user = await User.findByPk(req.userId);
+    await sendNewTransactionNotificationToAdmin(user, brand, newTransaction.id, proof_transaction);
+
 
     res.status(201).json({ status: true, message: "Transaction created successfully", data: newTransaction });
   } catch (error) {
@@ -452,37 +457,48 @@ exports.getAllTransactions = async (req, res) => {
 };
  
 
-  exports.updateTransaction = async (req, res) => {
-    try {
-      const transaction = await Transaction.findByPk(req.params.id);
-  
-      if (!transaction) {
-        return res.status(404).json({ status: false, message: "Transaction not found" });
-      }
-  
-      const { status_transaction, summary_cancel } = req.body;
-      
-      const validStatuses = ["pending", "success", "cancel"];
-      if (!validStatuses.includes(status_transaction)) {
-        return res.status(400).json({ status: false, message: `Invalid status. Allowed values: ${validStatuses.join(", ")}` });
-      }
-  
-      if (status_transaction === "cancel" && !summary_cancel) {
-        return res.status(400).json({ status: false, message: "Cancellation requires a summary cancel reason." });
-      }
+exports.updateTransaction = async (req, res) => {
+  try {
+    const transaction = await Transaction.findByPk(req.params.id, {
+      include: [
+        { model: User, as: 'User' },
+        { model: Brand, as: 'Brand' },
+      ],
+    });
 
-      await Brand.increment({sold_sum: 1}, {where: {id: transaction.brand_id}});
-      
-      await transaction.update({
-        status_transaction: status_transaction || transaction.status_transaction,
-        summary_cancel: status_transaction === "cancel" ? summary_cancel : null 
-      });
-  
-      res.json({ status: true, message: "Transaction updated successfully", data: transaction });
-    } catch (error) {
-      res.status(500).json({ status: false, error: error.message });
+    if (!transaction) {
+      return res.status(404).json({ status: false, message: "Transaction not found" });
     }
-  };
+
+    const { status_transaction, summary_cancel } = req.body;
+
+    const validStatuses = ["pending", "success", "cancel"];
+    if (!validStatuses.includes(status_transaction)) {
+      return res.status(400).json({ status: false, message: `Invalid status. Allowed values: ${validStatuses.join(", ")}` });
+    }
+
+    if (status_transaction === "cancel" && !summary_cancel) {
+      return res.status(400).json({ status: false, message: "Cancellation requires a summary cancel reason." });
+    }
+
+    if (status_transaction === "success") {
+      await Brand.increment({ sold_sum: 1 }, { where: { id: transaction.brand_id } });
+    }
+
+    await transaction.update({
+      status_transaction: status_transaction || transaction.status_transaction,
+      summary_cancel: status_transaction === "cancel" ? summary_cancel : null,
+    });
+
+    if (["success", "cancel"].includes(status_transaction)) {
+      await sendTransactionStatusEmail(transaction.User, transaction.Brand, transaction.id, status_transaction, summary_cancel);
+    }
+    res.json({ status: true, message: "Transaction updated successfully", data: transaction });
+  } catch (error) {
+    res.status(500).json({ status: false, error: error.message });
+  }
+};
+
   
 
 exports.deleteTransaction = async (req, res) => {

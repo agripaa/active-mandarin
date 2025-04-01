@@ -25,7 +25,7 @@ const Affiliate = () => {
     useEffect(() => {
         fetchAffiliators(currentPage);
         fetchAffiliateRevenue();
-    }, []);
+    }, [currentPage]);
 
     const handleYearChange = (year) => {
         setSelectedYear(year);
@@ -42,8 +42,9 @@ const Affiliate = () => {
         setLoading(true);
         try {
             const response = await getAffiliatorStatusTrue(page, pageSize);
+            const totalAffiliators = response.total_affiliators.reduce((sum, item) => sum + item.count, 0); // Calculate total items
             setAffiliators(response.data);
-            setTotalItems(response.total_items);
+            setTotalItems(totalAffiliators); // Set total items based on total count
         } catch (error) {
             console.error("Error fetching approved affiliates:", error);
         } finally {
@@ -54,7 +55,6 @@ const Affiliate = () => {
     const fetchAffiliateRevenue = async () => {
         try {
             const response = await getTotalAffiliateRevenue();
-            console.log({response})
             setTotalCommission(response.total_revenue);
             setMonthlyRevenue(response.revenue_by_month);
         } catch (error) {
@@ -71,34 +71,32 @@ const Affiliate = () => {
     );
 
     const columns = [
-      { title: "Nama", dataIndex: "name", key: "name", render: (text) => text || "-" },
-      { title: "Email", dataIndex: "email", key: "email", render: (text) => text || "-" },
-      { title: "No Telpon", dataIndex: "number", key: "number", render: (text) => text || "-" },
-      { title: "Kode Referal", dataIndex: "reveral_code", key: "reveral_code", render: (text) => text || "-" },
-      { 
-          title: "Total Komisi", 
-          dataIndex: "total_commission", 
-          key: "total_commission", 
-          render: (text) => `Rp ${text?.toLocaleString() || "0"}` // ✅ Format ke Rupiah
-      },
-  ];
-  
+        { title: "Nama", dataIndex: "name", key: "name", render: (text) => text || "-" },
+        { title: "Email", dataIndex: "email", key: "email", render: (text) => text || "-" },
+        { title: "No Telpon", dataIndex: "number", key: "number", render: (text) => text || "-" },
+        { title: "Kode Referal", dataIndex: "reveral_code", key: "reveral_code", render: (text) => text || "-" },
+        { 
+            title: "Total Komisi", 
+            dataIndex: "total_commission", 
+            key: "total_commission", 
+            render: (text) => `Rp ${text?.toLocaleString() || "0"}` // ✅ Format ke Rupiah
+        },
+    ];
 
     const chartData = {
-      labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"],
-      datasets: [
-          {
-              label: "Jumlah Transaksi",
-              backgroundColor: "#3377FF",
-              borderColor: "#3377FF",
-              borderWidth: 1,
-              hoverBackgroundColor: "#3377FF",
-              borderRadius: 10,
-              data: monthlyRevenue, // ✅ Data transaksi per bulan
-          },
-      ],
-  };
-  
+        labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"],
+        datasets: [
+            {
+                label: "Jumlah Transaksi",
+                backgroundColor: "#3377FF",
+                borderColor: "#3377FF",
+                borderWidth: 1,
+                hoverBackgroundColor: "#3377FF",
+                borderRadius: 10,
+                data: monthlyRevenue, // ✅ Data transaksi per bulan
+            },
+        ],
+    };
 
     const chartOptions = {
         plugins: { legend: { display: false } },

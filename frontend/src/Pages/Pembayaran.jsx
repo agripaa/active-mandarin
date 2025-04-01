@@ -16,6 +16,7 @@ const Pembayaran = () => {
   const [proof, setProof] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
   const reveralCode = localStorage.getItem("reveral_code");
 
   useEffect(() => {
@@ -50,13 +51,14 @@ const Pembayaran = () => {
       Swal.fire("Error!", "Bukti pembayaran wajib diunggah!", "error");
       return;
     }
-
+  
     const formData = new FormData();
     formData.append("brand_id", id);
-    formData.append("payment_method", metode); // Sesuai metode yang dipilih
+    formData.append("payment_method", metode);
     formData.append("proof_transaction", proof);
     if (reveralCode) formData.append("reveral_code", reveralCode);
-
+  
+    setLoadingSubmit(true); // ⏳ Start loading
     try {
       const response = await createTransaction(formData);
       Swal.fire("Berhasil!", "Transaksi berhasil dibuat!", "success").then(() => {
@@ -65,8 +67,11 @@ const Pembayaran = () => {
       });
     } catch (error) {
       Swal.fire("Error!", error.message || "Terjadi kesalahan", "error");
+    } finally {
+      setLoadingSubmit(false); // ✅ Stop loading
     }
   };
+  
 
   const token = localStorage.getItem("token");
   if(!token) {
@@ -98,7 +103,9 @@ const Pembayaran = () => {
             <img src={`${process.env.REACT_APP_API_IMG}${brandData.brand_img}`} alt="Product" className="w-full h-auto border-b pb-4" />
             <h1 className="text-2xl font-semibold mt-6">{brandData.variant}</h1>
             <div 
-              className="text-gray-600 mt-2 leading-relaxed"
+              className="prose text-gray-600 mt-2 leading-relaxed
+              [&_a]:text-blue-600 [&_a]:underline 
+              [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-6 [&_ol]:pl-6"
               dangerouslySetInnerHTML={{ __html: brandData.detail_brand }}
             />
           </div>
@@ -155,8 +162,12 @@ const Pembayaran = () => {
               )}
             </div>
 
-            <button onClick={handleSubmit} className="mt-6 w-full bg-[#FFCC00] hover:bg-yellow-500 text-black font-semibold py-3 rounded-xl">
-              Buat Pesanan
+            <button
+              onClick={handleSubmit}
+              className="mt-6 w-full bg-[#FFCC00] hover:bg-yellow-500 text-black font-semibold py-3 rounded-xl flex justify-center items-center"
+              disabled={loadingSubmit}
+            >
+              {loadingSubmit ? <Spin size="small" /> : "Buat Pesanan"}
             </button>
           </div>
         </div>

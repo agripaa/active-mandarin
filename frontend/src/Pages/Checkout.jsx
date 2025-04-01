@@ -89,7 +89,9 @@ const Checkout = () => {
                     <div className="bg-white rounded-lg md:w-5/12">
                         <img src={`${process.env.REACT_APP_API_IMG}${brandData.brand_img}`} alt="Product" className="w-full h-auto border-b pb-4" />
                         <h1 className="text-2xl font-semibold mt-6">{brandData.variant}</h1>
-                        <div className="text-gray-600 mt-2 leading-relaxed" dangerouslySetInnerHTML={{ __html: brandData.detail_brand }}></div>
+                        <div className="prose text-gray-600 mt-2 leading-relaxed w-10/12 
+                        [&_a]:text-blue-600 [&_a]:underline 
+                        [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-6 [&_ol]:pl-6" dangerouslySetInnerHTML={{ __html: brandData.detail_brand }}></div>
                     </div>
 
                     {/* Kode Referral + Detail Pembayaran */}

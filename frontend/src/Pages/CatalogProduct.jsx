@@ -73,7 +73,7 @@ const CatalogProduct = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full gap-6">
                     {products.map((item, index) => (
                       <div key={index} className="p-0 m-0">
-                        <div onClick={() => handleClickItem(item?.brands[0].id)}className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
+                        <div onClick={() => handleClickItem(item?.brands[0].id)} className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
                           <img
                             src={`${process.env.REACT_APP_API_IMG}${item.image}`}
                             alt={`${item.turunan_brand}`}

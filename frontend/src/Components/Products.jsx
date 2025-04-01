@@ -97,6 +97,16 @@ const Products = ({ text }) => {
     ],
   };
 
+  const handleClickItem = (id) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      const openModalEvent = new CustomEvent("triggerLoginModal");
+      window.dispatchEvent(openModalEvent); // trigger modal dari Header
+    } else {
+      window.location.href = `/detail/${id}`;
+    }
+  };
+
   return (
     <div className="container mx-auto px-5 py-16 md:px-16" id="products">
       <h1 className="text-2xl font-semibold text-start md:text-3xl lg:text-[32px]">{text.title}</h1>
@@ -107,8 +117,8 @@ const Products = ({ text }) => {
         <div className="home-slider product-slider w-full">
           <Slider {...settings} ref={(slider) => sliderRef = slider}>
             {products.map((item, index) => (
-              <a
-                href={`/detail/${item.id}`}
+              <div
+                onClick={() => handleClickItem(item.id)}
                 key={index}
                 className="p-0 m-0"
               >
@@ -135,7 +145,7 @@ const Products = ({ text }) => {
                     </div>
                   </div>
                 </div>
-              </a>
+              </div>
             ))}
           </Slider>
         </div>

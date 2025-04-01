@@ -3,6 +3,16 @@ const { Role } = require('../models');
 exports.createRole = async (req, res) => {
   try {
     const { role_name } = req.body;
+
+    const role_name_lower = role_name.toLowerCase();
+    const roleExist = await Role.findOne({where: {role_name: role_name_lower}});
+    if(roleExist) 
+      return res.status(400).json({status: false, message: "role sudah tersedia"});
+
+    const mustRole = ["user", "affiliator", "admin"]
+    if(!mustRole.includes(role_name_lower)) {
+      res.status(400).json({status: false, message: "role tidak sesuai dengan kategori. nama role yang mesti di input (user, affiliator, admin)"});
+    }
     
     const newRole = await Role.create({ role_name: role_name.toLowerCase() });
     res.status(201).json({status: true, data: newRole});

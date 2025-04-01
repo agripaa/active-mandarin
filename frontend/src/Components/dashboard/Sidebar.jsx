@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { RiDashboardFill, RiFileTextLine, RiNotification4Line, RiContactsLine, RiHandHeartLine, RiGroupLine, RiLogoutBoxLine, RiUserLine, RiHome4Line } from "react-icons/ri";
+import { MdCoPresent, MdOutlineDashboardCustomize } from "react-icons/md";
 import { getProfile } from "../../api/auth";
 
 const Sidebar = () => {
@@ -84,20 +85,27 @@ const Sidebar = () => {
                         <SidebarItem to={`/affiliate`} icon={<RiContactsLine />} label="Data Affiliate" location={location} />
                         <SidebarItem to={`/donasi`} icon={<RiHandHeartLine />} label="Data Donasi" location={location} />
                         <SidebarItem to={`/rekrutmen`} icon={<RiGroupLine />} label="Data Rekrutmen" location={location} />
+                        <hr className="my-4" />
                         <SidebarItem to={`/`} icon={<RiHome4Line />} label="Homepage" location={location} />
                     </ul>
                 ) : role === "affiliator" ? (
                     <ul>
                         <SidebarItem to={`/dashboard`} icon={<RiDashboardFill />} label="Dashboard" location={location} />
                         <SidebarItem to={`/profile`} icon={<RiUserLine />} label="Profile" location={location} />
+                        <hr className="my-4" />
                         <SidebarItem to={`/`} icon={<RiHome4Line />} label="Homepage" location={location} />
+                        <SidebarItem to={`/class`} icon={<MdCoPresent />} label="Explore Program" location={location} />
+                        <SidebarItem to={`/products`} icon={<MdOutlineDashboardCustomize />} label="Explore Product" location={location} />
                     </ul>
                 ) : (
                     <ul>
                         <SidebarItem to={`/dashboard`} icon={<RiDashboardFill />} label="Dashboard" location={location} />
                         <SidebarItem to={`/transaksi`} icon={<RiFileTextLine />} label="Transaksi" location={location} />
                         <SidebarItem to={`/profile`} icon={<RiUserLine />} label="Profile" location={location} />
+                        <hr className="my-4" />
                         <SidebarItem to={`/`} icon={<RiHome4Line />} label="Homepage" location={location} />
+                        <SidebarItem to={`/class`} icon={<MdCoPresent />} label="Explore Program" location={location} />
+                        <SidebarItem to={`/products`} icon={<MdOutlineDashboardCustomize />} label="Explore Product" location={location} />
                     </ul>
                 )}
             </nav>

@@ -50,7 +50,6 @@ const TransaksiUser = () => {
                 <th className="p-3">Item</th>
                 <th className="p-3">Harga</th>
                 <th className="p-3">Tanggal Pembelian</th>
-                <th className="p-3">Komisi</th>
                 <th className="p-3">Status</th>
               </tr>
             </thead>
@@ -63,7 +62,6 @@ const TransaksiUser = () => {
                   <td className="p-3">{transaction.item}</td>
                   <td className="p-3">{transaction.discount_price ? formatRupiah(transaction.discount_price) : formatRupiah(transaction.price)}</td>
                   <td className="p-3">{formatDate(transaction.transaction_date)}</td>
-                  <td className="p-3">{formatRupiah(transaction.commission) || "-"}</td>
                   <td className={`p-3 font-semibold ${
                     transaction.status_transaction === "success" ? "text-green-500" 
                     : transaction.status_transaction === "cancel" ? "text-red-500" 

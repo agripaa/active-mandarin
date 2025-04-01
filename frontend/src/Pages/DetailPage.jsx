@@ -104,7 +104,9 @@ const DetailPage = () => {
 
             <h2 className="text-xl font-semibold mt-6">Detail</h2>
             <div
-              className="text-gray-600 mt-2 leading-relaxed w-10/12"
+              className="prose text-gray-600 mt-2 leading-relaxed w-10/12 
+                        [&_a]:text-blue-600 [&_a]:underline 
+                        [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-6 [&_ol]:pl-6"
               dangerouslySetInnerHTML={{
                 __html:
                   showFullDesc || detailBrandText.length <= MAX_LENGTH

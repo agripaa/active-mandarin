@@ -13,11 +13,11 @@ import { formatRupiah } from "../../utils/rupiahFormat";
 const TransaksiAdmin = () => {
   const [data, setData] = useState([]);
   const [totalTransactions, setTotalTransactions] = useState(0);
-  const [totalRevenue, setTotalRevenue] = useState(0);
+  const [totalRevenue, setTotalRevenue] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 5;
+  const [totalItems, setTotalItems] = useState(1);
+  const pageSize = 10;
 
-  // Fetch Transactions
   useEffect(() => {
     fetchTransactions();
     fetchTransactionSummary();
@@ -26,7 +26,9 @@ const TransaksiAdmin = () => {
   const fetchTransactions = async () => {
     try {
       const response = await getAllTransactions(currentPage, pageSize);
+      const totalAffiliators = response.total_affiliators.reduce((sum, item) => sum + item.count, 0);
       setData(response.data);
+      setTotalItems(totalAffiliators);
     } catch (error) {
       console.error(error);
     }
@@ -42,7 +44,6 @@ const TransaksiAdmin = () => {
     }
   };
 
-  // **Handle Export to Excel**
   const handleExportExcel = async () => {
     try {
       await exportTransactionsToExcel();
@@ -75,7 +76,6 @@ const TransaksiAdmin = () => {
 
   return (
     <div className="flex flex-col w-full min-h-screen p-4">
-      {/* Header Cards */}
       <div className="flex w-full gap-4 mb-6">
         <div className="flex flex-col rounded-xl bg-white px-6 shadow-lg py-6 w-[22%]">
           <div className="flex items-center justify-center bg-[#F9CA24] text-white rounded-full w-14 h-14">
@@ -97,7 +97,6 @@ const TransaksiAdmin = () => {
         </div>
       </div>
 
-      {/* Table */}
       <div className="bg-white p-6 shadow-lg rounded-xl">
         <div className="flex w-full justify-between items-center mb-4">
           <h4 className="text-lg font-semibold">Transaksi Berhasil</h4>
@@ -105,8 +104,16 @@ const TransaksiAdmin = () => {
             Export To Excel
           </Button>
         </div>
-        <Table columns={columns} dataSource={data} pagination={false} />
-        <Pagination current={currentPage} total={data.length} pageSize={pageSize} onChange={setCurrentPage} className="mt-4" />
+        <Table columns={columns} dataSource={data} pagination={false} rowKey="id" />
+        <div className="flex justify-end mt-4">
+            <Pagination
+                current={currentPage}
+                total={totalItems}
+                pageSize={pageSize}
+                onChange={(page) => setCurrentPage(page)}
+                showSizeChanger={false}
+            />
+        </div>
       </div>
     </div>
   );
