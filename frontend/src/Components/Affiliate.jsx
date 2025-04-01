@@ -38,7 +38,7 @@ const Affiliate = ({ text }) => {
 
           <div className='w-0 lg:w-[48%] xl:w-[45%]' />
 
-          <div className='flex flex-col justify-center text-white w-full lg:max-w-lg lg:w-7/12'>
+          <div className='flex flex-col justify-center text-white w-full z-20 lg:max-w-lg lg:w-7/12'>
             <h2 className='font-semibold text-2xl md:text-[32px]'>{text.title}</h2>
             <ul className='flex flex-col gap-4 mt-6'>
               <li className='flex gap-2.5 items-center'>
@@ -59,12 +59,13 @@ const Affiliate = ({ text }) => {
               </li>
             </ul>
             <div className='mt-6'>
-              <button
-                onClick={showModal}
-                className="px-8 py-4 w-full bg-[#FFCC00] tracking-wide mt-2 text-base text-[#252525] font-semibold rounded-3xl transition-all duration-300 hover:bg-yellow-500 hover:text-black"
-              >
-                {langs ? "Join Us" : "Gabung Sekarang"}
-              </button>
+              <Link to={'/join-affiliate'} className='block'>
+                <button
+                  className="px-8 py-4 w-full bg-[#FFCC00] tracking-wide mt-2 text-base text-[#252525] font-semibold rounded-3xl transition-all duration-300 hover:bg-yellow-500 hover:text-black"
+                >
+                  {langs ? "Join Us" : "Gabung Sekarang"}
+                </button>
+              </Link>
             </div>
           </div>
         </div>

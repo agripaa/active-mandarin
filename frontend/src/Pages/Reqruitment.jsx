@@ -70,13 +70,13 @@ const Reqruitment = () => {
             </div>
           </div>
           <div className='flex items-center justify-center mt-8 gap-4 md:justify-start'>
-            <Link to='#apply'>
+            <a href='#Apply'>
               <button
                 className="px-6 py-3 md:px-8 md:py-4 w-fit bg-[#FFCC00] tracking-wide mt-2 text-xs text-[#252525] font-semibold rounded-3xl transition-all duration-300 hover:bg-yellow-500 hover:text-black sm:text-sm lg:text-base"
               >
                 {langs ? "Apply Now" : "Daftar Sekarang"}
               </button>
-            </Link>
+            </a>
             <Link to='#'>
               <button
                 className="px-6 py-3 md:px-8 md:py-4 w-fit border-2 border-[#8493AC] tracking-wide mt-2 text-xs text-[#252525] font-semibold rounded-3xl transition-all duration-300 hover:bg-yellow-500 hover:text-black sm:text-sm lg:text-base"
@@ -121,7 +121,7 @@ const Reqruitment = () => {
                 : "Ambil Langkah Pertama Menuju Masa Depan Anda!"}
             </p>
           </div>
-          <div className="mt-8" id="apply">
+          <div className="mt-8" id="Apply">
             <AffiliateForm />
           </div>
         </div>

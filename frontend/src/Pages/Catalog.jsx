@@ -77,6 +77,26 @@ const Catalog = () => {
         image: "/assets/banner/Web Banne Act CTA-7.png",
         link: "https://wa.me/+6282279506450",
       },
+      {
+        image: "/assets/banner/Web Banne Act CTA-8.png",
+        link: "/join-affiliate",
+      },
+      {
+        image: "/assets/banner/Web Banne Act CTA-9.png",
+        link: "/products",
+      },
+      {
+        image: "/assets/banner/Web Banne Act CTA-10.png",
+        link: "#Mentor",
+      },
+      {
+        image: "/assets/banner/Web Banne Act CTA-11.png",
+        link: "#Mentor",
+      },
+      {
+        image: "/assets/banner/Web Banne Act CTA-12.png",
+        link: "#Mentor",
+      },
     ];
     setGalleryData(images);
   };

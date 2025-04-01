@@ -22,6 +22,7 @@ import Donation from "../Pages/Donation";
 import JoinAffiliate from "../Pages/JoinAffiliate";
 import Reqruitment from "../Pages/Reqruitment";
 import GiveDonation from "../Pages/GiveDonation";
+import Invoice from "../Pages/Invoice";
 
 const Routings = () => {
     return(
@@ -42,6 +43,7 @@ const Routings = () => {
                 <Route path="/detail/:id" element={<DetailPage/>}/>
                 <Route path="/checkout/:id" element={<Checkout/>}/>
                 <Route path="/pembayaran/:id" element={<Pembayaran/>}/>
+                <Route path="/invoice/:id" element={<Invoice/>}/>
 
                 {/* Dashboard */}
                 <Route path="/dashboard" element={<Dashboard/>}/>

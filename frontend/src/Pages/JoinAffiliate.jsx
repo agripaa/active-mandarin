@@ -6,13 +6,23 @@ import { Button, Checkbox, Form, Input, InputNumber, Radio, Rate, Select, Spin, 
 import { getBrandCategoryTurunan } from "../api/brand";
 import { formatRupiah } from "../utils/rupiahFormat";
 import { RiCheckboxCircleFill } from "react-icons/ri";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { UploadOutlined } from "@ant-design/icons";
 import Swal from "sweetalert2";
 import axios from "axios";
 
 const JoinAffiliate = () => {
   const { _, langs } = useSelector((state) => state.LangReducer);
+  const location = useLocation();
+  
+  useEffect(() => {
+    if (location.hash) {
+      const element = document.querySelector(location.hash);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [location])
 
   const heroPoints = useMemo(() => {
     return langs ? [
@@ -60,13 +70,13 @@ const JoinAffiliate = () => {
             </div>
           </div>
           <div className='flex items-center justify-center mt-8 gap-4 md:justify-start'>
-            <Link to='#apply'>
+            <a href='#Apply'>
               <button
                 className="px-6 py-3 md:px-8 md:py-4 w-fit bg-[#FFCC00] tracking-wide mt-2 text-xs text-[#252525] font-semibold rounded-3xl transition-all duration-300 hover:bg-yellow-500 hover:text-black sm:text-sm lg:text-base"
               >
                 {langs ? "Apply Now" : "Daftar Sekarang"}
               </button>
-            </Link>
+            </a>
             <Link to='#'>
               <button
                 className="px-6 py-3 md:px-8 md:py-4 w-fit border-2 border-[#8493AC] tracking-wide mt-2 text-xs text-[#252525] font-semibold rounded-3xl transition-all duration-300 hover:bg-yellow-500 hover:text-black sm:text-sm lg:text-base"
@@ -111,7 +121,7 @@ const JoinAffiliate = () => {
                 : "Gabung, Bagikan, dan Dapatkan Komisi! 🎉"}
             </p>
           </div>
-          <div className="mt-8">
+          <div className="mt-8" id="Apply">
             <AffiliateForm />
           </div>
         </div>

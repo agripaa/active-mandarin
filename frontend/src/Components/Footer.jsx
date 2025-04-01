@@ -75,7 +75,7 @@ const Footers = ({ footerClassName }) => {
                 </Row>
             </div>
             <div className="bg-[#02264A] p-5 w-full text-white text-center">
-                <p className="text-xs sm:text-sm md:text-base">© 2024 All Right Reserved | Active Mandarin Indonesia</p>
+                <p className="text-xs sm:text-sm md:text-base">© 2025 All Right Reserved | PT Active Mandarin Indonesia</p>
             </div>
         </div>
     )

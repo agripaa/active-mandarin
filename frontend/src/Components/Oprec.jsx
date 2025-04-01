@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Modal, Button } from 'antd'
 import { useSelector } from "react-redux";
 import { RiCheckboxCircleFill } from 'react-icons/ri';
+import { Link } from 'react-router-dom';
 
 const Oprec = ({ text }) => {
     const {data, langs} = useSelector(state => state.LangReducer);
@@ -49,12 +50,13 @@ const Oprec = ({ text }) => {
               </li>
             </ul>
             <div className='mt-6'>
-              <button
-                onClick={showModal}
-                className="px-8 py-4 bg-[#FFCC00] tracking-wide mt-2 text-base text-[#252525] font-semibold rounded-3xl transition-all duration-300 hover:bg-yellow-500 hover:text-black w-full"
-              >
-                {langs ? "Join Us" : "Gabung Sekarang"}
-              </button>
+              <Link to={'/join-team'} className='block'>
+                <button
+                  className="px-8 py-4 bg-[#FFCC00] tracking-wide mt-2 text-base text-[#252525] font-semibold rounded-3xl transition-all duration-300 hover:bg-yellow-500 hover:text-black w-full"
+                >
+                  {langs ? "Join Us" : "Gabung Sekarang"}
+                </button>
+              </Link>
             </div>
           </div>
 
