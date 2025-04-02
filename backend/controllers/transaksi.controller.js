@@ -321,10 +321,12 @@ exports.getAllTransactions = async (req, res) => {
 
   exports.getTransactionById = async (req, res) => {
     try {
+      const id = parseInt(req.params.id); 
       const transaction = await Transaction.findOne({
-            where: { id: req.params.id, isDelete: false, },
+            where: { id, isDelete: false, },
         include: [
           { model: User, as: 'User', },
+          { model: User, as: 'Affiliator', },
           { model: Brand, as: 'Brand', }
         ]
       });
@@ -336,7 +338,7 @@ exports.getAllTransactions = async (req, res) => {
       let affiliator = null;
       if (transaction.affiliator_id) {
         affiliator = await User.findOne({
-          where: { reveral_code: transaction.affiliator_id },
+          where: { id: transaction.affiliator_id },
         });
       }
   

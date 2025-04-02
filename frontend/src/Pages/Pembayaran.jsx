@@ -61,9 +61,10 @@ const Pembayaran = () => {
     setLoadingSubmit(true); // ⏳ Start loading
     try {
       const response = await createTransaction(formData);
+      console.log(response)
       Swal.fire("Berhasil!", "Transaksi berhasil dibuat!", "success").then(() => {
         localStorage.removeItem("reveral_code");
-        navigate("/invoice");
+        navigate(`/invoice/${response.data.id}`);
       });
     } catch (error) {
       Swal.fire("Error!", error.message || "Terjadi kesalahan", "error");
@@ -140,10 +141,10 @@ const Pembayaran = () => {
               </div>
             ) : (
               <div className="border p-4 rounded-lg flex items-center gap-4">
-                <img src="/assets/bca.png" alt="Bank Transfer" className="w-20 h-auto" />
+                <img src="/assets/bni.png" alt="Bank Transfer" className="w-20 h-auto" />
                 <div className="flex flex-col">
-                  <p className="text-lg font-semibold">996162569</p>
-                  <p className="text-gray-600">A/n Active Mandarin Indonesia</p>
+                  <p className="text-lg font-semibold">1920120881</p>
+                  <p className="text-gray-600">A/n PT Active Edulang Global</p>
                 </div>
               </div>
             )}

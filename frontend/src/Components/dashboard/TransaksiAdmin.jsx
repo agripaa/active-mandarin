@@ -13,9 +13,9 @@ import { formatRupiah } from "../../utils/rupiahFormat";
 const TransaksiAdmin = () => {
   const [data, setData] = useState([]);
   const [totalTransactions, setTotalTransactions] = useState(0);
-  const [totalRevenue, setTotalRevenue] = useState(1);
+  const [totalRevenue, setTotalRevenue] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalItems, setTotalItems] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const pageSize = 10;
 
   useEffect(() => {
@@ -26,9 +26,8 @@ const TransaksiAdmin = () => {
   const fetchTransactions = async () => {
     try {
       const response = await getAllTransactions(currentPage, pageSize);
-      const totalAffiliators = response.total_affiliators.reduce((sum, item) => sum + item.count, 0);
       setData(response.data);
-      setTotalItems(totalAffiliators);
+      setTotalPages(response.total_pages * pageSize); // Set total items instead of pages
     } catch (error) {
       console.error(error);
     }
@@ -72,6 +71,16 @@ const TransaksiAdmin = () => {
       key: "commission", 
       render: (_, record) => record?.Affiliator ? formatRupiah(record.Brand?.commission) : "-" 
     },
+    { 
+      title: "Aksi", 
+      dataIndex: "id", 
+      key: "id", 
+      render: (id, record) => (
+        <a href={`/invoice/${id}`} className="bg-transparent border-2 border-neutral-600 hover:bg-neutral-600 hover:text-white text-black font-semibold py-2 rounded-xl flex justify-center items-center">
+          Lihat Invoice
+        </a>
+      ) 
+    },
   ];
 
   return (
@@ -106,13 +115,14 @@ const TransaksiAdmin = () => {
         </div>
         <Table columns={columns} dataSource={data} pagination={false} rowKey="id" />
         <div className="flex justify-end mt-4">
-            <Pagination
-                current={currentPage}
-                total={totalItems}
-                pageSize={pageSize}
-                onChange={(page) => setCurrentPage(page)}
-                showSizeChanger={false}
-            />
+        <Pagination
+          current={currentPage}
+          total={totalPages}
+          pageSize={pageSize}
+          onChange={setCurrentPage}
+          showSizeChanger={false}
+          showLessItems
+        />
         </div>
       </div>
     </div>

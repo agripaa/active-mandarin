@@ -142,7 +142,7 @@ const DetailPage = () => {
         </div>
 
         {/* Produk Serupa */}
-        <h2 className="text-3xl font-semibold mt-12">Similar Products</h2>
+        <h2 className="text-3xl font-semibold mt-12">Similar {brandData.category_brand == "product" ? "Products" : "Programs"}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
           {similarData.length === 0 ? (
             <p className="text-gray-500">Tidak ada produk serupa.</p>

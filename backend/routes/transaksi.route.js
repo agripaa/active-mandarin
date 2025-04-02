@@ -15,7 +15,7 @@ router.get('/pending', verifyAuth.authenticateUser, transactionController.getAll
 router.get('/dashboard-data', verifyAuth.authenticateUser, transactionController.getTransactionDashboardData);
 
 router.get('/', verifyAuth.authenticateUser, verifyAdmin.authenticateAdmin, transactionController.getAllTransactions);
-router.get('/:id', verifyAuth.authenticateUser, verifyAdmin.authenticateAdmin, transactionController.getTransactionById);
+router.get('/:id', verifyAuth.authenticateUser, transactionController.getTransactionById);
 
 router.patch('/:id', verifyAuth.authenticateUser, verifyAdmin.authenticateAdmin, transactionController.updateTransaction);
 router.delete('/:id', verifyAuth.authenticateUser, verifyAdmin.authenticateAdmin, transactionController.deleteTransaction);

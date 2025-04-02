@@ -198,6 +198,7 @@ const Affiliate = () => {
                             pageSize={pageSize}
                             onChange={(page) => setCurrentPage(page)}
                             showSizeChanger={false}
+                            showLessItems
                         />
                     </div>
                 </div>

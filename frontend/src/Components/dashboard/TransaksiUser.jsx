@@ -3,6 +3,7 @@ import { getAllUserTransactions } from "../../api/user";
 import { Spin } from "antd";
 import { formatRupiah } from "../../utils/rupiahFormat";
 import { formatDate } from "../../utils/formatDate";
+import { useNavigate } from "react-router";
 
 const TransaksiUser = () => {
   const [transactions, setTransactions] = useState([]);
@@ -10,6 +11,7 @@ const TransaksiUser = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 5;
   const [totalPages, setTotalPages] = useState(1);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchTransactions();
@@ -33,6 +35,11 @@ const TransaksiUser = () => {
     }
   };
 
+  const handleDirectInvoice = (e, id) => {
+    e.preventDefault();
+    navigate(`/invoice/${id}`);
+  }
+
   if (loading) {
     return <Spin size="large" className="flex justify-center items-center h-screen" />;
   }
@@ -51,6 +58,7 @@ const TransaksiUser = () => {
                 <th className="p-3">Harga</th>
                 <th className="p-3">Tanggal Pembelian</th>
                 <th className="p-3">Status</th>
+                <th className="p-3">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -68,6 +76,9 @@ const TransaksiUser = () => {
                     : "text-yellow-500"
                   }`}>
                     {transaction.status_transaction}
+                  </td>
+                  <td className={`p-3`}>
+                    <button onClick={(e) => handleDirectInvoice(e,transaction.id)} className="bg-transparent border-2 border-neutral-600 hover:bg-neutral-600 hover:text-white text-black font-semibold py-3 px-4 rounded-xl flex justify-center items-center">Invoice</button>
                   </td>
                 </tr>
               )) : <tr><td colSpan="6" className="p-4 text-center">Anda Belum Melakukan Transaksi!.</td></tr>}
