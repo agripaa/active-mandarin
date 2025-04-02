@@ -3,7 +3,7 @@ import Slider from "react-slick";
 import { Rate, Modal, Button } from "antd";
 import { useSelector } from "react-redux";
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
-import { getBrandCategoryTurunan } from "../api/brand";
+import { getBrandCategoryTurunan, getLatestPrograms } from "../api/brand";
 import { formatRupiah } from "../utils/rupiahFormat";
 
 const Products = ({ text }) => {
@@ -21,27 +21,14 @@ const Products = ({ text }) => {
   const fetchAllData = async () => {
     setIsLoading(true);
     try {
-      const responses = await Promise.allSettled([
-        getBrandCategoryTurunan("program", "Non Degree (Kelas Bahasa di China)"),
-        getBrandCategoryTurunan("program", "Degree"),
-        getBrandCategoryTurunan("program", "Mentor Scholarship"),
-        getBrandCategoryTurunan("program", "Kelas HSK"),
-        getBrandCategoryTurunan("program", "Premium Mandarin Learning"),
-        getBrandCategoryTurunan("program", "Educonsult S1-S3 Full Cover")
-      ]);
+      const response = await getLatestPrograms();
 
-      console.log("Responses:", responses);
-
-      const allProgram = responses?.map((response) => {
-        if (response.status === "fulfilled") {
-          return response.value.data || [];
-        } else {
-          console.error("Error fetching data:", response.reason);
-          return [];
-        }
-      });
-
-      setProducts(allProgram.flat());
+      if (response.status) {
+        setProducts(response.data || []);
+      } else {
+        console.error("Error fetching data:", response.reason);
+        setProducts([]);
+      }
     } catch (error) {
       console.error("🔥 ERROR fetching data:", error);
     }
