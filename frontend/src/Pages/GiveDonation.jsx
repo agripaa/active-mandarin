@@ -234,12 +234,20 @@ const AffiliateForm = () => {
           </button>
         </div>
         
-        {paymentMethod === "QRIS" && (
+        {paymentMethod === "QRIS" ? (
           <div className="w-40 mt-6">
             <img src="/assets/qris-dummy.png" alt="qris" className="w-full h-fit mt-4" />
             <button className={"px-6 py-3 w-full ring-2 ring-fiord-300 tracking-wide mt-2 text-xs text-[#252525] font-semibold rounded-xl transition-all duration-300 hover:bg-yellow-500 hover:text-black"}>
               {langs ? "See QRIS" : "Lihat QRIS"}
             </button>
+          </div>
+        ) : (
+          <div className="border p-4 rounded-lg flex items-center gap-4 mt-6">
+            <img src="/assets/bni.png" alt="Bank Transfer" className="w-20 h-auto" />
+            <div className="flex flex-col">
+              <p className="text-lg font-semibold">1920120881</p>
+              <p className="text-gray-600">A/n PT Active Edulang Global</p>
+            </div>
           </div>
         )}
 
