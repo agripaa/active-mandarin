@@ -129,29 +129,29 @@ const Lectures = ({ text }) => {
           },
       ],
     },
-    {
-      name: "Nasy-ah Nur Firdousi",
-      profile: "/assets/Nasy-ah Nur Firdousi.jpg",
-      university_name: "Nanjing Polytechnic Institute",
-      cat_certificate: "HSK 4 Certified",
-      certificates: [
-        {
-          english: "HSK 4 Certified",
-          indonesian: "Bersertifikat HSK 4",
-          chinese: "HSK 4 认证",
-        },
-        {
-          english: "Awardee the President’s Scholarship",
-          indonesian: "Penerima Beasiswa Presiden",
-          chinese: "校长奖学金得奖者",
-        },
-        {
-          english: "Author of the book Comprehensive Chinese Book",
-          indonesian: "Penulis buku 'Komprehensif Bahasa Mandarin'",
-          chinese: "著有《综合汉语书》",
-        },
-      ],
-    },
+    // {
+    //   name: "Nasy-ah Nur Firdousi",
+    //   profile: "/assets/Nasy-ah Nur Firdousi.jpg",
+    //   university_name: "Nanjing Polytechnic Institute",
+    //   cat_certificate: "HSK 4 Certified",
+    //   certificates: [
+    //     {
+    //       english: "HSK 4 Certified",
+    //       indonesian: "Bersertifikat HSK 4",
+    //       chinese: "HSK 4 认证",
+    //     },
+    //     {
+    //       english: "Awardee the President’s Scholarship",
+    //       indonesian: "Penerima Beasiswa Presiden",
+    //       chinese: "校长奖学金得奖者",
+    //     },
+    //     {
+    //       english: "Author of the book Comprehensive Chinese Book",
+    //       indonesian: "Penulis buku 'Komprehensif Bahasa Mandarin'",
+    //       chinese: "著有《综合汉语书》",
+    //     },
+    //   ],
+    // },
     {
       name: "Vemas Alvieno Dian Saputra",
       profile: "/assets/Vemas Alvieno.jpg",
@@ -199,7 +199,7 @@ const Lectures = ({ text }) => {
     dots: false,
     infinite: false,
     speed: 500,
-    slidesToShow: 4,
+    slidesToShow: 3,
     slidesToScroll: 1,
     centerMode: false, // Nonaktifkan centerMode
     arrows: false, // Nonaktifkan tombol next dan prev
@@ -304,7 +304,7 @@ const Lectures = ({ text }) => {
               ))}
             </Slider>
           </div>
-          <div className="flex flex-row gap-2 mt-4 items-center justify-center w-full sm:justify-start 2xl:hidden">
+          <div className="flex flex-row gap-2 mt-4 items-center justify-center w-full sm:justify-start lg:hidden">
             <button
               className="border-2 border-[#8493AC] p-2 rounded-xl"
               onClick={handlePrev}

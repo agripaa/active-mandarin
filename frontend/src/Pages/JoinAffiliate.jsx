@@ -77,17 +77,17 @@ const JoinAffiliate = () => {
                 {langs ? "Apply Now" : "Daftar Sekarang"}
               </button>
             </a>
-            <Link to='#'>
+            <a href='#Banner'>
               <button
                 className="px-6 py-3 md:px-8 md:py-4 w-fit border-2 border-[#8493AC] tracking-wide mt-2 text-xs text-[#252525] font-semibold rounded-3xl transition-all duration-300 hover:bg-yellow-500 hover:text-black sm:text-sm lg:text-base"
               >
                 {langs ? "How It Works" : "Cara Kerjanya"}
               </button>
-            </Link>
+            </a>
           </div>
         </div>
         <img
-          src="/assets/donation-hero.png"
+          src="/assets/affiliate-hero-image.png"
           alt="hero"
           className="w-full h-fit lg:w-[43%]"
         />
@@ -105,7 +105,7 @@ const JoinAffiliate = () => {
               : "Jelajahi dan Dapatkan Komisi! 🎉"}
           </p>
         </div>
-        <div className="mt-8 w-full rounded-3xl h-96 bg-[#D9D9D9]" />
+        <img src="/assets/affiliate-banner.png" alt="affiliate banner" className="w-full h-fit mt-8 rounded-3xl" id="Banner" />
       </div>
       <div className="w-full bg-fiord-50 rounded-[32px]">
         <div className="container flex flex-col mx-auto px-5 py-5 md:px-[72px] md:py-16">

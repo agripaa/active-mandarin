@@ -71,6 +71,48 @@ const Faq = ({ text }) => {
         },
         {
             question: {
+                english: "What Classes Are Available at Active Mandarin Indonesia?",
+                indonesia: "Kelas Apa Saja yang Tersedia di Active Mandarin Indonesia?",
+            },
+            answer: {
+                english: `
+                <strong>Programs:</strong>
+                <ul>
+                    <li>Mandarin Premium Class (Fast-Track Program):</li>
+                    <ul>
+                        <li>Mandarin Juara Next Level (5 months) – Private class from Basic to HSK 4.</li>
+                        <li>Mandarin Juara (5 months) – Small class from Basic to HSK 4.</li>
+                        <li>Mandarin Basic to HSK 4 (8 months) – Group class for Basic to Intermediate levels.</li>
+                        <li>Mandarin Native Basic to HSK 5 (8 months) – Class with native tutors from Basic to HSK 5.</li>
+                    </ul>
+                    <li>General Class (Flexible Learning Program):</li>
+                    <ul>
+                        <li>General Class (Basic – HSK 5) – Duration of 1, 2, or 3 months per level.</li>
+                        <li>General Native Class (Basic – HSK 5) – Class with native tutors, duration of 1, 2, or 3 months per level.</li>
+                    </ul>
+                </ul>
+                `,
+                indonesia: `
+                <strong>Program:</strong>
+                <ul>
+                    <li>Mandarin Premium Class (Fast-Track Program):</li>
+                    <ul>
+                        <li>Mandarin Juara Next Level (5 bulan) – Kelas privat dari Basic hingga HSK 4.</li>
+                        <li>Mandarin Juara (5 bulan) – Kelas kecil dari Basic hingga HSK 4.</li>
+                        <li>Mandarin Basic to HSK 4 (8 bulan) – Kelas grup untuk level dasar hingga menengah.</li>
+                        <li>Mandarin Native Basic to HSK 5 (8 bulan) – Kelas dengan tutor native dari Basic hingga HSK 5.</li>
+                    </ul>
+                    <li>General Class (Flexible Learning Program):</li>
+                    <ul>
+                        <li>General Class (Basic – HSK 5) – Durasi 1, 2, atau 3 bulan per level.</li>
+                        <li>General Native Class (Basic – HSK 5) – Kelas dengan tutor native, durasi 1, 2, atau 3 bulan per level.</li>
+                    </ul>
+                </ul>
+                `,
+            },
+        },
+        {
+            question: {
                 english: "What is the Difference Between Premium and General Classes?",
                 indonesia: "Apa Perbedaan Kelas Premium dan General?",
             },
