@@ -46,16 +46,16 @@ const GiveDonation = () => {
               <button
                 className="px-6 py-3 md:px-8 md:py-4 w-fit bg-[#FFCC00] tracking-wide mt-2 text-xs text-[#252525] font-semibold rounded-3xl transition-all duration-300 hover:bg-yellow-500 hover:text-black sm:text-sm lg:text-base"
               >
-                {langs ? "Apply Now" : "Daftar Sekarang"}
+                {langs ? "Donate Now" : "Donasi Sekarang"}
               </button>
             </a>
-            <Link to='#'>
+            <a href='#Banner'>
               <button
                 className="px-6 py-3 md:px-8 md:py-4 w-fit border-2 border-[#8493AC] tracking-wide mt-2 text-xs text-[#252525] font-semibold rounded-3xl transition-all duration-300 hover:bg-yellow-500 hover:text-black sm:text-sm lg:text-base"
               >
                 {langs ? "How It Works" : "Cara Kerjanya"}
               </button>
-            </Link>
+            </a>
           </div>
         </div>
         <img
@@ -66,19 +66,19 @@ const GiveDonation = () => {
       </div>
       <div className="container flex flex-col mx-auto px-5 py-5 md:px-[72px] md:py-16">
         <div className="flex flex-col">
-          <h1 className="text-fiord-950 text-2xl font-semibold leading-10 md:text-[32px]">
+          <h1 className="text-fiord-950 text-2xl font-semibold leading-10 md:text-[32px] md:text-center">
             {langs
               ? "Awardee Management Program"
               : "Awardee Management Program"}
           </h1>
-          <p className="text-fiord-600">
+          <p className="text-fiord-600 md:text-center">
             {langs
               ? "After completing their studies, alumni will be empowered to continue making an impact in the following roles"
               : "Setelah menyelesaikan studi, alumni akan diberdayakan untuk terus memberikan dampak dalam peran berikut"}
           </p>
         </div>
         <div className="grid grid-cols-12 mt-8 w-full gap-8">
-          <div className="flex gap-4 w-full p-4 rounded-2xl bg-white col-span-12 lg:col-span-6">
+          <div className="flex gap-4 w-full p-4 rounded-2xl bg-white col-span-12">
             <div className="p-2.5 bg-[#F9CA24] h-fit rounded-full">
               <RiGroupFill className="w-6 h-6 min-w-6 min-h-6" color="#000000" />
             </div>
@@ -96,7 +96,7 @@ const GiveDonation = () => {
               </div>
             </div>
           </div>
-          <div className="flex gap-4 w-full p-4 rounded-2xl bg-white col-span-12 lg:col-span-6">
+          <div className="flex gap-4 w-full p-4 rounded-2xl bg-white col-span-12">
             <div className="p-2.5 bg-[#F53B57] h-fit rounded-full">
               <RiFileSearchFill className="w-6 h-6 min-w-6 min-h-6" color="#FFFFFF" />
             </div>
@@ -115,8 +115,8 @@ const GiveDonation = () => {
         <div className="flex flex-col">
           <h1 className="text-fiord-950 text-2xl font-semibold leading-10 md:text-[32px]">
             {langs
-              ? "Make an Impact in 3 Easy Steps!"
-              : "Buat Dampak dalam 3 Langkah Mudah!"}
+              ? "Make an Impact in 5 Easy Steps!"
+              : "Buat Dampak dalam 5 Langkah Mudah!"}
           </h1>
           <p className="text-fiord-600">
             {langs
@@ -124,7 +124,7 @@ const GiveDonation = () => {
               : "Pilih, Donasi, dan Ubah Hidup! ❤️"}
           </p>
         </div>
-        <div className="mt-8 w-full rounded-3xl h-96 bg-[#D9D9D9]" />
+        <img src="/assets/donate-banner.png" alt="donate banner" className="w-full h-fit mt-8 rounded-3xl" id="Banner" />
       </div>
       <div className="w-full bg-fiord-50 rounded-[32px]">
         <div className="container flex flex-col mx-auto px-5 py-5 md:px-[72px] md:py-16">
