@@ -119,6 +119,7 @@ const Headers = ({ collapse, funcs }) => {
                 setOpenSignIn(false);
                 setOpenVerification(true);
                 setUserEmail(email);
+                window.history.replaceState(null, "", window.location.pathname);
             } else {
                 Swal.fire("Error", response.data.message, "error");
             }
@@ -251,10 +252,18 @@ const Headers = ({ collapse, funcs }) => {
     useEffect(() => {
       const urlParams = new URLSearchParams(window.location.search);
       const resetToken = urlParams.get("reset_password_token");
+      const email = urlParams.get("email");
+      const password = urlParams.get("password");
     
       if (resetToken) {
         setResetToken(resetToken);
         setOpenResetPassword(true);
+      }
+
+      if (email && password) {
+        setEmail(email);
+        setPassword(password);
+        setOpenSignIn(true);
       }
     }, []);
     

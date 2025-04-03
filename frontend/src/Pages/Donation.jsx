@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Input, Modal, Button, Spin } from "antd";
+import { Table, Input, Modal, Spin, Pagination } from "antd";
 import { RiSearchLine } from "react-icons/ri";
 import DashboardLayout from "../Layouts/DashboardLayout";
 import { getAllDonation } from "../api/donation";
@@ -10,22 +10,31 @@ const Donation = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [donationData, setDonationData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [imagePreview, setImagePreview] = useState(null); // State untuk modal gambar
+  const [imagePreview, setImagePreview] = useState(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const pageSize = 5;
 
   useEffect(() => {
-    fetchDonations();
-  }, []);
+    fetchDonations(currentPage);
+  }, [currentPage]);
 
-  const fetchDonations = async () => {
+  const fetchDonations = async (page = 1) => {
     setLoading(true);
     try {
-      const response = await getAllDonation();
+      const response = await getAllDonation(page, pageSize);
       setDonationData(response.data);
+      setTotalItems(response.total_items); // backend must return this
     } catch (error) {
       console.error("Error fetching donation data:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchText(e.target.value);
   };
 
   const showModal = (donation) => {
@@ -69,13 +78,13 @@ const Donation = () => {
 
   if (loading) {
     return (
-            <DashboardLayout>
-                <div className="flex justify-center items-center h-[80vh]">
-                    <Spin size="large" />
-                </div>
-            </DashboardLayout>
-        );
-    }
+      <DashboardLayout>
+        <div className="flex justify-center items-center h-[80vh]">
+          <Spin size="large" />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -86,11 +95,30 @@ const Donation = () => {
             <Input
               placeholder="Cari donatur..."
               prefix={<RiSearchLine className="text-2xl mr-2" />}
-              onChange={(e) => setSearchText(e.target.value)}
-              className="w-96 py-2 px-4"
+              onChange={handleSearchChange}
+              className="w-8/12 md:w-96 py-2 px-4"
             />
           </div>
-            <Table columns={columns} dataSource={filteredData} pagination={false} rowKey="id" />
+          <div className="overflow-x-auto">
+            <Table
+              columns={columns}
+              dataSource={filteredData}
+              pagination={false}
+              rowKey="id"
+            />
+          </div>
+
+          {/* Ant Design Pagination */}
+          <div className="flex justify-end mt-6">
+            <Pagination
+              current={currentPage}
+              total={totalItems}
+              pageSize={pageSize}
+              onChange={(page) => setCurrentPage(page)}
+              showSizeChanger={false}
+              showLessItems
+            />
+          </div>
         </div>
 
         {/* MODAL DETAIL DONASI */}
@@ -112,7 +140,9 @@ const Donation = () => {
               </div>
               <div>
                 <h4 className="text-gray-600">Metode Pembayaran</h4>
-                <div className="border rounded-md p-2">{selectedDonation.payment_method}</div>
+                <div className="border rounded-md p-2">
+                  {selectedDonation.payment_method}
+                </div>
               </div>
               <div>
                 <h4 className="text-gray-600">Bukti Transfer</h4>

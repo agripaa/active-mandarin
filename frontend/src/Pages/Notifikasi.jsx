@@ -256,13 +256,17 @@ const Notifikasi = () => {
         {/* Tabel Verifikasi Pembayaran */}
         <div className="bg-white p-6 shadow-lg rounded-xl mb-6">
           <h4 className="text-lg font-semibold mb-4">Verifikasi Pembayaran</h4>
-          <Table columns={pembayaranColumns} dataSource={transactions} pagination={false} />
+          <div className="overflow-x-auto">
+            <Table columns={pembayaranColumns} dataSource={transactions} pagination={false} />
+          </div>
         </div>
 
         {/* Tabel Verifikasi Calon Affiliator */}
         <div className="bg-white p-6 shadow-lg rounded-xl">
           <h4 className="text-lg font-semibold mb-4">Verifikasi Calon Affiliator</h4>
-          <Table columns={affiliatorColumns} dataSource={affiliators} pagination={false} />
+          <div className="overflow-x-auto">
+            <Table columns={affiliatorColumns} dataSource={affiliators} pagination={false} />
+          </div>
         </div>
       </div>
     </DashboardLayout>

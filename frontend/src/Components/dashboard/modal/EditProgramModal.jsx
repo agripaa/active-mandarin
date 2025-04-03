@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; 
+import { formatRupiah } from "../../../utils/rupiahFormat";
 
 const turunanOptions = [
   "Non Degree (Kelas Bahasa di China)",
@@ -20,20 +21,24 @@ const EditProgramModal = ({ isModalOpen, setIsModalOpen, programData, refreshDat
   const [detailBrand, setDetailBrand] = useState(""); 
   const [imageFile, setImageFile] = useState(null);
   const [fileList, setFileList] = useState([]); 
+  const [price, setPrice] = useState("0");
+  const [discountPrice, setDiscountPrice] = useState("0");
+  const [commission, setCommission] = useState("0");
 
   useEffect(() => {
     if (programData) {
+      setPrice(programData.price?.toString() || "0");
+      setDiscountPrice(programData.discount_price?.toString() || "0");
+      setCommission(programData.commission?.toString() || "0");
+  
       form.setFieldsValue({
         variant: programData.variant || "",
         turunan: programData.turunan || "",
-        price: programData.price || 0,
-        discount_price: programData.discount_price || 0,
-        commission: programData.commission || 0,
         link_classroom: programData.link_classroom || "",
       });
-
-      setDetailBrand(programData.detail_brand || ""); 
-
+  
+      setDetailBrand(programData.detail_brand || "");
+  
       if (programData.brand_img) {
         setFileList([
           {
@@ -53,6 +58,11 @@ const EditProgramModal = ({ isModalOpen, setIsModalOpen, programData, refreshDat
     setImageFile(file);
   };
 
+  const handleRupiahChange = (value, setter) => {
+    const numericValue = value.replace(/[^0-9]/g, "");
+    setter(numericValue);
+  };
+
   const handleCancel = () => {
     setIsModalOpen(false);
     form.resetFields();
@@ -67,9 +77,9 @@ const EditProgramModal = ({ isModalOpen, setIsModalOpen, programData, refreshDat
 
       formData.append("variant", values.variant);
       formData.append("turunan", values.turunan);
-      formData.append("price", values.price);
-      formData.append("discount_price", values.discount_price || 0);
-      formData.append("commission", values.commission || 0);
+      formData.append("price", Number(price));
+      formData.append("discount_price", Number(discountPrice));
+      formData.append("commission", Number(commission));
       formData.append("detail_brand", detailBrand); // Menggunakan state WYSIWYG
       formData.append("link_classroom", values.link_classroom || "");
       formData.append("category_brand", "program");
@@ -128,16 +138,31 @@ const EditProgramModal = ({ isModalOpen, setIsModalOpen, programData, refreshDat
           </Select>
         </Form.Item>
 
-        <Form.Item name="price" label="Harga Normal" rules={[{ required: true, message: "Harga normal wajib diisi!" }]}>
-          <InputNumber className="w-full py-2" />
+        <Form.Item label="Harga Normal" required>
+          <Input
+            value={formatRupiah(price)}
+            onChange={(e) => handleRupiahChange(e.target.value, setPrice)}
+            placeholder="Masukkan Harga Normal"
+            className="w-full py-2"
+          />
         </Form.Item>
 
-        <Form.Item name="discount_price" label="Harga Promo">
-          <InputNumber className="w-full py-2" />
+        <Form.Item label="Harga Promo">
+          <Input
+            value={formatRupiah(discountPrice)}
+            onChange={(e) => handleRupiahChange(e.target.value, setDiscountPrice)}
+            placeholder="Masukkan Harga Promo (Opsional)"
+            className="w-full py-2"
+          />
         </Form.Item>
 
-        <Form.Item name="commission" label="Komisi" rules={[{ required: true, message: "Komisi wajib diisi!" }]}>
-          <InputNumber className="w-full py-2" />
+        <Form.Item label="Komisi" required>
+          <Input
+            value={formatRupiah(commission)}
+            onChange={(e) => handleRupiahChange(e.target.value, setCommission)}
+            placeholder="Masukkan Komisi Affiliator"
+            className="w-full py-2"
+          />
         </Form.Item>
 
         {/* 📝 WYSIWYG Editor untuk Detail Program */}

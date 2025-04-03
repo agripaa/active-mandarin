@@ -1,5 +1,7 @@
 import api from "../";
 import * as XLSX from "xlsx";
+import { formatRupiah } from "../../utils/rupiahFormat";
+import { formatDate } from "../../utils/formatDate";
 
 export const getTransactionSummary = async () => {
   try {
@@ -111,11 +113,26 @@ export const exportTransactionsToExcel = async () => {
       throw new Error("No transactions to export.");
     }
 
-    const worksheet = XLSX.utils.json_to_sheet(transactions);
+    const transformedData = transactions.map((tx) => ({
+      "Buyer Name": tx.User?.name || "-",
+      "Phone Number": tx.User?.number || "-",
+      "Category": tx.Brand?.category_brand || "-",
+      "Variant": tx.Brand?.variant || "-",
+      "Type": tx.Brand?.turunan || "-",
+      "Price": formatRupiah(tx.Brand.price),
+      "Price Discount": formatRupiah(tx.Brand.discount_price),
+      "Transaction Date": formatDate(tx.transaction_date),
+      "Payment Method": tx.payment_method,
+      "Affiliate": tx.Affiliator?.name || "-",
+      "Commission": tx.Affiliator ? formatRupiah(tx.Brand?.commission) : "-",
+      "Invoice Link": `${process.env.REACT_APP_FRONTEND_URL || "http://localhost:3000"}/invoice/${tx.id}`
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(transformedData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Transactions");
 
-    XLSX.writeFile(workbook, `Transactions_${new Date().toISOString()}.xlsx`);
+    XLSX.writeFile(workbook, `Transactions_${new Date().toISOString().slice(0, 10)}.xlsx`);
 
     return { status: true, message: "Exported successfully!" };
   } catch (error) {

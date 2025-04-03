@@ -14,6 +14,7 @@ const Checkout = () => {
     const [brandData, setBrandData] = useState({});
     const [reveralCode, setReveralCode] = useState("");
     const [loading, setLoading] = useState(true);
+    const [showFullDesc, setShowFullDesc] = useState(false);
     const [validReveral, setValidReveral] = useState(null);
     
     const fetchBrand = async () => {
@@ -44,19 +45,19 @@ const Checkout = () => {
             try {
                 const response = await validateReveralCode(reveralCode);
                 if (!response.status) {
-                    Swal.fire("Error", "Kode Reveral tidak valid!", "error");
+                    Swal.fire("Error", response.message, "error");
                     return;
                 }
                 setValidReveral(true);
             } catch (error) {
-                Swal.fire("Error", "Kode Reveral tidak valid!", "error");
+              console.log(error)
+                Swal.fire("Error", error?.message, "error");
                 return;
             } finally {
               setLoading(false);
             }
         }
 
-        // Simpan ke localStorage agar tetap ada di halaman pembayaran
         localStorage.setItem("reveral_code", reveralCode);
         navigate(`/pembayaran/${id}`);
     };
@@ -77,6 +78,9 @@ const Checkout = () => {
       );
     }
 
+  const MAX_LENGTH = 200;
+  const detailBrandText = brandData.detail_brand || "";
+
     return (
         <Mainlayouts>
             <div className="container mx-auto px-6 md:px-12 lg:px-20 py-10 md:py-20">
@@ -86,12 +90,29 @@ const Checkout = () => {
 
                 <div className="grid grid-cols-1 md:flex md:items-start md:justify-between gap-10 w-full">
                     {/* Detail Produk */}
-                    <div className="bg-white rounded-lg md:w-5/12">
+                    <div className="bg-white rounded-lg w-full md:w-5/12">
                         <img src={`${process.env.REACT_APP_API_IMG}${brandData.brand_img}`} alt="Product" className="w-full h-auto border-b pb-4" />
                         <h1 className="text-2xl font-semibold mt-6">{brandData.variant}</h1>
-                        <div className="prose text-gray-600 mt-2 leading-relaxed w-10/12 
-                        [&_a]:text-blue-600 [&_a]:underline 
-                        [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-6 [&_ol]:pl-6" dangerouslySetInnerHTML={{ __html: brandData.detail_brand }}></div>
+                        <div
+                        className="prose text-gray-600 mt-2 leading-relaxed w-full md:w-10/12 
+                                  [&_a]:text-blue-600 [&_a]:underline 
+                                  [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-6 [&_ol]:pl-6"
+                        dangerouslySetInnerHTML={{
+                          __html:
+                            showFullDesc || detailBrandText.length <= MAX_LENGTH
+                              ? detailBrandText
+                              : `${detailBrandText.substring(0, MAX_LENGTH)}...`,
+                        }}
+                      />
+
+                      {detailBrandText.length > MAX_LENGTH && (
+                        <button
+                          onClick={() => setShowFullDesc(!showFullDesc)}
+                          className="text-blue-500 font-medium mt-2 inline-block"
+                        >
+                          {showFullDesc ? "Tutup" : "Selengkapnya"}
+                        </button>
+                      )}
                     </div>
 
                     {/* Kode Referral + Detail Pembayaran */}

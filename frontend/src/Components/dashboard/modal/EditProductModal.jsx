@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; 
+import { formatRupiah } from "../../../utils/rupiahFormat";
 
 const turunanOptions = [
   "Comprehensive Chinese Book",
@@ -19,19 +20,23 @@ const EditProductModal = ({ isModalOpen, setIsModalOpen, productData, refreshDat
   const [productDetails, setProductDetails] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [productFile, setProductFile] = useState(null);
+  const [price, setPrice] = useState("0");
+  const [discountPrice, setDiscountPrice] = useState("0");
+  const [commission, setCommission] = useState("0");
   
-  // 🔹 Menyimpan URL untuk preview file
   const [imagePreview, setImagePreview] = useState([]);
   const [filePreview, setFilePreview] = useState([]);
 
   useEffect(() => {
     if (productData) {
+      setPrice(productData.price?.toString() || "0");
+      setDiscountPrice(productData.discount_price?.toString() || "0");
+      setCommission(productData.commission?.toString() || "0");
+  
       form.setFieldsValue({
-        variant: productData.variant,
-        turunan: productData.turunan,
-        price: productData.price,
-        discount_price: productData.discount_price,
-        commission: productData.commission,
+        variant: productData.variant || "",
+        turunan: productData.turunan || "",
+        link_classroom: productData.link_classroom || "",
       });
 
       setProductDetails(productData.detail_brand || "");
@@ -70,6 +75,11 @@ const EditProductModal = ({ isModalOpen, setIsModalOpen, productData, refreshDat
     setImageFile(file);
   };
 
+  const handleRupiahChange = (value, setter) => {
+    const numericValue = value.replace(/[^0-9]/g, "");
+    setter(numericValue);
+  };
+
   const handleProductFileChange = ({ file }) => {
     setProductFile(file);
   };
@@ -89,9 +99,9 @@ const EditProductModal = ({ isModalOpen, setIsModalOpen, productData, refreshDat
 
       formData.append("variant", values.variant);
       formData.append("turunan", values.turunan);
-      formData.append("price", values.price);
-      formData.append("discount_price", values.discount_price);
-      formData.append("commission", values.commission);
+      formData.append("price", Number(price));
+      formData.append("discount_price", Number(discountPrice));
+      formData.append("commission", Number(commission));
       formData.append("detail_brand", productDetails);
 
       if (productFile) {
@@ -150,16 +160,31 @@ const EditProductModal = ({ isModalOpen, setIsModalOpen, productData, refreshDat
           </Select>
         </Form.Item>
 
-        <Form.Item name="price" label="Harga Normal" rules={[{ required: true, message: "Harga normal wajib diisi!" }]}>
-          <InputNumber placeholder="Masukkan Harga Normal, cth: Rp. 50.000" className="w-full py-2" />
+        <Form.Item label="Harga Normal" required>
+          <Input
+            value={formatRupiah(price)}
+            onChange={(e) => handleRupiahChange(e.target.value, setPrice)}
+            placeholder="Masukkan Harga Normal"
+            className="w-full py-2"
+          />
         </Form.Item>
 
-        <Form.Item name="discount_price" label="Harga Promo">
-          <InputNumber placeholder="Masukkan Harga Promo (opsional)" className="w-full py-2" />
+        <Form.Item label="Harga Promo">
+          <Input
+            value={formatRupiah(discountPrice)}
+            onChange={(e) => handleRupiahChange(e.target.value, setDiscountPrice)}
+            placeholder="Masukkan Harga Promo (Opsional)"
+            className="w-full py-2"
+          />
         </Form.Item>
 
-        <Form.Item name="commission" label="Komisi" rules={[{ required: true, message: "Komisi wajib diisi!" }]}>
-          <InputNumber placeholder="Masukkan Komisi Affiliator, cth: Rp. 50.000" className="w-full py-2" />
+        <Form.Item label="Komisi" required>
+          <Input
+            value={formatRupiah(commission)}
+            onChange={(e) => handleRupiahChange(e.target.value, setCommission)}
+            placeholder="Masukkan Komisi Affiliator"
+            className="w-full py-2"
+          />
         </Form.Item>
 
         {/* WYSIWYG Editor untuk Detail Produk */}

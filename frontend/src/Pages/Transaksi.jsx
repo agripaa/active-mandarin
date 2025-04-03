@@ -38,16 +38,14 @@ const Transaksi = () => {
 
     return (
         <DashboardLayout>
-            {user && user.Role ? ( // ✅ Cek apakah user dan Role ada
+            {user && user.Role ? ( 
                 user.Role.role_name === "admin" ? (
                     <TransaksiAdmin />
-                ) : user.Role.role_name === "user" ? (
-                    <TransaksiUser />
                 ) : (
-                    <p>Role Invalid!</p>
+                    <TransaksiUser />
                 )
             ) : (
-                <p>User not found</p> // ✅ Tampilkan ini jika user masih null
+                <p>User not found</p> 
             )}
         </DashboardLayout>
     );

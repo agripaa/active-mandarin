@@ -1,28 +1,23 @@
 const { Op, Sequelize } = require('sequelize');
 const db = require('../models');
 const nodemailer = require('nodemailer');
+const { sendAffiliatorApprovedEmail, sendAffiliatorRejectedEmail } = require('../helpers/sendEmail');
 require('dotenv').config();
 
 const { User, Role, AffiliateDetail, Transaction, Brand } = db;
 
-const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
-    secure: false,
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-    }
-});
-
 exports.validateReveralCode = async (req, res) => {
     try {
         const { reveral_code } = req.query;
-        
-        const affiliator = await User.findOne({where: {reveral_code}});
-        if(!affiliator) return res.status(404).json({status: false, message: "reveral code invalid!"});
 
-        res.status(200).json({status: true, message: "affiliator defined!", data: affiliator});
+        const user = await User.findByPk(req.userId);
+        if(!user) return res.status(404).json({ status: false, message: "User Not Found!" })
+    
+        const affiliator = await User.findOne({where: {reveral_code}});
+        if(!affiliator) return res.status(404).json({status: false, message: "Reveral code invalid!"});
+        if (affiliator.reveral_code == user.reveral_code) return res.status(400).json({ status: false, message: "Affiliates cannot input their own referral code!" });
+
+        res.status(200).json({status: true, message: "Affiliator defined!", data: affiliator});
     } catch (error) {
         console.error("🔥 ERROR:", error);
         res.status(500).json({ error: error.message });
@@ -232,29 +227,9 @@ exports.approveAffiliator = async (req, res) => {
         user.affiliator_status = true;
         await user.save();
 
-        const mailOptions = {
-            from: process.env.SMTP_USER,
-            to: user.email,
-            subject: "Akun Affiliator Anda Telah Disetujui!",
-            html: `
-                <h2>Selamat, ${user.name}!</h2>
-                <p>Akun affiliator Anda telah disetujui oleh admin. Berikut adalah detail akun Anda:</p>
-                <ul>
-                    <li><strong>Nama:</strong> ${user.name}</li>
-                    <li><strong>Email:</strong> ${user.email}</li>
-                    <li><strong>No. Telepon:</strong> ${user.number || "-"}</li>
-                    <li><strong>Reveral Code:</strong> ${user.reveral_code || "-"}</li>
-                    <li><strong>Password Default:</strong> NewAffiliatorMandarin</li>
-                </ul>
-                <p><strong>Harap segera mengubah password Anda untuk keamanan akun!</strong></p>
-                <p>Terima kasih telah bergabung sebagai affiliator Active Mandarin.</p>
-                <br>
-                <p>Salam,</p>
-                <p>Tim Active Mandarin</p>
-            `
-        };
+        const loginLink = `${process.env.FRONTEND_URL}/?email=${user.email}&password=NewAffiliatorMandarin`;
 
-        await transporter.sendMail(mailOptions);
+        await sendAffiliatorApprovedEmail(user, loginLink)
 
         res.status(200).json({ status: true, message: "Affiliator approved successfully, email sent!" });
     } catch (error) {
@@ -280,22 +255,7 @@ exports.rejectAffiliator = async (req, res) => {
             return res.status(404).json({ status: false, message: "User not found!" });
         }
 
-        const mailOptions = {
-            from: process.env.SMTP_USER,
-            to: user.email,
-            subject: "Pendaftaran Affiliator Anda Ditolak",
-            html: `
-                <h2>Hai, ${user.name}</h2>
-                <p>Kami ingin memberitahukan bahwa pendaftaran Anda sebagai affiliator Active Mandarin telah ditolak.</p>
-                <p><strong>Alasan:</strong> ${summary_cancel}</p>
-                <p>Anda dapat menghubungi kami untuk informasi lebih lanjut.</p>
-                <br>
-                <p>Salam,</p>
-                <p>Tim Active Mandarin</p>
-            `
-        };
-
-        await transporter.sendMail(mailOptions);
+        sendAffiliatorRejectedEmail(user, summary_cancel)
 
         // Hapus user dari database
         await user.destroy();

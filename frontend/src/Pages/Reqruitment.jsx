@@ -202,7 +202,7 @@ const AffiliateForm = () => {
       </Form.Item>
 
       <Form.Item name="telepon" label={langs ? "Phone Number" : "No Telpon"} rules={[{ required: true, message: langs ? "Phone Number is required!" : "No Telpon wajib diisi!" }]} labelCol={{ className: "font-medium" }}>
-        <InputNumber placeholder="+62 (648) 958-7603" className="w-full py-2" />
+        <Input placeholder="+62 (648) 958-7603" className="w-full py-2" />
       </Form.Item>
 
       <Form.Item name="domisili" label={langs ? "Domicile" : "Domisili" } rules={[{ required: true, message: langs ? "Domisili is required!" : "Domisili wajib diisi!" }]} labelCol={{ className: "font-medium" }}>

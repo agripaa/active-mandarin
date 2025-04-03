@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { formatRupiah } from "../../../utils/rupiahFormat";
 
 const turunanOptions = [
   "Comprehensive Chinese Book",
@@ -19,6 +20,9 @@ const CreateProductModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
   const [productDetails, setProductDetails] = useState(""); // WYSIWYG state
   const [imageFile, setImageFile] = useState(null);
   const [productFile, setProductFile] = useState(null);
+  const [price, setPrice] = useState("0");
+  const [discountPrice, setDiscountPrice] = useState("0");
+  const [commission, setCommission] = useState("0");
 
   const handleImageChange = ({ file }) => {
     setImageFile(file);
@@ -26,6 +30,11 @@ const CreateProductModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
 
   const handleProductFileChange = ({ file }) => {
     setProductFile(file);
+  };
+
+  const handleRupiahChange = (value, setter) => {
+    const numericValue = value.replace(/[^0-9]/g, "");
+    setter(numericValue);
   };
 
   const handleCancel = () => {
@@ -44,9 +53,9 @@ const CreateProductModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
 
       formData.append("variant", values.variant);
       formData.append("turunan", values.turunan);
-      formData.append("price", values.price);
-      formData.append("discount_price", values.discount_price || "");
-      formData.append("commission", values.commission);
+      formData.append("price", Number(price));
+      formData.append("discount_price", Number(discountPrice) || "");
+      formData.append("commission", Number(commission));      
       formData.append("detail_brand", productDetails); // Menggunakan state WYSIWYG
       formData.append("category_brand", "product");
 
@@ -111,16 +120,31 @@ const CreateProductModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
           </Select>
         </Form.Item>
 
-        <Form.Item name="price" label="Harga Normal" rules={[{ required: true, message: "Harga normal wajib diisi!" }]}>
-          <InputNumber placeholder="Masukkan Harga Normal, cth: Rp. 50.000" className="w-full py-2" />
+        <Form.Item label="Harga Normal" required>
+          <Input
+            value={formatRupiah(price)}
+            onChange={(e) => handleRupiahChange(e.target.value, setPrice)}
+            className="w-full py-2"
+            placeholder="Masukkan Harga Normal"
+          />
         </Form.Item>
 
-        <Form.Item name="discount_price" label="Harga Promo">
-          <InputNumber placeholder="Masukkan Harga Promo (opsional)" className="w-full py-2" />
+        <Form.Item label="Harga Promo">
+          <Input
+            value={formatRupiah(discountPrice)}
+            onChange={(e) => handleRupiahChange(e.target.value, setDiscountPrice)}
+            className="w-full py-2"
+            placeholder="Masukkan Harga Promo (Opsional)"
+          />
         </Form.Item>
 
-        <Form.Item name="commission" label="Komisi" rules={[{ required: true, message: "Komisi wajib diisi!" }]}>
-          <InputNumber placeholder="Masukkan Komisi Affiliator, cth: Rp. 50.000" className="w-full py-2" />
+        <Form.Item label="Komisi" required>
+          <Input
+            value={formatRupiah(commission)}
+            onChange={(e) => handleRupiahChange(e.target.value, setCommission)}
+            className="w-full py-2"
+            placeholder="Masukkan Komisi Affiliator"
+          />
         </Form.Item>
 
         {/* WYSIWYG Editor untuk Detail Produk */}

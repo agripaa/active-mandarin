@@ -15,6 +15,7 @@ const Catalog = () => {
   const [kelasHSK, setKelasHSK] = useState([]);
   const [premiumMandarin, setPremiumMandarin] = useState([]);
   const [educonsult, setEduconsult] = useState([]);
+  const [growWithUs, setGrowWithUs] = useState([]);
   const [activeSlide, setActiveSlide] = React.useState(0);
   const [galleryData, setGalleryData] = useState([]); // State untuk menyimpan data dari API/sumber
 
@@ -31,7 +32,8 @@ const Catalog = () => {
         getBrandCategoryTurunan("program", "Mentor Scholarship"),
         getBrandCategoryTurunan("program", "Kelas HSK"),
         getBrandCategoryTurunan("program", "Premium Mandarin Learning"),
-        getBrandCategoryTurunan("program", "Educonsult S1-S3 Full Cover")
+        getBrandCategoryTurunan("program", "Educonsult S1-S3 Full Cover"),
+        getBrandCategoryTurunan("program", "Grow with Us")
       ]);
   
       setNonDegree(responses[0].status === "fulfilled" ? responses[0].value.data || [] : []);
@@ -40,6 +42,7 @@ const Catalog = () => {
       setKelasHSK(responses[3].status === "fulfilled" ? responses[3].value.data || [] : []);
       setPremiumMandarin(responses[4].status === "fulfilled" ? responses[4].value.data || [] : []);
       setEduconsult(responses[5].status === "fulfilled" ? responses[5].value.data || [] : []);
+      setGrowWithUs(responses[6].status === "fulfilled" ? responses[6].value.data || [] : []);
     } catch (error) {
       console.error("🔥 ERROR fetching data:", error);
     } finally {
@@ -184,6 +187,45 @@ const handleClickItem = (id) => {
         </div>
 
         <div className="pt-10 pb-1">
+          {growWithUs.length > 0 && (
+            <div>
+              <div className="w-full mx-auto mb-6">
+                <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
+                  {langs ? "Grow with Us" : "Tumbuh bersama Kami"}
+                </h2>
+                <span className="font-semibold text-[#8493AC] text-lg">
+                  {langs
+                    ? "Empower Your Learning, Anywhere."
+                    : "Berdayakan Pembelajaran Anda, Di Mana Saja."}
+                </span>
+              </div>
+              <div className="my-8 flex justify-start">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
+                    {growWithUs.map((item, index) => (
+                      <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
+                        <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
+                          <img
+                            src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
+                            alt={item.variant}
+                            className="w-full h-56 object-cover rounded-t-2xl"
+                          />
+                          <div className="flex flex-col justify-between items-start px-4 py-5">
+                            <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
+                            <p className="font-semibold text-lg mb-2">
+                              {item.discount_price ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
+                            </p>
+                            <span className="text-sm text-[#3377FF]">
+                              {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+          )}
+          
           {kelasHSK.length > 0 && (
             <div>
               <div className="w-full mx-auto mb-6">

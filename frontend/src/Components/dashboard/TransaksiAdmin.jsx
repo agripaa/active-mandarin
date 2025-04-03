@@ -54,6 +54,7 @@ const TransaksiAdmin = () => {
 
   const columns = [
     { title: "Nama Pembeli", dataIndex: "User", key: "buyer", render: (user) => user?.name || "-" },
+    { title: "Nomor Telepon", dataIndex: "User", key: "number", render: (user) => user?.number || "-" },
     { title: "Category", dataIndex: "Brand", key: "item", render: (brand) => brand?.category_brand || "-" },
     { title: "Variant", dataIndex: "Brand", key: "variant", render: (brand) => brand?.variant || "-" },
     { title: "Turunan", dataIndex: "Brand", key: "turunan", render: (brand) => brand?.turunan || "-" },
@@ -76,8 +77,8 @@ const TransaksiAdmin = () => {
       dataIndex: "id", 
       key: "id", 
       render: (id, record) => (
-        <a href={`/invoice/${id}`} className="bg-transparent border-2 border-neutral-600 hover:bg-neutral-600 hover:text-white text-black font-semibold py-2 rounded-xl flex justify-center items-center">
-          Lihat Invoice
+        <a href={`/invoice/${id}`} className="bg-transparent border-2 border-neutral-600 hover:bg-neutral-600 hover:text-white text-black font-semibold py-2 rounded-xl flex justify-center px-3 items-center">
+          Invoice
         </a>
       ) 
     },
@@ -85,8 +86,8 @@ const TransaksiAdmin = () => {
 
   return (
     <div className="flex flex-col w-full min-h-screen p-4">
-      <div className="flex w-full gap-4 mb-6">
-        <div className="flex flex-col rounded-xl bg-white px-6 shadow-lg py-6 w-[22%]">
+      <div className="flex flex-col md:flex-row w-full gap-4 mb-6">
+        <div className="flex flex-col rounded-xl bg-white px-6 shadow-lg py-6 w-auto">
           <div className="flex items-center justify-center bg-[#F9CA24] text-white rounded-full w-14 h-14">
             <RiMoneyDollarCircleFill className="text-4xl" />
           </div>
@@ -95,7 +96,7 @@ const TransaksiAdmin = () => {
             <h4 className="text-gray-400">Pendapatan</h4>
           </div>
         </div>
-        <div className="flex flex-col rounded-xl bg-white px-6 shadow-lg py-6 w-[22%]">
+        <div className="flex flex-col rounded-xl bg-white px-6 shadow-lg py-6 w-auto">
           <div className="flex items-center justify-center bg-[#02264A] text-white rounded-full w-14 h-14">
             <RiFileTextFill className="text-4xl" />
           </div>
@@ -113,7 +114,9 @@ const TransaksiAdmin = () => {
             Export To Excel
           </Button>
         </div>
-        <Table columns={columns} dataSource={data} pagination={false} rowKey="id" />
+        <div className="overflow-x-auto">
+          <Table columns={columns} dataSource={data} pagination={false} rowKey="id" />
+        </div>
         <div className="flex justify-end mt-4">
         <Pagination
           current={currentPage}

@@ -15,6 +15,9 @@ exports.createTransaction = async (req, res) => {
       return res.status(400).json({ status: false, message: "Proof of transaction is required!" });
     }
 
+    const user = await User.findByPk(req.userId);
+    if(!user) return res.status(404).json({ status: false, message: "User Not Found!" })
+
     const proofFile = req.files.proof_transaction;
     const proofExt = path.extname(proofFile.name).toLowerCase();
     const allowedTypes = [".jpg", ".jpeg", ".png", ".webp", ".pdf"];
@@ -36,6 +39,7 @@ exports.createTransaction = async (req, res) => {
     let affiliator = null;
     if (reveral_code) {
       affiliator = await User.findOne({ where: { reveral_code } });
+      if (affiliator.reveral_code == user.reveral_code) return res.status(400).json({ status: false, message: "Affiliates cannot input their own referral code!" });
       if (!affiliator) return res.status(400).json({ status: false, message: "Invalid Reveral Code!" });
     }
 
@@ -49,7 +53,7 @@ exports.createTransaction = async (req, res) => {
     }
 
     const newTransaction = await Transaction.create({
-      user_id: req.userId,
+      user_id: user.id,
       affiliator_id: affiliator ? affiliator.id : null,
       brand_id,
       status_transaction: "pending",
@@ -59,7 +63,6 @@ exports.createTransaction = async (req, res) => {
       expired_date,
     });
 
-    const user = await User.findByPk(req.userId);
     await sendNewTransactionNotificationToAdmin(user, brand, newTransaction.id, proof_transaction);
 
 

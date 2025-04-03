@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Input, Modal, Button, Spin } from "antd";
+import { Table, Input, Modal, Spin, Pagination } from "antd";
 import { RiSearchLine } from "react-icons/ri";
 import DashboardLayout from "../Layouts/DashboardLayout";
 import { getAllRecruitment } from "../api/recruitment";
@@ -10,21 +10,29 @@ const Rekrutmen = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [recruitmentData, setRecruitmentData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const pageSize = 5;
 
   useEffect(() => {
-    fetchRecruitments();
-  }, []);
+    fetchRecruitments(currentPage);
+  }, [currentPage]);
 
-  const fetchRecruitments = async () => {
+  const fetchRecruitments = async (page = 1) => {
     setLoading(true);
     try {
-      const response = await getAllRecruitment();
+      const response = await getAllRecruitment(page, pageSize);
       setRecruitmentData(response.data);
+      setTotalItems(response.total_items);
     } catch (error) {
       console.error("Error fetching recruitment data:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSearch = (e) => {
+    setSearchText(e.target.value);
   };
 
   const showModal = (candidate) => {
@@ -50,10 +58,7 @@ const Rekrutmen = () => {
       title: "Aksi",
       key: "action",
       render: (_, record) => (
-        <span
-          className="text-blue-500 cursor-pointer"
-          onClick={() => showModal(record)}
-        >
+        <span className="text-blue-500 cursor-pointer" onClick={() => showModal(record)}>
           Selengkapnya
         </span>
       ),
@@ -62,13 +67,13 @@ const Rekrutmen = () => {
 
   if (loading) {
     return (
-            <DashboardLayout>
-                <div className="flex justify-center items-center h-[80vh]">
-                    <Spin size="large" />
-                </div>
-            </DashboardLayout>
-        );
-    }
+      <DashboardLayout>
+        <div className="flex justify-center items-center h-[80vh]">
+          <Spin size="large" />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -79,13 +84,33 @@ const Rekrutmen = () => {
             <Input
               placeholder="Cari kandidat..."
               prefix={<RiSearchLine className="text-2xl mr-2" />}
-              onChange={(e) => setSearchText(e.target.value)}
-              className="w-96 py-2 px-4"
+              onChange={handleSearch}
+              className="w-8/12 md:w-96 py-2 px-4"
             />
           </div>
-            <Table columns={columns} dataSource={filteredData} pagination={false} rowKey="id" />
+          <div className="overflow-x-auto">
+            <Table
+              columns={columns}
+              dataSource={filteredData}
+              pagination={false}
+              rowKey="id"
+            />
+          </div>
+
+          {/* Pagination bawaan antd */}
+          <div className="flex justify-end mt-6">
+            <Pagination
+              current={currentPage}
+              total={totalItems}
+              pageSize={pageSize}
+              onChange={(page) => setCurrentPage(page)}
+              showSizeChanger={false}
+              showLessItems
+            />
+          </div>
         </div>
 
+        {/* MODAL DETAIL */}
         <Modal
           title="Detail Rekrutmen"
           open={isModalOpen}
@@ -116,7 +141,7 @@ const Rekrutmen = () => {
               </div>
               <div>
                 <h4 className="text-gray-600">Portofolio</h4>
-                {selectedCandidate.portofolio ? (
+                {selectedCandidate.portofolio && selectedCandidate.portofolio !== "undefined" ? (
                   <a
                     href={selectedCandidate.portofolio}
                     target="_blank"

@@ -82,21 +82,21 @@ const DetailPage = () => {
           <RiArrowLeftLine /> Kembali
         </button>
 
-        <div className="grid grid-cols-1 md:flex md:justify-between items-start gap-6">
+        <div className="flex flex-col-reverse justify-center md:flex-row md:justify-between items-start gap-8">
           {/* Detail Produk */}
-          <div>
+          <div className="flex-grow">
             <h1 className="text-4xl font-semibold mb-6">{brandData.variant}</h1>
 
             {brandData.discount_price ? (
               <>
                 <p className="text-3xl text-gray-900 font-semibold mt-2">
-                  {formatRupiah(brandData.discount_price)} <span className="text-sm">/item</span>
+                  {formatRupiah(brandData.discount_price)} <span className="text-sm">{brandData.category_brand == "product" ? "/item" : langs ? "/Month" : "/Bulan"}</span>
                 </p>
                 <p className="text-lg text-red-500 line-through">{formatRupiah(brandData.price)}</p>
               </>
             ) : (
               <p className="text-3xl text-gray-900 font-semibold mt-2">
-                {formatRupiah(brandData.price)} <span className="text-sm">/item</span>
+                {formatRupiah(brandData.price)} <span className="text-sm">{brandData.category_brand == "product" ? "/item" : langs ? "/Month" : "/Bulan"}</span>
               </p>
             )}
 
@@ -104,7 +104,7 @@ const DetailPage = () => {
 
             <h2 className="text-xl font-semibold mt-6">Detail</h2>
             <div
-              className="prose text-gray-600 mt-2 leading-relaxed w-10/12 
+              className="prose text-gray-600 mt-2 leading-relaxed w-full md:w-10/12 
                         [&_a]:text-blue-600 [&_a]:underline 
                         [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-6 [&_ol]:pl-6"
               dangerouslySetInnerHTML={{
@@ -126,7 +126,7 @@ const DetailPage = () => {
           </div>
 
           {/* Gambar Produk + Tombol Beli */}
-          <div className="bg-white shadow-md w-5/12 rounded-lg p-6">
+          <div className="bg-white shadow-md w-full md:w-5/12 rounded-lg p-6 flex-shrink-0">
             <img
               src={`${process.env.REACT_APP_API_IMG}${brandData.brand_img}`}
               alt="Product"

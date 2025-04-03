@@ -2,14 +2,15 @@ import React, { useState, useEffect } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { RiDashboardFill, RiFileTextLine, RiNotification4Line, RiContactsLine, RiHandHeartLine, RiGroupLine, RiLogoutBoxLine, RiUserLine, RiHome4Line } from "react-icons/ri";
 import { MdCoPresent, MdOutlineDashboardCustomize } from "react-icons/md";
+import { SiGoogleclassroom } from "react-icons/si";
 import { getProfile } from "../../api/auth";
 
-const Sidebar = () => {
+const Sidebar = ({ onClose }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [role, setRole] = useState(null);
-    const [name, setName] = useState("User");
+    const [name, setName] = useState("");
     const [profileImg, setProfileImg] = useState("/assets/profile-dummy.webp");
     const [loading, setLoading] = useState(true);
 
@@ -53,14 +54,22 @@ const Sidebar = () => {
         navigate("/", { replace: true });
     };
 
-    const handleDirectHomepage = (e) => {
-        e.preventDefault();
-        navigate("/", { replace: true });
+    const capitalize = (str) => {
+        if (!str) return "-";
+        return str.charAt(0).toUpperCase() + str.slice(1);
     };
 
     return (
-        <aside className="w-[260px] h-screen fixed left-0 top-0 p-4 bg-white shadow-lg">
-            <div className="flex justify-center mb-8">
+        <aside className="w-[260px] h-screen fixed top-0 left-0 z-50 bg-white shadow-lg overflow-y-auto transition-transform">
+              {onClose && (
+                    <button
+                    onClick={onClose}
+                    className="lg:hidden absolute top-4 right-4 z-50 text-gray-600 hover:text-black text-2xl"
+                    >
+                    ✕
+                    </button>
+                )}
+            <div className="flex justify-center my-4">
                 <img src="/assets/active_logo.png" alt="Metalog Logo" className="w-[140px]" />
             </div>
 
@@ -70,7 +79,7 @@ const Sidebar = () => {
                     <img src={profileImg} alt="profile user" className="w-[100px] h-[100px] rounded-full object-cover" />
                     <h5 className="text-xl text-gray-800 mt-2 font-medium">{name}</h5>
                     <h5 className="text-md text-white bg-[#3377FF] px-4 py-1 rounded-2xl font-medium">
-                        {role}
+                        {capitalize(role)}
                     </h5>
                 </div>
             </div>
@@ -91,6 +100,8 @@ const Sidebar = () => {
                 ) : role === "affiliator" ? (
                     <ul>
                         <SidebarItem to={`/dashboard`} icon={<RiDashboardFill />} label="Dashboard" location={location} />
+                        <SidebarItem to={`/kelas-affiliator`} icon={<SiGoogleclassroom />} label="Kelas" location={location} />
+                        <SidebarItem to={`/transaksi`} icon={<RiFileTextLine />} label="Transaksi" location={location} />
                         <SidebarItem to={`/profile`} icon={<RiUserLine />} label="Profile" location={location} />
                         <hr className="my-4" />
                         <SidebarItem to={`/`} icon={<RiHome4Line />} label="Homepage" location={location} />

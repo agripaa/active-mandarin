@@ -147,7 +147,7 @@ const Heros = ({ text }) => {
         </picture>
       </Space> */}
       <Link to='https://wa.me/+6282279506450' target="_blank" className="absolute z-20">
-        <button className="flex items-center gap-2.5 fixed right-[5%] bottom-[6%] bg-[#57D163] hover:bg-[#4bad55] text-white font-normal text-xs md:text-base lg:text-lg py-3 px-6 rounded-2xl transition duration-300 ease-in-out">
+        <button className="flex items-center gap-2.5 fixed right-[5%] bottom-[4.3%] bg-[#57D163] hover:bg-[#4bad55] text-white font-normal text-xs md:text-base lg:text-lg py-3 px-6 rounded-2xl transition duration-300 ease-in-out">
           <FaWhatsapp className="text-lg md:text-2xl lg:text-3xl"/>
           Chat Mintive
         </button>

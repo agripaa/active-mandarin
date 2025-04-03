@@ -10,7 +10,8 @@ const turunanProgram = [
   "Mentor Scholarship",
   "Kelas HSK",
   "Premium Mandarin Learning",
-  "Educonsult S1-S3 Full Cover"
+  "Educonsult S1-S3 Full Cover",
+  "Grow with Us"
 ];
 
 const turunanProduct = [
@@ -107,7 +108,7 @@ exports.getGroupedBrands = async (req, res) => {
     });
 
     if (brands.length === 0) {
-      return res.status(404).json({ status: false, message: "Data Brand tidak ditemukan!" });
+      return res.status(404).json({ status: false, message: "Brand Data not found!" });
     }
 
     const groupedBrands = brands.reduce((acc, brand) => {
@@ -147,26 +148,26 @@ exports.getCategoryTurunanBrand = async (req, res) => {
 
   try {
     if (!category_brand || !turunan_brand) {
-      return res.status(400).json({ status: false, message: "category_brand dan turunan_brand harus diisi!" });
+      return res.status(400).json({ status: false, message: "Both 'category_brand' and 'turunan_brand' must be provided." });
     }
 
     const category = category_brand.toLowerCase();
     if (!categoryBrandOption.includes(category)) {
-      return res.status(400).json({ status: false, message: "Category Brand tidak ditemukan dalam daftar yang tersedia." });
+      return res.status(400).json({ status: false, message: "Category Brand is not found in the available list." });
     }
 
     if (category === "program" && !turunanProgram.includes(turunan_brand)) {
-      return res.status(400).json({ status: false, message: "Turunan Brand tidak ditemukan dalam daftar turunan program." });
+      return res.status(400).json({ status: false, message: "Turunan Brand is not found in the list of program subcategories." });
     }
 
     if (category === "product" && !turunanProduct.includes(turunan_brand)) {
-      return res.status(400).json({ status: false, message: "Turunan Brand tidak ditemukan dalam daftar turunan produk." });
+      return res.status(400).json({ status: false, message: "Turunan Brand is not found in the list of product subcategories." });
     }
 
     const brand = await Brand.findAll({ where: { turunan: turunan_brand, isDelete: false } });
 
     if (brand.length === 0) {
-      return res.status(404).json({ status: false, message: "Data Brand untuk kategori ini tidak ditemukan!" });
+      return res.status(404).json({ status: false, message: "No Brand data found for this category and subcategory." });
     }
 
     res.status(200).json({ status: true, data: brand });
@@ -337,7 +338,7 @@ exports.getLatestPrograms = async (req, res) => {
     const latestPrograms = await Brand.findAll({
       where: { isDelete: false, category_brand: "program" },
       order: [['createdAt', 'DESC']],
-      limit: 5,
+      limit: 7,
     });
 
     if (latestPrograms.length === 0) {

@@ -32,6 +32,10 @@ module.exports = {
           '0%': { transform: 'translateX(100%)' },
           '100%': { transform: 'translateX(0%)' },
         },
+        fadeOut: {
+          '0%': { opacity: 1 },
+          '100%': { opacity: 0 },
+        },
       },
       animation : {
         'spin-slow-30': 'spin 30s linear infinite',
@@ -44,6 +48,7 @@ module.exports = {
         'scroll-horizontal-infinite' : 'scrollHorizontal 30s linear infinite',
         'scroll-horizontal-infinite-reverse' : 'scrollHorizontal2 30s linear infinite',
         'scroll-horizontal-infinite-reverse-50' : 'scrollHorizontal2 50s linear infinite',
+        fade: 'fadeOut 2s ease-in-out forwards',
       },
     },
   },

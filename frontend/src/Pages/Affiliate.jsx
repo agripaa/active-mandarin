@@ -6,6 +6,7 @@ import { RiSearchLine, RiMoneyDollarCircleFill, RiFileTextFill } from "react-ico
 import DashboardLayout from "../Layouts/DashboardLayout";
 import { getAffiliatorStatusTrue, getTotalAffiliateRevenue } from "../api/affiliate";
 import "chart.js/auto";
+import { formatRupiah } from "../utils/rupiahFormat";
 
 const years = [2025, 2026];
 
@@ -120,9 +121,9 @@ const Affiliate = () => {
     return (
         <DashboardLayout>
             <section className="flex flex-col">
-                <div className="w-full flex my-4">
+                <div className="grid grid-cols-1 md:flex w-full p-4 gap-4 md:gap-0">
                     {/* CHART SECTION */}
-                    <div className="w-[75%]">
+                    <div className="w-full md:w-[70%]">
                     <motion.div 
                         initial={{ opacity: 0, y: -20 }} 
                         animate={{ opacity: 1, y: 0 }}
@@ -157,13 +158,15 @@ const Affiliate = () => {
                     </div>
 
                     {/* RIGHT CARD SECTION */}
-                    <div className='flex flex-col w-[25%] gap-4 ml-4' style={{ height: `${chartHeight}px` }}>
+                    <div className='flex flex-col w-full md:w-[30%] gap-4 md:ml-4' style={{ height: `${chartHeight}px` }}>
                         <div className="flex flex-col rounded-xl bg-white px-4 shadow-lg flex-1 justify-center gap-4">
                             <div className="flex items-center justify-center bg-[#F9CA24] text-white rounded-full w-14 h-14">
                                 <RiMoneyDollarCircleFill className="text-4xl" />
                             </div>
                             <div className="w-full flex flex-col gap-2">
-                                <h2 className="text-gray-900 text-3xl font-semibold">{`Rp ${totalCommission.toLocaleString()}`}</h2>
+                                <h2 className='text-gray-900 text-2xl sm:text-3xl font-semibold break-words'>
+                                    {formatRupiah(totalCommission)}
+                                </h2>
                                 <h4 className="text-gray-400">Total Komisi Affiliator</h4>
                             </div>
                         </div>
@@ -172,7 +175,9 @@ const Affiliate = () => {
                                 <RiFileTextFill className="text-4xl" />
                             </div>
                             <div className="w-full flex flex-col gap-2">
-                                <h2 className="text-gray-900 text-3xl font-semibold">{affiliators.length}</h2>
+                                <h2 className='text-gray-900 text-2xl sm:text-3xl font-semibold break-words'>
+                                    {affiliators.length}
+                                </h2>
                                 <h4 className="text-gray-400">Jumlah Affiliator</h4>
                             </div>
                         </div>
@@ -187,10 +192,12 @@ const Affiliate = () => {
                             placeholder="Cari Affiliator, cth: Josh Steward"
                             prefix={<RiSearchLine className="text-2xl mr-2" />}
                             onChange={handleSearch}
-                            className="w-96 py-2 px-4"
+                            className="w-8/12 md:w-96 py-2 px-4"
                         />
                     </div>
-                    <Table columns={columns} dataSource={filteredAffiliators} pagination={false} rowKey="id" />
+                    <div className="overflow-x-auto">
+                        <Table columns={columns} dataSource={filteredAffiliators} pagination={false} rowKey="id" />
+                    </div>
                     <div className="flex justify-end mt-4">
                         <Pagination
                             current={currentPage}

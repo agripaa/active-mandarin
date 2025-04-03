@@ -5,6 +5,8 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Import styles untuk editor
+import { formatRupiah } from "../../../utils/rupiahFormat";
+
 
 const turunanOptions = [
   "Non Degree (Kelas Bahasa di China)",
@@ -12,7 +14,8 @@ const turunanOptions = [
   "Mentor Scholarship",
   "Kelas HSK",
   "Premium Mandarin Learning",
-  "Educonsult S1-S3 Full Cover"
+  "Educonsult S1-S3 Full Cover",
+  "Grow with Us"
 ];
 
 const CreateProgramModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
@@ -20,9 +23,17 @@ const CreateProgramModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
   const [loading, setLoading] = useState(false);
   const [detailBrand, setDetailBrand] = useState(""); // State untuk WYSIWYG
   const [imageFile, setImageFile] = useState(null);
+  const [price, setPrice] = useState("0");
+  const [discountPrice, setDiscountPrice] = useState("0");
+  const [commission, setCommission] = useState("0");
 
   const handleFileChange = ({ file }) => {
     setImageFile(file);
+  };
+
+  const handleRupiahChange = (value, setter) => {
+    const numericValue = value.replace(/[^0-9]/g, "");
+    setter(numericValue);
   };
 
   const handleCancel = () => {
@@ -38,9 +49,9 @@ const CreateProgramModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
   
       formData.append("variant", values.variant);
       formData.append("turunan", values.turunan);
-      formData.append("price", values.price);
-      formData.append("discount_price", values.discount_price || ""); 
-      formData.append("commission", values.commission);
+      formData.append("price", Number(price));
+      formData.append("discount_price", Number(discountPrice) || "");
+      formData.append("commission", Number(commission));      
       formData.append("detail_brand", detailBrand); // Menggunakan state WYSIWYG
       formData.append("link_classroom", values.link_classroom || "");
       formData.append("category_brand", "program");
@@ -103,16 +114,31 @@ const CreateProgramModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
           </Select>
         </Form.Item>
 
-        <Form.Item name="price" label="Harga Normal" rules={[{ required: true, message: "Harga normal wajib diisi!" }]}>
-          <InputNumber placeholder="Masukkan Harga Normal, cth: Rp. 50.000" className="w-full py-2" />
+        <Form.Item label="Harga Normal" required>
+          <Input
+            value={formatRupiah(price)}
+            onChange={(e) => handleRupiahChange(e.target.value, setPrice)}
+            className="w-full py-2"
+            placeholder="Masukkan Harga Normal"
+          />
         </Form.Item>
 
-        <Form.Item name="discount_price" label="Harga Promo">
-          <InputNumber placeholder="Masukkan Harga Promo (opsional)" className="w-full py-2" />
+        <Form.Item label="Harga Promo">
+          <Input
+            value={formatRupiah(discountPrice)}
+            onChange={(e) => handleRupiahChange(e.target.value, setDiscountPrice)}
+            className="w-full py-2"
+            placeholder="Masukkan Harga Promo (Opsional)"
+          />
         </Form.Item>
 
-        <Form.Item name="commission" label="Komisi" rules={[{ required: true, message: "Komisi wajib diisi!" }]}>
-          <InputNumber placeholder="Masukkan Komisi Affiliator, cth: Rp. 50.000" className="w-full py-2" />
+        <Form.Item label="Komisi" required>
+          <Input
+            value={formatRupiah(commission)}
+            onChange={(e) => handleRupiahChange(e.target.value, setCommission)}
+            className="w-full py-2"
+            placeholder="Masukkan Komisi Affiliator"
+          />
         </Form.Item>
 
         {/* 📝 WYSIWYG Editor untuk Detail Program */}

@@ -50,9 +50,12 @@ const DashboardUser = () => {
                     <p className="text-[#3377FF] flex items-center gap-2 text-sm">
                         <RiLink /> <a href={program.link_classroom} target="_blank" rel="noopener noreferrer">Class Room</a>
                     </p>
-                    <button className="mt-3 w-40 bg-[#FFCC00] text-black px-3 py-3 rounded-xl">
-                        Kerjakan Ujian
-                    </button>
+                    <div className="flex flex-col items-start mt-3 gap-2">
+                      <button className="w-40 bg-[#ffcc003b] text-[#0000003c] px-3 py-3 rounded-xl " disabled={true}>
+                          Kerjakan Ujian
+                      </button>
+                      <p className="text-xs ml-1">Coming Soon</p>
+                    </div>
                 </div>
               </div>
             )) : (<div>

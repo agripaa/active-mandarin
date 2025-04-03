@@ -9,7 +9,7 @@ const TransaksiUser = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 5;
+  const pageSize = 10;
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
 
@@ -37,7 +37,7 @@ const TransaksiUser = () => {
 
   const handleDirectInvoice = (e, id) => {
     e.preventDefault();
-    navigate(`/invoice/${id}`);
+    window.open(`/invoice/${id}`);
   }
 
   if (loading) {
@@ -49,7 +49,7 @@ const TransaksiUser = () => {
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">Transaksi Mu</h2>
         
         {/* Table */}
-        <div className="bg-white shadow-md rounded-lg overflow-hidden">
+        <div className="bg-white shadow-md rounded-lg overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead className="bg-gray-200">
               <tr>
@@ -65,7 +65,7 @@ const TransaksiUser = () => {
               {transactions.length > 0 ? transactions.map((transaction, index) => (
                 <tr key={transaction.id} className="border-b">
                   <td className="p-3">
-                    <img src={transaction.brand_image ? `${process.env.REACT_APP_API_IMG}${transaction.brand_image}` : "/assets/product-default.png"} alt={transaction.item} className="w-42 h-28 rounded-md" />
+                    <img src={transaction.brand_image ? `${process.env.REACT_APP_API_IMG}${transaction.brand_image}` : "/assets/product-default.png"} alt={transaction.item} className="w-full h-38 md:h-26 lg:w-36 lg:h-20 rounded-md" />
                   </td>
                   <td className="p-3">{transaction.item}</td>
                   <td className="p-3">{transaction.discount_price ? formatRupiah(transaction.discount_price) : formatRupiah(transaction.price)}</td>
@@ -87,29 +87,58 @@ const TransaksiUser = () => {
         </div>
 
         {/* Pagination */}
-        <div className="flex justify-center items-center mt-6 space-x-2">
+        <div className="flex justify-center items-center mt-6 space-x-2 flex-wrap">
           <button
             onClick={() => goToPage(currentPage - 1)}
             disabled={currentPage === 1}
-            className={`px-3 py-2 border rounded-md ${currentPage === 1 ? "text-gray-400 cursor-not-allowed" : "text-gray-700 hover:bg-gray-100"}`}
+            className={`px-2 py-1 border rounded-md ${currentPage === 1 ? "text-gray-400 cursor-not-allowed" : "text-gray-700 hover:bg-gray-100"}`}
           >
             &lt;
           </button>
 
-          {[...Array(totalPages)].map((_, index) => (
-            <button
-              key={index}
-              onClick={() => goToPage(index + 1)}
-              className={`px-3 py-2 border rounded-md ${currentPage === index + 1 ? "bg-blue-500 text-white" : "text-gray-700 hover:bg-gray-100"}`}
-            >
-              {index + 1}
-            </button>
-          ))}
+          {/* Generate Pagination Items */}
+          {(() => {
+            const pages = [];
+            const visiblePages = 3;
+
+            if (totalPages <= 7) {
+              // Show all pages if few
+              for (let i = 1; i <= totalPages; i++) {
+                pages.push(i);
+              }
+            } else {
+              if (currentPage <= 3) {
+                pages.push(1, 2, 3, 4, "...", totalPages);
+              } else if (currentPage >= totalPages - 2) {
+                pages.push(1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+              } else {
+                pages.push(1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages);
+              }
+            }
+
+            return pages.map((page, idx) => {
+              if (page === "...") {
+                return (
+                  <span key={`ellipsis-${idx}`} className="px-2 py-1 text-gray-400">...</span>
+                );
+              }
+
+              return (
+                <button
+                  key={page}
+                  onClick={() => goToPage(page)}
+                  className={`px-2 py-1 border rounded-md ${currentPage === page ? "bg-blue-500 text-white" : "text-gray-700 hover:bg-gray-100"}`}
+                >
+                  {page}
+                </button>
+              );
+            });
+          })()}
 
           <button
             onClick={() => goToPage(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className={`px-3 py-2 border rounded-md ${currentPage === totalPages ? "text-gray-400 cursor-not-allowed" : "text-gray-700 hover:bg-gray-100"}`}
+            className={`px-2 py-1 border rounded-md ${currentPage === totalPages ? "text-gray-400 cursor-not-allowed" : "text-gray-700 hover:bg-gray-100"}`}
           >
             &gt;
           </button>

@@ -90,7 +90,7 @@ const Profile = () => {
     <DashboardLayout>
       <div className="flex flex-col items-start p-6">
         <h1 className="text-4xl font-semibold">Your Profile</h1>
-        <p className="text-gray-500 mt-1 text-lg w-[30%]">
+        <p className="text-gray-500 mt-1 text-lg w-full lg:w-[35%]">
           Masukkan informasi yang valid agar proses belajar lebih mudah
         </p>
 
