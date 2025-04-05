@@ -30,7 +30,7 @@ const Oprec = ({ text }) => {
           <div className='w-0 lg:w-[48%] xl:w-[45%]' />
 
           <div className='flex flex-col justify-center text-white w-full lg:max-w-lg lg:w-7/12'>
-            <h2 className='font-semibold text-2xl md:text-[32px]'>{langs ? 'Join Our Team and Grow with Active Mandarin Indonesia' : 'Bergabunglah dengan Tim Kami dan Berkembang Bersama Active Mandarin Indonesia'}</h2>
+            <h2 className='font-semibold text-2xl md:text-[32px]'>{text.title}</h2>
             <ul className='flex flex-col gap-4 mt-6'>
               <li className='flex gap-2.5 items-center'>
                 <RiCheckboxCircleFill color='#57D163' className='w-5 h-5 min-w-5 min-h-5' />

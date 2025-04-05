@@ -62,7 +62,7 @@ const TransaksiUser = () => {
               </tr>
             </thead>
             <tbody>
-              {transactions.length > 0 ? transactions?.map((transaction, index) => (
+              {transactions.length > 0 ? transactions.map((transaction, index) => (
                 <tr key={transaction.id} className="border-b">
                   <td className="p-3">
                     <img src={transaction.brand_image ? `${process.env.REACT_APP_API_IMG}${transaction.brand_image}` : "/assets/product-default.png"} alt={transaction.item} className="w-full h-38 md:h-26 lg:w-36 lg:h-20 rounded-md" />
@@ -116,7 +116,7 @@ const TransaksiUser = () => {
               }
             }
 
-            return pages?.map((page, idx) => {
+            return pages.map((page, idx) => {
               if (page === "...") {
                 return (
                   <span key={`ellipsis-${idx}`} className="px-2 py-1 text-gray-400">...</span>

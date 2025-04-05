@@ -261,12 +261,12 @@ const Lectures = ({ text }) => {
     >
       <div className="mx-auto text-start">
         <div className="w-full">
-          <h1 className="text-black text-2xl font-semibold md:text-3xl lg:text-[32px]">{langs ? "Learn with Expert Tutors" : "Belajar dengan Tutor Ahli"}</h1>
+          <h1 className="text-black text-2xl font-semibold md:text-3xl lg:text-[32px]">{text?.title}</h1>
         </div>
         <div className="mt-9">
           <div className="home-slider w-full overflow-visible">
             <Slider {...settings} ref={(slider) => sliderRef = slider}>
-              {lecture?.map((item, index) => (
+              {lecture.map((item, index) => (
                 <div key={index} className="h-full">
                   <div className="flex flex-col bg-white border border-[#D5DAE2] rounded-3xl w-full h-full text-center p-4 xl:p-6">
                     <div className="relative w-48 mx-auto mb-4 flex justify-center items-center aspect-square rounded-full overflow-hidden">
@@ -358,7 +358,7 @@ const Lectures = ({ text }) => {
         <div className="p-6">
           <h2 className="font-bold text-lg mb-4">Tutor Achievement</h2>
           <ul className="list-disc ml-5">
-            {currentCertificates?.map((cert, index) => (
+            {currentCertificates.map((cert, index) => (
               <li key={index} className="mb-2">
                 <p className="text-black text-lg">
                   {langs 

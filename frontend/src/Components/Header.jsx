@@ -174,18 +174,16 @@ const Headers = ({ collapse, funcs }) => {
      }, []) 
 
     const dispatch = useDispatch();
-    const { _, langs } = useSelector((state) => state.LangReducer);
-    const navList = {
-        english: ['Home', 'About Us', 'Our Programs', 'Our Products'],
-        indonesia: ['Beranda', 'Tentang Kami', 'Program Kami', 'Produk Kami']
-    }
-    const text = langs ? navList?.english : navList?.indonesia;
+    const { data, langs } = useSelector((state) => state.LangReducer);
+    const text = langs ? data?.english : data?.indonesia;
     const location = useLocation();
 
-    const navs = (text || []).map((name, idx) => ({
-        name,
-        href: ["/", "/about", "/class", "/products"][idx],
-      }));
+    const navs = [
+        { name: text?.navbar[0], href: "/" },
+        { name: text?.navbar[1], href: "/about" },
+        { name: text?.navbar[2], href: "/class" },
+        { name: text?.navbar[3], href: "/products" },
+    ];
 
     useEffect(() => {
         const handleScroll = () => {
@@ -282,7 +280,7 @@ const Headers = ({ collapse, funcs }) => {
                     </Col>
                     <Col span={14} className="lg:block hidden">
                         <Row justify="center" gutter={24}>
-                            {navs?.map((item, index) => (
+                            {navs.map((item, index) => (
                                 <div key={index}>
                                     <Link
                                         to={item.href}
@@ -368,7 +366,7 @@ const Headers = ({ collapse, funcs }) => {
                     </div>
                     <Row align="middle" className="py-5">
                         <div className="flex flex-col">
-                            {navs?.map((item, index) => (
+                            {navs.map((item, index) => (
                                 <Link
                                     to={item.href}
                                     className={`relative no-underline nav-text font-medium text-xl text-[#9F9FA1] mx-4 hover:text-[#09072E] p-2 transition-all duration-300 !w-full ${

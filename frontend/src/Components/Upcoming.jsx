@@ -44,7 +44,7 @@ const Upcoming = ({ text }) => {
             </div>
             <Row gutter={[32, 32]} className="py-10" justify='center'>
                 {
-                    post?.map((item, index) => 
+                    post.map((item, index) => 
                         <Col key={index} xs={{ span: 24, offset: 0 }} lg={{ span: 6, offset: 0 }} sm={{ span: 12 }}>
                             <Link to={item.link} target="_blank">
                                 <Card 

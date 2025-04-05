@@ -303,7 +303,7 @@ const Classes = ({ title }) => {
         </div>
 
         <Col className="py-5 flex flex-col justify-center items-center w-full">
-          {text?.map((item, index) => (
+          {text.map((item, index) => (
             <div key={index} className="mb-8 w-full lg:w-11/12 xl:w-9/12">
               <CardClasses data={item} />
             </div>

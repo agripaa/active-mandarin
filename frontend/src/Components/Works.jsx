@@ -3,49 +3,8 @@ import React from "react";
 import { FaChalkboardTeacher, FaHeadSideVirus } from "react-icons/fa";
 import { GiVrHeadset } from "react-icons/gi";
 import { TbCertificate } from "react-icons/tb";
-import { useSelector } from "react-redux";
 
-const Works = ({ text, test }) => {
-    const { langs } = useSelector((state) => state.LangReducer);
-    const dataCard = {
-        english: [
-            {
-                title: 'Best Teachers',
-                shorts: 'We have highly skilled teachers with experience'
-            },
-            {
-                title: 'Best Curriculum',
-                shorts: 'We have made our structure easy & understandable'
-            },
-            {
-                title: "1 to 1 Support",
-                shorts: 'We give 1 to 1 support to our students'
-            },
-            {
-                title: 'Work Relation',
-                shorts: 'We have more than 500+ access with top company '
-            }
-        ],
-        indonesia: [
-            {
-                title: 'Guru Terbaik',
-                shorts: 'Kami memiliki guru berpengalaman dan sangat terampil'
-            },
-            {
-                title: 'Kurikulum Terbaik',
-                shorts: 'Kami menyusun kurikulum yang mudah dipahami'
-            },
-            {
-                title: 'Bantuan 1 Per 1',
-                shorts: 'Kami memberikan dukungan 1 lawan 1 kepada siswa kami'
-            },
-            {
-                title: 'Relasi Kerja',
-                shorts: 'Kami memiliki lebih dari 500+ koneksi dengan perusahaan terkemuka'
-            } 
-        ]
-    }
-    const cards = langs ? dataCard?.english : dataCard?.indonesia
+const Works = ({ text, cards }) => {
     const icons = [
         <GiVrHeadset />,
         <TbCertificate />,
@@ -66,7 +25,7 @@ const Works = ({ text, test }) => {
         <div className="py-10 w-full bg-white" style={{ backgroundImage: "url('/assets/texture.png')", backgroundSize: "cover", backgroundPosition: "center" }}>
             <div className="container mx-auto relative w-full">
             <h1 className="text-center mt-4 font-semibold text-2xl text-[#252525] px-3 md:text-3xl lg:text-[32px]">
-                {langs ? 'Why are we different from others?': 'Mengapa kita berbeda dari yang lain?'}
+                {text?.title}
             </h1>
             <h2 className="text-4xl text-center font-semibold my-5">{text?.desc}</h2>
 

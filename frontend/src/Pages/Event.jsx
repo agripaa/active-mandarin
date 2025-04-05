@@ -26,7 +26,7 @@ const Event = () => {
                 </div>
                 <Row gutter={ [{lg: 24, md: 16, sm: 8, xs: 8} ,24] } className="py-10">
                     {
-                        post?.map((item, index) => 
+                        post.map((item, index) => 
                             <Col key={index} xs={{ span: 12, offset: 0 }} lg={{ span: 6, offset: 0 }} sm={{ span: 12 }}>
                                 <Link to={item.link} className="transition ease-in px-0 md:py-10 py-5 bg-white md:rounded-2xl rounded text-[#02264A] md:min-h-[350px] min-h-[250px] hover:drop-shadow-md">
                                     <img src={`${url.IMAGE_URL}posting/${item?.MstPostingAttachment?.file_name}`} alt="card" className="w-full"/>

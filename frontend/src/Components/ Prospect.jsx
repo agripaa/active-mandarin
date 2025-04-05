@@ -5,31 +5,6 @@ import { Link } from 'react-router-dom';
 const  Prospect = ({text}) => {
     const {data, langs} = useSelector(state => state.LangReducer);
 
-    const careerDatas = {
-        english: [
-            'Asistant Manager',
-            'Mandarin Editor',
-            'Mandarin Translator',
-            'Personal Assistant',
-            'Bussiness Consultant',
-            'Mandarin Speaker',
-            'Mandarin Teacher',
-            'Other',
-        ],
-        indonesia: [
-            'Asisten Manajer',
-            'Editor Bahasa Mandarin',
-            'Penerjemah Bahasa Mandarin',
-            'Asisten Pribadi',
-            'Konsultan Bisnis',
-            'Penutur Bahasa Mandarin',
-            'Guru Bahasa Mandarin',
-            'Lainnya',
-        ]
-    }
-
-    const careers = langs ? careerDatas?.english : careerDatas?.indonesia;
-
     return (
         <div className='container mx-auto pt-16 pb-24 px-5 relative w-full md:px-16'>
             <div className='flex items-center justify-center w-full h-full'>
@@ -40,16 +15,16 @@ const  Prospect = ({text}) => {
                     </div>
                     <div className='w-4/12 hidden lg:flex' />
                     <div className='flex flex-col justify-center text-[#02264A] w-full z-10 lg:w-8/12'>
-                        <h2 className='font-semibold text-xl sm:text-2xl md:text-[32px]'>{langs ? "Earn a Higher Salary by Learning Mandarin" : "Dapatkan Gaji Lebih Tinggi dengan Belajar Mandarin"}</h2>
+                        <h2 className='font-semibold text-xl sm:text-2xl md:text-[32px]'>{text.title}</h2>
                         <span className='max-w-max my-6'>
-                            <h1 className='text-[#3377FF] font-semibold text-4xl smtext-5xl md:text-6xl'>{langs ? 'Rp8-30 Million' : 'Rp8-30 Juta'}</h1>
-                            <p className='text-base font-medium text-[#8493AC] w-auto text-end md:text-lg'>{langs ? 'Source: Jobstreet' : 'Sumber: Jobstreet'}</p>
+                            <h1 className='text-[#3377FF] font-semibold text-4xl smtext-5xl md:text-6xl'>{text.tags}</h1>
+                            <p className='text-base font-medium text-[#8493AC] w-auto text-end md:text-lg'>{text.source}</p>
                         </span>
                         <div className='flex flex-col w-full'>
-                            <h2 className='text-[#8493AC] text-2xl'>{langs ? 'As a' : 'Sebagai'}</h2>
+                            <h2 className='text-[#8493AC] text-2xl'>{text.head}</h2>
                             <div className='grid gap-2 mt-4 grid-cols-2 md:grid-cols-3 xl:gap-4'>
-                                {careers?.map((career, index) => (
-                                    <h2 key={index} className='text-sm sm:text-base'>{career}</h2>
+                                {text.careers.map((career, index) => (
+                                    <h2 className='text-sm sm:text-base'>{career}</h2>
                                 ))}
                             </div>
                         </div>

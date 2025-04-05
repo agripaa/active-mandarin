@@ -160,7 +160,7 @@ const handleClickItem = (id) => {
             {...settingsCarousel}
             className="rounded-xl overflow-visible h-full"
           >
-            {galleryData?.map((item, index) => (
+            {galleryData.map((item, index) => (
               <div
                 key={index}
                 className={`relative transition-transform duration-[1500ms] px-2 sm:px-8 my-8 md:my-12 md:px-10 lg:px-14 xl:px-16 ${
@@ -201,7 +201,7 @@ const handleClickItem = (id) => {
               </div>
               <div className="my-8 flex justify-start">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
-                    {growWithUs?.map((item, index) => (
+                    {growWithUs.map((item, index) => (
                       <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
                         <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
                           <img
@@ -240,7 +240,7 @@ const handleClickItem = (id) => {
               </div>
               <div className="my-8 flex justify-start">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
-                    {kelasHSK?.map((item, index) => (
+                    {kelasHSK.map((item, index) => (
                       <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
                         <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
                           <img
@@ -281,7 +281,7 @@ const handleClickItem = (id) => {
               </span>
             </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
-                    {premiumMandarin?.map((item, index) => (
+                    {premiumMandarin.map((item, index) => (
                       <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
                         <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
                           <img
@@ -322,7 +322,7 @@ const handleClickItem = (id) => {
             </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
-                    {mentorScholarship?.map((item, index) => (
+                    {mentorScholarship.map((item, index) => (
                       <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
                         <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
                           <img
@@ -363,7 +363,7 @@ const handleClickItem = (id) => {
               </span>
             </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
-                    {degree?.map((item, index) => (
+                    {degree.map((item, index) => (
                       <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
                         <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
                           <img
@@ -403,7 +403,7 @@ const handleClickItem = (id) => {
                 </span>
               </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
-                      {nonDegree?.map((item, index) => (
+                      {nonDegree.map((item, index) => (
                         <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
                           <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
                             <img

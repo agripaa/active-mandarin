@@ -152,12 +152,12 @@ const Gallery = ({ text }) => {
         <div className="w-full mx-auto py-16 pb-28 px-5 md:px-0">
             <div className="text-center flex flex-col items-center mb-10">
                 <h1 className="text-2xl w-full capitalize font-semibold text-[#02264A] md:text-3xl lg:w-9/12 lg:text-4xl">
-                    {langs ? 'Documentation of Indonesian Students and International Students in China' : 'Dokumentasi Pelajar Indonesia dan Pelajar Internasional di Tiongkok'}
+                    {text.title}
                 </h1>
             </div>
             <div className="h-full max-h-[440px]">
                 <Slider {...settings} className="rounded-xl overflow-hidden h-full">
-                    {galleryData?.map((item, index) => (
+                    {galleryData.map((item, index) => (
                         <div
                             key={index}
                             className={`relative transition-transform duration-1000 px-8 my-12 ${

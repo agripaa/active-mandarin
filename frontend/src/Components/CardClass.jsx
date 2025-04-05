@@ -20,7 +20,7 @@ const CardClasses = ({ data }) => {
         {/* Gambar */}
         <div className="w-full lg:w-6/12 flex justify-center items-center">
           <img
-            src={data?.image}
+            src={data.image}
             alt="card"
             className="max-w-full max-h-full object-contain rounded-xl"
           />
@@ -61,7 +61,7 @@ const CardClasses = ({ data }) => {
                 : `Rp ${addCommas(data?.price)}`}
               {data?.price !== "Soon" && data?.price !== "Segera" && (
                 <span className="font-light text-xs ml-1 sm:text-sm">
-                  {data?.category
+                  {data.category
                     ? langs
                       ? "/Person"
                       : "/Orang"
@@ -102,30 +102,30 @@ const CardClasses = ({ data }) => {
 
           <div className="space-y-0 w-full flex flex-col">
             <div className="w-full justify-between flex flex-col sm:flex-row">
-              {data?.facilities.length > 0 && (
+              {data.facilities.length > 0 && (
                 <div
                   className={
-                    data?.free.length > 0 ? "w-9/12 sm:w-5/12" : "w-full"
+                    data.free.length > 0 ? "w-9/12 sm:w-5/12" : "w-full"
                   }
                 >
                   <h3 className="font-semibold text-lg text-[#252525] mb-2">
                     {langs ? "Facilities:" : "Fasilitas:"}
                   </h3>
                   <ul className="list-disc ml-5 text-gray-900">
-                    {data?.facilities.map((facility, index) => (
+                    {data.facilities.map((facility, index) => (
                       <li key={index}>{facility}</li>
                     ))}
                   </ul>
                 </div>
               )}
 
-              {data?.free.length > 0 && (
+              {data.free.length > 0 && (
                 <div className="w-full my-2 sm:w-6/12">
                   <h3 className="font-semibold text-lg text-[#252525] mb-2">
                     {langs ? "Free:" : "Gratis:"}
                   </h3>
                   <ul className="list-disc ml-5 text-gray-900">
-                    {data?.free.map((detail, index) => (
+                    {data.free.map((detail, index) => (
                       <li key={index}>{detail}</li>
                     ))}
                   </ul>
@@ -134,39 +134,39 @@ const CardClasses = ({ data }) => {
             </div>
 
             <div className="w-full justify-between flex flex-col sm:flex-row">
-              {data?.title == "Mandarin General Class - Basic" && (
+              {data.title == "Mandarin General Class - Basic" && (
                 <div className="w-full my-2">
                   <h3 className="font-semibold text-lg text-[#252525] mb-2">
                     {langs ? "Benefits:" : "Manfaat:"}
                   </h3>
                   <ul className="list-disc ml-5 text-gray-900">
-                    {data?.bnefits.map((bnefit, index) => (
+                    {data.bnefits.map((bnefit, index) => (
                       <li key={index}>{bnefit}</li>
                     ))}
                   </ul>
                 </div>
               )}
 
-              {data?.other.length > 0 && (
+              {data.other.length > 0 && (
                 <div className="w-full my-2 sm:w-5/12">
                   <h3 className="font-semibold text-lg text-[#252525] mb-2">
                     {langs ? "Other:" : "Lainnya:"}
                   </h3>
                   <ul className="list-disc ml-5 text-gray-900">
-                    {data?.other.map((facility, index) => (
+                    {data.other.map((facility, index) => (
                       <li key={index}>{facility}</li>
                     ))}
                   </ul>
                 </div>
               )}
 
-              {data?.detail_class.length > 0 && (
+              {data.detail_class.length > 0 && (
                 <div className="w-full my-2 sm:w-6/12">
                   <h3 className="font-semibold text-lg text-[#252525] mb-2">
                     {langs ? "Class Detail:" : "Detail Kelas:"}
                   </h3>
                   <ul className="list-disc ml-5 text-gray-900">
-                    {data?.detail_class.map((detail, index) => (
+                    {data.detail_class.map((detail, index) => (
                       <li key={index}>{detail}</li>
                     ))}
                   </ul>
@@ -185,7 +185,7 @@ const CardClasses = ({ data }) => {
                 <>
                   Rp {addCommas(data?.price)}{" "}
                   <span className="text-sm md:text-lg font-normal">
-                    {data?.category
+                    {data.category
                       ? langs
                         ? "/Person"
                         : "/Orang"
