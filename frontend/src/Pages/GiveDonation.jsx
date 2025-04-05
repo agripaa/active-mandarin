@@ -111,7 +111,7 @@ const GiveDonation = () => {
           </div>
         </div>
       </div>
-      <div className="container flex flex-col mx-auto px-5 py-5 md:px-[72px] md:py-16">
+      <div className="container flex flex-col mx-auto px-5 py-5 items-start md:px-[72px] md:py-16">
         <div className="flex flex-col">
           <h1 className="text-fiord-950 text-2xl font-semibold leading-10 md:text-[32px]">
             {langs

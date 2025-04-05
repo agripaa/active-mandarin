@@ -40,7 +40,7 @@ const JoinAffiliate = () => {
 
   return (
     <Mainlayouts className="bg-background" footerClassName="bg-background">
-      <div className="container flex flex-col mx-auto px-5 py-5 gap-16 md:px-[72px] md:py-16 lg:flex-row">
+      <div className="container flex flex-col mx-auto px-5 py-5 gap-16 items-start md:px-[72px] md:py-16 lg:flex-row">
         <div className="w-full lg:w-[57%]">
           <div className="flex flex-col">
             <h1 className="text-fiord-950 text-2xl font-semibold md:text-[32px]">
