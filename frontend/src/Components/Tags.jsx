@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useSelector } from "react-redux";
 
 const Tags = ({ text }) => {
+  const { langs } = useSelector((state) => state.LangReducer);
   const [registrant, setRegistrant] = useState(0);
   const [happyParticipants, setHappyParticipants] = useState(0);
   const [skillsEnhancement, setSkillsEnhancement] = useState(0);
@@ -66,7 +68,7 @@ const Tags = ({ text }) => {
                   {registrant}+
                 </h2>
                 <h4 className="tracking-wide text-sm md:text-base">
-                  {text.regist}
+                  {langs ? 'Registrant' : 'Pendaftar'}
                 </h4>
               </div>
             </span>
@@ -84,7 +86,7 @@ const Tags = ({ text }) => {
                   {happyParticipants}%
                 </h2>
                 <h4 className="tracking-wide text-sm md:text-base">
-                  {text.participants}
+                  {langs ? 'Happy Participants' : 'Peserta Puas'}
                 </h4>
               </div>
             </span>
@@ -102,7 +104,7 @@ const Tags = ({ text }) => {
                   {skillsEnhancement}%
                 </h2>
                 <h4 className="tracking-wide text-sm md:text-base">
-                  {text.skill}
+                  {langs ? 'Skills Enhancement' : 'Peningkatan Keterampilan'}
                 </h4>
               </div>
             </span>

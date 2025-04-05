@@ -1,7 +1,10 @@
-import { Link, useLocation } from "react-router-dom";
-import { RiHandHeartLine, RiSearch2Line } from "@remixicon/react";    
+import { Link } from "react-router-dom";
+import { RiHandHeartLine } from "@remixicon/react";    
+import { useSelector } from "react-redux";
 
 const Donation = ({text}) => {
+    const { langs } = useSelector((state) => state.LangReducer);
+
     return (
         <div
         className={`bg-[#02264A] py-6 text-white`}
@@ -15,8 +18,8 @@ const Donation = ({text}) => {
                     <RiHandHeartLine size={40} color="white" className="font-thin" />
                 </span>
                 <span className="md:ml-4">
-                    <h4 className="text-sm lg:text-base font-semibold">{text.title}</h4>
-                    <p className="text-xs lg:text-sm font-light">{text.tags}</p>
+                    <h4 className="text-sm lg:text-base font-semibold">{langs ? 'Support Free Education Today' : 'Dukung Pendidikan Gratis Hari Ini'}</h4>
+                    <p className="text-xs lg:text-sm font-light">{langs ? 'Help Make Mandarin Learning, Mentor Scholarship, Carrer Center, Accessible for All!' : 'Bantu Pembelajaran Mandarin, Pembimbingan Beasiswa, dan Pusat Karier Dapat Diakses oleh Semua!'}</p>
                 </span>
             </Link>
             <div className="items-center text-md space-x-4 flex mr-auto md:mr-0">
@@ -25,7 +28,7 @@ const Donation = ({text}) => {
                     target="_blank"
                     className="px-2 py-1.5 bg-[#FFCC00] text-[#252525] text-center rounded-xl transition-all duration-300 font-medium text-sm md:px-4 md:py-3 md:rounded-2xl lg:text-base hover:bg-yellow-500"
                 >
-                    {text.btn}
+                    {langs ? 'Support Now' : 'Dukung Sekarang!'}
                 </Link>
             </div>
         </div>

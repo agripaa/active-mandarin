@@ -35,7 +35,7 @@ const DashboardUser = () => {
         <section className="mb-8 bg-white p-4 rounded-xl">
           <h2 className="text-xl font-semibold mb-4">Program Saya</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-            {programs.length > 0 ? programs.map((program, index) => (
+            {programs.length > 0 ? programs?.map((program, index) => (
               <div
                 key={index}
                 className="bg-white p-4 rounded-xl shadow-md flex flex-col items-start"
@@ -68,7 +68,7 @@ const DashboardUser = () => {
         <section className="bg-white p-4 rounded-xl">
           <h2 className="text-xl font-semibold mb-4">Produk Saya</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {products.length > 0 ? products.map((product, index) => (
+            {products.length > 0 ? products?.map((product, index) => (
               <div
                 key={index}
                 className="bg-white p-4 rounded-xl shadow-md flex flex-col items-start"

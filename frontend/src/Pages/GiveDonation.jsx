@@ -85,7 +85,7 @@ const GiveDonation = () => {
             <div className="w-full">
               <h3 className="text-xl text-[#2B313B] font-semibold">Awardee Impact</h3>
               <div className="mt-1 flex flex-col gap-4">
-                {awardeeImpacts.map((impact, index) => (
+                {awardeeImpacts?.map((impact, index) => (
                   <div key={index} className="flex gap-2 items-start">
                     <RiCheckboxCircleFill className="w-5 h-5 min-w-5 min-h-5" color="#57D163" />
                     <p className="text-[#201F1F]">

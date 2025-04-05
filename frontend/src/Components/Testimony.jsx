@@ -164,7 +164,7 @@ const Testimony = ({ text }) => {
           />
           <div className="flex flex-col items-center justify-center">
             <h2 className="text-[32px] font-semibold text-white mb-4 mt-8">
-              {text.tags}
+              {langs ? 'Join Our Growing Community' : 'Bergabunglah dengan Komunitas Kami yang Berkembang'}
             </h2>
             <div className="flex justify-start items-start w-full gap-6">
               <Link
@@ -182,7 +182,7 @@ const Testimony = ({ text }) => {
 
         <div className="flex-col gap-4 hidden absolute bottom-0 right-5 xl:flex md:right-16">
           <div className="flex flex-col gap-4 h-max animate-scroll-vertical-infinite-reverse-50">
-            {testiFirstHalf.map((item, index) => (
+            {testiFirstHalf?.map((item, index) => (
               <div key={index} className="h-auto w-[346px]">
                 <div className="bg-white p-4 rounded-2xl flex flex-col shadow-md h-full">
                   <div className="flex items-center mb-4">
@@ -208,7 +208,7 @@ const Testimony = ({ text }) => {
             ))}
           </div>
           <div className="flex flex-col gap-4 h-max animate-scroll-vertical-infinite-reverse-50">
-            {testiFirstHalf.map((item, index) => (
+            {testiFirstHalf?.map((item, index) => (
               <div key={index} className="h-auto w-[346px]">
                 <div className="bg-white p-4 rounded-2xl flex flex-col shadow-md h-full">
                   <div className="flex items-center mb-4">
@@ -234,7 +234,7 @@ const Testimony = ({ text }) => {
             ))}
           </div>
           <div className="flex flex-col gap-4 h-max animate-scroll-vertical-infinite-reverse-50">
-            {testiFirstHalf.map((item, index) => (
+            {testiFirstHalf?.map((item, index) => (
               <div key={index} className="h-auto w-[346px]">
                 <div className="bg-white p-4 rounded-2xl flex flex-col shadow-md h-full">
                   <div className="flex items-center mb-4">
@@ -262,7 +262,7 @@ const Testimony = ({ text }) => {
         </div>
         <div className="flex-col gap-4 hidden absolute bottom-0 right-[180px] xl:flex xl:right-[426px]">
           <div className="flex flex-col gap-4 h-max animate-scroll-vertical-infinite-50">
-            {testiSecondHalf.map((item, index) => (
+            {testiSecondHalf?.map((item, index) => (
               <div key={index} className="h-auto w-[346px]">
                 <div className="bg-white p-4 rounded-2xl flex flex-col shadow-md h-full">
                   <div className="flex items-center mb-4">
@@ -288,7 +288,7 @@ const Testimony = ({ text }) => {
             ))}
           </div>
           <div className="flex flex-col gap-4 h-max animate-scroll-vertical-infinite-50">
-            {testiSecondHalf.map((item, index) => (
+            {testiSecondHalf?.map((item, index) => (
               <div key={index} className="h-auto w-[346px]">
                 <div className="bg-white p-4 rounded-2xl flex flex-col shadow-md h-full">
                   <div className="flex items-center mb-4">
@@ -314,7 +314,7 @@ const Testimony = ({ text }) => {
             ))}
           </div>
           <div className="flex flex-col gap-4 h-max animate-scroll-vertical-infinite-50">
-            {testiSecondHalf.map((item, index) => (
+            {testiSecondHalf?.map((item, index) => (
               <div key={index} className="h-auto w-[346px]">
                 <div className="bg-white p-4 rounded-2xl flex flex-col shadow-md h-full">
                   <div className="flex items-center mb-4">
@@ -343,7 +343,7 @@ const Testimony = ({ text }) => {
 
         <div className="flex-col gap-4 hidden absolute bottom-0 right-[180px] lg:flex xl:hidden">
           <div className="flex flex-col gap-4 h-max animate-scroll-vertical-infinite-50">
-            {translate.map((item, index) => (
+            {translate?.map((item, index) => (
               <div key={index} className="h-auto w-[346px]">
                 <div className="bg-white p-4 rounded-2xl flex flex-col shadow-md h-full">
                   <div className="flex items-center mb-4">
@@ -369,7 +369,7 @@ const Testimony = ({ text }) => {
             ))}
           </div>
           <div className="flex flex-col gap-4 h-max animate-scroll-vertical-infinite-50">
-            {translate.map((item, index) => (
+            {translate?.map((item, index) => (
               <div key={index} className="h-auto w-[346px]">
                 <div className="bg-white p-4 rounded-2xl flex flex-col shadow-md h-full">
                   <div className="flex items-center mb-4">
@@ -395,7 +395,7 @@ const Testimony = ({ text }) => {
             ))}
           </div>
           <div className="flex flex-col gap-4 h-max animate-scroll-vertical-infinite-50">
-            {translate.map((item, index) => (
+            {translate?.map((item, index) => (
               <div key={index} className="h-auto w-[346px]">
                 <div className="bg-white p-4 rounded-2xl flex flex-col shadow-md h-full">
                   <div className="flex items-center mb-4">
@@ -424,7 +424,7 @@ const Testimony = ({ text }) => {
 
         <div className="flex flex-row gap-4 absolute right-0 bottom-20 md:bottom-20 lg:hidden">
           <div className="flex gap-4 w-max animate-scroll-horizontal-infinite-reverse-50">
-            {translate.map((item, index) => (
+            {translate?.map((item, index) => (
               <div key={index} className="h-auto w-[346px]">
                 <div className="bg-white p-4 rounded-2xl flex flex-col shadow-md h-full">
                   <div className="flex items-center mb-4">
@@ -450,7 +450,7 @@ const Testimony = ({ text }) => {
             ))}
           </div>
           <div className="flex gap-4 w-max animate-scroll-horizontal-infinite-reverse-50">
-            {translate.map((item, index) => (
+            {translate?.map((item, index) => (
               <div key={index} className="h-auto w-[346px]">
                 <div className="bg-white p-4 rounded-2xl flex flex-col shadow-md h-full">
                   <div className="flex items-center mb-4">

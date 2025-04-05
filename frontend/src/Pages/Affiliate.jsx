@@ -138,7 +138,7 @@ const Affiliate = () => {
                                 onChange={(e) => handleYearChange(parseInt(e.target.value))}
                                 value={selectedYear}
                             >
-                                {years.map((year) => (
+                                {years?.map((year) => (
                                     <option key={year} value={year}>{year}</option>
                                 ))}
                             </select>

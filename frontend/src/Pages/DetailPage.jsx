@@ -147,7 +147,7 @@ const DetailPage = () => {
           {similarData.length === 0 ? (
             <p className="text-gray-500">Tidak ada produk serupa.</p>
           ) : (
-            similarData.map((item, index) => (
+            similarData?.map((item, index) => (
               <a href={`/detail/${item.id}`} key={index} className="p-0 m-0">
                 <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
                   <img

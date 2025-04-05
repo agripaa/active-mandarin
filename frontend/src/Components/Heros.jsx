@@ -10,10 +10,10 @@ const Heros = ({ text }) => {
     <div className="container flex flex-col justify-between relative overflow-hidden mx-auto px-5 md:px-16 lg:flex-row">
       <div className="pt-10 md:pt-24 pb-48 max-w-[658px] sm:pb-36">
         <h1 className="text-2xl font-semibold md:text-3xl lg:text-[32px]">
-          {text.title}
+          {langs ? 'Transform Your Future with Active Mandarin Indonesia' : 'Ubah Masa Depan Anda dengan Active Mandarin Indonesia'}
         </h1>
         <p className="mt-6">
-          {text.desc}
+          {langs ? 'Active Mandarin Indonesia is a platform focused on Education, Mentor Scholarship and Career Center. Join us today to achieve a Bright Future by Studying at a Top University in China! 🇨🇳✨' : 'Active Mandarin Indonesia adalah platform yang berfokus pada Pendidikan, Beasiswa Mentor, dan Pusat Karir. Bergabunglah dengan kami hari ini untuk meraih Masa Depan Cerah dengan Belajar di Universitas Terbaik di Tiongkok! 🇨🇳✨'}
         </p>
         <div className='flex items-center justify-center mt-6 gap-4 md:justify-start'>
           <Link to='/class'>

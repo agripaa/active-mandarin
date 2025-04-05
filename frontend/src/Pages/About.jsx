@@ -66,7 +66,7 @@ const About = () => {
           <div className="w-full">
             <h3 className="text-xl text-[#2B313B] font-semibold">Our Mission</h3>
             <div className="mt-1 flex flex-col gap-4">
-              {missions.map((mission, index) => (
+              {missions?.map((mission, index) => (
                 <div key={index} className="flex gap-2 items-center">
                   <RiCheckboxCircleFill className="w-6 h-6 min-w-6 min-h-6" color="#57D163" />
                   <p className="text-[#201F1F]">{mission}</p>

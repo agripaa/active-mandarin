@@ -39,7 +39,7 @@ const Affiliate = ({ text }) => {
           <div className='w-0 lg:w-[48%] xl:w-[45%]' />
 
           <div className='flex flex-col justify-center text-white w-full z-20 lg:max-w-lg lg:w-7/12'>
-            <h2 className='font-semibold text-2xl md:text-[32px]'>{text.title}</h2>
+            <h2 className='font-semibold text-2xl md:text-[32px]'>{langs ? 'Join Our Affiliate By Active Mandarin Indonesia' : 'Bergabung dengan Afiliasi Kami di Active Mandarin Indonesia'}</h2>
             <ul className='flex flex-col gap-4 mt-6'>
               <li className='flex gap-2.5 items-center'>
                 <RiCheckboxCircleFill color='#57D163' className='w-5 h-5 min-w-5 min-h-5' />

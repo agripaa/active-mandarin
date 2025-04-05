@@ -112,7 +112,7 @@ const CreateProductModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
 
         <Form.Item name="turunan" label="Turunan Produk" rules={[{ required: true, message: "Nama produk wajib diisi!" }]}>
           <Select placeholder="Pilih Turunan Product" className="w-full">
-            {turunanOptions.map((option) => (
+            {turunanOptions?.map((option) => (
               <Select.Option key={option} value={option}>
                 {option}
               </Select.Option>

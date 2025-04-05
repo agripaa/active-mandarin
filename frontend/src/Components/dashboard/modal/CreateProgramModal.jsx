@@ -106,7 +106,7 @@ const CreateProgramModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
         {/* Turunan Program sebagai Select Option */}
         <Form.Item name="turunan" label="Turunan Program" rules={[{ required: true, message: "Turunan program wajib diisi!" }]}>
           <Select placeholder="Pilih Turunan Program" className="w-full">
-            {turunanOptions.map((option) => (
+            {turunanOptions?.map((option) => (
               <Select.Option key={option} value={option}>
                 {option}
               </Select.Option>

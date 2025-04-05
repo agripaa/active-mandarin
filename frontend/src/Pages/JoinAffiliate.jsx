@@ -61,7 +61,7 @@ const JoinAffiliate = () => {
                 : "Kenapa Menjadi Afiliasi?"}
             </h2>
             <div className="flex flex-col mt-4 gap-4">
-              {heroPoints.map((point, index) => (
+              {heroPoints?.map((point, index) => (
                 <div key={index} className="flex items-center gap-2">
                   <RiCheckboxCircleFill color='#57D163' className='w-5 h-5 min-w-5 min-h-5' />
                   <p className="text-fiord-950 text-sm">{point}</p>

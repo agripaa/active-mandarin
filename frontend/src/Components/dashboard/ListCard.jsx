@@ -6,7 +6,7 @@ export const ListCard = ({ title, data, link }) => {
                 <a href={link} className='text-sm text-[#3377FF] cursor-pointer'>Selengkapnya</a>
             </div>
             <div className='flex flex-col gap-6 mt-4'>
-                {data.map((item, index) => (
+                {data?.map((item, index) => (
                     <div key={index} className={`flex items-center justify-between text-gray-900`}>
                         <div className="flex items-center gap-3">
                             <span className={`text-lg font-semibold flex justify-center items-center w-10 h-10 rounded-full 

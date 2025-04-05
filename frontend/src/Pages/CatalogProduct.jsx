@@ -71,7 +71,7 @@ const CatalogProduct = () => {
               ) : (
                 <div className="my-8 flex w-full">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full gap-6">
-                    {products.map((item, index) => (
+                    {products?.map((item, index) => (
                       <div key={index} className="p-0 m-0">
                         <div onClick={() => handleClickItem(item?.brands[0].id)} className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
                           <img

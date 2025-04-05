@@ -145,7 +145,7 @@ const CardDegree = ({ data }) => {
                           : "Pendampingan Profesional:"}
                       </h2>
                       <div className="list-disc ml-6 text-gray-900">
-                        {fa.mentor.map((men, i) => (
+                        {fa?.mentor.map((men, i) => (
                           <li key={i}>{men}</li>
                         ))}
                       </div>
@@ -155,7 +155,7 @@ const CardDegree = ({ data }) => {
                           : "Pengurusan Pendaftaran:"}{" "}
                       </h2>
                       <div className="list-disc ml-6 text-gray-900">
-                        {fa.assistance.map((ass, i) => (
+                        {fa?.assistance.map((ass, i) => (
                           <li key={i}>{ass}</li>
                         ))}
                       </div>
