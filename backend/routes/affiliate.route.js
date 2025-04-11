@@ -12,5 +12,6 @@ router.patch('/reject/:userId', middleware.authenticateUser, verifyAdmin.authent
 router.get("/total-revenue",  middleware.authenticateUser, verifyAdmin.authenticateAdmin, affiliateController.getTotalAffiliateRevenue);
 router.get("/dashboard", middleware.authenticateUser, affiliateController.getUserAffiliateDashboard);
 router.get("/transactions", middleware.authenticateUser, affiliateController.getUserTransactions);
+router.delete("/delete/:userId", middleware.authenticateUser, affiliateController.deleteAffiliator);
 
 module.exports = router;
