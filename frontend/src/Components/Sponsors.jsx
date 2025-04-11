@@ -3,8 +3,11 @@ import { Row } from "antd";
 import Buttons from "./Buttons";
 
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Sponsors = ({ text }) => {
+    const { langs } = useSelector((state) => state.LangReducer);
+
     const data = [
         '/assets/1000 Startup Digital.png',
         '/assets/kgm.png',
@@ -16,7 +19,7 @@ const Sponsors = ({ text }) => {
     return (
         <div className="bg-[#FFFFFF] pt-48 sm:pt-28 pb-4">
             <div className="container w-full flex justify-center items-center flex-col mx-auto px-5 md:px-16">
-                <h2 className="font-normal text-[#252525] text-base text-start md:text-lg lg:text-2xl">{text.tags}</h2>
+                <h2 className="font-normal text-[#252525] text-base text-start md:text-lg lg:text-2xl">{langs ? 'Our Company & Organization Partners' : 'Mitra Perusahaan & Organisasi Kami'}</h2>
                 <div className="w-full flex justify-between items-center mt-8">
                     <div className="w-full justify-center flex items-center">
                         <Row className="w-full justify-center flex items-center gap-10">
@@ -32,7 +35,7 @@ const Sponsors = ({ text }) => {
                 </div>
                 <div className="w-full flex justify-center items-center mt-12">
                     <Link to='https://docs.google.com/forms/d/14c32eKPuWFBfkXPRlS7cgWFBvfx0C_p3zZdhL0Kikzk/edit' target="_blank">
-                        <Buttons>{text.button}</Buttons>
+                        <Buttons>{langs ? 'Become Our Partner' : 'Menjadi Mitra Kami'}</Buttons>
                     </Link>
                 </div>
             </div>

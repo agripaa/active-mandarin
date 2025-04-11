@@ -152,7 +152,7 @@ const Gallery = ({ text }) => {
         <div className="w-full mx-auto py-16 pb-28 px-5 md:px-0">
             <div className="text-center flex flex-col items-center mb-10">
                 <h1 className="text-2xl w-full capitalize font-semibold text-[#02264A] md:text-3xl lg:w-9/12 lg:text-4xl">
-                    {text.title}
+                    {langs ? 'Documentation of Indonesian Students and International Students in China' : 'Dokumentasi Pelajar Indonesia dan Pelajar Internasional di Tiongkok'}
                 </h1>
             </div>
             <div className="h-full max-h-[440px]">

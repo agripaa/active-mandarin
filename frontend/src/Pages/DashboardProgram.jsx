@@ -57,7 +57,6 @@ const DashboardProgram = () => {
                 }]
             });
         } catch (error) {
-            console.error("Error fetching product dashboard data:", error);
         } finally { 
             setLoading(false);
         }

@@ -9,13 +9,13 @@ import { formatRupiah } from "../../../utils/rupiahFormat";
 
 
 const turunanOptions = [
-  "Non Degree (Kelas Bahasa di China)",
-  "Degree",
-  "Mentor Scholarship",
-  "Kelas HSK",
-  "Premium Mandarin Learning",
-  "Educonsult S1-S3 Full Cover",
-  "Grow with Us"
+  { label: "Grow With Us Program", value: "Grow with Us" },
+  { label: "Mandarin Premium Program", value: "Premium Mandarin Learning" },
+  { label: "General Language Class Program", value: "Kelas HSK" },
+  { label: "General Native Class Program", value: "Educonsult S1-S3 Full Cover" },
+  { label: "Mentor Scholarship Program", value: "Mentor Scholarship" },
+  { label: "Non Degree Program", value: "Non Degree (Kelas Bahasa di China)" },
+  { label: "Degree Program", value: "Degree" },
 ];
 
 const CreateProgramModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
@@ -28,6 +28,12 @@ const CreateProgramModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
   const [commission, setCommission] = useState("0");
 
   const handleFileChange = ({ file }) => {
+    const MAX_IMAGE_SIZE = 300 * 1024; // 300 KB
+    if (file.size > MAX_IMAGE_SIZE) {
+      Swal.fire("Ukuran Gambar Terlalu Besar", "Gambar maksimum 300KB.", "error");
+      return;
+    }
+
     setImageFile(file);
   };
 
@@ -77,6 +83,7 @@ const CreateProgramModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
         Swal.fire("Sukses!", "Program berhasil ditambahkan!", "success");
         handleCancel();
         refreshData();
+        window.location.reload();
       } else {
         Swal.fire("Gagal!", response.data.message, "error");
       }
@@ -106,11 +113,11 @@ const CreateProgramModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
         {/* Turunan Program sebagai Select Option */}
         <Form.Item name="turunan" label="Turunan Program" rules={[{ required: true, message: "Turunan program wajib diisi!" }]}>
           <Select placeholder="Pilih Turunan Program" className="w-full">
-            {turunanOptions.map((option) => (
-              <Select.Option key={option} value={option}>
-                {option}
-              </Select.Option>
-            ))}
+          {turunanOptions.map((option) => (
+            <Select.Option key={option.value} value={option.value}>
+              {option.label}
+            </Select.Option>
+          ))}
           </Select>
         </Form.Item>
 
@@ -150,7 +157,7 @@ const CreateProgramModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
           <Input placeholder="Masukkan Link Classroom (Opsional)" className="w-full py-2" />
         </Form.Item>
 
-        <Form.Item name="brand_img" label="Upload Gambar Program" rules={[{ required: true, message: "Gambar program wajib diunggah!" }]}>
+        <Form.Item name="brand_img" label="Upload Gambar Program (Max 300 KB)" rules={[{ required: true, message: "Gambar program wajib diunggah!" }]}>
           <Upload
             maxCount={1}
             beforeUpload={() => false}

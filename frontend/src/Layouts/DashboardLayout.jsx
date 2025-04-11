@@ -14,7 +14,6 @@ const DashboardLayout = ({ children }) => {
       const response = await getProfile();
       setUser(response.data);
     } catch (error) {
-      console.error(error);
       if (error.status === 400 || error.status === 401 || error.status === 403) {
         navigate("/", { replace: true });
         return;

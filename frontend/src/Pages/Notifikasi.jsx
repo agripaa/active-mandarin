@@ -24,7 +24,6 @@ const Notifikasi = () => {
       const response = await getAffiliatorStatusFalse();
       setAffiliators(response.data);
     } catch (error) {
-      console.error("Error fetching affiliators:", error);
     }
   };
 
@@ -124,7 +123,6 @@ const Notifikasi = () => {
       const response = await getPendingTransactions();
       setTransactions(response.data);
     } catch (error) {
-      console.error("Error fetching transactions:", error);
     } finally {
       setLoading(false);
     }

@@ -61,7 +61,7 @@ const GiveDonation = () => {
         <img
           src="/assets/donation-hero.png"
           alt="hero"
-          className="w-full h-fit lg:w-[43%]"
+          className="w-full h-auto lg:w-[43%] object-contain"
         />
       </div>
       <div className="container flex flex-col mx-auto px-5 py-5 md:px-[72px] md:py-16">
@@ -236,7 +236,7 @@ const AffiliateForm = () => {
         
         {paymentMethod === "QRIS" ? (
           <div className="w-40 mt-6">
-            <img src="/assets/qris-dummy.png" alt="qris" className="w-full h-fit mt-4" />
+            <img src="/assets/qris-dummy.png" alt="qris" className="w-full h-full mt-4" />
             <button className={"px-6 py-3 w-full ring-2 ring-fiord-300 tracking-wide mt-2 text-xs text-[#252525] font-semibold rounded-xl transition-all duration-300 hover:bg-yellow-500 hover:text-black"}>
               {langs ? "See QRIS" : "Lihat QRIS"}
             </button>

@@ -19,7 +19,7 @@ const ProductTable = ({ dataProduct }) => {
   const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
-    setData(dataProduct || []);
+    setData((dataProduct || []).slice().reverse());
   }, [dataProduct]);
 
   // 🔹 Handle Edit Modal
@@ -28,9 +28,7 @@ const ProductTable = ({ dataProduct }) => {
       const { data } = await getBrandById(productId);
       setEditingProduct(data);
       setIsEditModalOpen(true);
-    } catch (error) {
-      console.error("Error fetching product details:", error);
-    }
+    } catch (error) {}
   };
 
   // 🔹 Handle Delete
@@ -48,6 +46,10 @@ const ProductTable = ({ dataProduct }) => {
       if (result.isConfirmed) {
         try {
           await softDeleteBrand(id);
+          setData((prevData) => prevData.filter((item) => item.id !== id));
+          Swal.fire("Dihapus!", "Product telah dihapus.", "success").then(() => {
+            window.location.reload();
+          });
           getDashboardData();
           Swal.fire("Dihapus!", "Produk telah dihapus.", "success");
         } catch (error) {
@@ -57,14 +59,10 @@ const ProductTable = ({ dataProduct }) => {
     });
   };
 
-  console.log({data})
-
   // 🔹 Filter Data berdasarkan input pencarian
   const filteredData = data.filter((item) =>
     item.variant?.toLowerCase().includes(searchText.toLowerCase())
   );
-
-  console.log({filteredData})
 
   // 🔹 Table Columns
   const columns = [

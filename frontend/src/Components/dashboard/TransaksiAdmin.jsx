@@ -28,9 +28,7 @@ const TransaksiAdmin = () => {
       const response = await getAllTransactions(currentPage, pageSize);
       setData(response.data);
       setTotalPages(response.total_pages * pageSize); // Set total items instead of pages
-    } catch (error) {
-      console.error(error);
-    }
+    } catch (error) {}
   };
 
   const fetchTransactionSummary = async () => {
@@ -38,9 +36,7 @@ const TransaksiAdmin = () => {
       const response = await getTransactionSummary();
       setTotalTransactions(response.total_transactions);
       setTotalRevenue(response.total_revenue);
-    } catch (error) {
-      console.error(error);
-    }
+    } catch (error) {}
   };
 
   const handleExportExcel = async () => {

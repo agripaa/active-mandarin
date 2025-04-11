@@ -31,9 +31,7 @@ const DashboardAffiliator = () => {
     try {
       const response = await getUserAffiliateDashboard();
       setDashboardData(response.data);
-    } catch (error) {
-      console.error("Error fetching dashboard data:", error);
-    } finally {
+    } catch (error) {} finally {
       setLoading(false);
     }
   };
@@ -45,9 +43,7 @@ const DashboardAffiliator = () => {
       setTransactions(response.data);
       setTotalTransactions(response.total_transactions);
       setCurrentPage(response.current_page);
-    } catch (error) {
-      console.error("Error fetching transactions:", error);
-    } finally {
+    } catch (error) {} finally {
       setTransactionLoading(false);
     }
   };

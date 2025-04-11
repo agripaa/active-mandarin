@@ -19,7 +19,7 @@ const ProgramTable = ({ dataProgram }) => {
   const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
-    setData(dataProgram || []);
+    setData((dataProgram || []).slice().reverse());
   }, [dataProgram]);
 
   // **🔹 Handle Edit Modal**
@@ -58,7 +58,9 @@ const ProgramTable = ({ dataProgram }) => {
         try {
           await softDeleteBrand(id);
           setData((prevData) => prevData.filter((item) => item.id !== id));
-          Swal.fire("Dihapus!", "Program telah dihapus.", "success");
+          Swal.fire("Dihapus!", "Program telah dihapus.", "success").then(() => {
+            window.location.reload();
+          });
         } catch (error) {
           Swal.fire("Gagal!", "Terjadi kesalahan saat menghapus.", "error");
         }
@@ -70,8 +72,6 @@ const ProgramTable = ({ dataProgram }) => {
   const filteredData = data.filter((item) =>
     item.variant?.toLowerCase().includes(searchText.toLowerCase())
   );
-
-  console.log({filteredData})
 
   // **🔹 Table Columns**
   const columns = [

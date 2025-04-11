@@ -37,7 +37,6 @@ const Sidebar = ({ onClose }) => {
                 setRole(response.data?.Role?.role_name || "-");
                 setProfileImg(response.data?.profile_img ? `${process.env.REACT_APP_API_IMG}${response.data.profile_img}` : "/assets/profile-dummy.webp");
             } catch (error) {
-                console.error("Error fetching profile:", error);
                 localStorage.removeItem("token"); 
                 navigate("/", { replace: true });
             } finally {
@@ -75,60 +74,62 @@ const Sidebar = ({ onClose }) => {
 
             {/* Profile User */}
             <div className="p-4 mb-4 border-b border-gray-300">
-                <div className="flex flex-col items-center my-4">
+                <div className="flex flex-col items-center my-4 justify-center">
                     <img src={profileImg} alt="profile user" className="w-[100px] h-[100px] rounded-full object-cover" />
-                    <h5 className="text-xl text-gray-800 mt-2 font-medium">{name}</h5>
-                    <h5 className="text-md text-white bg-[#3377FF] px-4 py-1 rounded-2xl font-medium">
+                    <h5 className="text-xl text-gray-800 mt-2 font-medium text-center w-full">{name}</h5>
+                    <h5 className="text-md text-white bg-[#3377FF] px-4 py-1 rounded-2xl text-center font-medium">
                         {capitalize(role)}
                     </h5>
                 </div>
             </div>
 
             {/* Sidebar Menu */}
-            <nav>
-                {role === "admin" ? (
-                    <ul>
-                        <SidebarItem to={`/dashboard`} icon={<RiDashboardFill />} label="Dashboard" location={location} />
-                        <SidebarItem to={`/transaksi`} icon={<RiFileTextLine />} label="Transaksi" location={location} />
-                        <SidebarItem to={`/notifikasi`} icon={<RiNotification4Line />} label="Notifikasi" location={location} />
-                        <SidebarItem to={`/affiliate`} icon={<RiContactsLine />} label="Data Affiliate" location={location} />
-                        <SidebarItem to={`/donasi`} icon={<RiHandHeartLine />} label="Data Donasi" location={location} />
-                        <SidebarItem to={`/rekrutmen`} icon={<RiGroupLine />} label="Data Rekrutmen" location={location} />
-                        <hr className="my-4" />
-                        <SidebarItem to={`/`} icon={<RiHome4Line />} label="Homepage" location={location} />
-                    </ul>
-                ) : role === "affiliator" ? (
-                    <ul>
-                        <SidebarItem to={`/dashboard`} icon={<RiDashboardFill />} label="Dashboard" location={location} />
-                        <SidebarItem to={`/kelas-affiliator`} icon={<SiGoogleclassroom />} label="Kelas" location={location} />
-                        <SidebarItem to={`/transaksi`} icon={<RiFileTextLine />} label="Transaksi" location={location} />
-                        <SidebarItem to={`/profile`} icon={<RiUserLine />} label="Profile" location={location} />
-                        <hr className="my-4" />
-                        <SidebarItem to={`/`} icon={<RiHome4Line />} label="Homepage" location={location} />
-                        <SidebarItem to={`/class`} icon={<MdCoPresent />} label="Explore Program" location={location} />
-                        <SidebarItem to={`/products`} icon={<MdOutlineDashboardCustomize />} label="Explore Product" location={location} />
-                    </ul>
-                ) : (
-                    <ul>
-                        <SidebarItem to={`/dashboard`} icon={<RiDashboardFill />} label="Dashboard" location={location} />
-                        <SidebarItem to={`/transaksi`} icon={<RiFileTextLine />} label="Transaksi" location={location} />
-                        <SidebarItem to={`/profile`} icon={<RiUserLine />} label="Profile" location={location} />
-                        <hr className="my-4" />
-                        <SidebarItem to={`/`} icon={<RiHome4Line />} label="Homepage" location={location} />
-                        <SidebarItem to={`/class`} icon={<MdCoPresent />} label="Explore Program" location={location} />
-                        <SidebarItem to={`/products`} icon={<MdOutlineDashboardCustomize />} label="Explore Product" location={location} />
-                    </ul>
-                )}
-            </nav>
+            <div className="flex flex-col justify-between h-auto">
+                <nav>
+                    {role === "admin" ? (
+                        <ul>
+                            <SidebarItem to={`/dashboard`} icon={<RiDashboardFill />} label="Dashboard" location={location} />
+                            <SidebarItem to={`/transaksi`} icon={<RiFileTextLine />} label="Transaksi" location={location} />
+                            <SidebarItem to={`/notifikasi`} icon={<RiNotification4Line />} label="Notifikasi" location={location} />
+                            <SidebarItem to={`/affiliate`} icon={<RiContactsLine />} label="Data Affiliate" location={location} />
+                            <SidebarItem to={`/donasi`} icon={<RiHandHeartLine />} label="Data Donasi" location={location} />
+                            <SidebarItem to={`/rekrutmen`} icon={<RiGroupLine />} label="Data Rekrutmen" location={location} />
+                            <hr className="my-4" />
+                            <SidebarItem to={`/`} icon={<RiHome4Line />} label="Homepage" location={location} />
+                        </ul>
+                    ) : role === "affiliator" ? (
+                        <ul>
+                            <SidebarItem to={`/dashboard`} icon={<RiDashboardFill />} label="Dashboard" location={location} />
+                            <SidebarItem to={`/kelas-affiliator`} icon={<SiGoogleclassroom />} label="Kelas" location={location} />
+                            <SidebarItem to={`/transaksi`} icon={<RiFileTextLine />} label="Transaksi" location={location} />
+                            <SidebarItem to={`/profile`} icon={<RiUserLine />} label="Profile" location={location} />
+                            <hr className="my-4" />
+                            <SidebarItem to={`/`} icon={<RiHome4Line />} label="Homepage" location={location} />
+                            <SidebarItem to={`/class`} icon={<MdCoPresent />} label="Explore Program" location={location} />
+                            <SidebarItem to={`/products`} icon={<MdOutlineDashboardCustomize />} label="Explore Product" location={location} />
+                        </ul>
+                    ) : (
+                        <ul>
+                            <SidebarItem to={`/dashboard`} icon={<RiDashboardFill />} label="Dashboard" location={location} />
+                            <SidebarItem to={`/transaksi`} icon={<RiFileTextLine />} label="Transaksi" location={location} />
+                            <SidebarItem to={`/profile`} icon={<RiUserLine />} label="Profile" location={location} />
+                            <hr className="my-4" />
+                            <SidebarItem to={`/`} icon={<RiHome4Line />} label="Homepage" location={location} />
+                            <SidebarItem to={`/class`} icon={<MdCoPresent />} label="Explore Program" location={location} />
+                            <SidebarItem to={`/products`} icon={<MdOutlineDashboardCustomize />} label="Explore Product" location={location} />
+                        </ul>
+                    )}
+                </nav>
 
-            {/* Logout */}
-            <div className="absolute bottom-[5%] left-6 font-semibold flex flex-col">
-                <button 
-                    className="mt-3 text-red-400 hover:text-red-600 text-md flex items-center"
-                    onClick={handleLogout}
-                >
-                    <RiLogoutBoxLine className="mr-1 text-2xl" /> Keluar
-                </button>
+                {/* Logout */}
+                <div className="p-2 px-4 py font-semibold flex flex-col">
+                    <button 
+                        className="mt-3 text-red-400 hover:text-red-600 text-md flex items-center"
+                        onClick={handleLogout}
+                    >
+                        <RiLogoutBoxLine className="mr-1 text-2xl" /> Keluar
+                    </button>
+                </div>
             </div>
         </aside>
     );

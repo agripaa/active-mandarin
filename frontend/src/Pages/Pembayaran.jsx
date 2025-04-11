@@ -29,7 +29,6 @@ const Pembayaran = () => {
       const response = await getBrandById(id);
       setBrandData(response.data);
     } catch (error) {
-      console.error(error);
       if(error.status == 400 || error.status == 401 || error.status == 403) {
         navigate('/', {replace: true});
         return;
@@ -41,6 +40,12 @@ const Pembayaran = () => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+    if (file.size > MAX_FILE_SIZE) {
+      Swal.fire("Ukuran File Produk Terlalu Besar", "File maksimum 5MB.", "error");
+      return;
+    }
+  
     if (file) {
       setProof(file);
       setPreview(URL.createObjectURL(file));
@@ -62,7 +67,6 @@ const Pembayaran = () => {
     setLoadingSubmit(true); // ⏳ Start loading
     try {
       const response = await createTransaction(formData);
-      console.log(response)
       Swal.fire("Berhasil!", "Transaksi berhasil dibuat!", "success").then(() => {
         localStorage.removeItem("reveral_code");
         navigate(`/invoice/${response.data.id}`);
@@ -168,7 +172,7 @@ const Pembayaran = () => {
 
             {/* Input Bukti Pembayaran */}
             <div className="mt-6">
-              <h2 className="text-lg font-semibold mb-2">Unggah Bukti Pembayaran</h2>
+              <h2 className="text-lg font-semibold mb-2">Unggah Bukti Pembayaran (Max 5MB)</h2>
               <input 
                 type="file" 
                 accept="image/*" 

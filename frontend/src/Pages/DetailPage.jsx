@@ -26,7 +26,6 @@ const DetailPage = () => {
       const response = await getBrandById(id);
       setBrandData(response.data);
     } catch (error) {
-      console.error(error);
       navigate("/", {replace: true})
     } finally{
       setLoading(false)
@@ -42,7 +41,6 @@ const DetailPage = () => {
 
       setSimilarData(filteredData);
     } catch (error) {
-      console.error(error);
       if(error.status == 400 || error.status == 403) {
         navigate("/", {replace: true})
         return;
@@ -87,16 +85,18 @@ const DetailPage = () => {
           <div className="flex-grow">
             <h1 className="text-4xl font-semibold mb-6">{brandData.variant}</h1>
 
-            {brandData.discount_price ? (
+            {brandData.discount_price && brandData.discount_price != "0" ? (
               <>
                 <p className="text-3xl text-gray-900 font-semibold mt-2">
-                  {formatRupiah(brandData.discount_price)} <span className="text-sm">{brandData.category_brand == "product" ? "/item" : langs ? "/Month" : "/Bulan"}</span>
+                  {formatRupiah(brandData.discount_price)} 
+                  {!["Mentor Scholarship", "Non Degree (Kelas Bahasa di China)", "Degree"].includes(brandData.turunan) ? <span className="text-sm">{brandData.category_brand == "product" ? "/item" : langs ? "/Month" : "/Bulan"}</span> : ""}
                 </p>
                 <p className="text-lg text-red-500 line-through">{formatRupiah(brandData.price)}</p>
               </>
             ) : (
               <p className="text-3xl text-gray-900 font-semibold mt-2">
-                {formatRupiah(brandData.price)} <span className="text-sm">{brandData.category_brand == "product" ? "/item" : langs ? "/Month" : "/Bulan"}</span>
+                {formatRupiah(brandData.price)} 
+                {!["Mentor Scholarship", "Non Degree (Kelas Bahasa di China)", "Degree"].includes(brandData.turunan) ? <span className="text-sm">{brandData.category_brand == "product" ? "/item" : langs ? "/Month" : "/Bulan"}</span> : ""}
               </p>
             )}
 
@@ -158,8 +158,8 @@ const DetailPage = () => {
                   <div className="flex flex-col justify-between items-start px-4 py-5">
                     <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
                     <p className="font-semibold text-lg mb-2">
-                      {item.discount_price ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                      <span className="font-light text-sm ml-1">{langs ? "/Month" : "/Bulan"}</span>
+                      {item.discount_price && item.discount_price != "0" ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
+                      {!["Mentor Scholarship", "Non Degree (Kelas Bahasa di China)", "Degree"].includes(item?.turunan) ?<span className="font-light text-sm ml-1">{langs ? "/Month" : "/Bulan"}</span> : ""}
                     </p>
                     <div className="flex mt-2">
                       <span className="text-sm text-[#3377FF]">

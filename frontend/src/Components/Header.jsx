@@ -1,4 +1,4 @@
-import { Col, Row, Space, Dropdown, Menu, Modal, Input, Button, Spin} from "antd";
+import { Col, Row, Space, Dropdown, Menu, Modal, Input, Button } from "antd";
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { GlobalOutlined } from "@ant-design/icons";
@@ -9,7 +9,7 @@ import { HandleLang } from "../Store/Action/LangAction";
 import { changePassword, getProfile, handleForgot, loginUser, registerUser, resendOTPCode, verifyOTP } from "../api/auth";
 
 const Headers = ({ collapse, funcs }) => {
-    const [isScrolled, setIsScrolled] = useState(false);
+    const [_, setIsScrolled] = useState(false);
     const [openProfileDropdown, setOpenProfileDropdown] = useState(false);
     const [openSignIn, setOpenSignIn] = useState(false);
     const [openSignUp, setOpenSignUp] = useState(false);
@@ -164,7 +164,6 @@ const Headers = ({ collapse, funcs }) => {
                 setUser(response.data);
             }
           } catch (error) {
-            console.error("Error: " + error.response?.data?.message || "Login failed");
             setUser(null);
           }
     }
@@ -174,15 +173,19 @@ const Headers = ({ collapse, funcs }) => {
      }, []) 
 
     const dispatch = useDispatch();
-    const { data, langs } = useSelector((state) => state.LangReducer);
-    const text = langs ? data?.english : data?.indonesia;
+    const { langs } = useSelector((state) => state.LangReducer);
+   const navbar ={
+        english: ['Home', 'About Us', 'Our Programs', 'Our Products'],
+        indonesia: ['Beranda', 'Tentang Kami', 'Program Kami', 'Produk Kami']
+    }
+    const text = langs ? navbar?.english : navbar?.indonesia;
     const location = useLocation();
 
     const navs = [
-        { name: text?.navbar[0], href: "/" },
-        { name: text?.navbar[1], href: "/about" },
-        { name: text?.navbar[2], href: "/class" },
-        { name: text?.navbar[3], href: "/products" },
+        { name: text?.[0], href: "/" },
+        { name: text?.[1], href: "/about" },
+        { name: text?.[2], href: "/class" },
+        { name: text?.[3], href: "/products" },
     ];
 
     useEffect(() => {

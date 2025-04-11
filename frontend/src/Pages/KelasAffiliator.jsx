@@ -20,7 +20,6 @@ const KelasAffiliator = () => {
       setPrograms(programData.data);
       setProducts(productData.data);
     } catch (error) {
-      console.error("Error fetching transactions:", error);
     } finally {
       setLoading(false);
     }

@@ -16,7 +16,6 @@ const Transaksi = () => {
                 setUser(data);
             }
         } catch (error) {
-            console.error("Error fetching profile:", error);
         } finally {
             setLoading(false);
         }

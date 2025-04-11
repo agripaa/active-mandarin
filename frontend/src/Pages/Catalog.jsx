@@ -17,7 +17,7 @@ const Catalog = () => {
   const [educonsult, setEduconsult] = useState([]);
   const [growWithUs, setGrowWithUs] = useState([]);
   const [activeSlide, setActiveSlide] = React.useState(0);
-  const [galleryData, setGalleryData] = useState([]); // State untuk menyimpan data dari API/sumber
+  const [galleryData, setGalleryData] = useState([]); 
 
   useEffect(() => {
     fetchAllData();
@@ -35,16 +35,17 @@ const Catalog = () => {
         getBrandCategoryTurunan("program", "Educonsult S1-S3 Full Cover"),
         getBrandCategoryTurunan("program", "Grow with Us")
       ]);
+
+      console.log(responses[3])
   
       setNonDegree(responses[0].status === "fulfilled" ? responses[0].value.data || [] : []);
       setDegree(responses[1].status === "fulfilled" ? responses[1].value.data || [] : []);
       setMentorScholarship(responses[2].status === "fulfilled" ? responses[2].value.data || [] : []);
-      setKelasHSK(responses[3].status === "fulfilled" ? responses[3].value.data || [] : []);
+      setKelasHSK(responses[3].status === "fulfilled" ? responses[3].value.data || []: []);      
       setPremiumMandarin(responses[4].status === "fulfilled" ? responses[4].value.data || [] : []);
       setEduconsult(responses[5].status === "fulfilled" ? responses[5].value.data || [] : []);
       setGrowWithUs(responses[6].status === "fulfilled" ? responses[6].value.data || [] : []);
     } catch (error) {
-      console.error("🔥 ERROR fetching data:", error);
     } finally {
       setLoading(false);
     }
@@ -187,86 +188,7 @@ const handleClickItem = (id) => {
         </div>
 
         <div className="pt-10 pb-1">
-          {growWithUs.length > 0 && (
-            <div>
-              <div className="w-full mx-auto mb-6">
-                <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
-                  {langs ? "Grow with Us" : "Tumbuh bersama Kami"}
-                </h2>
-                <span className="font-semibold text-[#8493AC] text-lg">
-                  {langs
-                    ? "Empower Your Learning, Anywhere."
-                    : "Berdayakan Pembelajaran Anda, Di Mana Saja."}
-                </span>
-              </div>
-              <div className="my-8 flex justify-start">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
-                    {growWithUs.map((item, index) => (
-                      <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
-                        <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
-                          <img
-                            src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
-                            alt={item.variant}
-                            className="w-full h-56 object-cover rounded-t-2xl"
-                          />
-                          <div className="flex flex-col justify-between items-start px-4 py-5">
-                            <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
-                            <p className="font-semibold text-lg mb-2">
-                              {item.discount_price ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                            </p>
-                            <span className="text-sm text-[#3377FF]">
-                              {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </div>
-            </div>
-          )}
-          
-          {kelasHSK.length > 0 && (
-            <div>
-              <div className="w-full mx-auto mb-6">
-                <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
-                  {langs ? "From Zero To Hero" : "Dari Nol Menjadi Pahlawan"}
-                </h2>
-                <span className="font-semibold text-[#8493AC] text-lg">
-                  {langs
-                    ? "Find the premium class and opportunities along the way "
-                    : "Temukan kelas premium dan peluang di sepanjang prosesnya"}
-                </span>
-              </div>
-              <div className="my-8 flex justify-start">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
-                    {kelasHSK.map((item, index) => (
-                      <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
-                        <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
-                          <img
-                            src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
-                            alt={item.variant}
-                            className="w-full h-56 object-cover rounded-t-2xl"
-                          />
-                          <div className="flex flex-col justify-between items-start px-4 py-5">
-                            <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
-                            <p className="font-semibold text-lg mb-2">
-                              {item.discount_price ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                              <span className="font-light text-sm ml-1">{langs ? "/Month" : "/Bulan"}</span>
-                            </p>
-                            <span className="text-sm text-[#3377FF]">
-                              {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {premiumMandarin.length > 0 && (
+        {premiumMandarin.length > 0 && (
           <div className="md:py-10" id="start">
             <div className="w-full mx-auto mb-6">
               <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
@@ -287,12 +209,12 @@ const handleClickItem = (id) => {
                           <img
                             src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
                             alt={item.variant}
-                            className="w-full h-56 object-cover rounded-t-2xl"
+                            className="w-full aspect-video object-cover rounded-t-2xl"
                           />
                           <div className="flex flex-col justify-between items-start px-4 py-5">
                             <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
                             <p className="font-semibold text-lg mb-2">
-                              {item.discount_price ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
+                              {item.discount_price && item.discount_price != "0" ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
                               <span className="font-light text-sm ml-1">{langs ? "/Month" : "/Bulan"}</span>
                             </p>
                             <span className="text-sm text-[#3377FF]">
@@ -302,6 +224,128 @@ const handleClickItem = (id) => {
                         </div>
                       </div>
                     ))}
+                </div>
+              </div>
+          )}
+
+        {growWithUs.length > 0 && (
+            <div className="md:py-10">
+              <div className="w-full mx-auto mb-6">
+                <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
+                  {langs ? "Grow with Us" : "Tumbuh bersama Kami"}
+                </h2>
+                <span className="font-semibold text-[#8493AC] text-lg">
+                  {langs
+                    ? "Empower Your Learning, Anywhere."
+                    : "Berdayakan Pembelajaran Anda, Di Mana Saja."}
+                </span>
+              </div>
+              <div className="my-8 flex justify-start">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4 ">
+                    {growWithUs.map((item, index) => (
+                      <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
+                        <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
+                          <img
+                            src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
+                            alt={item.variant}
+                            className="w-full aspect-video object-cover rounded-t-2xl"
+                          />
+                          <div className="flex flex-col justify-between items-start px-4 py-5">
+                            <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
+                            <p className="font-semibold text-lg mb-2">
+                              {item.discount_price && item.discount_price != "0" ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
+                            </p>
+                            <span className="text-sm text-[#3377FF]">
+                              {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {kelasHSK.length > 0 && (
+              <div>
+                <div className="w-full mx-auto mb-6">
+                  <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
+                    {langs ? "From Zero To Hero" : "Dari Nol Menjadi Pahlawan"}
+                  </h2>
+                  <span className="font-semibold text-[#8493AC] text-lg">
+                    {langs
+                      ? "Find the premium class and opportunities along the way "
+                      : "Temukan kelas premium dan peluang di sepanjang prosesnya"}
+                  </span>
+                </div>
+                <div className="my-8 flex justify-start">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
+                      {kelasHSK.map((item, index) => (
+                        <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
+                          <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
+                            <img
+                              src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
+                              alt={item.variant}
+                              className="w-full aspect-video object-cover rounded-t-2xl"
+                            />
+                            <div className="flex flex-col justify-between items-start px-4 py-5">
+                              <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
+                              <p className="font-semibold text-lg mb-2">
+                                {item.discount_price && item.discount_price != "0" ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
+                                <span className="font-light text-sm ml-1">{langs ? "/Month" : "/Bulan"}</span>
+                              </p>
+                              <span className="text-sm text-[#3377FF]">
+                                {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              </div>
+          )}
+
+          {educonsult.length > 0 && (
+              <div>
+                <div className="w-full mx-auto mb-6">
+                  <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
+                    {langs ? "Mandarin Native Class" : "Kelas Asli Mandarin"}
+                  </h2>
+                  <span className="font-semibold text-[#8493AC] text-lg">
+                    {langs
+                      ? "Find the premium class and opportunities along the way "
+                      : "Temukan kelas premium dan peluang di sepanjang prosesnya"}
+                  </span>
+                </div>
+                <div className="my-8 flex justify-start">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
+                      {educonsult.map((item, index) => (
+                        <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
+                          <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
+                            <img
+                              src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
+                              alt={item.variant}
+                              className="w-full aspect-video object-cover rounded-t-2xl"
+
+
+
+                            />
+                            <div className="flex flex-col justify-between items-start px-4 py-5">
+                              <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
+                              <p className="font-semibold text-lg mb-2">
+                                {item.discount_price && item.discount_price != "0" ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
+                                <span className="font-light text-sm ml-1">{langs ? "/Month" : "/Bulan"}</span>
+                              </p>
+                              <span className="text-sm text-[#3377FF]">
+                                {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
                 </div>
               </div>
           )}
@@ -328,13 +372,15 @@ const handleClickItem = (id) => {
                           <img
                             src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
                             alt={item.variant}
-                            className="w-full h-56 object-cover rounded-t-2xl"
+                            className="w-full aspect-video object-cover rounded-t-2xl"
+
+
+
                           />
                           <div className="flex flex-col justify-between items-start px-4 py-5">
                             <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
                             <p className="font-semibold text-lg mb-2">
-                              {item.discount_price ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                              <span className="font-light text-sm ml-1">{langs ? "/Month" : "/Bulan"}</span>
+                              {item.discount_price && item.discount_price != "0" ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
                             </p>
                             <span className="text-sm text-[#3377FF]">
                               {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
@@ -347,6 +393,47 @@ const handleClickItem = (id) => {
             </div>
           )}
 
+          {nonDegree.length > 0 && (
+            <div className="py-10">
+              <div className="w-full mx-auto mb-6">
+                <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
+                  {langs
+                    ? "Non - Degree Program"
+                    : "Program Non-Gelar"}
+                </h2>
+                <span className="font-semibold text-[#8493AC] text-lg">
+                  {langs
+                    ? "To secure your future, seek knowledge even as far as China."
+                    : "Untuk menjamin masa depanmu, carilah ilmu sampai ke Tiongkok."}
+                </span>
+              </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
+                      {nonDegree.map((item, index) => (
+                        <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
+                          <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
+                            <img
+                              src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
+                              alt={item.variant}
+                              className="w-full aspect-video object-cover rounded-t-2xl"
+
+
+
+                            />
+                            <div className="flex flex-col justify-between items-start px-4 py-5">
+                              <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
+                              <p className="font-semibold text-lg mb-2">
+                                {item.discount_price && item.discount_price != "0" ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
+                              </p>
+                              <span className="text-sm text-[#3377FF]">
+                                {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+              </div>
+            )}
           
           {degree.length > 0 && (
           <div className="py-10">
@@ -369,13 +456,12 @@ const handleClickItem = (id) => {
                           <img
                             src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
                             alt={item.variant}
-                            className="w-full h-56 object-cover rounded-t-2xl"
+                            className="w-full aspect-video object-cover rounded-t-2xl"
                           />
                           <div className="flex flex-col justify-between items-start px-4 py-5">
                             <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
                             <p className="font-semibold text-lg mb-2">
-                              {item.discount_price ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                              <span className="font-light text-sm ml-1">{langs ? "/Month" : "/Bulan"}</span>
+                              {item.discount_price && item.discount_price != "0" ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
                             </p>
                             <span className="text-sm text-[#3377FF]">
                               {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
@@ -387,46 +473,6 @@ const handleClickItem = (id) => {
                 </div>
             </div>
           )}
-
-          {nonDegree.length && (
-            <div className="py-10">
-              <div className="w-full mx-auto mb-6">
-                <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
-                  {langs
-                    ? "Non - Degree Program"
-                    : "Program Non-Gelar"}
-                </h2>
-                <span className="font-semibold text-[#8493AC] text-lg">
-                  {langs
-                    ? "To secure your future, seek knowledge even as far as China."
-                    : "Untuk menjamin masa depanmu, carilah ilmu sampai ke Tiongkok."}
-                </span>
-              </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
-                      {nonDegree.map((item, index) => (
-                        <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
-                          <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
-                            <img
-                              src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
-                              alt={item.variant}
-                              className="w-full h-56 object-cover rounded-t-2xl"
-                            />
-                            <div className="flex flex-col justify-between items-start px-4 py-5">
-                              <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
-                              <p className="font-semibold text-lg mb-2">
-                                {item.discount_price ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                                <span className="font-light text-sm ml-1">{langs ? "/Month" : "/Bulan"}</span>
-                              </p>
-                              <span className="text-sm text-[#3377FF]">
-                                {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-              </div>
-            )}
         </div>
       </div>
     </Mainlayouts>
