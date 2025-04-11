@@ -14,10 +14,22 @@ const app = express();
 app.use(fileUpload({
     useTempFiles: true,
     tempFileDir: '/tmp/',
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+    limits: { fileSize: 5 * 1024 * 1024 }, // 25MB limit
     abortOnLimit: true,
-    responseOnLimit: "File size is too large!",
+    responseOnLimit: "Ukuran file terlalu besar. Maksimum 5MB.",
 }));
+
+app.use((err, req, res, next) => {
+    if (err && err.message && err.message.includes('File too large')) {
+        return res.status(413).json({
+            status: false,
+            message: "Ukuran file terlalu besar. Maksimum 5MB.",
+        });
+    }
+
+    console.error("Global Error:", err);
+    res.status(500).json({ status: false, message: "Internal Server Error", error: err.message });
+});
 
 app.use(cookieParser());
 app.use(express.json()); 

@@ -213,26 +213,30 @@ exports.editUser = async (req, res) => {
     if (req.files && req.files.profile_img) {
       const uploadedFile = req.files.profile_img;
       const fileExt = path.extname(uploadedFile.name).toLowerCase();
-      const allowedExt = ['.png', '.jpg', '.webp', '.jpeg'];
-
+      const allowedExt = ['.png', '.jpg', '.jpeg', '.webp'];
+      const MAX_FILE_SIZE = 300 * 1024; // 300KB
+    
       if (!allowedExt.includes(fileExt)) {
-        return res.status(400).json({ error: 'Only PNG, JPG, WEBP, and JPEG files are allowed!' });
+        return res.status(400).json({ error: 'Only PNG, JPG, JPEG, and WEBP files are allowed!' });
       }
-
-      const fileName = `${Date.now()}_${uploadedFile.name}`;
+    
+      if (uploadedFile.size > MAX_FILE_SIZE) {
+        return res.status(400).json({ error: 'Image file size must be less than 300KB!' });
+      }
+    
+      const fileName = `${Date.now()}_${uploadedFile.name.replace(/\s/g, "_")}`;
       const filePath = path.join(__dirname, '../public/profile-user', fileName);
-
-      await uploadedFile.mv(filePath);
-
+    
       if (user.profile_img) {
         const oldFilePath = path.join(__dirname, '../', user.profile_img);
         if (fs.existsSync(oldFilePath)) {
           fs.unlinkSync(oldFilePath);
         }
       }
-
+    
+      await uploadedFile.mv(filePath);
       profile_img = `/public/profile-user/${fileName}`;
-    }
+    }    
 
     if (email && email !== user.email) {
       const emailExists = await User.findOne({ where: { email } });

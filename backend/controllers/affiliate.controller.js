@@ -334,3 +334,28 @@ exports.getUserTransactions = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+exports.deleteAffiliator = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        const affiliator = await User.findByPk(userId);
+        if (!affiliator) {
+            return res.status(404).json({ status: false, message: "Affiliator tidak ditemukan." });
+        }
+
+        // Set affiliator_id di transaksi jadi null
+        await Transaction.update(
+            { affiliator_id: null },
+            { where: { affiliator_id: userId } }
+        );
+
+        // Hapus data affiliator
+        await affiliator.destroy();
+
+        return res.status(200).json({ status: true, message: "Affiliator berhasil dihapus." });
+    } catch (error) {
+        console.error("🔥 ERROR:", error);
+        res.status(500).json({ status: false, message: "Terjadi kesalahan saat menghapus affiliator.", error: error.message });
+    }
+};
