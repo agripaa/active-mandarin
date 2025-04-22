@@ -139,7 +139,7 @@ exports.getGroupedBrands = async (req, res) => {
       return {
         turunan_brand,
         image: brandList[0].brand_img, 
-        start_from_price: Math.min(...brandList.map(brand => parseFloat(brand.discount_price || brand.price))), 
+        start_from_price: Math.min(...brandList.map(brand => parseFloat(brand.discount_price && brand.discount_price === "0" ? brand.discount_price : brand.price || brand.price))), 
         commission: brandList[0].commission, 
         total_items: brandList.length, 
         brands: brandList, 
