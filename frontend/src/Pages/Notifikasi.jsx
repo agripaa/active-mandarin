@@ -135,7 +135,12 @@ const Notifikasi = () => {
       html: `
         <div style="text-align: left">
           <p><strong>Nama Pembeli</strong><span style="display: inline-block;"></span>: ${record?.User.name || "-"}</p>
-          <p><strong>Nama Produk</strong><span style="display: inline-block;"></span>: ${record?.Brand.variant || "-"}</p>
+          ${record?.Brand.category_brand === "product" ? `
+            <p><strong>Alamat</strong><span style="display: inline-block;"></span>: ${record?.User.address || "-"}</p>
+            <p><strong>Email</strong><span style="display: inline-block;"></span>: ${record?.User.email || "-"}</p>
+            <p><strong>No Telp</strong><span style="display: inline-block;"></span>: ${record?.User.number || "-"}</p>
+          ` : ""} 
+          <p><strong>Nama ${record?.Brand.category_brand === "product" ? "Produk" : "Program"}</strong><span style="display: inline-block;"></span>: ${record?.Brand.variant || "-"}</p>
           <p><strong>Harga</strong><span style="display: inline-block;"></span>: ${record?.Brand.discount_price ? formatRupiah(record?.Brand.discount_price) : formatRupiah(record?.Brand.price) || "-"}</p>
           <p><strong>Metode Pembayaran</strong><span style="display: inline-block;"></span>: ${record.payment_method || "-"}</p>
           <p><strong>Waktu Pembelian</strong><span style="display: inline-block;"></span>: ${formatDate(record.transaction_date) || "-"}</p>

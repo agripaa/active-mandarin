@@ -258,7 +258,7 @@ const Lectures = ({ text }) => {
     >
       <div className="mx-auto text-start">
         <div className="w-full">
-          <h1 className="text-black text-2xl font-semibold md:text-3xl lg:text-[32px]">{text?.title}</h1>
+          <h1 className="text-black text-2xl font-semibold md:text-3xl lg:text-[32px]">{langs ? "Mandarin Made Easy With Tutor" : "Bahasa Mandarin Menjadi Mudah dengan Tutor"}</h1>
         </div>
         <div className="mt-9">
           <div className="home-slider w-full overflow-visible">

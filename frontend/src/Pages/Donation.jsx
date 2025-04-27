@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Table, Input, Modal, Spin, Pagination } from "antd";
 import { RiSearchLine } from "react-icons/ri";
 import DashboardLayout from "../Layouts/DashboardLayout";
-import { getAllDonation } from "../api/donation";
+import { getAllDonation, deleteDonation } from "../api/donation";
 
 const Donation = () => {
   const [searchText, setSearchText] = useState("");
@@ -11,6 +11,7 @@ const Donation = () => {
   const [donationData, setDonationData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -54,6 +55,17 @@ const Donation = () => {
     setImagePreview(null);
   };
 
+  const handleDelete = async (id) => {
+    try {
+      await deleteDonation(id);
+      setIsSuccessModalOpen(true); 
+      fetchDonations(currentPage); 
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
+
   const filteredData = donationData.filter((item) =>
     item.nama.toLowerCase().includes(searchText.toLowerCase())
   );
@@ -65,12 +77,21 @@ const Donation = () => {
       title: "Aksi",
       key: "action",
       render: (_, record) => (
-        <span
-          className="text-blue-500 cursor-pointer"
-          onClick={() => showModal(record)}
-        >
-          Selengkapnya
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className="text-blue-500 cursor-pointer"
+            onClick={() => showModal(record)}
+          >
+            Selengkapnya
+          </span>
+          <span
+            className="text-red-500 cursor-pointer"
+            onClick={() => handleDelete(record.id)}
+          >
+            Delete
+          </span>
+        </div>
+        
       ),
     },
   ];
@@ -164,6 +185,25 @@ const Donation = () => {
         <Modal open={!!imagePreview} footer={null} onCancel={closeImagePreview} centered>
           {imagePreview && <img src={imagePreview} alt="Preview" className="w-full" />}
         </Modal>
+
+        {/* MODAL SUCCESS DELETE */}
+        <Modal
+          open={isSuccessModalOpen}
+          onCancel={() => setIsSuccessModalOpen(false)}
+          footer={null}
+          centered
+        >
+          <div className="flex flex-col items-center justify-center p-4">
+            <h2 className="text-2xl font-semibold text-green-600 mb-4">Berhasil Dihapus!</h2>
+            <button
+              onClick={() => setIsSuccessModalOpen(false)}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
+            >
+              Tutup
+            </button>
+          </div>
+        </Modal>
+
       </section>
     </DashboardLayout>
   );

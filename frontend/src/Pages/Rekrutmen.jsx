@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Table, Input, Modal, Spin, Pagination } from "antd";
 import { RiSearchLine } from "react-icons/ri";
 import DashboardLayout from "../Layouts/DashboardLayout";
-import { getAllRecruitment } from "../api/recruitment";
+import { deleteRecruitment, getAllRecruitment } from "../api/recruitment";
 
 const Rekrutmen = () => {
   const [searchText, setSearchText] = useState("");
@@ -11,6 +11,7 @@ const Rekrutmen = () => {
   const [recruitmentData, setRecruitmentData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [totalItems, setTotalItems] = useState(0);
   const pageSize = 5;
 
@@ -33,6 +34,16 @@ const Rekrutmen = () => {
   const handleSearch = (e) => {
     setSearchText(e.target.value);
   };
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteRecruitment(id);
+      setIsSuccessModalOpen(true); 
+      fetchRecruitments(currentPage);
+    } catch (error) {
+      console.error(error);
+    }
+  };  
 
   const showModal = (candidate) => {
     setSelectedCandidate(candidate);
@@ -57,9 +68,14 @@ const Rekrutmen = () => {
       title: "Aksi",
       key: "action",
       render: (_, record) => (
-        <span className="text-blue-500 cursor-pointer" onClick={() => showModal(record)}>
-          Selengkapnya
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-blue-500 cursor-pointer" onClick={() => showModal(record)}>
+            Selengkapnya
+          </span>
+          <span className="text-red-500 cursor-pointer" onClick={() => handleDelete(record.id)}>
+            Delete
+          </span>
+        </div>
       ),
     },
   ];
@@ -166,6 +182,24 @@ const Rekrutmen = () => {
               </div>
             </div>
           )}
+        </Modal>
+
+        {/* MODAL SUCCESS DELETE */}
+        <Modal
+          open={isSuccessModalOpen}
+          onCancel={() => setIsSuccessModalOpen(false)}
+          footer={null}
+          centered
+        >
+          <div className="flex flex-col items-center justify-center p-4">
+            <h2 className="text-2xl font-semibold text-green-600 mb-4">Berhasil Dihapus!</h2>
+            <button
+              onClick={() => setIsSuccessModalOpen(false)}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
+            >
+              Tutup
+            </button>
+          </div>
         </Modal>
       </section>
     </DashboardLayout>

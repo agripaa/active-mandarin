@@ -168,6 +168,10 @@ const Invoice = () => {
                     <td>Phone Number</td>
                     <td className="font-medium">: {invoiceData.User.number || "-"}</td>
                   </tr>
+                  <tr>
+                    <td>Address</td>
+                    <td className="font-medium">: {invoiceData.User.address || "-"}</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
