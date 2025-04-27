@@ -165,7 +165,7 @@ const About = () => {
           <Col xs={24} md={12}>
             <div className="relative rounded-[32px] overflow-hidden shadow-lg">
               <img
-                src="assets/about_2.png"
+                src="assets/about_2.jpg"
                 alt="About"
                 className="w-full object-cover"
               />

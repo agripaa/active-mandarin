@@ -4,14 +4,17 @@ import { useSelector } from "react-redux";
 import { getGroupedBrands } from "../api/brand";
 import { formatRupiah } from "../utils/rupiahFormat";
 import { Spin } from "antd";
+import { getProfile } from "../api/auth";
 
 const CatalogProduct = () => {
   const { _, langs } = useSelector((state) => state.LangReducer);
   const [products, setProducts] = useState([]);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    handleProfileUser();
     fetchProducts();
   }, []);
 
@@ -26,6 +29,17 @@ const CatalogProduct = () => {
       setLoading(false);
     }
   };
+
+  const handleProfileUser = async () => {
+    try {
+      const response = await getProfile();
+      if (response.status) {
+        setUser(response.data);
+      }
+    } catch (error) {
+      setUser(null);
+    }
+  }
 
   if (loading) {
     return (
@@ -89,13 +103,15 @@ const CatalogProduct = () => {
                                 {langs ? "/Item" : "/Item"}
                               </span>
                             </p>
-                            <div className="flex mt-2">
-                              <span className="text-sm text-[#3377FF]">
-                                {langs
-                                  ? `Earn commission ${formatRupiah(item.commission)}`
-                                  : `Dapatkan komisi ${formatRupiah(item.commission)}`}
-                              </span>
-                            </div>
+                            {item.commission ? (
+                              <div className="flex mt-2">
+                                <span className="text-sm text-[#3377FF]">
+                                  {langs
+                                    ? `Earn commission ${formatRupiah(item.commission)}`
+                                    : `Dapatkan komisi ${formatRupiah(item.commission)}`}
+                                </span>
+                              </div>
+                            ) : null}
                           </div>
                         </div>
                       </div>
