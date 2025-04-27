@@ -50,7 +50,14 @@ const Profile = () => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    const MAX_IMAGE_SIZE = 300 * 1024; // 300KB
+  
     if (file) {
+      if (file.size > MAX_IMAGE_SIZE) {
+        Swal.fire("Ukuran Gambar Terlalu Besar", "Ukuran maksimum 300KB.", "error");
+        return;
+      }
+  
       const reader = new FileReader();
       reader.onloadend = () => {
         setAvatar(reader.result);
@@ -59,6 +66,7 @@ const Profile = () => {
       setSelectedFile(file);
     }
   };
+  
 
   const handleSave = async () => {
     try {
@@ -103,7 +111,7 @@ const Profile = () => {
               className="w-24 h-24 rounded-full object-cover border"
             />
             <label className="mt-2 cursor-pointer bg-transparent border-2 border-gray-300 text-black px-4 py-2 rounded-xl">
-              Upload Gambar
+              Upload Gambar (Max 300 KB)
               <input
                 type="file"
                 className="hidden"

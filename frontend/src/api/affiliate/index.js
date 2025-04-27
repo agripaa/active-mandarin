@@ -82,3 +82,13 @@ export const validateReveralCode = async (reveral_code) => {
       throw error.response ? error.response.data : error.message;
   }
 };
+
+export const deleteAffiliator = async (userId) => {
+  try {
+      const response = await api.delete(`/affiliate/delete/${userId}`);
+      return response.data;
+  } catch (error) {
+      console.error("Error fetching transactions:", error);
+      throw error.response ? error.response.data : error.message;
+  }
+};

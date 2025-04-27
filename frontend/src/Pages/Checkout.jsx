@@ -22,7 +22,6 @@ const Checkout = () => {
         const response = await getBrandById(id);
         setBrandData(response.data);
       } catch (error) {
-        console.error(error);
         if(error.status == 400 || error.status == 401 || error.status == 403) {
           navigate('/', {replace: true});
           return;
@@ -50,7 +49,6 @@ const Checkout = () => {
                 }
                 setValidReveral(true);
             } catch (error) {
-              console.log(error)
                 Swal.fire("Error", error?.message, "error");
                 return;
             } finally {
@@ -134,12 +132,12 @@ const Checkout = () => {
                             </div>
                             <div className="flex justify-between mt-1">
                                 <span className="text-gray-700">Promo</span>
-                                <span className="text-green-500">{brandData.discount_price ? formatRupiah(brandData.discount_price - brandData.price) : `- Rp 0`}</span>
+                                <span className="text-green-500">{brandData.discount_price && brandData.discount_price != "0" ? formatRupiah(brandData.discount_price - brandData.price) : `- Rp 0`}</span>
                             </div>
                             <hr className="my-2" />
                             <div className="flex justify-between text-xl font-bold">
                                 <span>Total Transfer</span>
-                                <span>{brandData.discount_price ? formatRupiah(brandData.discount_price) : formatRupiah(brandData.price)}</span>
+                                <span>{brandData.discount_price && brandData.discount_price != "0" ? formatRupiah(brandData.discount_price) : formatRupiah(brandData.price)}</span>
                             </div>
                         </div>
 

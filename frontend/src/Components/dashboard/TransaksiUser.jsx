@@ -22,9 +22,7 @@ const TransaksiUser = () => {
       const response = await getAllUserTransactions(currentPage, pageSize);
       setTransactions(response.data);
       setTotalPages(response.total_pages);
-    } catch (error) {
-      console.error("Error fetching transactions:", error);
-    } finally {
+    } catch (error) {} finally {
       setLoading(false);
     }
   };

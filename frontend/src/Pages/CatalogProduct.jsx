@@ -77,7 +77,7 @@ const CatalogProduct = () => {
                           <img
                             src={`${process.env.REACT_APP_API_IMG}${item.image}`}
                             alt={`${item.turunan_brand}`}
-                            className="w-full h-56 object-cover rounded-t-2xl"
+                            className="w-full aspect-video object-cover rounded-t-2xl"
                           />
                           <div className="flex flex-col justify-between items-start px-4 py-5">
                             <h2 className="text-lg font-semibold text-gray-800 mb-2">
@@ -92,8 +92,8 @@ const CatalogProduct = () => {
                             <div className="flex mt-2">
                               <span className="text-sm text-[#3377FF]">
                                 {langs
-                                  ? `Earn commission Rp ${formatRupiah(item.commission)}`
-                                  : `Dapatkan komisi Rp ${formatRupiah(item.commission)}`}
+                                  ? `Earn commission ${formatRupiah(item.commission)}`
+                                  : `Dapatkan komisi ${formatRupiah(item.commission)}`}
                               </span>
                             </div>
                           </div>

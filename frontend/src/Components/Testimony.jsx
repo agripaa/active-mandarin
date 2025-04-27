@@ -164,7 +164,7 @@ const Testimony = ({ text }) => {
           />
           <div className="flex flex-col items-center justify-center">
             <h2 className="text-[32px] font-semibold text-white mb-4 mt-8">
-              {text.tags}
+              {langs ? 'Join Our Growing Community' : 'Bergabunglah dengan Komunitas Kami yang Berkembang'}
             </h2>
             <div className="flex justify-start items-start w-full gap-6">
               <Link

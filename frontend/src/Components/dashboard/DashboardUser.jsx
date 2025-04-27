@@ -18,9 +18,7 @@ const DashboardUser = () => {
       const productData = await getUserTransactionsByCategory("product");
       setPrograms(programData.data);
       setProducts(productData.data);
-    } catch (error) {
-      console.error("Error fetching transactions:", error);
-    } finally {
+    } catch (error) {} finally {
       setLoading(false);
     }
   };

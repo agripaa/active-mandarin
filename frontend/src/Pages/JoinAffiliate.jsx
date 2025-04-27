@@ -89,7 +89,7 @@ const JoinAffiliate = () => {
         <img
           src="/assets/affiliate-hero-image.png"
           alt="hero"
-          className="w-full h-fit lg:w-[43%]"
+          className="w-full h-auto lg:w-[43%] object-contain"
         />
       </div>
       <div className="container flex flex-col mx-auto px-5 py-5 md:px-[72px] md:py-16">
@@ -238,21 +238,20 @@ const AffiliateForm = () => {
           className="flex flex-col gap-3.5"
           // value={value}
           options={type_options}
-          onChange={(props) => console.log(props)}
         />
       </Form.Item>
 
       <Form.Item name="reason" label={langs ? "Why are you interested in joining the Active Mandarin Affiliate Program?" : "Alasan Tertarik Join Affiliate Program Active Mandarin"} rules={[{ required: true, message: langs ? "Reason is required!" : "Alasan wajib diisi!" }]} labelCol={{ className: "font-medium" }}>
-        <Checkbox.Group options={reason_options} onChange={(props) => console.log(props)} className="flex flex-col gap-3.5" />
+        <Checkbox.Group options={reason_options} className="flex flex-col gap-3.5" />
       </Form.Item>
 
       <Form.Item name="platform" label={langs ? "What Platform do you use to share the affiliate code given by Active Mandarin?" : "Platform Apa Yang Digunakan Untuk Share Kode Affiliate yang Diberikan Active Mandarin?"} rules={[{ required: true, message: langs ? "Platform is required!" : "Platform wajib diisi!" }]} labelCol={{ className: "font-medium" }}>
-        <Checkbox.Group options={platform_options} onChange={(props) => console.log(props)} className="flex flex-col gap-3.5" />
+        <Checkbox.Group options={platform_options} className="flex flex-col gap-3.5" />
       </Form.Item>
 
       <Form.Item name="know_program" label={langs ? "Where did you find out about the Active Mandarin Affiliate Program?" : "Dari Mana Anda Mengetahui Program Affiliate Active Mandarin?"}
        rules={[{ required: true, message: langs ? "This field is required!" : "Kolom ini wajib diisi!" }]} labelCol={{ className: "font-medium" }}>
-        <Checkbox.Group options={know_options} onChange={(props) => console.log(props)} className="flex flex-col gap-3.5" />
+        <Checkbox.Group options={know_options} className="flex flex-col gap-3.5" />
       </Form.Item>
 
       <button

@@ -25,7 +25,6 @@ const Rekrutmen = () => {
       setRecruitmentData(response.data);
       setTotalItems(response.total_items);
     } catch (error) {
-      console.error("Error fetching recruitment data:", error);
     } finally {
       setLoading(false);
     }

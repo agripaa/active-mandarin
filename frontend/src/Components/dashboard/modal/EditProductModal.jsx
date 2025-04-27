@@ -72,17 +72,29 @@ const EditProductModal = ({ isModalOpen, setIsModalOpen, productData, refreshDat
   }, [productData, form]);
 
   const handleImageChange = ({ file }) => {
+    const MAX_IMAGE_SIZE = 300 * 1024; // 300 KB
+    if (file.size > MAX_IMAGE_SIZE) {
+      Swal.fire("Ukuran Gambar Terlalu Besar", "Gambar maksimum 300KB.", "error");
+      return;
+    }
     setImageFile(file);
   };
+
+  const handleProductFileChange = ({ file }) => {
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+    if (file.size > MAX_FILE_SIZE) {
+      Swal.fire("Ukuran File Produk Terlalu Besar", "File maksimum 5MB.", "error");
+      return;
+    }
+    setProductFile(file);
+  };
+  
 
   const handleRupiahChange = (value, setter) => {
     const numericValue = value.replace(/[^0-9]/g, "");
     setter(numericValue);
   };
 
-  const handleProductFileChange = ({ file }) => {
-    setProductFile(file);
-  };
 
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -123,6 +135,7 @@ const EditProductModal = ({ isModalOpen, setIsModalOpen, productData, refreshDat
         Swal.fire("Sukses!", "Produk berhasil diperbarui!", "success");
         handleCancel();
         refreshData();
+        window.location.reload();
       } else {
         Swal.fire("Gagal!", response.data.message, "error");
       }
@@ -193,7 +206,7 @@ const EditProductModal = ({ isModalOpen, setIsModalOpen, productData, refreshDat
         </Form.Item>
 
         {/* 🔹 Upload File Produk dengan Preview */}
-        <Form.Item name="file_product" label="Upload File Produk">
+        <Form.Item name="file_product" label="Upload File Produk (Max 5 MB)">
           <Upload
             maxCount={1}
             beforeUpload={() => false}
@@ -205,7 +218,7 @@ const EditProductModal = ({ isModalOpen, setIsModalOpen, productData, refreshDat
         </Form.Item>
 
         {/* 🔹 Upload Gambar Produk dengan Preview */}
-        <Form.Item name="brand_img" label="Upload Gambar Produk">
+        <Form.Item name="brand_img" label="Upload Gambar Produk (Max 300 KB)">
           <Upload
             maxCount={1}
             beforeUpload={() => false}

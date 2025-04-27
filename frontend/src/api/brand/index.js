@@ -33,7 +33,6 @@ export const getAllBrands = async () => {
 export const getBrandCategoryTurunan = async (category_brand, turunan_brand) => {
   try {
     const response = await api.get(`/brand/category?category_brand=${category_brand}&turunan_brand=${turunan_brand}`);
-    console.log("Response:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching transactions:", error);

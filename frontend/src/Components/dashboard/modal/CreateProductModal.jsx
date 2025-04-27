@@ -25,12 +25,23 @@ const CreateProductModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
   const [commission, setCommission] = useState("0");
 
   const handleImageChange = ({ file }) => {
+    const MAX_IMAGE_SIZE = 300 * 1024; // 300 KB
+    if (file.size > MAX_IMAGE_SIZE) {
+      Swal.fire("Ukuran Gambar Terlalu Besar", "Gambar maksimum 300KB.", "error");
+      return;
+    }
     setImageFile(file);
   };
 
   const handleProductFileChange = ({ file }) => {
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+    if (file.size > MAX_FILE_SIZE) {
+      Swal.fire("Ukuran File Produk Terlalu Besar", "File maksimum 5MB.", "error");
+      return;
+    }
     setProductFile(file);
   };
+  
 
   const handleRupiahChange = (value, setter) => {
     const numericValue = value.replace(/[^0-9]/g, "");
@@ -62,9 +73,6 @@ const CreateProductModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
       // 🔹 Cek apakah file produk dan gambar produk ada
       if (productFile) {
         formData.append("file_product", productFile);
-      } else {
-        Swal.fire("Error!", "File produk wajib diunggah!", "error");
-        return;
       }
 
       if (imageFile) {
@@ -81,12 +89,14 @@ const CreateProductModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
         Swal.fire("Sukses!", "Produk berhasil ditambahkan!", "success");
         refreshData();
         handleCancel(); 
+        window.location.reload();
       } else {
         Swal.fire("Gagal!", response.data.message, "error");
       }
     } catch (error) {
       setLoading(false);
-      Swal.fire("Error!", "Terjadi kesalahan saat menyimpan data!", "error");
+    
+      Swal.fire("Error!", "Terjadi kesalahan saat menyimpan data! Harap Perhatikan Size File Data (Max 5MB)", "error");
     } finally{
       setLoading(false);
     }
@@ -153,14 +163,14 @@ const CreateProductModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
         </Form.Item>
 
         {/* 🔹 Upload File Produk */}
-        <Form.Item name="file_product" label="Upload File Produk" rules={[{ required: true, message: "File produk wajib diunggah!" }]}>
+        <Form.Item name="file_product" label="Upload File Produk (Max 5 MB)" rules={[{ required: false, message: "File produk wajib diunggah!" }]}>
           <Upload maxCount={1} beforeUpload={() => false} onChange={handleProductFileChange}>
             <Button icon={<UploadOutlined />}>Upload File Produk</Button>
           </Upload>
         </Form.Item>
 
         {/* 🔹 Upload Gambar Produk */}
-        <Form.Item name="image" label="Upload Gambar Produk" rules={[{ required: true, message: "Gambar produk wajib diunggah!" }]}>
+        <Form.Item name="image" label="Upload Gambar Produk (Max 300 KB)" rules={[{ required: true, message: "Gambar produk wajib diunggah!" }]}>
           <Upload maxCount={1} beforeUpload={() => false} onChange={handleImageChange} listType="picture">
             <Button icon={<UploadOutlined />}>Pilih Gambar</Button>
           </Upload>

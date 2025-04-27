@@ -1,9 +1,9 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import Slider from "react-slick";
 import { Modal, Button } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
-import { RiArrowLeftLine, RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
+import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 
 const Lectures = ({ text }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -11,7 +11,7 @@ const Lectures = ({ text }) => {
   const [currentSlide, setCurrentSlide] = useState(1);
   const [currentCertificates, setCurrentCertificates] = useState([]);
   let sliderRef = useRef(null);
-  const { data, langs } = useSelector((state) => state.LangReducer);
+  const { langs } = useSelector((state) => state.LangReducer);
 
   const lecture = [
     {
@@ -205,10 +205,7 @@ const Lectures = ({ text }) => {
     arrows: false, // Nonaktifkan tombol next dan prev
     // variableWidth: true,
     beforeChange: (current, next) => {
-      console.log("Current slide:", current);
-      console.log("Next slide:", next);
       setCurrentSlide(next);
-      console.log(sliderRef);
     },
     responsive: [
       {

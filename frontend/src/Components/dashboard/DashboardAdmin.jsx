@@ -66,9 +66,7 @@ const DashboardAdmin = () => {
             const response = await getTransactionSummary();
             setTotalTransactions(response.total_transactions);
             setTotalRevenue(response.total_revenue);
-        } catch (error) {
-            console.error(error);
-        }
+        } catch (error) {}
     };
 
     const fetchTransactionsByMonth = async () => {
@@ -88,9 +86,7 @@ const DashboardAdmin = () => {
                     },
                 ],
             });
-        } catch (error) {
-            console.error(error);
-        }
+        } catch (error) {}
     };
 
     const fetchTopSellingProductsAndPrograms = async () => {
@@ -98,9 +94,7 @@ const DashboardAdmin = () => {
             const response = await getTopSellingProductsAndPrograms();
             setTopProducts(response.top_products);
             setTopPrograms(response.top_programs);
-        } catch (error) {
-            console.error(error);
-        }
+        } catch (error) {}
     };
 
     return (

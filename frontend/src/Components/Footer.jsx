@@ -7,8 +7,8 @@ import { Link } from "react-router-dom";
 
 
 const Footers = ({ footerClassName }) => {
-    const { data, langs } = useSelector(item => item.LangReducer)
-    const text = langs ? data.english : data.indonesia
+    const { langs } = useSelector(item => item.LangReducer)
+
     const socmed = [
         {
             title: 'activemandarinid@gmail.com',
@@ -43,15 +43,15 @@ const Footers = ({ footerClassName }) => {
                     <Col xs={{ span: 24, offset: 0 }} lg={{ span: 6, offset: 0 }} sm={{ span: 12 }}>
                         <img src="/assets/active_logo.png" alt="logo" className="md:w-48 w-1/3"/>
                         <Space direction="vertical" className="mt-5">
-                            <p className="md:text-xl text-md font-regular">{text?.footerDesc}</p>
-                            <h2 className="text-xl font-semibold">{text?.addressTitle}</h2>
+                            <p className="md:text-xl text-md font-regular">{langs ? 'Active Mandarin Indonesia is a platform focused on education, mentorship and career center' : 'Active Mandarin Indonesia adalah sebuah platform yang berfokus pada pendidikan, bimbingan, dan pusat karir'}</p>
+                            <h2 className="text-xl font-semibold">{langs ? 'Address' : 'Alamat'}</h2>
                             <p className="md:text-xl text-md font-regular">Xinle Road, Jiangbei New Area Nanjing, Jiangsu China.</p>
-                            <h2 className="text-xl font-semibold">{text?.phoneTitle}</h2>
+                            <h2 className="text-xl font-semibold">{langs ? 'Phone Number & Whatsapp' : 'Nomor Telepon & Whatsapp'}</h2>
                             <p className="md:text-xl text-md font-regular">+62 822-7950-6450</p>
                         </Space>
                     </Col>
                     <Col xs={{ span: 24, offset: 0 }} lg={{ span: 4, offset: 0 }} sm={{ span: 12 }}>
-                        <h1 className="text-2xl font-bold">{text?.socmed}</h1>
+                        <h1 className="text-2xl font-bold">{langs ? 'Social Media' : 'Media Sosial'}</h1>
                         <Space direction="vertical" className="mt-5" size={15}>
                             {
                                 socmed.map((item, index) => 
@@ -61,9 +61,9 @@ const Footers = ({ footerClassName }) => {
                         </Space>
                     </Col>
                     <Col xs={{ span: 24, offset: 0 }} lg={{ span: 4, offset: 0 }} sm={{ span: 12 }}>
-                        <h1 className="text-2xl font-bold">{text?.general}</h1>
+                        <h1 className="text-2xl font-bold">{langs ? 'General' : 'Umum'}</h1>
                         <Space direction="vertical" className="mt-5" size={15}>
-                            <Link to='/about' className="md:text-xl text-md flex items-center gap-3">{text?.generalItem[0]}</Link>
+                            <Link to='/about' className="md:text-xl text-md flex items-center gap-3">{langs ? 'About Us' : 'Tentang Kami'}</Link>
                             <Link to='/products' className="md:text-xl text-md flex items-center gap-3">{langs ? "Products" : "Produk Kami"}</Link>
                             <Link to='/class' className="md:text-xl text-md flex items-center gap-3">{langs ? "Programs" : "Program Kami"}</Link>
                             <Link to='/donate' className="md:text-xl text-md flex items-center gap-3">{langs ? "Donation" : "Donasi"}</Link>

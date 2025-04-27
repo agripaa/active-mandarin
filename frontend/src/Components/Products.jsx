@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Slider from "react-slick";
-import { Rate, Modal, Button } from "antd";
+import { Modal } from "antd";
 import { useSelector } from "react-redux";
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
-import { getBrandCategoryTurunan, getLatestPrograms } from "../api/brand";
+import { getLatestPrograms } from "../api/brand";
 import { formatRupiah } from "../utils/rupiahFormat";
 
 const Products = ({ text }) => {
@@ -26,12 +26,9 @@ const Products = ({ text }) => {
       if (response.status) {
         setProducts(response.data || []);
       } else {
-        console.error("Error fetching data:", response.reason);
         setProducts([]);
       }
-    } catch (error) {
-      console.error("🔥 ERROR fetching data:", error);
-    }
+    } catch (error) {}
     setIsLoading(false);
   };
 
@@ -96,9 +93,9 @@ const Products = ({ text }) => {
 
   return (
     <div className="container mx-auto px-5 py-16 md:px-16" id="products">
-      <h1 className="text-2xl font-semibold text-start md:text-3xl lg:text-[32px]">{text.title}</h1>
+      <h1 className="text-2xl font-semibold text-start md:text-3xl lg:text-[32px]">{langs ? 'Just Released' : 'Baru Rilis'}</h1>
       <p className="mb-6 text-start text-base font-medium tracking-wide text-[#8493AC] md:text-lg lg:text-xl">
-        {text.desc}
+        {langs ? 'Find the premium class and opportunities along the way' : 'Temukan kelas premium dan peluang di sepanjang jalan'}
       </p>
       <div className="flex flex-col">
         <div className="home-slider product-slider w-full">

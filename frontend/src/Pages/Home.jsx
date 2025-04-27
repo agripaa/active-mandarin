@@ -52,13 +52,7 @@ const Homes = () => {
                     tags: text?.sponsorsTags, 
                     button: text?.sponsorsCTA
                 }}/>
-            <Works 
-                text={{ 
-                    title: text?.workflowTitle,
-                    desc: text?.workflowDesc
-                }}
-                cards={text?.workflowCards}
-            />
+            <Works />
             <Products text={{ 
                 title: text?.productsTitle,
                 tags: text?.productsTags, 

@@ -8,9 +8,7 @@ const Faq = ({ text }) => {
     const { langs } = useSelector((state) => state.LangReducer);
     const [activeKey, setActiveKey] = useState([]); // Track single active panel
 
-    useEffect(() => {
-        console.log(activeKey)
-    }, [activeKey])
+    useEffect(() => {}, [activeKey])
 
     const faq = useMemo(() => [
         {
@@ -306,8 +304,8 @@ const Faq = ({ text }) => {
     return (
         <div className="container flex flex-col gap-8 items-center m-auto py-16 px-5 lg:px-10 lg:mt-10">
             <div className="text-center w-full">
-                <h1 className="text-2xl font-semibold text-[#252525] md:text-3xl lg:text-[32px] 2xl:text-5xl">{text.title}</h1>
-                <h2 className="text-base font-normal text-[#252525] mt-4 lg:text-lg">"{text.tags}"</h2>
+                <h1 className="text-2xl font-semibold text-[#252525] md:text-3xl lg:text-[32px] 2xl:text-5xl">{langs ? 'Frequently Asked Questions' : 'Pusat Bantuan'}</h1>
+                <h2 className="text-base font-normal text-[#252525] mt-4 lg:text-lg">"{langs ? 'One language sets you in a corridor for life. Two languages open every door along the way.' : 'Satu bahasa menempatkanmu di sebuah koridor sepanjang hidup. Dua bahasa membuka setiap pintu di sepanjang jalan.'}"</h2>
                 <h2 className="text-base font-normal text-[#252525] mt-1 lg:text-lg">- Frank Smith</h2>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-4 w-full">

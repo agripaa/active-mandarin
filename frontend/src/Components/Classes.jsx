@@ -1,10 +1,10 @@
-import { Col, Row } from "antd";
+import { Col } from "antd";
 import React from "react";
 import { useSelector } from "react-redux";
 import CardClasses from "./CardClass";
 
 const Classes = ({ title }) => {
-  const { data, langs } = useSelector((state) => state.LangReducer);
+  const { langs } = useSelector((state) => state.LangReducer);
 
   const classes = {
     indonesia: [
@@ -292,8 +292,6 @@ const Classes = ({ title }) => {
   };
 
   const text = langs ? classes?.english : classes.indonesia;
-
-  console.log(text);
 
   return (
     <div className="px-5 bg-neutral-50">

@@ -4,9 +4,11 @@ import { Bar } from "react-chartjs-2";
 import { motion } from 'framer-motion';
 import { RiSearchLine, RiMoneyDollarCircleFill, RiFileTextFill } from "react-icons/ri";
 import DashboardLayout from "../Layouts/DashboardLayout";
-import { getAffiliatorStatusTrue, getTotalAffiliateRevenue } from "../api/affiliate";
+import { deleteAffiliator, getAffiliatorStatusTrue, getTotalAffiliateRevenue } from "../api/affiliate";
 import "chart.js/auto";
 import { formatRupiah } from "../utils/rupiahFormat";
+
+import Swal from "sweetalert2";
 
 const years = [2025, 2026];
 
@@ -46,9 +48,7 @@ const Affiliate = () => {
             const totalAffiliators = response.total_affiliators.reduce((sum, item) => sum + item.count, 0); // Calculate total items
             setAffiliators(response.data);
             setTotalItems(totalAffiliators); // Set total items based on total count
-        } catch (error) {
-            console.error("Error fetching approved affiliates:", error);
-        } finally {
+        } catch (error) {} finally {
             setLoading(false);
         }
     };
@@ -58,9 +58,7 @@ const Affiliate = () => {
             const response = await getTotalAffiliateRevenue();
             setTotalCommission(response.total_revenue);
             setMonthlyRevenue(response.revenue_by_month);
-        } catch (error) {
-            console.error("Error fetching total revenue:", error);
-        }
+        } catch (error) {}
     };
 
     const handleSearch = (e) => {
@@ -71,17 +69,57 @@ const Affiliate = () => {
         item.name.toLowerCase().includes(searchText)
     );
 
+    const handleDelete = (userId, userName) => {
+        Swal.fire({
+            title: 'Hapus Affiliator?',
+            text: `Apakah kamu yakin ingin menghapus affiliator bernama "${userName}"? Transaksinya akan tetap ada.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, Hapus',
+            cancelButtonText: 'Batal'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const res = await deleteAffiliator(userId);
+    
+                    if (res.status) {
+                        Swal.fire('Terhapus!', 'Affiliator berhasil dihapus.', 'success');
+                        setAffiliators((prev) => prev.filter((item) => item.id !== userId));
+                    } else {
+                        Swal.fire('Gagal!', res.message || 'Affiliator gagal dihapus.', 'error');
+                    }
+                } catch (error) {
+                    Swal.fire('Error', 'Terjadi kesalahan saat menghapus affiliator.', 'error');
+                }
+            }
+        });
+    };    
+
     const columns = [
-        { title: "Nama", dataIndex: "name", key: "name", render: (text) => text || "-" },
-        { title: "Email", dataIndex: "email", key: "email", render: (text) => text || "-" },
-        { title: "No Telpon", dataIndex: "number", key: "number", render: (text) => text || "-" },
-        { title: "Kode Referal", dataIndex: "reveral_code", key: "reveral_code", render: (text) => text || "-" },
+        { title: "Nama", dataIndex: "name", key: "name" },
+        { title: "Email", dataIndex: "email", key: "email" },
+        { title: "No Telpon", dataIndex: "number", key: "number" },
+        { title: "Kode Referal", dataIndex: "reveral_code", key: "reveral_code" },
         { 
             title: "Total Komisi", 
             dataIndex: "total_commission", 
             key: "total_commission", 
-            render: (text) => `Rp ${text?.toLocaleString() || "0"}` // ✅ Format ke Rupiah
+            render: (text) => `Rp ${text?.toLocaleString() || "0"}`
         },
+        {
+            title: "Aksi",
+            key: "action",
+            render: (_, record) => (
+                <button
+                    className="text-red-500 hover:underline"
+                    onClick={() => handleDelete(record.id, record.name)}
+                >
+                    Hapus
+                </button>
+            ),
+        }        
     ];
 
     const chartData = {

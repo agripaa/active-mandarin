@@ -27,7 +27,6 @@ const Donation = () => {
       setDonationData(response.data);
       setTotalItems(response.total_items); // backend must return this
     } catch (error) {
-      console.error("Error fetching donation data:", error);
     } finally {
       setLoading(false);
     }

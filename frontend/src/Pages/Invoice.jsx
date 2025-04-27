@@ -65,7 +65,6 @@ const Invoice = () => {
       const response = await getProfile();
       setUser(response.data);
     } catch (error) {
-      console.error(error);
       if ([400, 401, 403].includes(error.status)) {
         navigate("/", { replace: true });
         return;
@@ -96,7 +95,6 @@ const Invoice = () => {
       const response = await getTransactionById(id);
       setInvoiceData(response.data);
     } catch (error) {
-      console.error(error);
       if ([400, 401, 403].includes(error.status)) {
         navigate("/", { replace: true });
         return;

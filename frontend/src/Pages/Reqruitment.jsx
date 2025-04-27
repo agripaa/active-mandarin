@@ -89,7 +89,7 @@ const Reqruitment = () => {
         <img
           src="/assets/donation-hero.png"
           alt="hero"
-          className="w-full h-fit lg:w-[43%]"
+          className="w-full h-auto lg:w-[43%] object-contain"
         />
       </div>
       <div className="container flex flex-col mx-auto px-5 py-5 md:px-[72px] md:py-16">
@@ -149,6 +149,12 @@ const AffiliateForm = () => {
   }, []);
 
   const handleCvFileChange = ({ file }) => {
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+    if (file.size > MAX_FILE_SIZE) {
+      Swal.fire("Ukuran File Produk Terlalu Besar", "File maksimum 5MB.", "error");
+      return;
+    }
+
     setCvFile(file);
   };
 
@@ -213,7 +219,6 @@ const AffiliateForm = () => {
         <Radio.Group
           className="flex flex-col gap-3.5"
           options={position_options}
-          onChange={(props) => console.log(props)}
         />
       </Form.Item>
 
@@ -221,7 +226,7 @@ const AffiliateForm = () => {
         <Input className="py-3" />
       </Form.Item>
 
-      <Form.Item name="cv_file" label={langs ? "Upload CV/Resume" : "Unggah CV/Resume"} rules={[{ required: true, message: "CV/Resume is required!" }]} labelCol={{ className: "font-medium" }}>
+      <Form.Item name="cv_file" label={langs ? "Upload CV/Resume (Max 5MB)" : "Unggah CV/Resume (Max 5MB)"} rules={[{ required: true, message: "CV/Resume is required!" }]} labelCol={{ className: "font-medium" }}>
         <Upload
           maxCount={1}
           beforeUpload={() => false}
