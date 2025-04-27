@@ -37,7 +37,7 @@ const About = () => {
   return (
     <Mainlayouts>
     <div className="flex flex-col mx-auto bg-[#F5F8FF] gap-8 py-8 px-5 md:px-16 lg:flex-row">
-      <div className="w-full lg:w-[54%]">
+      <div className="w-full lg:w-[54%] xl:w-[70%] 2xl:w-[80%]">
         <h1 className="text-2xl font-semibold md:text-3xl lg:text-[32px]">
           Active Mandarin Indonesia
         </h1>
@@ -76,7 +76,7 @@ const About = () => {
           </div>
         </div>
       </div>
-      <div className="w-full lg:w-[46%] grid grid-cols-12 gap-4 items-start justify-start">
+      <div className="w-full lg:w-[46%] xl:w-[30%] 2xl:w-[20%] grid grid-cols-12 gap-4 items-start justify-start">
         <img src="assets/about-top-1.png" alt="about 1" className="col-span-12 w-full rounded-2xl order-2 lg:order-1" />
         <div className="grid grid-cols-12 col-span-12 gap-4 order-1 lg:order-2">
           <img src="assets/about-top-3.png" alt="about 3" className="col-span-5 w-full h-full object-cover rounded-2xl" />
