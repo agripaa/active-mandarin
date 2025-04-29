@@ -31,6 +31,11 @@ const ProductTable = ({ dataProduct }) => {
     } catch (error) {}
   };
 
+  const capitalize = (str) => {
+    if (!str) return "-";
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
   // 🔹 Handle Delete
   const handleDelete = async (id) => {
     Swal.fire({
@@ -78,6 +83,12 @@ const ProductTable = ({ dataProduct }) => {
       title: "Nama Produk",
       dataIndex: "variant",
       key: "variant",
+    },
+    {
+      title: "Tipe Produk",
+      dataIndex: "type_product",
+      key: "type_product",
+      render: (type_product) =>  `${type_product ? capitalize(type_product) : "-"}`
     },
     {
       title: "Harga Normal",
