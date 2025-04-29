@@ -67,8 +67,8 @@ const Footers = ({ footerClassName }) => {
                             <Link to='/products' className="md:text-xl text-md flex items-center gap-3">{langs ? "Products" : "Produk Kami"}</Link>
                             <Link to='/class' className="md:text-xl text-md flex items-center gap-3">{langs ? "Programs" : "Program Kami"}</Link>
                             <Link to='/donate' className="md:text-xl text-md flex items-center gap-3">{langs ? "Donation" : "Donasi"}</Link>
-                            <Link to='/join-affiliate' className="md:text-xl text-md flex items-center gap-3">{langs ? "Become Our Partner" : "Kemitraan"}</Link>
-                            <Link to='/join-team' className="md:text-xl text-md flex items-center gap-3">{langs ? "Join Our Team" : "Gabung Tim Kami"}</Link>
+                            <Link to='/join-affiliate' className="md:text-xl text-md flex items-center gap-3">{langs ? "Become Partner" : "Kemitraan"}</Link>
+                            {/* <Link to='/join-team' className="md:text-xl text-md flex items-center gap-3">{langs ? "Join Our Team" : "Gabung Tim Kami"}</Link> */}
 
                         </Space>
                     </Col>

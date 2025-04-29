@@ -40,8 +40,8 @@ const Reqruitment = () => {
             </h1>
             <p className="text-[#2B313B] mt-4 text-sm md:text-base">
               {langs
-                ? "Hi, Active Mandarin Friends!"
-                : "Hai, Sobat Active Mandarin!"}
+                ? "Hi, Active Mandarin Friends! 👋"
+                : "Hai, Sobat Active Mandarin! 👋"}
               <br />
               <br />
               {langs

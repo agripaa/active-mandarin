@@ -27,32 +27,43 @@ const Catalog = () => {
     fetchAllData();
   }, []);
 
-  useEffect(() => {
-    console.log("user", user);
-  }, [user])
-
   const fetchAllData = async () => {
     setLoading(true);
     try {
       const responses = await Promise.allSettled([
-        getBrandCategoryTurunan("program", "Non Degree (Kelas Bahasa di China)"),
+        getBrandCategoryTurunan(
+          "program",
+          "Non Degree (Kelas Bahasa di China)"
+        ),
         getBrandCategoryTurunan("program", "Degree"),
         getBrandCategoryTurunan("program", "Mentor Scholarship"),
         getBrandCategoryTurunan("program", "Kelas HSK"),
         getBrandCategoryTurunan("program", "Premium Mandarin Learning"),
         getBrandCategoryTurunan("program", "Educonsult S1-S3 Full Cover"),
-        getBrandCategoryTurunan("program", "Grow with Us")
+        getBrandCategoryTurunan("program", "Grow with Us"),
       ]);
 
-      console.log(responses[3])
-  
-      setNonDegree(responses[0].status === "fulfilled" ? responses[0].value.data || [] : []);
-      setDegree(responses[1].status === "fulfilled" ? responses[1].value.data || [] : []);
-      setMentorScholarship(responses[2].status === "fulfilled" ? responses[2].value.data || [] : []);
-      setKelasHSK(responses[3].status === "fulfilled" ? responses[3].value.data || []: []);      
-      setPremiumMandarin(responses[4].status === "fulfilled" ? responses[4].value.data || [] : []);
-      setEduconsult(responses[5].status === "fulfilled" ? responses[5].value.data || [] : []);
-      setGrowWithUs(responses[6].status === "fulfilled" ? responses[6].value.data || [] : []);
+      setNonDegree(
+        responses[0].status === "fulfilled" ? responses[0].value.data || [] : []
+      );
+      setDegree(
+        responses[1].status === "fulfilled" ? responses[1].value.data || [] : []
+      );
+      setMentorScholarship(
+        responses[2].status === "fulfilled" ? responses[2].value.data || [] : []
+      );
+      setKelasHSK(
+        responses[3].status === "fulfilled" ? responses[3].value.data || [] : []
+      );
+      setPremiumMandarin(
+        responses[4].status === "fulfilled" ? responses[4].value.data || [] : []
+      );
+      setEduconsult(
+        responses[5].status === "fulfilled" ? responses[5].value.data || [] : []
+      );
+      setGrowWithUs(
+        responses[6].status === "fulfilled" ? responses[6].value.data || [] : []
+      );
     } catch (error) {
     } finally {
       setLoading(false);
@@ -68,7 +79,7 @@ const Catalog = () => {
     } catch (error) {
       setUser(null);
     }
-  }
+  };
 
   const fetchData = () => {
     const images = [
@@ -130,24 +141,23 @@ const Catalog = () => {
 
   if (loading) {
     return (
-        <Mainlayouts>
-            <div className="flex justify-center items-center h-[80vh]">
-                <Spin size="large" />
-            </div>
-        </Mainlayouts>
+      <Mainlayouts>
+        <div className="flex justify-center items-center h-[80vh]">
+          <Spin size="large" />
+        </div>
+      </Mainlayouts>
     );
   }
 
-
-const handleClickItem = (id) => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    const openModalEvent = new CustomEvent("triggerLoginModal");
-    window.dispatchEvent(openModalEvent); // trigger modal dari Header
-  } else {
-    window.location.href = `/detail/${id}`;
-  }
-};
+  const handleClickItem = (id) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      const openModalEvent = new CustomEvent("triggerLoginModal");
+      window.dispatchEvent(openModalEvent); // trigger modal dari Header
+    } else {
+      window.location.href = `/detail/${id}`;
+    }
+  };
 
   const settingsCarousel = {
     dots: false,
@@ -208,247 +218,136 @@ const handleClickItem = (id) => {
 
         <div className="pt-10 pb-1">
           {growWithUs.length > 0 && (
-              <div className="md:py-10">
-                <div className="w-full mx-auto mb-6">
-                  <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
-                    {langs ? "Grow with Us" : "Tumbuh bersama Kami"}
-                  </h2>
-                  <span className="font-semibold text-[#8493AC] text-lg">
-                    {langs
-                      ? "Empower Your Learning, Anywhere."
-                      : "Berdayakan Pembelajaran Anda, Di Mana Saja."}
-                  </span>
-                </div>
-                <div className="my-8 flex justify-start">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4 ">
-                      {growWithUs.map((item, index) => (
-                        <div>
-                          <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
-                            <img
-                              onClick={() => handleClickItem(item.id)}
-                              src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
-                              alt={item.variant}
-                              className="w-full aspect-video object-cover rounded-t-2xl cursor-pointer"
-                            />
-                            <div className="flex flex-col justify-between items-start px-4 py-5">
-                              <h2 onClick={() => handleClickItem(item.id)} className="text-lg font-semibold text-gray-800 mb-2 cursor-pointer">{item.variant}</h2>
-                              <p className="font-semibold text-lg mb-2">
-                                {item.discount_price && item.discount_price != "0" ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                              </p>
-                              {item.commission ? (
-                                user?.Role?.role_name === 'affiliator' ? (
-                                  <span className="text-sm text-[#3377FF]">
-                                    {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                                  </span>
-                                ) : (
-                                  <Link to={'/join-affiliate'} onClick={() => {}} className="text-sm text-[#3377FF] z-20">
-                                    {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                                  </Link>
-                                )
-                              ) : null}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
+            <div className="md:py-10">
+              <div className="w-full mx-auto mb-6">
+                <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
+                  {langs ? "Grow with Us" : "Tumbuh bersama Kami"}
+                </h2>
+                <span className="font-semibold text-[#8493AC] text-lg">
+                  {langs
+                    ? "Empower Your Learning, Anywhere."
+                    : "Berdayakan Pembelajaran Anda, Di Mana Saja."}
+                </span>
+              </div>
+              <div className="my-8 flex justify-start">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4 ">
+                  {growWithUs.map((item, index) => (
+                    <CardCatalog
+                      item={item}
+                      handleClickItem={() => handleClickItem(item.id)}
+                      user={user}
+                    />
+                  ))}
                 </div>
               </div>
-          )}
-
-        {premiumMandarin.length > 0 && (
-          <div className="md:py-10" id="start">
-            <div className="w-full mx-auto mb-6">
-              <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
-                {langs
-                  ? "Premium Mandarin Learning"
-                  : "Pembelajaran Mandarin Premium"}
-              </h2>
-              <span className="font-semibold text-[#8493AC] text-lg">
-                {langs
-                  ? "For your bright future starts here"
-                  : "Untuk masa depan cerah Anda dimulai di sini"}
-              </span>
             </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
-                    {premiumMandarin.map((item, index) => (
-                      <div>
-                        <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
-                          <img
-                            onClick={() => handleClickItem(item.id)}
-                            src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
-                            alt={item.variant}
-                            className="w-full aspect-video object-cover rounded-t-2xl cursor-pointer"
-                          />
-                          <div className="flex flex-col justify-between items-start px-4 py-5">
-                            <h2 onClick={() => handleClickItem(item.id)} className="text-lg font-semibold text-gray-800 mb-2 cursor-pointer">{item.variant}</h2>
-                            <p className="font-semibold text-lg mb-2">
-                              {item.discount_price && item.discount_price != "0" ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                              <span className="font-light text-sm ml-1">{langs ? "/Month" : "/Bulan"}</span>
-                            </p>
-                            {item.commission ? (
-                              user?.Role?.role_name === 'affiliator' ? (
-                                <span className="text-sm text-[#3377FF]">
-                                  {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                                </span>
-                              ) : (
-                                <Link to={'/join-affiliate'} onClick={() => {}} className="text-sm text-[#3377FF] z-20">
-                                  {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                                </Link>
-                              )
-                            ) : null}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </div>
           )}
 
+          {premiumMandarin.length > 0 && (
+            <div className="md:py-10" id="start">
+              <div className="w-full mx-auto mb-6">
+                <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
+                  {langs
+                    ? "Premium Mandarin Learning"
+                    : "Pembelajaran Mandarin Premium"}
+                </h2>
+                <span className="font-semibold text-[#8493AC] text-lg">
+                  {langs
+                    ? "For your bright future starts here"
+                    : "Untuk masa depan cerah Anda dimulai di sini"}
+                </span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
+                {premiumMandarin.map((item, index) => (
+                  <CardCatalog
+                    item={item}
+                    handleClickItem={() => handleClickItem(item.id)}
+                    user={user}
+                    isMonthlyProgram
+                  />
+                ))}
+              </div>
+            </div>
+          )}
 
           {kelasHSK.length > 0 && (
-              <div>
-                <div className="w-full mx-auto mb-6">
-                  <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
-                    {langs ? "General Mandarin Classs" : "Kelas Mandarin Umum"}
-                  </h2>
-                  <span className="font-semibold text-[#8493AC] text-lg">
-                    {langs
-                      ? "Interactive classes with experienced tutors who are ready to guide you from scratch."
-                      : "Kelas interaktif bersama tutor berpengalaman yang siap membimbingmu dari nol."}
-                  </span>
-                </div>
-                <div className="my-8 flex justify-start">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
-                      {kelasHSK.map((item, index) => (
-                        <div>
-                          <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
-                            <img
-                              onClick={() => handleClickItem(item.id)}
-                              src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
-                              alt={item.variant}
-                              className="w-full aspect-video object-cover rounded-t-2xl cursor-pointer"
-                            />
-                            <div className="flex flex-col justify-between items-start px-4 py-5">
-                              <h2 onClick={() => handleClickItem(item.id)} className="text-lg font-semibold text-gray-800 mb-2 cursor-pointer">{item.variant}</h2>
-                              <p className="font-semibold text-lg mb-2">
-                                {item.discount_price && item.discount_price != "0" ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                                <span className="font-light text-sm ml-1">{langs ? "/Month" : "/Bulan"}</span>
-                              </p>
-                              {item.commission ? (
-                                user?.Role?.role_name === 'affiliator' ? (
-                                  <span className="text-sm text-[#3377FF]">
-                                    {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                                  </span>
-                                ) : (
-                                  <Link to={'/join-affiliate'} onClick={() => {}} className="text-sm text-[#3377FF] z-20">
-                                    {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                                  </Link>
-                                )
-                              ) : null}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
+            <div>
+              <div className="w-full mx-auto mb-6">
+                <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
+                  {langs ? "General Mandarin Classs" : "Kelas Mandarin Umum"}
+                </h2>
+                <span className="font-semibold text-[#8493AC] text-lg">
+                  {langs
+                    ? "Interactive classes with experienced tutors who are ready to guide you from scratch."
+                    : "Kelas interaktif bersama tutor berpengalaman yang siap membimbingmu dari nol."}
+                </span>
+              </div>
+              <div className="my-8 flex justify-start">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
+                  {kelasHSK.map((item, index) => (
+                    <CardCatalog
+                      item={item}
+                      handleClickItem={() => handleClickItem(item.id)}
+                      user={user}
+                      isMonthlyProgram
+                    />
+                  ))}
                 </div>
               </div>
+            </div>
           )}
 
           {educonsult.length > 0 && (
-              <div>
-                <div className="w-full mx-auto mb-6">
-                  <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
-                    {langs ? "Mandarin Native Class" : "Kelas Asli Mandarin"}
-                  </h2>
-                  <span className="font-semibold text-[#8493AC] text-lg">
-                    {langs
-                      ? "Experience an authentic Mandarin learning experience with a native Chinese tutor."
-                      : "Rasakan pengalaman otentik belajar Mandarin dengan tutor asli dari China."}
-                  </span>
-                </div>
-                <div className="my-8 flex justify-start">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
-                      {educonsult.map((item, index) => (
-                        <div>
-                          <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
-                            <img
-                              onClick={() => handleClickItem(item.id)}
-                              src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
-                              alt={item.variant}
-                              className="w-full aspect-video object-cover rounded-t-2xl cursor-pointer"
-                            />
-                            <div className="flex flex-col justify-between items-start px-4 py-5">
-                              <h2 onClick={() => handleClickItem(item.id)} className="text-lg font-semibold text-gray-800 mb-2 cursor-pointer">{item.variant}</h2>
-                              <p className="font-semibold text-lg mb-2">
-                                {item.discount_price && item.discount_price != "0" ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                                <span className="font-light text-sm ml-1">{langs ? "/Month" : "/Bulan"}</span>
-                              </p>
-                              {item.commission ? (
-                                user?.Role?.role_name === 'affiliator' ? (
-                                  <span className="text-sm text-[#3377FF]">
-                                    {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                                  </span>
-                                ) : (
-                                  <Link to={'/join-affiliate'} onClick={() => {}} className="text-sm text-[#3377FF] z-20">
-                                    {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                                  </Link>
-                                )
-                              ) : null}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
+            <div>
+              <div className="w-full mx-auto mb-6">
+                <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
+                  {langs ? "Mandarin Native Class" : "Kelas Asli Mandarin"}
+                </h2>
+                <span className="font-semibold text-[#8493AC] text-lg">
+                  {langs
+                    ? "Experience an authentic Mandarin learning experience with a native Chinese tutor."
+                    : "Rasakan pengalaman otentik belajar Mandarin dengan tutor asli dari China."}
+                </span>
+              </div>
+              <div className="my-8 flex justify-start">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
+                  {educonsult.map((item, index) => (
+                    <CardCatalog
+                      item={item}
+                      handleClickItem={() => handleClickItem(item.id)}
+                      user={user}
+                      isMonthlyProgram
+                    />
+                  ))}
                 </div>
               </div>
+            </div>
           )}
 
           {mentorScholarship.length > 0 && (
-          <div className="py-10" id="Mentor">
-            <div className="w-full mx-auto mb-6">
-              <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
-                {langs
-                  ? "Mentor Scholarship Program"
-                  : "Program Beasiswa Mentor"}
-              </h2>
-              <span className="font-semibold text-[#8493AC] text-lg">
-                {langs
-                  ? "Find the programs and opportunities along the way "
-                  : "Temukan program dan peluang di sepanjang jalan"}
-              </span>
-            </div>
+            <div className="py-10" id="Mentor">
+              <div className="w-full mx-auto mb-6">
+                <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
+                  {langs
+                    ? "Mentor Scholarship Program"
+                    : "Program Beasiswa Mentor"}
+                </h2>
+                <span className="font-semibold text-[#8493AC] text-lg">
+                  {langs
+                    ? "Find the programs and opportunities along the way "
+                    : "Temukan program dan peluang di sepanjang jalan"}
+                </span>
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
-                    {mentorScholarship.map((item, index) => (
-                      <div>
-                        <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
-                          <img
-                            onClick={() => handleClickItem(item.id)}
-                            src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
-                            alt={item.variant}
-                            className="w-full aspect-video object-cover rounded-t-2xl cursor-pointer"
-                          />
-                          <div className="flex flex-col justify-between items-start px-4 py-5">
-                            <h2 onClick={() => handleClickItem(item.id)} className="text-lg font-semibold text-gray-800 mb-2 cursor-pointer">{item.variant}</h2>
-                            <p className="font-semibold text-lg mb-2">
-                              {item.discount_price && item.discount_price != "0" ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                            </p>
-                            {item.commission ? (
-                              user?.Role?.role_name === 'affiliator' ? (
-                                <span className="text-sm text-[#3377FF]">
-                                  {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                                </span>
-                              ) : (
-                                <Link to={'/join-affiliate'} onClick={() => {}} className="text-sm text-[#3377FF] z-20">
-                                  {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                                </Link>
-                              )
-                            ) : null}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                </div>
+                {mentorScholarship.map((item, index) => (
+                  <CardCatalog
+                    item={item}
+                    handleClickItem={() => handleClickItem(item.id)}
+                    user={user}
+                  />
+                ))}
+              </div>
             </div>
           )}
 
@@ -456,9 +355,7 @@ const handleClickItem = (id) => {
             <div className="py-10">
               <div className="w-full mx-auto mb-6">
                 <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
-                  {langs
-                    ? "Non - Degree Program"
-                    : "Program Non-Gelar"}
+                  {langs ? "Non - Degree Program" : "Program Non-Gelar"}
                 </h2>
                 <span className="font-semibold text-[#8493AC] text-lg">
                   {langs
@@ -466,90 +363,113 @@ const handleClickItem = (id) => {
                     : "Untuk menjamin masa depanmu, carilah ilmu sampai ke Tiongkok."}
                 </span>
               </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
-                      {nonDegree.map((item, index) => (
-                        <div>
-                          <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
-                            <img
-                              onClick={() => handleClickItem(item.id)}
-                              src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
-                              alt={item.variant}
-                              className="w-full aspect-video object-cover rounded-t-2xl cursor-pointer"
-                            />
-                            <div className="flex flex-col justify-between items-start px-4 py-5">
-                              <h2 className="text-lg font-semibold text-gray-800 mb-2 cursor-pointer">{item.variant}</h2>
-                              <p className="font-semibold text-lg mb-2">
-                                {item.discount_price && item.discount_price != "0" ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                              </p>
-                              {item.commission ? (
-                                user?.Role?.role_name === 'affiliator' ? (
-                                  <span className="text-sm text-[#3377FF]">
-                                    {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                                  </span>
-                                ) : (
-                                  <Link to={'/join-affiliate'} onClick={() => {}} className="text-sm text-[#3377FF] z-20">
-                                    {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                                  </Link>
-                                )
-                              ) : null}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-              </div>
-            )}
-          
-          {degree.length > 0 && (
-          <div className="py-10">
-            <div className="w-full mx-auto mb-6">
-              <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
-                {langs
-                  ? "Degree Program"
-                  : "Program Gelar"}
-              </h2>
-              <span className="font-semibold text-[#8493AC] text-lg">
-                {langs
-                  ? "To secure your future, seek knowledge even as far as China."
-                  : "Untuk menjamin masa depanmu, carilah ilmu sampai ke Tiongkok."}
-              </span>
-            </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
-                    {degree.map((item, index) => (
-                      <div className="cursor-pointer">
-                        <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
-                          <img
-                            onClick={() => handleClickItem(item.id)}
-                            src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
-                            alt={item.variant}
-                            className="w-full aspect-video object-cover rounded-t-2xl cursor-pointer"
-                          />
-                          <div className="flex flex-col justify-between items-start px-4 py-5">
-                            <h2 onClick={() => handleClickItem(item.id)} className="text-lg font-semibold text-gray-800 mb-2 cursor-pointer">{item.variant}</h2>
-                            <p className="font-semibold text-lg mb-2">
-                              {item.discount_price && item.discount_price != "0" ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                            </p>
-                            {item.commission ? (
-                              user?.Role?.role_name === 'affiliator' ? (
-                                <span className="text-sm text-[#3377FF]">
-                                  {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                                </span>
-                              ) : (
-                                <Link to={'/join-affiliate'} onClick={() => {}} className="text-sm text-[#3377FF] z-20">
-                                  {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                                </Link>
-                              )
-                            ) : null}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                </div>
+                {nonDegree.map((item, index) => (
+                  <CardCatalog
+                    item={item}
+                    handleClickItem={() => handleClickItem(item.id)}
+                    user={user}
+                    isDegreeProgram
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {degree.length > 0 && (
+            <div className="py-10">
+              <div className="w-full mx-auto mb-6">
+                <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
+                  {langs ? "Degree Program" : "Program Gelar"}
+                </h2>
+                <span className="font-semibold text-[#8493AC] text-lg">
+                  {langs
+                    ? "To secure your future, seek knowledge even as far as China."
+                    : "Untuk menjamin masa depanmu, carilah ilmu sampai ke Tiongkok."}
+                </span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
+                {degree.map((item, index) => (
+                  <CardCatalog
+                    item={item}
+                    handleClickItem={() => handleClickItem(item.id)}
+                    user={user}
+                    isDegreeProgram
+                  />
+                ))}
+              </div>
             </div>
           )}
         </div>
       </div>
     </Mainlayouts>
+  );
+};
+
+const CardCatalog = ({ item, handleClickItem, user, isMonthlyProgram, isDegreeProgram }) => {
+  const { _, langs } = useSelector((state) => state.LangReducer);
+
+  return (
+    <div>
+      <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
+        <img
+          onClick={handleClickItem}
+          src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
+          alt={item.variant}
+          className="w-full aspect-video object-cover rounded-t-2xl cursor-pointer"
+        />
+        <div className="flex flex-col justify-between items-start px-4 py-5">
+          <h2
+            onClick={handleClickItem}
+            className="text-lg font-semibold text-gray-800 mb-2 cursor-pointer"
+          >
+            {item.variant}
+          </h2>
+          {isDegreeProgram ? (
+            <div
+              className={"prose text-gray-600 overflow-auto mb-2 grow leading-relaxed w-full [&_a]:text-blue-600 [&_a]:underline [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-6 [&_ol]:pl-6"}
+              dangerouslySetInnerHTML={{
+                __html: `${item.detail_brand.substring(0, 100)}...`,
+              }}
+            />
+          ) : (
+            <p className="font-semibold text-lg mb-2">
+              {item.discount_price && item.discount_price != "0"
+                ? (
+                  <>
+                    <span className="font-medium text-sm text-[#FF3E3E] mr-2 line-through">
+                      {formatRupiah(item.price)}
+                    </span>
+                    {formatRupiah(item.discount_price)}
+                  </>
+                ) : formatRupiah(item.price)}
+              {isMonthlyProgram ? (
+                <span className="font-light text-sm ml-1">
+                  {langs ? "/Month" : "/Bulan"}
+                </span>
+              ) : null}
+            </p>
+          )}
+          {item.commission ? (
+            user?.Role?.role_name === "affiliator" ? (
+              <span className="text-sm text-[#3377FF]">
+                {langs ? "Earn commission" : "Dapatkan komisi"}{" "}
+                {formatRupiah(item.commission || 0)}
+              </span>
+            ) : (
+              <Link
+                to={"/join-affiliate"}
+                onClick={() => {}}
+                className="text-sm text-[#3377FF]"
+              >
+                {langs ? "Earn commission" : "Dapatkan komisi"}{" "}
+                {formatRupiah(item.commission || 0)}
+              </Link>
+            )
+          ) : null}
+        </div>
+      </div>
+    </div>
   );
 };
 

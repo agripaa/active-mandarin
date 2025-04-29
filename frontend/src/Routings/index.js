@@ -24,6 +24,7 @@ import Reqruitment from "../Pages/Reqruitment";
 import GiveDonation from "../Pages/GiveDonation";
 import Invoice from "../Pages/Invoice";
 import KelasAffiliator from "../Pages/KelasAffiliator";
+import BecomePartner from "../Pages/BecomePartner";
 
 const Routings = () => {
     return(
@@ -39,6 +40,7 @@ const Routings = () => {
                 <Route path="/join-affiliate" element={<JoinAffiliate/>}/>
                 <Route path="/join-team" element={<Reqruitment/>}/>
                 <Route path="/donate" element={<GiveDonation/>}/>
+                <Route path="/become-partner" element={<BecomePartner/>}/>
                 <Route path="/kelas-affiliator" element={<KelasAffiliator/>}/>
 
                 {/* Transaction User Page */}
