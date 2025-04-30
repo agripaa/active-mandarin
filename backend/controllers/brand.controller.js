@@ -110,7 +110,8 @@ exports.createBrand = async (req, res) => {
         turunanExist = await TurunanBrand.create({
           title: title.trim(),
           sub_title: sub_title.trim(),
-          turunan: turunan.trim()
+          turunan: turunan.trim(),
+          category_brand: category_brand_lower.trim()
         });
       }
     }
@@ -323,7 +324,7 @@ exports.updateBrand = async (req, res) => {
 
     let turunanExist = null;
     if (turunan_id) {
-      turunanExist = await TurunanBrand.findOne({ where: { id: turunan_id, turunan } });
+      turunanExist = await TurunanBrand.findOne({ where: { id: turunan_id } });
     }
 
     if (!turunanExist) {
@@ -340,8 +341,9 @@ exports.updateBrand = async (req, res) => {
 
       turunanExist = await TurunanBrand.create({
         title: title.trim(),
-        sub_title: sub_title?.trim() || null,
-        turunan,
+        sub_title: sub_title?.trim(),
+        turunan: turunan.trim(),
+        category_brand: category_brand_lower.trim()
       });
     }
 

@@ -11,12 +11,14 @@ module.exports = (sequelize, DataTypes) => {
   TurunanBrand.init({
     title: DataTypes.STRING,
     sub_title: DataTypes.STRING,
-    turunan: DataTypes.STRING
+    turunan: DataTypes.STRING,
+    category_brand: DataTypes.STRING 
   }, {
     sequelize,
     modelName: 'TurunanBrand',
     tableName: 'turunan_brand'
   });
+  
 
   return TurunanBrand;
 };

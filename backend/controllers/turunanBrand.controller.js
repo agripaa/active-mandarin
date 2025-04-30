@@ -1,17 +1,18 @@
 const { TurunanBrand } = require('../models');
-const {Op} = require('sequelize');
+const { Op } = require('sequelize');
 
 exports.getAllTurunan = async (req, res) => {
   try {
-    const { search } = req.query;
+    const { search, category_brand } = req.query;
 
     let where = {};
+
     if (search) {
-      where = {
-        turunan: {
-          [Op.iLike]: `%${search}%`
-        }
-      };
+      where.turunan = { [Op.iLike]: `%${search}%` };
+    }
+
+    if (category_brand) {
+      where.category_brand = category_brand;
     }
 
     const turunanList = await TurunanBrand.findAll({ where });
@@ -22,6 +23,7 @@ exports.getAllTurunan = async (req, res) => {
     res.status(500).json({ status: false, message: 'Failed to fetch turunan', error: error.message });
   }
 };
+
 
 exports.getTurunanById = async (req, res) => {
   try {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Input } from "antd";
+import { Table, Button, Input, Select } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { RiSearchLine } from "react-icons/ri";
 import Swal from "sweetalert2";
@@ -12,17 +12,34 @@ import { truncateText } from '../../utils/truncateText';
 import { formatRupiah } from "../../utils/rupiahFormat";
 
 const ProgramTable = ({ dataProgram }) => {
-  const [data, setData] = useState(dataProgram);
+  const [data, setData] = useState([]);
+  const [allData, setAllData] = useState({});
+  const [turunanOptions, setTurunanOptions] = useState([]);
+  const [selectedTurunan, setSelectedTurunan] = useState("Semua");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingProgram, setEditingProgram] = useState(null);
   const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
-    setData((dataProgram || []).slice().reverse());
+    if (dataProgram) {
+      setAllData(dataProgram);
+      const options = Object.keys(dataProgram);
+      setTurunanOptions(["Semua", ...options]);
+      setData(options.flatMap(key => dataProgram[key]));
+    }
   }, [dataProgram]);
 
-  // **🔹 Handle Edit Modal**
+  const handleFilterTurunan = (value) => {
+    setSelectedTurunan(value);
+    if (value === "Semua") {
+      const all = Object.keys(allData).flatMap(key => allData[key]);
+      setData(all);
+    } else {
+      setData((allData[value] || []).slice());
+    }
+  };
+
   const showEditModal = (programId) => {
     Swal.fire({
       title: "Edit Program?",
@@ -33,16 +50,15 @@ const ProgramTable = ({ dataProgram }) => {
       cancelButtonColor: "#d33",
       confirmButtonText: "Ya, Edit",
       cancelButtonText: "Batal",
-    }).then( async (result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        const { data } = await getBrandById(programId); // ✅ Ambil data lengkap dari backend
+        const { data } = await getBrandById(programId);
         setEditingProgram(data);
         setIsEditModalOpen(true);
       }
     });
   };
 
-  // **🔹 Handle Delete**
   const handleDelete = async (id) => {
     Swal.fire({
       title: "Hapus Program?",
@@ -57,7 +73,7 @@ const ProgramTable = ({ dataProgram }) => {
       if (result.isConfirmed) {
         try {
           await softDeleteBrand(id);
-          setData((prevData) => prevData.filter((item) => item.id !== id));
+          setData(prev => prev.filter((item) => item.id !== id));
           Swal.fire("Dihapus!", "Program telah dihapus.", "success").then(() => {
             window.location.reload();
           });
@@ -68,30 +84,23 @@ const ProgramTable = ({ dataProgram }) => {
     });
   };
 
-  // **🔹 Filter Data**
   const filteredData = data.filter((item) =>
     item.variant?.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  // **🔹 Table Columns**
   const columns = [
     {
       title: "Gambar",
       dataIndex: "brand_img",
       key: "brand_img",
       render: (image) => (
-        <img
-          src={`${process.env.REACT_APP_API_IMG}${image}`}
-          alt="Program"
-          className="w-18 h-12 rounded-md"
-        />
+        <img src={`${process.env.REACT_APP_API_IMG}${image}`} alt="Program" className="w-18 h-12 rounded-md" />
       ),
     },
     {
       title: "Nama Program",
       dataIndex: "variant",
       key: "variant",
-      render: (variant) => variant || "-",
     },
     {
       title: "Harga Normal",
@@ -114,7 +123,7 @@ const ProgramTable = ({ dataProgram }) => {
       title: "Komisi",
       dataIndex: "commission",
       key: "commission",
-      render: (komisi) => (komisi ? formatRupiah(komisi) : "-")
+      render: (komisi) => (komisi ? formatRupiah(komisi) : "-"),
     },
     {
       title: "Detail Program",
@@ -130,16 +139,8 @@ const ProgramTable = ({ dataProgram }) => {
       key: "action",
       render: (_, record) => (
         <div className="flex gap-2">
-          <Button
-            icon={<EditOutlined />}
-            onClick={() => showEditModal(record.id)}
-            className="bg-[#FFCC00] text-black"
-          />
-          <Button
-            icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record.id)}
-            className="bg-red-500 text-white"
-          />
+          <Button icon={<EditOutlined />} onClick={() => showEditModal(record.id)} className="bg-[#FFCC00] text-black" />
+          <Button icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)} className="bg-red-500 text-white" />
         </div>
       ),
     },
@@ -148,17 +149,23 @@ const ProgramTable = ({ dataProgram }) => {
   return (
     <>
       <div className="p-4 bg-white shadow-lg rounded-xl w-full">
-        <div className="flex flex-col md:flex-row gap-2 md:gap-0 justify-between w-full items-center mb-4">
-          <h4 className="text-lg font-semibold w-full md:w-[20%]">List Program</h4>
-          <div className="flex items-center gap-2 w-full md:justify-end">    
+        <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
+          <h4 className="text-lg font-semibold">List Program</h4>
+          <div className="flex flex-wrap gap-2 items-center w-full md:w-auto">
+            <Select
+              value={selectedTurunan}
+              onChange={handleFilterTurunan}
+              options={turunanOptions.map(tur => ({ label: tur, value: tur }))}
+              style={{ width: 200 }}
+            />
             <Input
-              placeholder="Cari Program, cth: Kelas Mandarin"
+              placeholder="Cari Program"
               prefix={<RiSearchLine className="text-2xl mr-2" />}
               onChange={(e) => setSearchText(e.target.value)}
-              className="w-1/2 py-2 px-4"
+              className="w-60"
             />
             <Button
-              className="text-black bg-[#FFCC00] border-none px-5 py-6 font-medium rounded-2xl"
+              className="bg-[#FFCC00] text-black px-4 py-2 rounded-xl"
               onClick={() => setIsCreateModalOpen(true)}
             >
               Tambah Program
@@ -166,18 +173,16 @@ const ProgramTable = ({ dataProgram }) => {
           </div>
         </div>
         <div className="overflow-x-auto">
-          <Table columns={columns} dataSource={filteredData} pagination={false} />
+          <Table columns={columns} dataSource={filteredData} rowKey="id" pagination={false} />
         </div>
       </div>
 
-      {/* Modal Create */}
       <CreateProgramModal
         isModalOpen={isCreateModalOpen}
         setIsModalOpen={setIsCreateModalOpen}
         refreshData={getDashboardData}
       />
 
-      {/* Modal Edit */}
       <EditProgramModal
         isModalOpen={isEditModalOpen}
         setIsModalOpen={setIsEditModalOpen}

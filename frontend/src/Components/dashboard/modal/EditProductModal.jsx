@@ -32,7 +32,9 @@ const EditProductModal = ({ isModalOpen, setIsModalOpen, productData, refreshDat
 
   const fetchTurunanOptions = async (search = "") => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/turunan-brand`, { params: { search } });
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/turunan-brand`, { 
+        params: { search, category_brand: "product" } 
+      });
       if (response.data.status) {
         const options = response.data.data.map((item) => ({
           label: item.turunan,

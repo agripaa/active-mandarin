@@ -70,7 +70,7 @@ const EditProgramModal = ({ isModalOpen, setIsModalOpen, programData, refreshDat
   const fetchTurunanOptions = async (search = "") => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/turunan-brand/`, {
-        params: { search },
+        params: { search, category_brand: "program" },
       });
 
       if (response.data.status) {
