@@ -356,110 +356,117 @@ exports.getAllTransactions = async (req, res) => {
 
   exports.getTransactionDashboardData = async (req, res) => {
     try {
-        const productTransactions = await Transaction.findAll({
-            where: { status_transaction: "success", isDelete: false },
-            include: [{ 
-                model: Brand, 
-                as: 'Brand', 
-                where: { category_brand: "product" },
-            }]
-        });
-
-        const totalProductTransactions = productTransactions.length;
-        const totalProductRevenue = productTransactions.reduce((sum, transaction) => {
-            const price = transaction.Brand?.discount_price || transaction.Brand?.price || 0;
-            return sum + parseInt(price);
-        }, 0);
-
-        const monthlyProductTransactions = await Transaction.findAll({
-            where: { status_transaction: "success", isDelete: false },
-            include: [{ 
-                model: Brand, 
-                as: 'Brand', 
-                where: { category_brand: "product" }, 
-                attributes: []
-            }],
-            attributes: [
-                [Sequelize.fn('EXTRACT', Sequelize.literal('MONTH FROM transaction_date')), 'month'],
-                [Sequelize.fn('COUNT', '*'), 'total_transactions']
-            ],
-            group: [Sequelize.literal('EXTRACT(MONTH FROM transaction_date)')],
-            order: [[Sequelize.literal('EXTRACT(MONTH FROM transaction_date)'), 'ASC']]
-        });
-
-        let transactionsByMonthProduct = new Array(12).fill(0);
-        monthlyProductTransactions.forEach(tx => {
-            const monthIndex = parseInt(tx.dataValues.month) - 1;
-            transactionsByMonthProduct[monthIndex] = parseInt(tx.dataValues.total_transactions);
-        });
-
-        const productList = await Brand.findAll({
-            where: { category_brand: "product", isDelete: false },
-        });
-
-        const programTransactions = await Transaction.findAll({
-            where: { status_transaction: "success", isDelete: false },
-            include: [{ 
-                model: Brand, 
-                as: 'Brand', 
-                where: { category_brand: "program" },
-            }]
-        });
-
-        const totalProgramTransactions = programTransactions.length;
-        const totalProgramRevenue = programTransactions.reduce((sum, transaction) => {
-            const price = transaction.Brand?.discount_price || transaction.Brand?.price || 0;
-            return sum + parseInt(price);
-        }, 0);
-
-        const monthlyProgramTransactions = await Transaction.findAll({
-            where: { status_transaction: "success", isDelete: false },
-            include: [{ 
-                model: Brand, 
-                as: 'Brand', 
-                where: { category_brand: "program" }, 
-                attributes: []
-            }],
-            attributes: [
-                [Sequelize.fn('EXTRACT', Sequelize.literal('MONTH FROM transaction_date')), 'month'],
-                [Sequelize.fn('COUNT', '*'), 'total_transactions']
-            ],
-            group: [Sequelize.literal('EXTRACT(MONTH FROM transaction_date)')],
-            order: [[Sequelize.literal('EXTRACT(MONTH FROM transaction_date)'), 'ASC']]
-        });
-
-        let transactionsByMonthProgram = new Array(12).fill(0);
-        monthlyProgramTransactions.forEach(tx => {
-            const monthIndex = parseInt(tx.dataValues.month) - 1;
-            transactionsByMonthProgram[monthIndex] = parseInt(tx.dataValues.total_transactions);
-        });
-
-        const programList = await Brand.findAll({
-            where: { category_brand: "program", isDelete: false },
-            attributes: ['id', 'variant', 'turunan', 'price', 'discount_price', 'sold_sum', 'brand_img', 'detail_brand', 'commission']
-        });
-
-        res.json({
-            status: true,
-            products: {
-                total_transactions: totalProductTransactions,
-                total_revenue: totalProductRevenue,
-                transactions_by_month: transactionsByMonthProduct,
-                data: productList
-            },
-            programs: {
-                total_transactions: totalProgramTransactions,
-                total_revenue: totalProgramRevenue,
-                transactions_by_month: transactionsByMonthProgram,
-                data: programList
-            }
-        });
-
+      const productTransactions = await Transaction.findAll({
+        where: { status_transaction: "success", isDelete: false },
+        include: [{ model: Brand, as: 'Brand', where: { category_brand: "product" }, include: ['TurunanBrand'] }]
+      });
+  
+      const totalProductTransactions = productTransactions.length;
+      const totalProductRevenue = productTransactions.reduce((sum, transaction) => {
+        const price = transaction.Brand?.discount_price || transaction.Brand?.price || 0;
+        return sum + parseInt(price);
+      }, 0);
+  
+      const monthlyProductTransactions = await Transaction.findAll({
+        where: { status_transaction: "success", isDelete: false },
+        include: [{ model: Brand, as: 'Brand', where: { category_brand: "product" }, attributes: [] }],
+        attributes: [
+          [Sequelize.fn('EXTRACT', Sequelize.literal('MONTH FROM transaction_date')), 'month'],
+          [Sequelize.fn('COUNT', '*'), 'total_transactions']
+        ],
+        group: [Sequelize.literal('EXTRACT(MONTH FROM transaction_date)')],
+        order: [[Sequelize.literal('EXTRACT(MONTH FROM transaction_date)'), 'ASC']]
+      });
+  
+      let transactionsByMonthProduct = new Array(12).fill(0);
+      monthlyProductTransactions.forEach(tx => {
+        const monthIndex = parseInt(tx.dataValues.month) - 1;
+        transactionsByMonthProduct[monthIndex] = parseInt(tx.dataValues.total_transactions);
+      });
+  
+      const productList = await Brand.findAll({
+        where: { category_brand: "product", isDelete: false },
+        include: ['TurunanBrand'],
+        order: [['id', 'ASC']]
+      });
+  
+      const groupedProducts = {};
+      const productTurunans = new Set();
+      productList.forEach((product) => {
+        const turunanKey = product.TurunanBrand?.turunan || 'Lainnya';
+        productTurunans.add(turunanKey);
+        if (!groupedProducts[turunanKey]) groupedProducts[turunanKey] = [];
+        groupedProducts[turunanKey].push(product);
+      });
+  
+      const programTransactions = await Transaction.findAll({
+        where: { status_transaction: "success", isDelete: false },
+        include: [{ model: Brand, as: 'Brand', where: { category_brand: "program" }, include: ['TurunanBrand'] }]
+      });
+  
+      const totalProgramTransactions = programTransactions.length;
+      const totalProgramRevenue = programTransactions.reduce((sum, transaction) => {
+        const price = transaction.Brand?.discount_price || transaction.Brand?.price || 0;
+        return sum + parseInt(price);
+      }, 0);
+  
+      const monthlyProgramTransactions = await Transaction.findAll({
+        where: { status_transaction: "success", isDelete: false },
+        include: [{ model: Brand, as: 'Brand', where: { category_brand: "program" }, attributes: [] }],
+        attributes: [
+          [Sequelize.fn('EXTRACT', Sequelize.literal('MONTH FROM transaction_date')), 'month'],
+          [Sequelize.fn('COUNT', '*'), 'total_transactions']
+        ],
+        group: [Sequelize.literal('EXTRACT(MONTH FROM transaction_date)')],
+        order: [[Sequelize.literal('EXTRACT(MONTH FROM transaction_date)'), 'ASC']]
+      });
+  
+      let transactionsByMonthProgram = new Array(12).fill(0);
+      monthlyProgramTransactions.forEach(tx => {
+        const monthIndex = parseInt(tx.dataValues.month) - 1;
+        transactionsByMonthProgram[monthIndex] = parseInt(tx.dataValues.total_transactions);
+      });
+  
+      const programList = await Brand.findAll({
+        where: { category_brand: "program", isDelete: false },
+        include: ['TurunanBrand'],
+        order: [['id', 'ASC']]
+      });
+  
+      const groupedPrograms = {};
+      const programTurunans = new Set();
+      programList.forEach((program) => {
+        const turunanKey = program.TurunanBrand?.turunan || 'Lainnya';
+        programTurunans.add(turunanKey);
+        if (!groupedPrograms[turunanKey]) groupedPrograms[turunanKey] = [];
+        groupedPrograms[turunanKey].push(program);
+      });
+  
+      res.json({
+        status: true,
+        products: {
+          total_transactions: totalProductTransactions,
+          total_revenue: totalProductRevenue,
+          transactions_by_month: transactionsByMonthProduct,
+          data: groupedProducts,
+          turunan_options: Array.from(productTurunans)
+        },
+        programs: {
+          total_transactions: totalProgramTransactions,
+          total_revenue: totalProgramRevenue,
+          transactions_by_month: transactionsByMonthProgram,
+          data: groupedPrograms,
+          turunan_options: Array.from(programTurunans)
+        }
+      });
+  
     } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-        res.status(500).json({ status: false, error: error.message });
+      console.error("Error fetching dashboard data:", error);
+      res.status(500).json({ status: false, error: error.message });
     }
-};
+  };
+  
+  
  
 
 exports.updateTransaction = async (req, res) => {

@@ -6,6 +6,7 @@ const transaksiRoute = require('./transaksi.route');
 const affiliateRoute = require('./affiliate.route');
 const recruitmentRoute = require('./recruitment.route');
 const donationRoute = require('./donation.route');
+const turunanBrandRoutes = require('./turunanBrand.route');
 const userRoute = require('./user.route');
 
 const router = express.Router();
@@ -18,5 +19,6 @@ router.use('/affiliate', affiliateRoute);
 router.use('/recruitment', recruitmentRoute);
 router.use('/donation', donationRoute);
 router.use('/user', userRoute);
+router.use('/turunan-brand', turunanBrandRoutes);
 
 module.exports = router;

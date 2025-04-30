@@ -29,6 +29,7 @@ const DashboardProduct = () => {
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [productList, setProductList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [turunanOptions, setTurunanOptions] = useState([]);
 
   const chartContainerRef = useRef(null);
   const [chartHeight, setChartHeight] = useState(300);
@@ -39,6 +40,8 @@ const DashboardProduct = () => {
       setTotalTransactions(response.products.total_transactions);
       setTotalRevenue(response.products.total_revenue);
       setProductList(response.products.data);
+      setTurunanOptions(response.products.turunan_options || []);
+
       setChartData({
         labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"],
         datasets: [
@@ -154,7 +157,7 @@ const DashboardProduct = () => {
           </div>
         </div>
         <div className="flex w-full min-h-[480px] gap-4 p-4">
-          <ProductTable dataProduct={productList} />
+          <ProductTable dataProduct={productList} turunanOptions={turunanOptions} />
         </div>
       </section>
     </DashboardLayout>
