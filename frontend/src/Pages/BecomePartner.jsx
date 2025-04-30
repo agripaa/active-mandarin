@@ -192,9 +192,9 @@ const BecomePartner = () => {
               <div className={`w-11 min-w-11 h-11 min-h-11 bg-[${item.color}] rounded-full flex items-center justify-center`}>
                 {<item.Icon className="text-xl text-white" />}
               </div>
-              <div className="w-full">
-                <h3 className="text-base font-semibold">{item.title}</h3>
-                <p className="text-base mt-4">{item.desc}</p>
+              <div className="w-full flex flex-col gap-1">
+                <h3 className="text-base font-bold">{item.title}</h3>
+                <p className="text-base font-normal">{item.desc}</p>
               </div>
             </div>
           ))}

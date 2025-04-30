@@ -98,26 +98,6 @@ const Catalog = () => {
         link: "#Mentor",
       },
       {
-        image: "/assets/banner/Web Banne Act CTA-5.png",
-        link: "https://wa.me/+6282279506450",
-      },
-      {
-        image: "/assets/banner/Web Banne Act CTA-6.png",
-        link: "https://wa.me/+6282279506450",
-      },
-      {
-        image: "/assets/banner/Web Banne Act CTA-7.png",
-        link: "https://wa.me/+6282279506450",
-      },
-      {
-        image: "/assets/banner/Web Banne Act CTA-8.png",
-        link: "/join-affiliate",
-      },
-      {
-        image: "/assets/banner/Web Banne Act CTA-9.png",
-        link: "/products",
-      },
-      {
         image: "/assets/banner/Web Banne Act CTA-10.png",
         link: "#Mentor",
       },
@@ -200,11 +180,11 @@ const Catalog = () => {
           </Slider>
         </div>
 
-        <div className="pt-10 pb-1">
+        <div className="md:pt-10 pb-1">
         {Object.keys(groupedData).map((turunanKey, index) => {
           const group = groupedData[turunanKey];
           return (
-            <div key={index} className="py-10">
+            <div key={index} className="md:py-10 mb-10 md:mb-0">
               <div className="w-full mx-auto mb-6">
                 <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
                   {langs ? group.title : group.title} {/* You can localize the title */}
@@ -222,7 +202,7 @@ const Catalog = () => {
                     item={item}
                     handleClickItem={() => handleClickItem(item.id)}
                     user={user}
-                    isDegreeProgram={item.turunan === "Non Degree (Kelas Bahasa di China)" || item.turunan === "Degree"}
+                    isDegreeProgram={item.turunan === "Non - Degree Program" || item.turunan === "Degree Program"}
                   />
                 ))}
               </div>
@@ -245,7 +225,7 @@ const CardCatalog = ({ item, handleClickItem, user, isMonthlyProgram, isDegreePr
           onClick={handleClickItem}
           src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
           alt={item.variant}
-          className="w-full aspect-video object-cover rounded-t-2xl cursor-pointer"
+          className="w-full aspect-video object-fill rounded-t-2xl cursor-pointer"
         />
         <div className="flex flex-col justify-between items-start px-4 py-5">
           <h2
@@ -279,7 +259,7 @@ const CardCatalog = ({ item, handleClickItem, user, isMonthlyProgram, isDegreePr
               ) : null}
             </p>
           )}
-          {item.commission ? (
+          {item.commission && !isDegreeProgram ? (
             user?.Role?.role_name === "user" ? (
               <Link
                 to={"/join-affiliate"}

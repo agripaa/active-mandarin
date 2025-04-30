@@ -176,20 +176,18 @@ const CatalogProduct = () => {
           </Slider>
         </div>
 
-        <div className="pt-10 pb-1">
-            <div className="md:py-10">
-
+        <div className="pb-1">
               {loading ? (
                 <p className="text-center text-lg text-gray-500">Loading...</p>
               ) : error ? (
                 <p className="text-center text-red-500">{error}</p>
               ) : (
-                <div className="my-8 flex flex-col w-full">
+                <div className="md:my-10 flex flex-col w-full">
                   {/* Iterate through grouped data */}
                   {Object.keys(groupedData).map((turunanKey, index) => {
                     const group = groupedData[turunanKey];
                     return (
-                      <div key={index} className="py-10">
+                      <div key={index} className="md:py-10 mb-10 md:mb-0">
                         <div className="w-full mx-auto mb-6">
                           <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
                             {langs ? group.title : group.title} {/* You can localize the title */}
@@ -221,7 +219,6 @@ const CatalogProduct = () => {
               )}
             </div> 
         </div>
-      </div>
     </Mainlayouts>
   );
 };
@@ -241,7 +238,7 @@ const CardCatalog = ({ item, handleClickItem, user, isMonthlyProgram, isDegreePr
           onClick={handleClickItem}
           src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
           alt={item.variant}
-          className="w-full aspect-video object-cover rounded-t-2xl cursor-pointer"
+          className="w-full aspect-video object-fill rounded-t-2xl cursor-pointer"
         />
         <div className="flex flex-col justify-between items-start px-4 py-5">
           <h2
@@ -295,7 +292,7 @@ const CardCatalog = ({ item, handleClickItem, user, isMonthlyProgram, isDegreePr
         </div>
 
         {/* Label positioned at the bottom right */}
-        <span className="absolute bottom-[42%] right-2 bg-blue-500 text-white text-sm font-medium py-1 px-3 rounded-2xl">
+        <span className={`absolute bottom-[42%] right-2 ${item.type_product == "fisik" ? "bg-[#FFCC00] text-black" : "bg-blue-500 text-white"} text-sm font-medium py-1 px-3 rounded-2xl`}>
           Produk {capitalize(item.type_product)}
         </span>
       </div>

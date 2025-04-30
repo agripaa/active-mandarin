@@ -5,7 +5,7 @@ const fs = require('fs');
 const { Brand, TurunanBrand } = db;
 
 const turunanProgram = [
-  "Non Degree (Kelas Bahasa di China)",
+  "Non - Degree Program",
   "Degree",
   "Mentor Scholarship",
   "Kelas HSK",

@@ -18,6 +18,7 @@ const Headers = ({ collapse, funcs }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
+    const [number, setNumber] = useState("");
     const [otpCode, setOtpCode] = useState("");
     const [userEmail, setUserEmail] = useState("");
     const [user, setUser] = useState(null)
@@ -80,7 +81,7 @@ const Headers = ({ collapse, funcs }) => {
     const handleRegister = async () => {
         setLoadingRegister(true)
         try {
-          const response = await registerUser({ name, email, password });
+          const response = await registerUser({ name, email, number, password });
           if (response.data.status) {
             setOpenSignUp(false);
             setOpenSignIn(true);
@@ -492,6 +493,12 @@ const Headers = ({ collapse, funcs }) => {
                     className="mb-3 py-2" 
                     value={email} 
                     onChange={(e) => setEmail(e.target.value)} 
+                />
+                <Input 
+                    placeholder="Nomor Telepon" 
+                    className="mb-3 py-2" 
+                    value={number} 
+                    onChange={(e) => setNumber(e.target.value)} 
                 />
                 <Input.Password 
                     placeholder="Password" 

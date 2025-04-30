@@ -12,7 +12,7 @@ const { User, OTP, Role, AffiliateDetail } = db;
 
 exports.register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, number, password } = req.body;
     
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
@@ -25,6 +25,7 @@ exports.register = async (req, res) => {
     const newUser = await User.create({
       name,
       email,
+      number,
       password,
       role_id: roleUser.id
     });

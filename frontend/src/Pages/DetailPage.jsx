@@ -116,30 +116,36 @@ const DetailPage = () => {
             <div className="flex flex-col gap-3 mb-6">
               <h1 className="text-4xl font-semibold">{capitalize(brandData.variant)}</h1>
               {brandData.category_brand == "product" ? (
-                <span className="flex items-center justify-center bg-blue-500 text-white text-base font-medium py-1 px-3 rounded-2xl w-[19%]">
+                <span className="flex items-center justify-center bg-blue-500 text-white text-base font-medium py-1 px-3 rounded-2xl w-[140px]">
                   Produk {capitalize(brandData.type_product)}
                 </span>
               ) : ""}
             </div>
 
-            {brandData.discount_price && brandData.discount_price != "0" ? (
+            {brandData.category_brand === "program" && (brandData.turunan === "Non - Degree Program" || brandData.turunan === "Degree Program") ? "" :
+            <div>
+              {brandData.discount_price && brandData.discount_price != "0" ? (
               <>
                 <p className="text-3xl text-gray-900 font-semibold mt-2">
                   {formatRupiah(brandData.discount_price)} 
-                  {!["Mentor Scholarship", "Non Degree (Kelas Bahasa di China)", "Degree"].includes(brandData.turunan) ? <span className="text-sm">{brandData.category_brand == "product" ? "/item" : langs ? "/Month" : "/Bulan"}</span> : ""}
+                  {!["Mentor Scholarship", "Non - Degree Program", "Degree Program"].includes(brandData.turunan) ? <span className="text-sm">{brandData.category_brand == "product" ? "/item" : langs ? "/Month" : "/Bulan"}</span> : ""}
                 </p>
                 <p className="text-lg text-red-500 line-through">{formatRupiah(brandData.price)}</p>
               </>
             ) : (
               <p className="text-3xl text-gray-900 font-semibold mt-2">
                 {formatRupiah(brandData.price)} 
-                {!["Mentor Scholarship", "Non Degree (Kelas Bahasa di China)", "Degree"].includes(brandData.turunan) ? <span className="text-sm">{brandData.category_brand == "product" ? "/item" : langs ? "/Month" : "/Bulan"}</span> : ""}
+                {!["Mentor Scholarship", "Non - Degree Program", "Degree Program"].includes(brandData.turunan) ? <span className="text-sm">{brandData.category_brand == "product" ? "/item" : langs ? "/Month" : "/Bulan"}</span> : ""}
               </p>
             )}
 
             {brandData.commission ? (
               <p className="text-blue-600 font-medium mt-2">Dapatkan Komisi {formatRupiah(brandData.commission)}</p>
             ) : null}
+            
+            </div>
+            }
+
             
             <h2 className="text-xl font-semibold mt-6">Detail</h2>
             <div
@@ -163,7 +169,7 @@ const DetailPage = () => {
           </div>
 
           {/* Gambar Produk + Tombol Beli */}
-          {brandData.category_brand === "program" && (brandData.turunan === "Non Degree (Kelas Bahasa di China)" || brandData.turunan === "Degree") ? (
+          {brandData.category_brand === "program" && (brandData.turunan === "Non - Degree Program" || brandData.turunan === "Degree Program") ? (
             <div className="bg-white shadow-md w-full md:w-5/12 rounded-lg p-6 flex-shrink-0">
               <img
                 src={`${process.env.REACT_APP_API_IMG}${brandData.brand_img}`}
@@ -224,7 +230,7 @@ const DetailPage = () => {
                     <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
                     <p className="font-semibold text-lg mb-2">
                       {item.discount_price && item.discount_price != "0" ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                      {!["Mentor Scholarship", "Non Degree (Kelas Bahasa di China)", "Degree"].includes(item?.turunan) ?<span className="font-light text-sm ml-1">{langs ? "/Month" : "/Bulan"}</span> : ""}
+                      {!["Mentor Scholarship", "Non - Degree Program", "Degree Program"].includes(item?.turunan) ?<span className="font-light text-sm ml-1">{langs ? "/Month" : "/Bulan"}</span> : ""}
                     </p>
                     <div className="flex mt-2">
                       <span className="text-sm text-[#3377FF]">
@@ -233,7 +239,7 @@ const DetailPage = () => {
                     </div>
                   </div>
                   {item.category_brand == "product" ? (
-                    <span className="absolute bottom-[42%] right-2 bg-blue-500 text-white text-sm font-medium py-1 px-3 rounded-2xl">
+                    <span className={`absolute bottom-[42%] right-2 ${item.type_product == "fisik" ? "bg-[#FFCC00] text-black" : "bg-blue-500 text-white"} text-sm font-medium py-1 px-3 rounded-2xl`}>
                       Produk {capitalize(item.type_product)}
                     </span>
                   ) : ""}

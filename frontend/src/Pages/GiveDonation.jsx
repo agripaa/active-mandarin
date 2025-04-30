@@ -90,7 +90,7 @@ const GiveDonation = () => {
           </div>
         </div>
         <img
-          src="/assets/donation-hero.png"
+          src="/assets/donation new.png"
           alt="hero"
           className="w-full h-auto lg:w-[43%] object-contain"
         />

@@ -87,7 +87,7 @@ const Reqruitment = () => {
           </div>
         </div>
         <img
-          src="/assets/join-team-hero.png"
+          src="/assets/our team new.png"
           alt="hero"
           className="w-full h-auto lg:w-[43%] object-contain"
         />

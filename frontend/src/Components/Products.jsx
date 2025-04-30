@@ -116,13 +116,13 @@ const Products = ({ text }) => {
                     onClick={() => handleClickItem(item.id)}
                     src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
                     alt={item.variant}
-                    className="w-full h-56 object-cover rounded-t-2xl cursor-pointer"
+                    className="w-full h-56 object-fill rounded-t-2xl cursor-pointer"
                   />
                   <div className="flex flex-col h-full items-start px-4 py-5">
                     <h2 onClick={() => handleClickItem(item.id)} className="text-lg font-semibold text-gray-800 mb-2 cursor-pointer">
                       {item.variant}
                     </h2>
-                    {item.turunan === 'Non Degree (Kelas Bahasa di China)' || item.turunan === 'Degree' ? (
+                    {item.turunan === 'Non - Degree Program' || item.turunan === 'Degree Program' ? (
                       <div
                         className={"prose text-gray-600 overflow-auto mb-2 grow leading-relaxed w-full [&_a]:text-blue-600 [&_a]:underline [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-6 [&_ol]:pl-6"}
                         dangerouslySetInnerHTML={{
