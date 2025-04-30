@@ -15,6 +15,32 @@ const DetailPage = () => {
   const [similarData, setSimilarData] = useState([]);
   const [showFullDesc, setShowFullDesc] = useState(false);
   const { _, langs } = useSelector((state) => state.LangReducer);
+  const [dynamicMaxLength, setDynamicMaxLength] = useState(200); // Default fallback
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0);
+
+  // Update max length based on window width
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+      
+      // Adjust MAX_LENGTH based on breakpoints
+      if (window.innerWidth >= 1536) {
+        setDynamicMaxLength(600);
+      } else if (window.innerWidth >= 1280) {
+        setDynamicMaxLength(450);
+      } else if (window.innerWidth >= 1024) {
+        setDynamicMaxLength(210);
+      } else if (window.innerWidth >= 768) {
+        setDynamicMaxLength(200);
+      } else {
+        setDynamicMaxLength(200);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Initialize
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleCheckout = (e, id) => {
     e.preventDefault();
@@ -69,7 +95,6 @@ const DetailPage = () => {
     );
   }
 
-  const MAX_LENGTH = 200;
   const detailBrandText = brandData.detail_brand || "";
 
   const capitalize = (str) => {
@@ -85,7 +110,7 @@ const DetailPage = () => {
           <RiArrowLeftLine /> Kembali
         </button>
 
-        <div className="flex flex-col-reverse justify-center md:flex-row md:justify-between items-start gap-8">
+        <div className="flex flex-col-reverse justify-center md:flex-row md:justify-between items-start gap-8 min-h-0">
           {/* Detail Produk */}
           <div className="flex-grow">
             <div className="flex flex-col gap-3 mb-6">
@@ -112,22 +137,22 @@ const DetailPage = () => {
               </p>
             )}
 
-            <p className="text-blue-600 font-medium mt-2">Dapatkan Komisi {formatRupiah(brandData.commission)}</p>
-
+            {brandData.commission ? (
+              <p className="text-blue-600 font-medium mt-2">Dapatkan Komisi {formatRupiah(brandData.commission)}</p>
+            ) : null}
+            
             <h2 className="text-xl font-semibold mt-6">Detail</h2>
             <div
-              className="prose text-gray-600 mt-2 leading-relaxed w-full md:w-10/12 
-                        [&_a]:text-blue-600 [&_a]:underline 
-                        [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-6 [&_ol]:pl-6"
+              className={"prose text-gray-600 mt-2 overflow-auto grow leading-relaxed w-full md:w-10/12 [&_a]:text-blue-600 [&_a]:underline [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-6 [&_ol]:pl-6"}
               dangerouslySetInnerHTML={{
                 __html:
-                  showFullDesc || detailBrandText.length <= MAX_LENGTH
+                  showFullDesc || detailBrandText.length <= dynamicMaxLength
                     ? detailBrandText
-                    : `${detailBrandText.substring(0, MAX_LENGTH)}...`,
+                    : `${detailBrandText.substring(0, dynamicMaxLength)}...`,
               }}
             />
 
-            {detailBrandText.length > MAX_LENGTH && (
+            {detailBrandText.length > dynamicMaxLength && (
               <button
                 onClick={() => setShowFullDesc(!showFullDesc)}
                 className="text-blue-500 font-medium mt-2 inline-block"
@@ -138,19 +163,47 @@ const DetailPage = () => {
           </div>
 
           {/* Gambar Produk + Tombol Beli */}
-          <div className="bg-white shadow-md w-full md:w-5/12 rounded-lg p-6 flex-shrink-0">
-            <img
-              src={`${process.env.REACT_APP_API_IMG}${brandData.brand_img}`}
-              alt="Product"
-              className="w-full h-auto rounded-md"
-            />
-            <button
-              onClick={(e) => handleCheckout(e, brandData.id)}
-              className="mt-4 w-full bg-[#FFCC00] hover:bg-[#debc38] text-black font-semibold py-3 rounded-xl"
-            >
-              Beli Produk
-            </button>
-          </div>
+          {brandData.category_brand === "program" && (brandData.turunan === "Non Degree (Kelas Bahasa di China)" || brandData.turunan === "Degree") ? (
+            <div className="bg-white shadow-md w-full md:w-5/12 rounded-lg p-6 flex-shrink-0">
+              <img
+                src={`${process.env.REACT_APP_API_IMG}${brandData.brand_img}`}
+                alt="Product"
+                className="w-full h-auto rounded-md"
+              />
+              <div className="flex gap-6 mt-4">
+                {brandData.link_classroom ? (
+                  <Link to={brandData.link_classroom} target="_blank" className="w-full block">
+                    <button
+                      className="py-3 w-full border-2 border-[#8493AC] text-xs text-black font-semibold rounded-xl transition-all duration-300 hover:bg-yellow-500 sm:text-sm lg:text-base"
+                    >
+                      PDF Program
+                    </button>
+                  </Link>
+                ) : null}
+                <Link to={'https://wa.me/+6282279506450'} target="_blank" className="w-full block">
+                  <button
+                    className="w-full bg-[#FFCC00] hover:bg-[#debc38] text-black font-semibold py-3 rounded-xl"
+                  >
+                    Chat Mintive
+                  </button>
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white shadow-md w-full md:w-5/12 rounded-lg p-6 flex-shrink-0">
+              <img
+                src={`${process.env.REACT_APP_API_IMG}${brandData.brand_img}`}
+                alt="Product"
+                className="w-full h-auto rounded-md"
+              />
+              <button
+                onClick={(e) => handleCheckout(e, brandData.id)}
+                className="mt-4 w-full bg-[#FFCC00] hover:bg-[#debc38] text-black font-semibold py-3 rounded-xl"
+              >
+                Beli Produk
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Produk Serupa */}

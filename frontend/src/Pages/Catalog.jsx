@@ -7,6 +7,8 @@ import { formatRupiah } from "../utils/rupiahFormat";
 import { Spin } from "antd";
 import { getAllTurunanBrand } from "../api/turunan";
 import { handleClickItem } from "../utils/handleClickItem";
+import { getProfile } from "../api/auth";
+import { Link } from "react-router-dom";
 
 const Catalog = () => {
   const { _, langs } = useSelector((state) => state.LangReducer);
@@ -62,6 +64,17 @@ const Catalog = () => {
     }
   };
   
+
+  const handleProfileUser = async () => {
+    try {
+      const response = await getProfile();
+      if (response.status) {
+        setUser(response.data);
+      }
+    } catch (error) {
+      setUser(null);
+    }
+  };
 
   const fetchData = () => {
     const images = [
@@ -123,11 +136,11 @@ const Catalog = () => {
 
   if (loading) {
     return (
-        <Mainlayouts>
-            <div className="flex justify-center items-center h-[80vh]">
-                <Spin size="large" />
-            </div>
-        </Mainlayouts>
+      <Mainlayouts>
+        <div className="flex justify-center items-center h-[80vh]">
+          <Spin size="large" />
+        </div>
+      </Mainlayouts>
     );
   }
 
@@ -233,6 +246,73 @@ const Catalog = () => {
         </div>
       </div>
     </Mainlayouts>
+  );
+};
+
+const CardCatalog = ({ item, handleClickItem, user, isMonthlyProgram, isDegreeProgram }) => {
+  const { _, langs } = useSelector((state) => state.LangReducer);
+
+  return (
+    <div>
+      <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
+        <img
+          onClick={handleClickItem}
+          src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
+          alt={item.variant}
+          className="w-full aspect-video object-cover rounded-t-2xl cursor-pointer"
+        />
+        <div className="flex flex-col justify-between items-start px-4 py-5">
+          <h2
+            onClick={handleClickItem}
+            className="text-lg font-semibold text-gray-800 mb-2 cursor-pointer"
+          >
+            {item.variant}
+          </h2>
+          {isDegreeProgram ? (
+            <div
+              className={"prose text-gray-600 overflow-auto mb-2 grow leading-relaxed w-full [&_a]:text-blue-600 [&_a]:underline [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-6 [&_ol]:pl-6"}
+              dangerouslySetInnerHTML={{
+                __html: `${item.detail_brand.substring(0, 100)}...`,
+              }}
+            />
+          ) : (
+            <p className="font-semibold text-lg mb-2">
+              {item.discount_price && item.discount_price != "0"
+                ? (
+                  <>
+                    <span className="font-medium text-sm text-[#FF3E3E] mr-2 line-through">
+                      {formatRupiah(item.price)}
+                    </span>
+                    {formatRupiah(item.discount_price)}
+                  </>
+                ) : formatRupiah(item.price)}
+              {isMonthlyProgram ? (
+                <span className="font-light text-sm ml-1">
+                  {langs ? "/Month" : "/Bulan"}
+                </span>
+              ) : null}
+            </p>
+          )}
+          {item.commission ? (
+            user?.Role?.role_name === "affiliator" ? (
+              <span className="text-sm text-[#3377FF]">
+                {langs ? "Earn commission" : "Dapatkan komisi"}{" "}
+                {formatRupiah(item.commission || 0)}
+              </span>
+            ) : (
+              <Link
+                to={"/join-affiliate"}
+                onClick={() => {}}
+                className="text-sm text-[#3377FF]"
+              >
+                {langs ? "Earn commission" : "Dapatkan komisi"}{" "}
+                {formatRupiah(item.commission || 0)}
+              </Link>
+            )
+          ) : null}
+        </div>
+      </div>
+    </div>
   );
 };
 

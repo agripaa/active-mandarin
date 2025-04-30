@@ -5,6 +5,7 @@ import { RiArrowLeftLine } from "react-icons/ri";
 import { getBrandById } from "../api/brand";
 import { formatRupiah } from "../utils/rupiahFormat";
 import { validateReveralCode } from "../api/affiliate";
+import { getProfile } from "../api/auth";
 import { Spin } from "antd";
 import Swal from "sweetalert2";
 
@@ -13,6 +14,9 @@ const Checkout = () => {
     const navigate = useNavigate();
     const [brandData, setBrandData] = useState({});
     const [reveralCode, setReveralCode] = useState("");
+    const [address, setAddress] = useState("");
+    const [user, setUser] = useState(null);
+    const [isUserLoading, setIsUserLoading] = useState(true);
     const [loading, setLoading] = useState(true);
     const [showFullDesc, setShowFullDesc] = useState(false);
     const [validReveral, setValidReveral] = useState(null);
@@ -31,15 +35,39 @@ const Checkout = () => {
       }
     };
     
+    const handleProfileUser = async () => {
+      setIsUserLoading(true);
+      try {
+        const response = await getProfile();
+        if (response.status) {
+          setUser(response.data);
+          if (response.data?.address) {
+            setAddress(response.data.address);
+          }
+        }
+      } catch (error) {
+        setUser(null);
+      } finally {
+        setIsUserLoading(false);
+      }
+    };
     
     useEffect(() => {
         fetchBrand();
+        handleProfileUser();
     }, [id]);
 
     const handlePayment = async (e) => {
         e.preventDefault();
-
+        
         setLoading(true)
+        
+        if (brandData.type_product == 'fisik' && address == "") {
+            Swal.fire("Peringatan", "Alamat tidak boleh kosong", "warning");
+            setLoading(false);
+            return;
+        }
+
         if (reveralCode) {
             try {
                 const response = await validateReveralCode(reveralCode);
@@ -57,6 +85,7 @@ const Checkout = () => {
         }
 
         localStorage.setItem("reveral_code", reveralCode);
+        localStorage.setItem("address", address);
         navigate(`/pembayaran/${id}`);
     };
 
@@ -123,6 +152,19 @@ const Checkout = () => {
                             placeholder="Masukkan Kode Reveral Affiliator (Opsional)"
                             className="w-full px-4 py-2 border-2 rounded-lg focus:outline-none"
                         />
+                        {brandData.type_product == 'fisik' ? (
+                          <>
+                            <h2 className="text-lg font-semibold mb-2 mt-4">Alamat</h2>
+                            <input
+                                type="text"
+                                value={address}
+                                onChange={(e) => setAddress(e.target.value)}
+                                disabled={isUserLoading}
+                                placeholder={isUserLoading ? "Loading..." : "Masukkan Alamatmu untuk pengiriman produk"}
+                                className="w-full px-4 py-2 border-2 rounded-lg focus:outline-none"
+                            />
+                          </>
+                        ) : null}
 
                         <h2 className="text-lg font-semibold mt-6">Detail Pembayaran</h2>
                         <div className="mt-3">

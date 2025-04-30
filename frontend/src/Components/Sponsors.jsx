@@ -34,7 +34,7 @@ const Sponsors = ({ text }) => {
                     </div>
                 </div>
                 <div className="w-full flex justify-center items-center mt-12">
-                    <Link to='https://docs.google.com/forms/d/14c32eKPuWFBfkXPRlS7cgWFBvfx0C_p3zZdhL0Kikzk/edit' target="_blank">
+                    <Link to='/become-partner'>
                         <Buttons>{langs ? 'Become Our Partner' : 'Menjadi Mitra Kami'}</Buttons>
                     </Link>
                 </div>

@@ -13,6 +13,12 @@ const CatalogProduct = () => {
   const [groupedData, setGroupedData] = useState({});
   const [turunan, setTurunan] = useState([]);
   const [error, setError] = useState(null);
+  const [chineseBook, setChineseBook] = useState([]);
+  const [flashcard, setFlashcard] = useState([]);
+  const [guideBook, setGuideBook] = useState([]);
+  const [hanziBook, setHanziBook] = useState([]);
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [galleryData, setGalleryData] = useState([]);
 
   useEffect(() => {
     fetchTurunanData(); 
@@ -64,6 +70,17 @@ const CatalogProduct = () => {
     }
   };
 
+  const handleProfileUser = async () => {
+    try {
+      const response = await getProfile();
+      if (response.status) {
+        setUser(response.data);
+      }
+    } catch (error) {
+      setUser(null);
+    }
+  };
+
   if (loading) {
     return (
       <Mainlayouts>
@@ -79,20 +96,73 @@ const CatalogProduct = () => {
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
+  const settingsCarousel = {
+    dots: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    arrows: false,
+    centerMode: true,
+    centerPadding: "20%",
+    beforeChange: (current, next) => setActiveSlide(next),
+    responsive: [
+      {
+        breakpoint: 768,
+        settings: {
+          centerMode: false,
+          centerPadding: 0,
+        },
+      },
+    ],
+  };
+
   return (
     <Mainlayouts>
-      <section>
-        <div className="container mx-auto px-5 lg:px-0">
-          <div className="py-16">
-            <div className="flex flex-col w-full">
-              <div className="w-full flex flex-col items-center mx-auto mb-6">
-                <h2 className="text-2xl md:text-4xl font-semibold text-[#02264A] mb-2">
-                  {langs ? "Our Products" : "Produk Kami"}
+      <div className="container mx-auto px-5 lg:px-0">
+        <div className="h-auto">
+          <Slider
+            {...settingsCarousel}
+            className="rounded-xl overflow-visible h-full"
+          >
+            {galleryData.map((item, index) => (
+              <div
+                key={index}
+                className={`relative transition-transform duration-[1500ms] px-2 sm:px-8 my-8 md:my-12 md:px-10 lg:px-14 xl:px-16 ${
+                  activeSlide === index
+                    ? "md:z-10 md:scale-125"
+                    : "md:z-0 md:scale-105"
+                }`}
+              >
+                <a
+                  href={item.link}
+                  target={item.link.startsWith("http") ? "_blank" : "_self"}
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src={item.image}
+                    alt={`Gallery ${index + 1}`}
+                    className="w-full h-auto object-contain rounded-xl cursor-pointer"
+                    draggable="false"
+                  />
+                </a>
+              </div>
+            ))}
+          </Slider>
+        </div>
+
+        <div className="pt-10 pb-1">
+            <div className="md:py-10">
+              <div className="w-full mx-auto mb-6">
+                <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
+                  {langs ? "Comprehensive Chinese Book" : "Buku Mandarin Komprehensif"}
                 </h2>
                 <span className="font-semibold text-[#8493AC] text-lg">
                   {langs
-                    ? "To Enhance your learning in understanding Mandarin"
-                    : "Untuk meningkatkan pembelajaran Anda dalam memahami bahasa Mandarin"}
+                    ? "A complete book for all learning levels."
+                    : "Buku lengkap untuk semua level pembelajaran."}
                 </span>
               </div>
 
@@ -149,13 +219,12 @@ const CatalogProduct = () => {
                       </div>
                     );
                   })}
-
                 </div>
               )}
-            </div>
-          </div>
+              </div>
+              
         </div>
-      </section>
+      </div>
     </Mainlayouts>
   );
 };

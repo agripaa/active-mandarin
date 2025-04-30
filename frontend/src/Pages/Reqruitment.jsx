@@ -40,8 +40,8 @@ const Reqruitment = () => {
             </h1>
             <p className="text-[#2B313B] mt-4 text-sm md:text-base">
               {langs
-                ? "Hi, Active Mandarin Friends!"
-                : "Hai, Sobat Active Mandarin!"}
+                ? "Hi, Active Mandarin Friends! 👋"
+                : "Hai, Sobat Active Mandarin! 👋"}
               <br />
               <br />
               {langs
@@ -87,7 +87,7 @@ const Reqruitment = () => {
           </div>
         </div>
         <img
-          src="/assets/donation-hero.png"
+          src="/assets/join-team-hero.png"
           alt="hero"
           className="w-full h-auto lg:w-[43%] object-contain"
         />
@@ -135,6 +135,8 @@ const AffiliateForm = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [cvFile, setCvFile] = useState(null);
+  const [position, setPosition] = useState(null);
+  const [positionOther, setPositionOther] = useState(null);
 
   const position_options = useMemo(() => {
     return [
@@ -145,8 +147,24 @@ const AffiliateForm = () => {
       { value: "Mandarin Translator", label: 'Mandarin Translator' },
       { value: "Mandarin Tutor", label: 'Mandarin Tutor' },
       { value: "Mandarin Interpreter", label: 'Mandarin Interpreter' },
+      {
+        value: "other",
+        label: (
+          <>
+            {langs ? "Other" : "Lainnya"}
+            {position === 'other' && (
+              <Input
+                value={positionOther}
+                onChange={(e) => setPositionOther(e.target.value)}
+                placeholder={langs ? "Other..." : "Lainnya..."}
+                style={{ width: 120, marginInlineStart: 12 }}
+              />
+            )}
+          </>
+        ),
+      },
     ]
-  }, []);
+  }, [position, positionOther, langs]);
 
   const handleCvFileChange = ({ file }) => {
     const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -167,7 +185,7 @@ const AffiliateForm = () => {
       formData.append("email", values.email);
       formData.append("telepon", values.telepon);
       formData.append("domisili", values.domisili);
-      formData.append("posisi", values.posisi);
+      formData.append("posisi", position === 'other' ? positionOther : position);
       formData.append("portofolio", values.portofolio);
 
       if (cvFile) {
@@ -218,6 +236,12 @@ const AffiliateForm = () => {
       <Form.Item name="posisi" label={langs ? "Job Position Applied for" : "Posisi Pekerjaan Yang Dilamar"} rules={[{ required: true, message: langs ? "Job Position Applied for is required!" : "Posisi Pekerjaan Yang Dilamar wajib diisi!" }]} labelCol={{ className: "font-medium" }}>
         <Radio.Group
           className="flex flex-col gap-3.5"
+          onChange={(e) => {
+              setPosition(e.target.value);
+              if (e.target.value !== 'other') {
+                setPositionOther(null);
+              }
+          }}
           options={position_options}
         />
       </Form.Item>

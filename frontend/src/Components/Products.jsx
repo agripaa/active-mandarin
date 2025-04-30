@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import Slider from "react-slick";
 import { Modal } from "antd";
 import { useSelector } from "react-redux";
@@ -6,16 +7,19 @@ import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 import { getLatestPrograms } from "../api/brand";
 import { formatRupiah } from "../utils/rupiahFormat";
 import { handleClickItem } from "../utils/handleClickItem";
+import { getProfile } from "../api/auth";
 
 const Products = ({ text }) => {
   const { data, langs } = useSelector((state) => state.LangReducer);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentProduct, setCurrentProduct] = useState({});
+  const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState([]);
   let sliderRef = useRef(null);
 
   useEffect(() => {
+    handleProfileUser();
     fetchAllData();
   }, []);
 
@@ -31,6 +35,17 @@ const Products = ({ text }) => {
       }
     } catch (error) {}
     setIsLoading(false);
+  };
+
+  const handleProfileUser = async () => {
+    try {
+      const response = await getProfile();
+      if (response.status) {
+        setUser(response.data);
+      }
+    } catch (error) {
+      setUser(null);
+    }
   };
 
   const showModal = (product) => {
@@ -93,31 +108,66 @@ const Products = ({ text }) => {
           <Slider {...settings} ref={(slider) => sliderRef = slider}>
             {products.map((item, index) => (
               <div
-                onClick={() => handleClickItem(item.id)}
                 key={index}
-                className="p-0 m-0"
+                className="p-0 m-0 h-full"
               >
                 <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
                   <img
+                    onClick={() => handleClickItem(item.id)}
                     src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
                     alt={item.variant}
-                    className="w-full h-56 object-cover rounded-t-2xl"
+                    className="w-full h-56 object-cover rounded-t-2xl cursor-pointer"
                   />
-                  <div className="flex flex-col justify-between items-start px-4 py-5">
-                    <h2 className="text-lg font-semibold text-gray-800 mb-2">
+                  <div className="flex flex-col h-full items-start px-4 py-5">
+                    <h2 onClick={() => handleClickItem(item.id)} className="text-lg font-semibold text-gray-800 mb-2 cursor-pointer">
                       {item.variant}
                     </h2>
-                    <p className="font-semibold text-lg mb-2">
-                      {item.discount_price && item.discount_price !== '0' ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                      <span className="font-light text-sm ml-1">
-                        {langs
-                          ? "/Month"
-                          : "/Bulan"}
-                      </span>
-                    </p>
-                    <div className="flex mt-2">
-                      <span className="text-sm text-[#3377FF]">{langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission) || formatRupiah(0)}</span>
-                    </div>
+                    {item.turunan === 'Non Degree (Kelas Bahasa di China)' || item.turunan === 'Degree' ? (
+                      <div
+                        className={"prose text-gray-600 overflow-auto mb-2 grow leading-relaxed w-full [&_a]:text-blue-600 [&_a]:underline [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-6 [&_ol]:pl-6"}
+                        dangerouslySetInnerHTML={{
+                          __html: `${item.detail_brand.substring(0, 100)}...`,
+                        }}
+                      />
+                    ) : (
+                      <p className="font-semibold text-lg mb-2">
+                        {item.discount_price && item.discount_price != "0"
+                          ? (
+                            <>
+                              <span className="font-medium text-sm text-[#FF3E3E] mr-2 line-through">
+                                {formatRupiah(item.price)}
+                              </span>
+                              {formatRupiah(item.discount_price)}
+                            </>
+                          ) : formatRupiah(item.price)}
+                        {/* {isMonthlyProgram ? (
+                          <span className="font-light text-sm ml-1">
+                            {langs ? "/Month" : "/Bulan"}
+                          </span>
+                        ) : null} */}
+                      </p>
+                    )}
+                    {item.commission ? (
+                      user?.Role?.role_name === "affiliator" ? (
+                        <div className="flex mt-auto">
+                          <span className="text-sm text-[#3377FF] mt-2">
+                            {langs ? "Earn commission" : "Dapatkan komisi"}{" "}
+                            {formatRupiah(item.commission || 0)}
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="flex mt-auto">
+                          <Link
+                            to={"/join-affiliate"}
+                            onClick={() => {}}
+                            className="text-sm text-[#3377FF] mt-2"
+                          >
+                            {langs ? "Earn commission" : "Dapatkan komisi"}{" "}
+                            {formatRupiah(item.commission || 0)}
+                          </Link>
+                        </div>
+                      )
+                    ) : null}
                   </div>
                 </div>
               </div>
