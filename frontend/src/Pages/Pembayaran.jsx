@@ -57,6 +57,18 @@ const Pembayaran = () => {
   };
 
   const handleSubmit = async () => {
+    const userAddress = localStorage.getItem("address");
+
+    if (!userAddress) {
+      Swal.fire(
+        "Error!",
+        "Alamat pengiriman wajib diisi! Silakan isi alamat terlebih dahulu.",
+        "error"
+      );
+      navigate(`/checkout/${id}`, { replace: true });
+      return;
+    }
+
     if (!proof) {
       Swal.fire("Error!", "Bukti pembayaran wajib diunggah!", "error");
       return;
@@ -66,6 +78,7 @@ const Pembayaran = () => {
     formData.append("brand_id", id);
     formData.append("payment_method", metode);
     formData.append("proof_transaction", proof);
+    formData.append("user_address", userAddress);
     if (reveralCode) formData.append("reveral_code", reveralCode);
 
     setLoadingSubmit(true); // ⏳ Start loading
@@ -74,6 +87,7 @@ const Pembayaran = () => {
       Swal.fire("Berhasil!", "Transaksi berhasil dibuat!", "success").then(
         () => {
           localStorage.removeItem("reveral_code");
+          localStorage.removeItem("address");
           navigate(`/invoice/${response.data.id}`);
         }
       );

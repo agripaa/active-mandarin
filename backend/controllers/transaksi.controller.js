@@ -8,7 +8,7 @@ const { Transaction, User, Brand } = db;
 
 exports.createTransaction = async (req, res) => {
   try {
-    const { reveral_code, brand_id, payment_method } = req.body;
+    const { reveral_code, brand_id, payment_method, user_address } = req.body;
 
     let proof_transaction = null;
     if (!req.files || !req.files.proof_transaction) {
@@ -17,6 +17,13 @@ exports.createTransaction = async (req, res) => {
 
     const user = await User.findByPk(req.userId);
     if(!user) return res.status(404).json({ status: false, message: "User Not Found!" })
+
+    if (user_address) {
+      await user.update({ address: user_address });
+    } else {
+      if (!user.address) res.status(400).json({ status: false, message: "Address is required!" });
+      return;
+    }
 
     const proofFile = req.files.proof_transaction;
     const proofExt = path.extname(proofFile.name).toLowerCase();
