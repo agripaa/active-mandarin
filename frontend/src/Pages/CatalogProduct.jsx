@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Mainlayouts from "../Layouts/MainLayouts";
 import { useSelector } from "react-redux";
 import { getBrandCategoryTurunan } from "../api/brand";
@@ -7,6 +7,8 @@ import { Spin } from "antd";
 import { getAllTurunanBrand } from "../api/turunan";
 import { handleClickItem } from "../utils/handleClickItem";
 import Slider from "react-slick";
+import { getProfile } from "../api/auth";
+import { Link } from "react-router-dom";
 
 const CatalogProduct = () => {
   const { _, langs } = useSelector((state) => state.LangReducer);
@@ -16,11 +18,24 @@ const CatalogProduct = () => {
   const [error, setError] = useState(null);
   const [activeSlide, setActiveSlide] = useState(0);
   const [galleryData, setGalleryData] = useState([]);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
+    handleProfileUser();
     fetchTurunanData(); 
     fetchSliderImage();
   }, []);
+
+  const handleProfileUser = async () => {
+    try {
+      const response = await getProfile();
+      if (response.status) {
+        setUser(response.data);
+      }
+    } catch (error) {
+      setUser(null);
+    }
+  };
 
   const fetchTurunanData = async () => {
     try {
@@ -103,11 +118,6 @@ const CatalogProduct = () => {
       </Mainlayouts>
     );
   }
-
-  const capitalize = (str) => {
-    if (!str) return "-";
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  };
 
   const settingsCarousel = {
     dots: false,
@@ -192,31 +202,16 @@ const CatalogProduct = () => {
                         {/* Grid untuk menampilkan data dari setiap turunan */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
                           {group.data.map((item, itemIndex) => (
-                            <div key={itemIndex} onClick={() => handleClickItem(item.id)} className="cursor-pointer">
-                              <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full relative"> {/* Make this container relative */}
-                                <img
-                                  src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
-                                  alt={item.variant}
-                                  className="w-full aspect-video object-fill rounded-t-2xl"
-                                />
-                                <div className="flex flex-col justify-between items-start px-4 py-5">
-                                  <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
-                                  <p className="font-semibold text-lg mb-2">
-                                    {item.discount_price && item.discount_price !== "0"
-                                      ? formatRupiah(item.discount_price)
-                                      : formatRupiah(item.price)}
-                                  </p>
-                                  <span className="text-sm text-[#3377FF]">
-                                    {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                                  </span>
-                                </div>
-
-                                {/* Label positioned at the bottom right */}
-                                <span className="absolute bottom-[42%] right-2 bg-blue-500 text-white text-sm font-medium py-1 px-3 rounded-2xl">
-                                  Produk {capitalize(item.type_product)}
-                                </span>
-                              </div>
-                            </div>
+                            <CardCatalog
+                              key={itemIndex}
+                              item={item}
+                              handleClickItem={() => handleClickItem(item.id)}
+                              user={user}
+                              isDegreeProgram={
+                                item.type_product === "program" &&
+                                item.is_degree_program
+                              }
+                            />
                           ))}
                         </div>
                       </div>
@@ -228,6 +223,83 @@ const CatalogProduct = () => {
         </div>
       </div>
     </Mainlayouts>
+  );
+};
+
+const CardCatalog = ({ item, handleClickItem, user, isMonthlyProgram, isDegreeProgram }) => {
+  const { _, langs } = useSelector((state) => state.LangReducer);
+
+  const capitalize = useCallback((str) => {
+    if (!str) return "-";
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }, []);
+
+  return (
+    <div>
+      <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full relative">
+        <img
+          onClick={handleClickItem}
+          src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
+          alt={item.variant}
+          className="w-full aspect-video object-cover rounded-t-2xl cursor-pointer"
+        />
+        <div className="flex flex-col justify-between items-start px-4 py-5">
+          <h2
+            onClick={handleClickItem}
+            className="text-lg font-semibold text-gray-800 mb-2 cursor-pointer"
+          >
+            {item.variant}
+          </h2>
+          {isDegreeProgram ? (
+            <div
+              className={"prose text-gray-600 overflow-auto mb-2 grow leading-relaxed w-full [&_a]:text-blue-600 [&_a]:underline [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-6 [&_ol]:pl-6"}
+              dangerouslySetInnerHTML={{
+                __html: `${item.detail_brand.substring(0, 100)}...`,
+              }}
+            />
+          ) : (
+            <p className="font-semibold text-lg mb-2">
+              {item.discount_price && item.discount_price != "0"
+                ? (
+                  <>
+                    <span className="font-medium text-sm text-[#FF3E3E] mr-2 line-through">
+                      {formatRupiah(item.price)}
+                    </span>
+                    {formatRupiah(item.discount_price)}
+                  </>
+                ) : formatRupiah(item.price)}
+              {isMonthlyProgram ? (
+                <span className="font-light text-sm ml-1">
+                  {langs ? "/Month" : "/Bulan"}
+                </span>
+              ) : null}
+            </p>
+          )}
+          {item.commission ? (
+            user?.Role?.role_name === "user" ? (
+              <Link
+                to={"/join-affiliate"}
+                onClick={() => {}}
+                className="text-sm text-[#3377FF]"
+              >
+                {langs ? "Earn commission" : "Dapatkan komisi"}{" "}
+                {formatRupiah(item.commission || 0)}
+              </Link>
+            ) : (
+              <span className="text-sm text-[#3377FF]">
+                {langs ? "Earn commission" : "Dapatkan komisi"}{" "}
+                {formatRupiah(item.commission || 0)}
+              </span>
+            )
+          ) : null}
+        </div>
+
+        {/* Label positioned at the bottom right */}
+        <span className="absolute bottom-[42%] right-2 bg-blue-500 text-white text-sm font-medium py-1 px-3 rounded-2xl">
+          Produk {capitalize(item.type_product)}
+        </span>
+      </div>
+    </div>
   );
 };
 

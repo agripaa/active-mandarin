@@ -8,6 +8,7 @@ import { Spin } from "antd";
 import { getAllTurunanBrand } from "../api/turunan";
 import { handleClickItem } from "../utils/handleClickItem";
 import { Link } from "react-router-dom";
+import { getProfile } from "../api/auth";
 
 const Catalog = () => {
   const { _, langs } = useSelector((state) => state.LangReducer);
@@ -16,10 +17,24 @@ const Catalog = () => {
   const [galleryData, setGalleryData] = useState([]); 
   const [turunan, setTurunan] = useState([]);
   const [groupedData, setGroupedData] = useState({});
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
+    handleProfileUser();
     fetchTurunanData();
+    fetchData();
   }, []);
+
+  const handleProfileUser = async () => {
+    try {
+      const response = await getProfile();
+      if (response.status) {
+        setUser(response.data);
+      }
+    } catch (error) {
+      setUser(null);
+    }
+  };
 
   const fetchTurunanData = async () => {
     try {
@@ -118,10 +133,6 @@ const Catalog = () => {
     setGalleryData(images);
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   if (loading) {
     return (
       <Mainlayouts>
@@ -206,26 +217,13 @@ const Catalog = () => {
               {/* Grid untuk menampilkan data dari setiap turunan */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
                 {group.data.map((item, itemIndex) => (
-                  <div key={itemIndex} onClick={() => handleClickItem(item.id)} className="cursor-pointer">
-                    <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
-                      <img
-                        src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
-                        alt={item.variant}
-                        className="w-full aspect-video object-fill rounded-t-2xl"
-                      />
-                      <div className="flex flex-col justify-between items-start px-4 py-5">
-                        <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
-                        <p className="font-semibold text-lg mb-2">
-                          {item.discount_price && item.discount_price !== "0"
-                            ? formatRupiah(item.discount_price)
-                            : formatRupiah(item.price)}
-                        </p>
-                        <span className="text-sm text-[#3377FF]">
-                          {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+                  <CardCatalog
+                    key={itemIndex}
+                    item={item}
+                    handleClickItem={() => handleClickItem(item.id)}
+                    user={user}
+                    isDegreeProgram={item.turunan === "Non Degree (Kelas Bahasa di China)" || item.turunan === "Degree"}
+                  />
                 ))}
               </div>
             </div>
@@ -282,12 +280,7 @@ const CardCatalog = ({ item, handleClickItem, user, isMonthlyProgram, isDegreePr
             </p>
           )}
           {item.commission ? (
-            user?.Role?.role_name === "affiliator" ? (
-              <span className="text-sm text-[#3377FF]">
-                {langs ? "Earn commission" : "Dapatkan komisi"}{" "}
-                {formatRupiah(item.commission || 0)}
-              </span>
-            ) : (
+            user?.Role?.role_name === "user" ? (
               <Link
                 to={"/join-affiliate"}
                 onClick={() => {}}
@@ -296,6 +289,11 @@ const CardCatalog = ({ item, handleClickItem, user, isMonthlyProgram, isDegreePr
                 {langs ? "Earn commission" : "Dapatkan komisi"}{" "}
                 {formatRupiah(item.commission || 0)}
               </Link>
+            ) : (
+              <span className="text-sm text-[#3377FF]">
+                {langs ? "Earn commission" : "Dapatkan komisi"}{" "}
+                {formatRupiah(item.commission || 0)}
+              </span>
             )
           ) : null}
         </div>
