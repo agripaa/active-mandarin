@@ -210,15 +210,13 @@ exports.getCategoryTurunanBrand = async (req, res) => {
       return res.status(400).json({ status: false, message: "Category Brand is not found in the available list." });
     }
 
-    if (category === "program" && !turunanProgram.includes(turunan_brand)) {
-      return res.status(400).json({ status: false, message: "Turunan Brand is not found in the list of program subcategories." });
-    }
-
-    if (category === "product" && !turunanProduct.includes(turunan_brand)) {
-      return res.status(400).json({ status: false, message: "Turunan Brand is not found in the list of product subcategories." });
-    }
-
-    const brand = await Brand.findAll({ where: { turunan: turunan_brand, isDelete: false } });
+    const brand = await Brand.findAll({ 
+      where: { category_brand, turunan: turunan_brand, isDelete: false },
+      include: [{
+        model: TurunanBrand,
+        as: "TurunanBrand"
+      }]
+    });
 
     if (brand.length === 0) {
       return res.status(404).json({ status: false, message: "No Brand data found for this category and subcategory." });

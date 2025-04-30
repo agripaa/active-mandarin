@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 import { getLatestPrograms } from "../api/brand";
 import { formatRupiah } from "../utils/rupiahFormat";
+import { handleClickItem } from "../utils/handleClickItem";
 
 const Products = ({ text }) => {
   const { data, langs } = useSelector((state) => state.LangReducer);
@@ -79,16 +80,6 @@ const Products = ({ text }) => {
         },
       },
     ],
-  };
-
-  const handleClickItem = (id) => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      const openModalEvent = new CustomEvent("triggerLoginModal");
-      window.dispatchEvent(openModalEvent); // trigger modal dari Header
-    } else {
-      window.location.href = `/detail/${id}`;
-    }
   };
 
   return (

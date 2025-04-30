@@ -5,51 +5,63 @@ import Slider from "react-slick";
 import { getBrandCategoryTurunan } from "../api/brand";
 import { formatRupiah } from "../utils/rupiahFormat";
 import { Spin } from "antd";
+import { getAllTurunanBrand } from "../api/turunan";
+import { handleClickItem } from "../utils/handleClickItem";
 
 const Catalog = () => {
   const { _, langs } = useSelector((state) => state.LangReducer);
   const [loading, setLoading] = useState(false);
-  const [nonDegree, setNonDegree] = useState([]);
-  const [degree, setDegree] = useState([]);
-  const [mentorScholarship, setMentorScholarship] = useState([]);
-  const [kelasHSK, setKelasHSK] = useState([]);
-  const [premiumMandarin, setPremiumMandarin] = useState([]);
-  const [educonsult, setEduconsult] = useState([]);
-  const [growWithUs, setGrowWithUs] = useState([]);
   const [activeSlide, setActiveSlide] = React.useState(0);
   const [galleryData, setGalleryData] = useState([]); 
+  const [turunan, setTurunan] = useState([]);
+  const [groupedData, setGroupedData] = useState({});
 
   useEffect(() => {
-    fetchAllData();
+    fetchTurunanData();
   }, []);
+
+  const fetchTurunanData = async () => {
+    try {
+      const res = await getAllTurunanBrand();
+      setTurunan(res.data);
+    } catch (error) {
+      
+    }
+  }
+
+  useEffect(() => {
+    if (turunan.length > 0) {
+      fetchAllData();
+    }
+  }, [turunan]); 
 
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const responses = await Promise.allSettled([
-        getBrandCategoryTurunan("program", "Non Degree (Kelas Bahasa di China)"),
-        getBrandCategoryTurunan("program", "Degree"),
-        getBrandCategoryTurunan("program", "Mentor Scholarship"),
-        getBrandCategoryTurunan("program", "Kelas HSK"),
-        getBrandCategoryTurunan("program", "Premium Mandarin Learning"),
-        getBrandCategoryTurunan("program", "Educonsult S1-S3 Full Cover"),
-        getBrandCategoryTurunan("program", "Grow with Us")
-      ]);
+      const promises = turunan?.map((t) => getBrandCategoryTurunan("program", t.turunan));
+      const responses = await Promise.allSettled(promises);
 
-      console.log(responses[3])
-  
-      setNonDegree(responses[0].status === "fulfilled" ? responses[0].value.data || [] : []);
-      setDegree(responses[1].status === "fulfilled" ? responses[1].value.data || [] : []);
-      setMentorScholarship(responses[2].status === "fulfilled" ? responses[2].value.data || [] : []);
-      setKelasHSK(responses[3].status === "fulfilled" ? responses[3].value.data || []: []);      
-      setPremiumMandarin(responses[4].status === "fulfilled" ? responses[4].value.data || [] : []);
-      setEduconsult(responses[5].status === "fulfilled" ? responses[5].value.data || [] : []);
-      setGrowWithUs(responses[6].status === "fulfilled" ? responses[6].value.data || [] : []);
+      const groupedData = turunan.reduce((acc, t, index) => {
+        const status = responses[index]?.status;
+        if (status === "fulfilled" && responses[index].value?.data) {
+          const data = responses[index].value.data;
+          acc[t.turunan] = {
+            title: t.title,
+            subtitle: t.sub_title,
+            data: data,
+          };
+        }
+        return acc;
+      }, {});
+
+      setGroupedData(groupedData);
     } catch (error) {
+      console.error("Fetching data failed:", error);
     } finally {
       setLoading(false);
     }
   };
+  
 
   const fetchData = () => {
     const images = [
@@ -119,17 +131,6 @@ const Catalog = () => {
     );
   }
 
-
-const handleClickItem = (id) => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    const openModalEvent = new CustomEvent("triggerLoginModal");
-    window.dispatchEvent(openModalEvent); // trigger modal dari Header
-  } else {
-    window.location.href = `/detail/${id}`;
-  }
-};
-
   const settingsCarousel = {
     dots: false,
     infinite: true,
@@ -188,292 +189,47 @@ const handleClickItem = (id) => {
         </div>
 
         <div className="pt-10 pb-1">
-          {growWithUs.length > 0 && (
-              <div className="md:py-10">
-                <div className="w-full mx-auto mb-6">
-                  <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
-                    {langs ? "Grow with Us" : "Tumbuh bersama Kami"}
-                  </h2>
-                  <span className="font-semibold text-[#8493AC] text-lg">
-                    {langs
-                      ? "Empower Your Learning, Anywhere."
-                      : "Berdayakan Pembelajaran Anda, Di Mana Saja."}
-                  </span>
-                </div>
-                <div className="my-8 flex justify-start">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4 ">
-                      {growWithUs.map((item, index) => (
-                        <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
-                          <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
-                            <img
-                              src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
-                              alt={item.variant}
-                              className="w-full aspect-video object-cover rounded-t-2xl"
-                            />
-                            <div className="flex flex-col justify-between items-start px-4 py-5">
-                              <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
-                              <p className="font-semibold text-lg mb-2">
-                                {item.discount_price && item.discount_price != "0" ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                              </p>
-                              <span className="text-sm text-[#3377FF]">
-                                {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              </div>
-          )}
-
-        {premiumMandarin.length > 0 && (
-          <div className="md:py-10" id="start">
-            <div className="w-full mx-auto mb-6">
-              <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
-                {langs
-                  ? "Premium Mandarin Learning"
-                  : "Pembelajaran Mandarin Premium"}
-              </h2>
-              <span className="font-semibold text-[#8493AC] text-lg">
-                {langs
-                  ? "For your bright future starts here"
-                  : "Untuk masa depan cerah Anda dimulai di sini"}
-              </span>
-            </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
-                    {premiumMandarin.map((item, index) => (
-                      <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
-                        <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
-                          <img
-                            src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
-                            alt={item.variant}
-                            className="w-full aspect-video object-cover rounded-t-2xl"
-                          />
-                          <div className="flex flex-col justify-between items-start px-4 py-5">
-                            <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
-                            <p className="font-semibold text-lg mb-2">
-                              {item.discount_price && item.discount_price != "0" ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                              <span className="font-light text-sm ml-1">{langs ? "/Month" : "/Bulan"}</span>
-                            </p>
-                            <span className="text-sm text-[#3377FF]">
-                              {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </div>
-          )}
-
-
-          {kelasHSK.length > 0 && (
-              <div>
-                <div className="w-full mx-auto mb-6">
-                  <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
-                    {langs ? "General Language Class" : "Kelas Bahasa Umum"}
-                  </h2>
-                  <span className="font-semibold text-[#8493AC] text-lg">
-                    {langs
-                      ? "Find the premium class and opportunities along the way "
-                      : "Temukan kelas premium dan peluang di sepanjang prosesnya"}
-                  </span>
-                </div>
-                <div className="my-8 flex justify-start">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
-                      {kelasHSK.map((item, index) => (
-                        <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
-                          <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
-                            <img
-                              src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
-                              alt={item.variant}
-                              className="w-full aspect-video object-cover rounded-t-2xl"
-                            />
-                            <div className="flex flex-col justify-between items-start px-4 py-5">
-                              <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
-                              <p className="font-semibold text-lg mb-2">
-                                {item.discount_price && item.discount_price != "0" ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                                <span className="font-light text-sm ml-1">{langs ? "/Month" : "/Bulan"}</span>
-                              </p>
-                              <span className="text-sm text-[#3377FF]">
-                                {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              </div>
-          )}
-
-          {educonsult.length > 0 && (
-              <div>
-                <div className="w-full mx-auto mb-6">
-                  <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
-                    {langs ? "Mandarin Native Class" : "Kelas Asli Mandarin"}
-                  </h2>
-                  <span className="font-semibold text-[#8493AC] text-lg">
-                    {langs
-                      ? "Find the premium class and opportunities along the way "
-                      : "Temukan kelas premium dan peluang di sepanjang prosesnya"}
-                  </span>
-                </div>
-                <div className="my-8 flex justify-start">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
-                      {educonsult.map((item, index) => (
-                        <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
-                          <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
-                            <img
-                              src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
-                              alt={item.variant}
-                              className="w-full aspect-video object-cover rounded-t-2xl"
-
-
-
-                            />
-                            <div className="flex flex-col justify-between items-start px-4 py-5">
-                              <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
-                              <p className="font-semibold text-lg mb-2">
-                                {item.discount_price && item.discount_price != "0" ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                                <span className="font-light text-sm ml-1">{langs ? "/Month" : "/Bulan"}</span>
-                              </p>
-                              <span className="text-sm text-[#3377FF]">
-                                {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              </div>
-          )}
-
-          {mentorScholarship.length > 0 && (
-          <div className="py-10" id="Mentor">
-            <div className="w-full mx-auto mb-6">
-              <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
-                {langs
-                  ? "Mentor Scholarship Program"
-                  : "Program Beasiswa Mentor"}
-              </h2>
-              <span className="font-semibold text-[#8493AC] text-lg">
-                {langs
-                  ? "Find the programs and opportunities along the way "
-                  : "Temukan program dan peluang di sepanjang jalan"}
-              </span>
-            </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
-                    {mentorScholarship.map((item, index) => (
-                      <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
-                        <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
-                          <img
-                            src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
-                            alt={item.variant}
-                            className="w-full aspect-video object-cover rounded-t-2xl"
-
-
-
-                          />
-                          <div className="flex flex-col justify-between items-start px-4 py-5">
-                            <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
-                            <p className="font-semibold text-lg mb-2">
-                              {item.discount_price && item.discount_price != "0" ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                            </p>
-                            <span className="text-sm text-[#3377FF]">
-                              {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-            </div>
-          )}
-
-          {nonDegree.length > 0 && (
-            <div className="py-10">
+        {Object.keys(groupedData).map((turunanKey, index) => {
+          const group = groupedData[turunanKey];
+          return (
+            <div key={index} className="py-10">
               <div className="w-full mx-auto mb-6">
                 <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
-                  {langs
-                    ? "Non - Degree Program"
-                    : "Program Non-Gelar"}
+                  {langs ? group.title : group.title} {/* You can localize the title */}
                 </h2>
                 <span className="font-semibold text-[#8493AC] text-lg">
-                  {langs
-                    ? "To secure your future, seek knowledge even as far as China."
-                    : "Untuk menjamin masa depanmu, carilah ilmu sampai ke Tiongkok."}
+                  {langs ? group.subtitle : group.subtitle} {/* You can localize the subtitle */}
                 </span>
               </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
-                      {nonDegree.map((item, index) => (
-                        <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
-                          <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
-                            <img
-                              src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
-                              alt={item.variant}
-                              className="w-full aspect-video object-cover rounded-t-2xl"
 
-
-
-                            />
-                            <div className="flex flex-col justify-between items-start px-4 py-5">
-                              <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
-                              <p className="font-semibold text-lg mb-2">
-                                {item.discount_price && item.discount_price != "0" ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                              </p>
-                              <span className="text-sm text-[#3377FF]">
-                                {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-              </div>
-            )}
-          
-          {degree.length > 0 && (
-          <div className="py-10">
-            <div className="w-full mx-auto mb-6">
-              <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
-                {langs
-                  ? "Degree Program"
-                  : "Program Gelar"}
-              </h2>
-              <span className="font-semibold text-[#8493AC] text-lg">
-                {langs
-                  ? "To secure your future, seek knowledge even as far as China."
-                  : "Untuk menjamin masa depanmu, carilah ilmu sampai ke Tiongkok."}
-              </span>
-            </div>
+              {/* Grid untuk menampilkan data dari setiap turunan */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
-                    {degree.map((item, index) => (
-                      <div onClick={() => handleClickItem(item.id)} className="cursor-pointer">
-                        <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
-                          <img
-                            src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
-                            alt={item.variant}
-                            className="w-full aspect-video object-cover rounded-t-2xl"
-                          />
-                          <div className="flex flex-col justify-between items-start px-4 py-5">
-                            <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
-                            <p className="font-semibold text-lg mb-2">
-                              {item.discount_price && item.discount_price != "0" ? formatRupiah(item.discount_price) : formatRupiah(item.price)}
-                            </p>
-                            <span className="text-sm text-[#3377FF]">
-                              {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
-                            </span>
-                          </div>
-                        </div>
+                {group.data.map((item, itemIndex) => (
+                  <div key={itemIndex} onClick={() => handleClickItem(item.id)} className="cursor-pointer">
+                    <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
+                      <img
+                        src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
+                        alt={item.variant}
+                        className="w-full aspect-video object-fill rounded-t-2xl"
+                      />
+                      <div className="flex flex-col justify-between items-start px-4 py-5">
+                        <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
+                        <p className="font-semibold text-lg mb-2">
+                          {item.discount_price && item.discount_price !== "0"
+                            ? formatRupiah(item.discount_price)
+                            : formatRupiah(item.price)}
+                        </p>
+                        <span className="text-sm text-[#3377FF]">
+                          {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
+                        </span>
                       </div>
-                    ))}
-                </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          )}
+          );
+        })}
         </div>
       </div>
     </Mainlayouts>

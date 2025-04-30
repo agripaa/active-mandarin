@@ -72,6 +72,11 @@ const DetailPage = () => {
   const MAX_LENGTH = 200;
   const detailBrandText = brandData.detail_brand || "";
 
+  const capitalize = (str) => {
+    if (!str) return "-";
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
   return (
     <Mainlayouts>
       <div className="container mx-auto px-6 md:px-12 lg:px-20 py-10">
@@ -83,7 +88,14 @@ const DetailPage = () => {
         <div className="flex flex-col-reverse justify-center md:flex-row md:justify-between items-start gap-8">
           {/* Detail Produk */}
           <div className="flex-grow">
-            <h1 className="text-4xl font-semibold mb-6">{brandData.variant}</h1>
+            <div className="flex flex-col gap-3 mb-6">
+              <h1 className="text-4xl font-semibold">{capitalize(brandData.variant)}</h1>
+              {brandData.category_brand == "product" ? (
+                <span className="flex items-center justify-center bg-blue-500 text-white text-base font-medium py-1 px-3 rounded-2xl w-[19%]">
+                  Produk {capitalize(brandData.type_product)}
+                </span>
+              ) : ""}
+            </div>
 
             {brandData.discount_price && brandData.discount_price != "0" ? (
               <>
@@ -149,11 +161,11 @@ const DetailPage = () => {
           ) : (
             similarData.map((item, index) => (
               <a href={`/detail/${item.id}`} key={index} className="p-0 m-0">
-                <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
+                <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full relative">
                   <img
                     src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
                     alt={item.variant}
-                    className="w-full h-56 object-cover rounded-t-2xl"
+                    className="w-full h-56 object-fill rounded-t-2xl"
                   />
                   <div className="flex flex-col justify-between items-start px-4 py-5">
                     <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
@@ -167,6 +179,11 @@ const DetailPage = () => {
                       </span>
                     </div>
                   </div>
+                  {item.category_brand == "product" ? (
+                    <span className="absolute bottom-[42%] right-2 bg-blue-500 text-white text-sm font-medium py-1 px-3 rounded-2xl">
+                      Produk {capitalize(item.type_product)}
+                    </span>
+                  ) : ""}
                 </div>
               </a>
             ))

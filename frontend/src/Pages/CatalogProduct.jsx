@@ -1,27 +1,64 @@
 import React, { useState, useEffect } from "react";
 import Mainlayouts from "../Layouts/MainLayouts";
 import { useSelector } from "react-redux";
-import { getGroupedBrands } from "../api/brand";
+import { getBrandCategoryTurunan } from "../api/brand";
 import { formatRupiah } from "../utils/rupiahFormat";
 import { Spin } from "antd";
+import { getAllTurunanBrand } from "../api/turunan";
+import { handleClickItem } from "../utils/handleClickItem";
 
 const CatalogProduct = () => {
   const { _, langs } = useSelector((state) => state.LangReducer);
-  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [groupedData, setGroupedData] = useState({});
+  const [turunan, setTurunan] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchProducts();
+    fetchTurunanData(); 
   }, []);
 
-  const fetchProducts = async () => {
+  const fetchTurunanData = async () => {
     try {
-      setLoading(true);
-      const response = await getGroupedBrands();
-      setProducts(response.data);
+      const res = await getAllTurunanBrand();
+      setTurunan(res.data); 
     } catch (error) {
-      setError(error.message || "Gagal mengambil data produk.");
+      setError(error.message || "Gagal mengambil data turunan.");
+    }
+  };
+
+  useEffect(() => {
+    if (turunan.length > 0) {
+      fetchAllData(); 
+    }
+  }, [turunan]);
+
+  const fetchAllData = async () => {
+    setLoading(true);
+    try {
+      const promises = turunan.map((t) =>
+        getBrandCategoryTurunan("product", t.turunan) 
+      );
+      const responses = await Promise.allSettled(promises);
+
+      // Grouping data by turunan
+      const groupedData = turunan.reduce((acc, t, index) => {
+        const status = responses[index]?.status;
+        if (status === "fulfilled" && responses[index].value?.data) {
+          const data = responses[index].value.data;
+
+          acc[t.turunan] = {
+            title: t.title,
+            subtitle: t.sub_title,
+            data: data,
+          };
+        }
+        return acc;
+      }, {});
+
+      setGroupedData(groupedData); 
+    } catch (error) {
+      setError("Gagal mengambil data produk.");
     } finally {
       setLoading(false);
     }
@@ -29,22 +66,17 @@ const CatalogProduct = () => {
 
   if (loading) {
     return (
-        <Mainlayouts>
-            <div className="flex justify-center items-center h-[80vh]">
-                <Spin size="large" />
-            </div>
-        </Mainlayouts>
+      <Mainlayouts>
+        <div className="flex justify-center items-center h-[80vh]">
+          <Spin size="large" />
+        </div>
+      </Mainlayouts>
     );
   }
 
-  const handleClickItem = (id) => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      const openModalEvent = new CustomEvent("triggerLoginModal");
-      window.dispatchEvent(openModalEvent); // trigger modal dari Header
-    } else {
-      window.location.href = `/detail/${id}`;
-    }
+  const capitalize = (str) => {
+    if (!str) return "-";
+    return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
   return (
@@ -69,38 +101,55 @@ const CatalogProduct = () => {
               ) : error ? (
                 <p className="text-center text-red-500">{error}</p>
               ) : (
-                <div className="my-8 flex w-full">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full gap-6">
-                    {products.map((item, index) => (
-                      <div key={index} className="p-0 m-0">
-                        <div onClick={() => handleClickItem(item?.brands[0].id)} className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full">
-                          <img
-                            src={`${process.env.REACT_APP_API_IMG}${item.image}`}
-                            alt={`${item.turunan_brand}`}
-                            className="w-full aspect-video object-cover rounded-t-2xl"
-                          />
-                          <div className="flex flex-col justify-between items-start px-4 py-5">
-                            <h2 className="text-lg font-semibold text-gray-800 mb-2">
-                              {item.turunan_brand}
-                            </h2>
-                            <p className="font-semibold text-lg mb-2">
-                              {formatRupiah(item.start_from_price)}
-                              <span className="font-light text-sm ml-1">
-                                {langs ? "/Item" : "/Item"}
-                              </span>
-                            </p>
-                            <div className="flex mt-2">
-                              <span className="text-sm text-[#3377FF]">
-                                {langs
-                                  ? `Earn commission ${formatRupiah(item.commission)}`
-                                  : `Dapatkan komisi ${formatRupiah(item.commission)}`}
-                              </span>
+                <div className="my-8 flex flex-col w-full">
+                  {/* Iterate through grouped data */}
+                  {Object.keys(groupedData).map((turunanKey, index) => {
+                    const group = groupedData[turunanKey];
+                    return (
+                      <div key={index} className="py-10">
+                        <div className="w-full mx-auto mb-6">
+                          <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
+                            {langs ? group.title : group.title} {/* You can localize the title */}
+                          </h2>
+                          <span className="font-semibold text-[#8493AC] text-lg">
+                            {langs ? group.subtitle : group.subtitle} {/* You can localize the subtitle */}
+                          </span>
+                        </div>
+
+                        {/* Grid untuk menampilkan data dari setiap turunan */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-4">
+                          {group.data.map((item, itemIndex) => (
+                            <div key={itemIndex} onClick={() => handleClickItem(item.id)} className="cursor-pointer">
+                              <div className="bg-white rounded-2xl border border-neutral-300 flex flex-col w-full h-full relative"> {/* Make this container relative */}
+                                <img
+                                  src={`${process.env.REACT_APP_API_IMG}${item.brand_img}`}
+                                  alt={item.variant}
+                                  className="w-full aspect-video object-fill rounded-t-2xl"
+                                />
+                                <div className="flex flex-col justify-between items-start px-4 py-5">
+                                  <h2 className="text-lg font-semibold text-gray-800 mb-2">{item.variant}</h2>
+                                  <p className="font-semibold text-lg mb-2">
+                                    {item.discount_price && item.discount_price !== "0"
+                                      ? formatRupiah(item.discount_price)
+                                      : formatRupiah(item.price)}
+                                  </p>
+                                  <span className="text-sm text-[#3377FF]">
+                                    {langs ? "Earn commission" : "Dapatkan komisi"} {formatRupiah(item.commission || 0)}
+                                  </span>
+                                </div>
+
+                                {/* Label positioned at the bottom right */}
+                                <span className="absolute bottom-[42%] right-2 bg-blue-500 text-white text-sm font-medium py-1 px-3 rounded-2xl">
+                                  Produk {capitalize(item.type_product)}
+                                </span>
+                              </div>
                             </div>
-                          </div>
+                          ))}
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    );
+                  })}
+
                 </div>
               )}
             </div>
