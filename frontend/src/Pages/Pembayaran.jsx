@@ -58,8 +58,7 @@ const Pembayaran = () => {
 
   const handleSubmit = async () => {
     const userAddress = localStorage.getItem("address");
-
-    if (!userAddress) {
+    if (!userAddress && brandData?.type_product === "fisik") {
       Swal.fire(
         "Error!",
         "Alamat pengiriman wajib diisi! Silakan isi alamat terlebih dahulu.",
@@ -68,19 +67,19 @@ const Pembayaran = () => {
       navigate(`/checkout/${id}`, { replace: true });
       return;
     }
-
+    
     if (!proof) {
       Swal.fire("Error!", "Bukti pembayaran wajib diunggah!", "error");
       return;
     }
-
+    
     const formData = new FormData();
     formData.append("brand_id", id);
     formData.append("payment_method", metode);
     formData.append("proof_transaction", proof);
-    formData.append("user_address", userAddress);
+    if (brandData?.type_product === "fisik") formData.append("user_address", userAddress);
     if (reveralCode) formData.append("reveral_code", reveralCode);
-
+    
     setLoadingSubmit(true); // ⏳ Start loading
     try {
       const response = await createTransaction(formData);

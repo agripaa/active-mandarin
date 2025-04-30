@@ -15,14 +15,18 @@ exports.createTransaction = async (req, res) => {
       return res.status(400).json({ status: false, message: "Proof of transaction is required!" });
     }
 
+    console.log("req.body", req.body);
+    const brand = await Brand.findByPk(brand_id);
+    if (!brand) return res.status(404).json({ status: false, message: "Brand not found" });
+    console.log("brand", brand);
+
     const user = await User.findByPk(req.userId);
     if(!user) return res.status(404).json({ status: false, message: "User Not Found!" })
-
+    
     if (user_address) {
       await user.update({ address: user_address });
     } else {
-      if (!user.address) res.status(400).json({ status: false, message: "Address is required!" });
-      return;
+      if (!user.address && brand.type_product === "fisik") return res.status(400).json({ status: false, message: "Address is required!" });
     }
 
     const proofFile = req.files.proof_transaction;
@@ -49,9 +53,6 @@ exports.createTransaction = async (req, res) => {
       if (affiliator.reveral_code == user.reveral_code) return res.status(400).json({ status: false, message: "Affiliates cannot input their own referral code!" });
       if (!affiliator) return res.status(400).json({ status: false, message: "Invalid Reveral Code!" });
     }
-
-    const brand = await Brand.findByPk(brand_id);
-    if (!brand) return res.status(404).json({ status: false, message: "Brand not found" });
 
     const dateNow = new Date();
     let expired_date = null;
