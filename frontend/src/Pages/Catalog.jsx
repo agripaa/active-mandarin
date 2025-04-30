@@ -7,7 +7,6 @@ import { formatRupiah } from "../utils/rupiahFormat";
 import { Spin } from "antd";
 import { getAllTurunanBrand } from "../api/turunan";
 import { handleClickItem } from "../utils/handleClickItem";
-import { getProfile } from "../api/auth";
 import { Link } from "react-router-dom";
 
 const Catalog = () => {
@@ -64,17 +63,6 @@ const Catalog = () => {
     }
   };
   
-
-  const handleProfileUser = async () => {
-    try {
-      const response = await getProfile();
-      if (response.status) {
-        setUser(response.data);
-      }
-    } catch (error) {
-      setUser(null);
-    }
-  };
 
   const fetchData = () => {
     const images = [

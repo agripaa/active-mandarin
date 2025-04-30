@@ -6,6 +6,7 @@ import { formatRupiah } from "../utils/rupiahFormat";
 import { Spin } from "antd";
 import { getAllTurunanBrand } from "../api/turunan";
 import { handleClickItem } from "../utils/handleClickItem";
+import Slider from "react-slick";
 
 const CatalogProduct = () => {
   const { _, langs } = useSelector((state) => state.LangReducer);
@@ -13,15 +14,12 @@ const CatalogProduct = () => {
   const [groupedData, setGroupedData] = useState({});
   const [turunan, setTurunan] = useState([]);
   const [error, setError] = useState(null);
-  const [chineseBook, setChineseBook] = useState([]);
-  const [flashcard, setFlashcard] = useState([]);
-  const [guideBook, setGuideBook] = useState([]);
-  const [hanziBook, setHanziBook] = useState([]);
   const [activeSlide, setActiveSlide] = useState(0);
   const [galleryData, setGalleryData] = useState([]);
 
   useEffect(() => {
     fetchTurunanData(); 
+    fetchSliderImage();
   }, []);
 
   const fetchTurunanData = async () => {
@@ -70,15 +68,30 @@ const CatalogProduct = () => {
     }
   };
 
-  const handleProfileUser = async () => {
-    try {
-      const response = await getProfile();
-      if (response.status) {
-        setUser(response.data);
-      }
-    } catch (error) {
-      setUser(null);
-    }
+  const fetchSliderImage = () => {
+    const images = [
+      {
+        image: "/assets/banner/Web Banne Act CTA-5.png",
+        link: "https://wa.me/+6282279506450",
+      },
+      {
+        image: "/assets/banner/Web Banne Act CTA-6.png",
+        link: "https://wa.me/+6282279506450",
+      },
+      {
+        image: "/assets/banner/Web Banne Act CTA-7.png",
+        link: "https://wa.me/+6282279506450",
+      },
+      {
+        image: "/assets/banner/Web Banne Act CTA-8.png",
+        link: "/join-affiliate",
+      },
+      {
+        image: "/assets/banner/Web Banne Act CTA-9.png",
+        link: "/products",
+      },
+    ];
+    setGalleryData(images);
   };
 
   if (loading) {
@@ -155,16 +168,6 @@ const CatalogProduct = () => {
 
         <div className="pt-10 pb-1">
             <div className="md:py-10">
-              <div className="w-full mx-auto mb-6">
-                <h2 className="text-2xl md:text-3xl font-bold text-[#02264A] mb-2">
-                  {langs ? "Comprehensive Chinese Book" : "Buku Mandarin Komprehensif"}
-                </h2>
-                <span className="font-semibold text-[#8493AC] text-lg">
-                  {langs
-                    ? "A complete book for all learning levels."
-                    : "Buku lengkap untuk semua level pembelajaran."}
-                </span>
-              </div>
 
               {loading ? (
                 <p className="text-center text-lg text-gray-500">Loading...</p>
@@ -221,8 +224,7 @@ const CatalogProduct = () => {
                   })}
                 </div>
               )}
-              </div>
-              
+            </div> 
         </div>
       </div>
     </Mainlayouts>
