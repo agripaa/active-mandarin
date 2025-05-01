@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     sold_sum: DataTypes.INTEGER,
     detail_brand: DataTypes.TEXT,
     link_classroom: DataTypes.STRING,
+    category_buy: DataTypes.STRING,
     type_product: DataTypes.STRING,
     file_product: DataTypes.STRING,
     commission: DataTypes.FLOAT,  

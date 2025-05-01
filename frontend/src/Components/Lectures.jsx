@@ -192,18 +192,107 @@ const Lectures = ({ text }) => {
         },
       ],
     },
+    {
+      name: "Kamila Yeta",
+      profile: "/assets/Kamila Yeta.jpg",
+      university_name:
+        "Guangxi University",
+      cat_certificate: "HSK 5 Certified",
+      certificates: [
+        {
+          english:
+            "Awardee International Chinese Language Teachers Scholarship from 2024 to 2025",
+          indonesian:
+            "Penerima Beasiswa Guru Bahasa Mandarin Internasional tahun 2024 hingga 2025",
+          chinese: '⁠2024至2025年度"国际中文教师奖学金"获得者',
+        },
+        {
+          english:
+            "Awardee Guangxi Government Scholarship for ASEAN Student by Guangxi Government from 2018 to 2023",
+          indonesian:
+            "Penerima Beasiswa Pemerintah Guangxi untuk Mahasiswa ASEAN dari Pemerintah Guangxi dari tahun 2018 hingga 2023",
+          chinese:
+            '2018至2023年度“广西政府东盟国家留学生奖学金”获得者'
+        },
+        {
+          english:
+            "⁠First Winner of the 14th Chinese Classics Reading Competition and the 2021 Guangxi Campus Chinese Classics Reading Competition in the International Student Individual Category",
+          indonesian:
+            "⁠Pemenang Pertama Kompetisi Membaca Klasik Tiongkok ke-14 dan Kompetisi Membaca Klasik Tiongkok Kampus Guangxi 2021 dalam Kategori Perorangan Mahasiswa Internasional",
+          chinese:
+            "广西第十四届中华经典诵读大赛暨 2021 广西校园中华经典通读比赛，外国学生个人姐一等奖",
+        },
+        {
+          english:
+            "Outstanding International Student in Guangxi University - 2019",
+          indonesian:
+            "Mahasiswa Internasional Berprestasi di Universitas Guangxi - 2019",
+          chinese:
+            "2019年广西大学优秀国际学生",
+        },
+        {
+          english:
+            "Outstanding Volunteer for The School Anniversary - 2018",
+          indonesian:
+            "Relawan Berprestasi untuk Ulang Tahun Sekolah - 2018",
+          chinese:
+            "2018年学校周年庆典优秀志愿者",
+        },
+        {
+          english:
+            "Background: Major in Robotics Engineering and Language Teaching",
+          indonesian:
+            "Latar Belakang: Jurusan Teknik Robotika dan Pengajaran Bahasa",
+          chinese:
+            "",
+        },
+        {
+          english:
+            "Experience: 4 years Online Mandarin Teaching Experience",
+          indonesian:
+            "Pengalaman: 4 tahun Pengalaman Mengajar Bahasa Mandarin Online",
+          chinese:
+            "",
+        },
+      ],
+    },
+    {
+      name: "Asher Chan",
+      profile: "/assets/Asher Chan.jpeg",
+      university_name:
+        "",
+      // cat_certificate: "",
+      certificates: [
+        {
+          english:
+            "Background: Major in Robotics Engineering and Language Teaching",
+          indonesian:
+            "Latar Belakang: Jurusan Teknik Robotika dan Pengajaran Bahasa",
+          chinese:
+            "",
+        },
+        {
+          english:
+            "Experience: 4 years Online Mandarin Teaching Experience",
+          indonesian:
+            "Pengalaman: 4 tahun Pengalaman Mengajar Bahasa Mandarin Online",
+          chinese:
+            "",
+        },
+      ],
+    },
   ];
 
   const settings = {
     className: "slider variable-width",
-    dots: false,
+    dots: true,
     infinite: false,
     speed: 500,
-    slidesToShow: 3,
+    slidesToShow: 4,
     slidesToScroll: 1,
     centerMode: false, // Nonaktifkan centerMode
-    arrows: false, // Nonaktifkan tombol next dan prev
-    // variableWidth: true,
+    arrows: true, // Enable arrows
+    cssEase: "linear",
     beforeChange: (current, next) => {
       setCurrentSlide(next);
     },
@@ -301,18 +390,18 @@ const Lectures = ({ text }) => {
               ))}
             </Slider>
           </div>
-          <div className="flex flex-row gap-2 mt-4 items-center justify-center w-full sm:justify-start lg:hidden">
+          <div className="flex flex-row gap-2 mt-12 items-center justify-center w-full sm:justify-start lg:hidden">
             <button
               className="border-2 border-[#8493AC] p-2 rounded-xl"
               onClick={handlePrev}
             >
-              <RiArrowLeftSLine className="text-[#1A1A1A]" />
+              <RiArrowLeftSLine style={{ color: "black" }} className="text-black" />
             </button>
             <button
               className="border-2 border-[#8493AC] p-2 rounded-xl"
               onClick={handleNext}
             >
-              <RiArrowRightSLine className="text-[#1A1A1A]" />
+              <RiArrowRightSLine style={{ color: "black" }} className="text-black" />
             </button>
           </div>
         </div>

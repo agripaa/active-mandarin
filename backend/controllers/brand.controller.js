@@ -71,6 +71,7 @@ exports.createBrand = async (req, res) => {
       price,
       detail_brand,
       link_classroom,
+      category_buy,
       type_product,
       commission,
       category_brand,
@@ -139,6 +140,7 @@ exports.createBrand = async (req, res) => {
       detail_brand,
       link_classroom,
       discount_price,
+      category_buy,
       file_product,
       commission,
       variant,
@@ -222,12 +224,16 @@ exports.getCategoryTurunanBrand = async (req, res) => {
       return res.status(404).json({ status: false, message: "No Brand data found for this category and subcategory." });
     }
 
-    res.status(200).json({ status: true, data: brand });
+    // Sort products by their 'id' in ascending order
+    const sortedBrandData = brand.sort((a, b) => a.id - b.id);
+
+    res.status(200).json({ status: true, data: sortedBrandData });
   } catch (error) {
     console.error("🔥 ERROR:", error);
     res.status(500).json({ status: false, error: error.message });
   }
 };
+
 
 exports.updateBrand = async (req, res) => {
   try {
@@ -289,6 +295,7 @@ exports.updateBrand = async (req, res) => {
       sub_title,
       turunan_id,
       turunan,
+      category_buy,
       price,
       detail_brand,
       link_classroom,
@@ -353,6 +360,7 @@ exports.updateBrand = async (req, res) => {
       link_classroom: link_classroom || brand.link_classroom,
       discount_price: discount_price || brand.discount_price,
       file_product,
+      category_buy: category_buy || brand.category_buy,
       commission: commission || brand.commission,
       variant: variant || brand.variant,
       category_brand: category_brand ? category_brand_lower : brand.category_brand,

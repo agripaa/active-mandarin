@@ -13,6 +13,7 @@ const CreateProgramModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
   const [detailBrand, setDetailBrand] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [price, setPrice] = useState("0");
+  const [category_buy, setCategoryBuy] = useState("");
   const [discountPrice, setDiscountPrice] = useState("0");
   const [commission, setCommission] = useState("0");
 
@@ -81,7 +82,7 @@ const CreateProgramModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
       Swal.fire("Error!", "Title dan Sub Title tidak boleh kosong!", "error");
       return;
     }
-    setSearchTurunan(newTurunan.title);
+    setSearchTurunan(searchTurunan);
     setIsCustomTurunan(true);
     setIsAddTurunanModalOpen(false);
   };
@@ -103,6 +104,7 @@ const CreateProgramModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
       formData.append("commission", Number(commission));
       formData.append("detail_brand", detailBrand);
       formData.append("link_classroom", values.link_classroom || "");
+      formData.append("category_buy", category_buy);
       formData.append("category_brand", "program");
 
       if (isCustomTurunan) {
@@ -174,14 +176,22 @@ const CreateProgramModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
                 showSearch
                 labelInValue
                 placeholder="Pilih Turunan Program"
-                options={turunanOptions}
+                options={[...turunanOptions, {
+                  label: `Tambahkan Turunan "${searchTurunan}"`,
+                  value: "add_custom_turunan"
+                }]}
                 onSearch={(value) => {
                   setSearchTurunan(value);
                   fetchTurunanOptions(value);
                 }}
                 onChange={(option) => {
-                  setSelectedTurunan(option);
-                  setIsCustomTurunan(false);
+                  if (option.value === "add_custom_turunan") {
+                    // If "Tambahkan Turunan" is selected, open the modal
+                    handleAddTurunan();
+                  } else {
+                    setSelectedTurunan(option);
+                    setIsCustomTurunan(false);
+                  }
                 }}
                 filterOption={false}
                 value={selectedTurunan}
@@ -206,12 +216,16 @@ const CreateProgramModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
             <Input value={formatRupiah(commission)} onChange={(e) => handleRupiahChange(e.target.value, setCommission)} placeholder="Masukkan Komisi Affiliator" />
           </Form.Item>
 
+          <Form.Item label="Kategori Pembelian" required>
+            <Input value={category_buy} onChange={(e) => setCategoryBuy(e.target.value)} placeholder="Example. (/Month, /Person)" />
+          </Form.Item>
+
           <Form.Item label="Detail Program" required>
             <ReactQuill value={detailBrand} onChange={setDetailBrand} theme="snow" />
           </Form.Item>
 
-          <Form.Item name="link_classroom" label="Link Classroom">
-            <Input placeholder="Masukkan Link Classroom (Opsional)" />
+          <Form.Item name="link_classroom" label="Link Program">
+            <Input placeholder="Masukkan Link Program (Opsional)" />
           </Form.Item>
 
           <Form.Item name="brand_img" label="Upload Gambar Program (Max 300 KB)" rules={[{ required: true, message: "Gambar wajib diunggah!" }]}>

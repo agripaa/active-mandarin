@@ -22,6 +22,7 @@ const CreateProductModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
   const [searchTurunan, setSearchTurunan] = useState("");
   const [selectedTurunan, setSelectedTurunan] = useState(null);
   const [isCustomTurunan, setIsCustomTurunan] = useState(false);
+  const [showCustomTurunan, setShowCustomTurunan] = useState(false);
   const [isAddTurunanModalOpen, setIsAddTurunanModalOpen] = useState(false);
   const [newTurunan, setNewTurunan] = useState({ title: "", sub_title: "" });
 
@@ -34,7 +35,7 @@ const CreateProductModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/turunan-brand/`, {
         params: { search, category_brand: "product" },
       });
-  
+
       if (response.data.status) {
         const options = response.data.data.map((item) => ({
           label: item.turunan, // label = turunan
@@ -46,7 +47,6 @@ const CreateProductModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
       console.error("Error fetching turunan:", error);
     }
   };
-  
 
   const handleSave = async () => {
     setLoading(true);
@@ -169,27 +169,33 @@ const CreateProductModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
                 <Button icon={<CloseCircleOutlined />} onClick={handleResetTurunan} />
               </Space>
             ) : (
-              <Select
-                showSearch
-                labelInValue
-                placeholder="Pilih Turunan Product"
-                options={turunanOptions}
-                onSearch={(value) => {
-                  setSearchTurunan(value);
-                  fetchTurunanOptions(value);
-                }}
-                onChange={(option) => {
-                  setSelectedTurunan(option);
-                  setIsCustomTurunan(false);
-                }}
-                filterOption={false}
-                value={selectedTurunan}
-                notFoundContent={searchTurunan ? (
-                  <Button icon={<PlusOutlined />} onClick={handleAddTurunan}>
-                    Tambahkan Turunan "{searchTurunan}"
-                  </Button>
-                ) : null}
-              />
+              <div>
+                {/* Add the option "Tambahkan Turunan" dynamically */}
+                <Select
+                  showSearch
+                  labelInValue
+                  placeholder="Pilih Turunan Produk"
+                  options={[...turunanOptions, {
+                    label: `Tambahkan Turunan "${searchTurunan}"`,
+                    value: "add_custom_turunan"
+                  }]}
+                  onSearch={(value) => {
+                    setSearchTurunan(value);
+                    fetchTurunanOptions(value);
+                  }}
+                  onChange={(option) => {
+                    if (option.value === "add_custom_turunan") {
+                      // If "Tambahkan Turunan" is selected, open the modal
+                      handleAddTurunan();
+                    } else {
+                      setSelectedTurunan(option);
+                      setIsCustomTurunan(false);
+                    }
+                  }}
+                  filterOption={false}
+                  value={selectedTurunan}
+                />
+              </div>
             )}
           </Form.Item>
 
@@ -231,13 +237,28 @@ const CreateProductModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
         </Form>
       </Modal>
 
-      <Modal title="Tambah Turunan Baru" open={isAddTurunanModalOpen} onOk={handleSaveTurunan} onCancel={() => setIsAddTurunanModalOpen(false)} okText="Simpan" cancelText="Batal">
+      <Modal
+        title="Tambah Turunan Baru"
+        open={isAddTurunanModalOpen}
+        onOk={handleSaveTurunan}
+        onCancel={() => setIsAddTurunanModalOpen(false)}
+        okText="Simpan"
+        cancelText="Batal"
+      >
         <Form layout="vertical">
           <Form.Item label="Title" required>
-            <Input value={newTurunan.title} onChange={(e) => setNewTurunan(prev => ({ ...prev, title: e.target.value }))} placeholder="Masukkan Title Turunan" />
+            <Input
+              value={newTurunan.title}
+              onChange={(e) => setNewTurunan(prev => ({ ...prev, title: e.target.value }))}
+              placeholder="Masukkan Title Turunan"
+            />
           </Form.Item>
           <Form.Item label="Sub Title" required>
-            <Input value={newTurunan.sub_title} onChange={(e) => setNewTurunan(prev => ({ ...prev, sub_title: e.target.value }))} placeholder="Masukkan Sub Title" />
+            <Input
+              value={newTurunan.sub_title}
+              onChange={(e) => setNewTurunan(prev => ({ ...prev, sub_title: e.target.value }))}
+              placeholder="Masukkan Sub Title"
+            />
           </Form.Item>
         </Form>
       </Modal>

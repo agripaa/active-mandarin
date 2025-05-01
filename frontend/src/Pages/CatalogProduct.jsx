@@ -292,7 +292,7 @@ const CardCatalog = ({ item, handleClickItem, user, isMonthlyProgram, isDegreePr
         </div>
 
         {/* Label positioned at the bottom right */}
-        <span className={`absolute bottom-[42%] right-2 ${item.type_product == "fisik" ? "bg-[#FFCC00] text-black" : "bg-blue-500 text-white"} text-sm font-medium py-1 px-3 rounded-2xl`}>
+        <span className={`absolute bottom-[50%] right-2 ${item.type_product == "fisik" ? "bg-[#FFCC00] text-black" : "bg-blue-500 text-white"} text-sm font-medium py-1 px-3 rounded-2xl`}>
           Produk {capitalize(item.type_product)}
         </span>
       </div>

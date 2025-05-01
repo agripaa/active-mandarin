@@ -248,3 +248,18 @@ svg { vertical-align: baseline; }
 .home-slider .slick-track .slick-slide:last-child {
   padding-right: 0;
 }
+
+/* Targeting the previous arrow */
+.slick-prev {
+  color: black; /* Changes the color of the left arrow */
+}
+
+/* Targeting the next arrow */
+.slick-next {
+  color: black; /* Changes the color of the right arrow */
+}
+
+/* Optional: If you want to make sure the arrow color stays black even when hovered */
+.slick-prev:hover, .slick-next:hover {
+  color: black; /* Keeps the arrow color black on hover */
+}

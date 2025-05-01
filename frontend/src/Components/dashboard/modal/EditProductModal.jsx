@@ -208,14 +208,22 @@ const EditProductModal = ({ isModalOpen, setIsModalOpen, productData, refreshDat
                 showSearch
                 labelInValue
                 placeholder="Pilih Turunan Product"
-                options={turunanOptions}
+                options={[...turunanOptions, {
+                  label: `Tambahkan Turunan "${searchTurunan}"`,
+                  value: "add_custom_turunan"
+                }]}
                 onSearch={(value) => {
                   setSearchTurunan(value);
                   fetchTurunanOptions(value);
                 }}
                 onChange={(option) => {
-                  setSelectedTurunan(option);
-                  setIsCustomTurunan(false);
+                  if (option.value === "add_custom_turunan") {
+                    // If "Tambahkan Turunan" is selected, open the modal
+                    handleAddTurunan();
+                  } else {
+                    setSelectedTurunan(option);
+                    setIsCustomTurunan(false);
+                  }
                 }}
                 filterOption={false}
                 value={selectedTurunan}

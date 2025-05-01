@@ -14,6 +14,7 @@ const EditProgramModal = ({ isModalOpen, setIsModalOpen, programData, refreshDat
   const [imageFile, setImageFile] = useState(null);
   const [fileList, setFileList] = useState([]);
   const [price, setPrice] = useState("0");
+  const [category_buy, setCategoryBuy] = useState("");
   const [discountPrice, setDiscountPrice] = useState("0");
   const [commission, setCommission] = useState("0");
 
@@ -37,6 +38,7 @@ const EditProgramModal = ({ isModalOpen, setIsModalOpen, programData, refreshDat
       setPrice(programData.price?.toString() || "0");
       setDiscountPrice(programData.discount_price?.toString() || "0");
       setCommission(programData.commission?.toString() || "0");
+      setCategoryBuy(programData.category_buy?.toString() || "");
 
       form.setFieldsValue({
         variant: programData.variant || "",
@@ -144,6 +146,7 @@ const EditProgramModal = ({ isModalOpen, setIsModalOpen, programData, refreshDat
       formData.append("commission", Number(commission));
       formData.append("detail_brand", detailBrand);
       formData.append("link_classroom", values.link_classroom || "");
+      formData.append("category_buy", category_buy);
       formData.append("category_brand", "program");
 
       if (isCustomTurunan) {
@@ -212,14 +215,22 @@ const EditProgramModal = ({ isModalOpen, setIsModalOpen, programData, refreshDat
                 showSearch
                 labelInValue
                 placeholder="Pilih Turunan Program"
-                options={turunanOptions}
+                options={[...turunanOptions, {
+                  label: `Tambahkan Turunan "${searchTurunan}"`,
+                  value: "add_custom_turunan"
+                }]}
                 onSearch={(value) => {
                   setSearchTurunan(value);
                   fetchTurunanOptions(value);
                 }}
                 onChange={(option) => {
-                  setSelectedTurunan(option);
-                  setIsCustomTurunan(false);
+                  if (option.value === "add_custom_turunan") {
+                    // If "Tambahkan Turunan" is selected, open the modal
+                    handleAddTurunan();
+                  } else {
+                    setSelectedTurunan(option);
+                    setIsCustomTurunan(false);
+                  }
                 }}
                 filterOption={false}
                 value={selectedTurunan}
@@ -244,12 +255,16 @@ const EditProgramModal = ({ isModalOpen, setIsModalOpen, programData, refreshDat
             <Input value={formatRupiah(commission)} onChange={(e) => handleRupiahChange(e.target.value, setCommission)} placeholder="Masukkan Komisi Affiliator" />
           </Form.Item>
 
+          <Form.Item label="Kategori Pembelian" required>
+            <Input value={category_buy} onChange={(e) => setCategoryBuy(e.target.value)} placeholder="Example. (/Month, /Person)" />
+          </Form.Item>
+
           <Form.Item label="Detail Program">
             <ReactQuill value={detailBrand} onChange={setDetailBrand} theme="snow" />
           </Form.Item>
 
-          <Form.Item name="link_classroom" label="Link Classroom">
-            <Input placeholder="Masukkan Link Classroom (Opsional)" />
+          <Form.Item name="link_classroom" label="Link Program">
+            <Input placeholder="Masukkan Link Program (Opsional)" />
           </Form.Item>
 
           <Form.Item name="brand_img" label="Upload Gambar Program (Max 300 KB)">

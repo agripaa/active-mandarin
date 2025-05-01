@@ -116,7 +116,7 @@ const DetailPage = () => {
             <div className="flex flex-col gap-3 mb-6">
               <h1 className="text-4xl font-semibold">{capitalize(brandData.variant)}</h1>
               {brandData.category_brand == "product" ? (
-                <span className="flex items-center justify-center bg-blue-500 text-white text-base font-medium py-1 px-3 rounded-2xl w-[140px]">
+                <span className={`flex items-center justify-center text-base font-medium py-1 px-3 rounded-2xl w-[140px] ${brandData.type_product == "fisik" ? "bg-[#FFCC00] text-black" : "bg-blue-500 text-white"}`}>
                   Produk {capitalize(brandData.type_product)}
                 </span>
               ) : ""}
@@ -128,14 +128,14 @@ const DetailPage = () => {
               <>
                 <p className="text-3xl text-gray-900 font-semibold mt-2">
                   {formatRupiah(brandData.discount_price)} 
-                  {!["Mentor Scholarship", "Non - Degree Program", "Degree Program"].includes(brandData.turunan) ? <span className="text-sm">{brandData.category_brand == "product" ? "/item" : langs ? "/Month" : "/Bulan"}</span> : ""}
+                  {!["Mentor Scholarship", "Non - Degree Program", "Degree Program"].includes(brandData.turunan) ? <span className="text-sm">{brandData.category_brand == "product" ? "/item" : brandData.category_buy}</span> : ""}
                 </p>
                 <p className="text-lg text-red-500 line-through">{formatRupiah(brandData.price)}</p>
               </>
             ) : (
               <p className="text-3xl text-gray-900 font-semibold mt-2">
                 {formatRupiah(brandData.price)} 
-                {!["Mentor Scholarship", "Non - Degree Program", "Degree Program"].includes(brandData.turunan) ? <span className="text-sm">{brandData.category_brand == "product" ? "/item" : langs ? "/Month" : "/Bulan"}</span> : ""}
+                {!["Mentor Scholarship", "Non - Degree Program", "Degree Program"].includes(brandData.turunan) ? <span className="text-sm">{brandData.category_brand == "product" ? "/item" : brandData.category_buy}</span> : ""}
               </p>
             )}
 
