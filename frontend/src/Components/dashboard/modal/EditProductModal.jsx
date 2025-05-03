@@ -208,10 +208,10 @@ const EditProductModal = ({ isModalOpen, setIsModalOpen, productData, refreshDat
                 showSearch
                 labelInValue
                 placeholder="Pilih Turunan Product"
-                options={[...turunanOptions, {
+                options={[...turunanOptions, ...(searchTurunan ? [{
                   label: `Tambahkan Turunan "${searchTurunan}"`,
                   value: "add_custom_turunan"
-                }]}
+                }] : [])]}
                 onSearch={(value) => {
                   setSearchTurunan(value);
                   fetchTurunanOptions(value);

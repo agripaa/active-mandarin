@@ -176,10 +176,10 @@ const CreateProgramModal = ({ isModalOpen, setIsModalOpen, refreshData }) => {
                 showSearch
                 labelInValue
                 placeholder="Pilih Turunan Program"
-                options={[...turunanOptions, {
+                options={[...turunanOptions, ...(searchTurunan ? [{
                   label: `Tambahkan Turunan "${searchTurunan}"`,
                   value: "add_custom_turunan"
-                }]}
+                }] : [])]}
                 onSearch={(value) => {
                   setSearchTurunan(value);
                   fetchTurunanOptions(value);
