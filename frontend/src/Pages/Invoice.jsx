@@ -221,7 +221,7 @@ const Invoice = () => {
             Download Invoice
           </button>
           {user?.Role.role_name !== "admin" ? (
-            <Link to="/class">
+            <Link to="https://wa.me/+6282279506450" target="_blank">
               <button className="flex gap-4 items-center px-6 py-4 w-fit bg-[#57D163] tracking-wide mt-2 text-xs text-white font-medium rounded-2xl transition-all duration-300 hover:bg-[#47ac51] hover:text-black sm:text-sm lg:text-base">
                 <FaWhatsapp size={20} />
                 <span className="text-sm">Chat Mintive</span>

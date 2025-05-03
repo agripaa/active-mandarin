@@ -236,7 +236,7 @@ const CardCatalog = ({ item, handleClickItem, user, isMonthlyProgram, isDegreePr
           </h2>
           {isDegreeProgram ? (
             <div
-              className={"prose text-gray-600 overflow-auto mb-2 grow leading-relaxed w-full [&_a]:text-blue-600 [&_a]:underline [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-6 [&_ol]:pl-6"}
+              className={"prose text-[#505e79] overflow-auto mb-2 grow leading-relaxed w-full [&_a]:text-blue-600 [&_a]:underline [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-6 [&_ol]:pl-6"}
               dangerouslySetInnerHTML={{
                 __html: `${item.detail_brand.substring(0, 100)}...`,
               }}
