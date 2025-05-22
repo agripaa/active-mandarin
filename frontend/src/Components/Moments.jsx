@@ -149,35 +149,37 @@ const Gallery = ({ text }) => {
     }, []);
 
     return (
-        <div className="w-full mx-auto py-16 pb-28 px-5 md:px-0">
-            <div className="text-center flex flex-col items-center mb-10">
+        <div className="w-full mx-auto md:py-16 md:pb-28 px-5 md:px-0">
+            <div className="text-center flex flex-col items-center md:mb-10">
                 <h1 className="text-2xl w-full capitalize font-semibold text-[#02264A] md:text-3xl lg:w-9/12 lg:text-4xl">
                     {langs ? 'Documentation of Indonesian Students and International Students in China' : 'Dokumentasi Pelajar Indonesia dan Pelajar Internasional di Tiongkok'}
                 </h1>
             </div>
-            <div className="h-full max-h-[440px]">
+            <div className="h-full max-h-[640px]">
                 <Slider {...settings} className="rounded-xl overflow-hidden h-full">
                     {galleryData.map((item, index) => (
                         <div
                             key={index}
-                            className={`relative transition-transform duration-1000 px-8 my-12 ${
+                            className={`relative transition-transform duration-1000 mx-auto px-8 my-12 ${
                                 activeSlide === index ? "z-10 scale-110" : "z-0 scale-95"
                             }`}
-                        >
-                            <img
+                            >
+                            <div className="aspect-w-16 aspect-h-9 rounded-xl overflow-hidden">
+                                <img
                                 src={item.image}
                                 alt={`Gallery ${index + 1}`}
-                                className="w-full h-[440px] object-cover rounded-xl cursor-pointer"
+                                className="w-full h-full object-fill rounded-xl cursor-pointer"
                                 draggable="false"
-                            />
-                            {activeSlide === index && (
-                                <div className="absolute left-8 cursor-pointer inset-0 w-[93%] h-full bg-black bg-opacity-50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-500 rounded-xl">
+                                />
+                                {activeSlide === index && (
+                                <div className="absolute left-0 top-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-500 rounded-xl">
                                     <span className="text-white text-center text-2xl font-semibold px-4">
-                                        {langs ? item.activity.english : item.activity.indonesia}
+                                    {langs ? item.activity.english : item.activity.indonesia}
                                     </span>
                                 </div>
-                            )}
-                        </div>
+                                )}
+                            </div>
+                            </div>
                     ))}
                 </Slider>
             </div>

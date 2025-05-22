@@ -9,6 +9,7 @@ import { getAllTurunanBrand } from "../api/turunan";
 import { handleClickItem } from "../utils/handleClickItem";
 import { Link } from "react-router-dom";
 import { getProfile } from "../api/auth";
+import DOMPurify from 'dompurify';
 
 const Catalog = () => {
   const { _, langs } = useSelector((state) => state.LangReducer);
@@ -236,9 +237,11 @@ const CardCatalog = ({ item, handleClickItem, user, isMonthlyProgram, isDegreePr
           </h2>
           {isDegreeProgram ? (
             <div
-              className={"prose text-[#505e79] overflow-auto mb-2 grow leading-relaxed w-full [&_a]:text-blue-600 [&_a]:underline [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-6 [&_ol]:pl-6"}
+              className="text-neutral-600 prose-p:text-neutral-600 [&_span]:text-neutral-600 [&_p]:text-neutral-600 [&_div]:text-neutral-600"
               dangerouslySetInnerHTML={{
-                __html: `${item.detail_brand.substring(0, 100)}...`,
+                __html: item.detail_brand
+                  .replace(/style="[^"]*"/g, '') // hapus inline style
+                  .substring(0, 100) + '...',     // batasi 100 karakter
               }}
             />
           ) : (
