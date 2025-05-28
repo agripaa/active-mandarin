@@ -92,6 +92,7 @@ const DashboardAdmin = () => {
     const fetchTopSellingProductsAndPrograms = async () => {
         try {
             const response = await getTopSellingProductsAndPrograms();
+            console.log(response);
             setTopProducts(response.top_products);
             setTopPrograms(response.top_programs);
         } catch (error) {}
@@ -161,7 +162,8 @@ const DashboardAdmin = () => {
             </div>
             <div className='flex flex-col md:flex-row w-full min-h-[480px] gap-4 p-4'>
                 <ListCard title="Top 5 Produk" link="/dashboard/products" data={topProducts} />
-                <ListCard title="Top 5 Program"link="/dashboard/programs"  data={topPrograms} />
+                <ListCard title="Top 5 Program" link="/dashboard/programs" data={topPrograms} />
+                <ListCard title="Top 5 Ujian" link="/dashboard/programs" data={topPrograms} />
             </div>
         </section>
     );

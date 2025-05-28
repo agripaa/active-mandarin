@@ -9,6 +9,7 @@ module.exports = {
         background: "#F5F8FF",
         fiord: {
           50: "#FFFFFF",
+          100: "#ECEEF2",
           200: "#D5DAE2",
           300: "#AFB8CA",
           600: "#505E79",

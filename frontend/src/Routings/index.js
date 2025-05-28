@@ -25,6 +25,13 @@ import GiveDonation from "../Pages/GiveDonation";
 import Invoice from "../Pages/Invoice";
 import KelasAffiliator from "../Pages/KelasAffiliator";
 import BecomePartner from "../Pages/BecomePartner";
+import DashboardExam from "../Pages/DashboardExam";
+import CreateExam from "../Components/dashboard/CreateExam";
+import NotifikasiAffiliator from "../Pages/NotifikasiAffiliator";
+import NotifikasiTransaksi from "../Pages/NotifikasiTransaksi";
+import NotifikasiUjian from "../Pages/NotifikasiUjian";
+import DashboardExaminate from "../Pages/DashboardExaminate";
+import TakeExam from "../Pages/TakeExam";
 
 const Routings = () => {
     return(
@@ -53,12 +60,18 @@ const Routings = () => {
                 <Route path="/dashboard" element={<Dashboard/>}/>
                 <Route path="/dashboard/products" element={<DashboardProduct/>}/>
                 <Route path="/dashboard/programs" element={<DashboardProgram/>}/>
+                <Route path="/dashboard/exam" element={<DashboardExam/>}/>
                 <Route path="/transaksi" element={<Transaksi/>}/>
-                <Route path="/notifikasi" element={<Notifikasi/>}/>
+                <Route path="/verifikasi/affiliator" element={<NotifikasiAffiliator/>}/>
+                <Route path="/verifikasi/transaksi" element={<NotifikasiTransaksi/>}/>
+                <Route path="/verifikasi/ujian" element={<NotifikasiUjian/>}/>
+                <Route path="/dashboard/examinate/:id" element={<DashboardExaminate/>}/>
+                <Route path="/dashboard/take-exam/:id" element={<TakeExam/>}/>
                 <Route path="/affiliate" element={<Affiliate/>}/>
                 <Route path="/rekrutmen" element={<Rekrutmen/>}/>
                 <Route path="/donasi" element={<Donation/>}/>
                 <Route path="/profile" element={<Profile/>}/>
+                <Route path="/dashboard/exam/add" element={<CreateExam/>}/>
 
                 {/* IDK */}
                 <Route path="/events" element={<Event/>}/>

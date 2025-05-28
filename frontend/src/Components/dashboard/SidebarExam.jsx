@@ -5,7 +5,7 @@ import { MdCoPresent, MdOutlineDashboardCustomize } from "react-icons/md";
 import { SiGoogleclassroom } from "react-icons/si";
 import { getProfile } from "../../api/auth";
 
-const Sidebar = ({ onClose }) => {
+const SidebarExam = ({ onClose }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
@@ -202,4 +202,4 @@ const SidebarMenuSub = ({ title, icon, children }) => {
     );
 };
 
-export default Sidebar;
+export default SidebarExam;
