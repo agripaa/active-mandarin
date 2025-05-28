@@ -73,14 +73,18 @@ const Sidebar = ({ onClose }) => {
             </div>
 
             {/* Profile User */}
-            <div className="p-4 mb-4 border-b border-gray-300">
-                <div className="flex flex-col items-center my-4 justify-center">
+            <div className="px-4 pt-3 pb-6">
+                <div className="flex flex-col items-center justify-center">
                     <img src={profileImg} alt="profile user" className="w-[100px] h-[100px] rounded-full object-cover" />
                     <h5 className="text-xl text-gray-800 mt-2 font-medium text-center w-full">{name}</h5>
                     <h5 className="text-md text-white bg-[#3377FF] px-4 py-1 rounded-2xl text-center font-medium">
                         {capitalize(role)}
                     </h5>
                 </div>
+            </div>
+
+            <div className="px-4">
+                <hr className="mb-4" />
             </div>
 
             {/* Sidebar Menu */}

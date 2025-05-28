@@ -73,8 +73,8 @@ const SidebarExam = ({ onClose }) => {
             </div>
 
             {/* Profile User */}
-            <div className="p-4 mb-4 border-b border-gray-300">
-                <div className="flex flex-col items-center my-4 justify-center">
+            <div className="px-4 pt-3 pb-6">
+                <div className="flex flex-col items-center justify-center">
                     <img src={profileImg} alt="profile user" className="w-[100px] h-[100px] rounded-full object-cover" />
                     <h5 className="text-xl text-gray-800 mt-2 font-medium text-center w-full">{name}</h5>
                     <h5 className="text-md text-white bg-[#3377FF] px-4 py-1 rounded-2xl text-center font-medium">
@@ -83,64 +83,46 @@ const SidebarExam = ({ onClose }) => {
                 </div>
             </div>
 
+            <div className="px-4">
+                <hr className="mb-4" />
+            </div>
+
             {/* Sidebar Menu */}
             <div className="flex flex-col justify-between h-auto px-4">
-                <nav>
-                    {role === "admin" ? (
-                        <ul>
-                            <SidebarItem to={`/dashboard`} icon={<RiDashboardFill />} label="Dashboard" location={location} />
-                            <SidebarItem to={`/transaksi`} icon={<RiFileTextLine />} label="Transaksi" location={location} />
-                            <SidebarMenuSub title="Kelola Item" icon={<RiSoundModuleLine />}>
-                                <SidebarItem to={`/dashboard/programs`} label="Program" location={location} />
-                                <SidebarItem to={`/dashboard/products`} label="Produk" location={location} />
-                                <SidebarItem to={`/dashboard/exam`} label="Ujian" location={location} />
-                            </SidebarMenuSub>
-                            <SidebarMenuSub title="Verifikasi" icon={<RiCheckboxCircleLine />}>
-                                <SidebarItem to={`/verifikasi/transaksi`} label="Pembayaran" location={location} />
-                                <SidebarItem to={`/verifikasi/affiliator`} label="Calon Affiliator" location={location} />
-                                <SidebarItem to={`/verifikasi/ujian`} label="Hasil Ujian" location={location} />
-                            </SidebarMenuSub>
-                            <SidebarMenuSub title="Data Form" icon={<RiListUnordered />}>
-                                <SidebarItem to={`/affiliate`} label="Data Affiliate" location={location} />
-                                <SidebarItem to={`/donasi`} label="Data Donasi" location={location} />
-                                <SidebarItem to={`/rekrutmen`} label="Data Rekrutmen" location={location} />
-                            </SidebarMenuSub>
-                            <hr className="my-4" />
-                            <SidebarItem to={`/`} icon={<RiHome4Line />} label="Homepage" location={location} />
-                        </ul>
-                    ) : role === "affiliator" ? (
-                        <ul>
-                            <SidebarItem to={`/dashboard`} icon={<RiDashboardFill />} label="Dashboard" location={location} />
-                            <SidebarItem to={`/kelas-affiliator`} icon={<SiGoogleclassroom />} label="Kelas" location={location} />
-                            <SidebarItem to={`/transaksi`} icon={<RiFileTextLine />} label="Transaksi" location={location} />
-                            <SidebarItem to={`/profile`} icon={<RiUserLine />} label="Profile" location={location} />
-                            <hr className="my-4" />
-                            <SidebarItem to={`/`} icon={<RiHome4Line />} label="Homepage" location={location} />
-                            <SidebarItem to={`/class`} icon={<MdCoPresent />} label="Explore Program" location={location} />
-                            <SidebarItem to={`/products`} icon={<MdOutlineDashboardCustomize />} label="Explore Product" location={location} />
-                        </ul>
-                    ) : (
-                        <ul>
-                            <SidebarItem to={`/dashboard`} icon={<RiDashboardFill />} label="Dashboard" location={location} />
-                            <SidebarItem to={`/transaksi`} icon={<RiFileTextLine />} label="Transaksi" location={location} />
-                            <SidebarItem to={`/profile`} icon={<RiUserLine />} label="Profile" location={location} />
-                            <hr className="my-4" />
-                            <SidebarItem to={`/`} icon={<RiHome4Line />} label="Homepage" location={location} />
-                            <SidebarItem to={`/class`} icon={<MdCoPresent />} label="Explore Program" location={location} />
-                            <SidebarItem to={`/products`} icon={<MdOutlineDashboardCustomize />} label="Explore Product" location={location} />
-                        </ul>
-                    )}
-                </nav>
-
-                {/* Logout */}
-                <div className="p-2 px-4 py font-semibold flex flex-col">
-                    <button 
-                        className="mt-3 text-red-400 hover:text-red-600 text-md flex items-center"
-                        onClick={handleLogout}
-                    >
-                        <RiLogoutBoxLine className="mr-1 text-2xl" /> Keluar
-                    </button>
+                {/* Question Type */}
+                <div className="flex flex-col gap-2 mb-4">
+                    <p className="text-base font-medium text-fiord-950">Tipe Soal</p>
+                    <h3 className="text-xl font-semibold">听力 - Mendengar</h3>
                 </div>
+
+                {/* Question Type */}
+                <div className="flex flex-col gap-2 mb-4">
+                    <p className="text-base font-medium text-fiord-950">Sisa Waktu</p>
+                    <div className="rounded-full bg-background py-2.5">
+                        <p className="text-xl font-medium text-[#3377FF] text-center">23:59</p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="px-4">
+                <hr className="mb-4" />
+            </div>
+            
+            {/* Question Navigation */}
+            <div className="flex flex-row flex-wrap gap-1.5 px-4">
+                {[...Array(10)].map((_, index) => (
+                    <button
+                        key={index}
+                        className={`w-10 h-10 rounded-lg flex items-center justify-center font-medium transition-colors ${
+                            location.search.includes(`question=${index + 1}`)
+                                ? "bg-[#3377FF] text-white"
+                                : "bg-white hover:bg-fiord-200 text-fiord-950"
+                        }`}
+                        onClick={() => navigate(`/dashboard/take-exam/1?question=${index + 1}`)}
+                    >
+                        {index + 1}
+                    </button>
+                ))}
             </div>
         </aside>
     );

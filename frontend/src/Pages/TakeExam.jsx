@@ -2,15 +2,23 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Table, Button, Spin, Input } from "antd";
 import Swal from "sweetalert2";
 import { useNavigate, useParams } from "react-router";
+import { motion } from "motion/react";
 import ExamLayout from "../Layouts/ExamLayout";
 
 const TakeExam = () => {
   const [loading, setLoading] = useState(true);
   const [profileImg, setProfileImg] = useState("/assets/profile-dummy.webp");
   const [questionList, setQuestionList] = useState([]);
+  const [number, setNumber] = useState(0);
+  const [draggedIdx, setDraggedIdx] = useState(null);
+  const [dragOverIdx, setDragOverIdx] = useState(null);
 
   const navigate = useNavigate();
   const { id } = useParams();
+
+  const currentQuestion = useMemo(() => {
+    return questionList[number] || {};
+  }, [questionList, number]);
 
   const questionNumberArray = useMemo(() => {
     let count = 0;
@@ -33,6 +41,38 @@ const TakeExam = () => {
     }, 1000);
   }, []);
 
+  const nextNumber = () => {
+    if (number < questionList.length - 1) {
+      setNumber(number + 1);
+    } else {
+      Swal.fire({
+        title: "Selesai",
+        text: "Anda telah menyelesaikan ujian ini.",
+        icon: "success",
+        confirmButtonText: "Kembali ke Dashboard",
+        showCancelButton: true,
+        cancelButtonText: "Tetap di sini",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/dashboard");
+        }
+      });
+    }
+  };
+
+  const prevNumber = () => {
+    if (number > 0) {
+      setNumber(number - 1);
+    } else {
+      Swal.fire({
+        title: "Tidak Bisa Mundur",
+        text: "Anda sudah berada di soal pertama.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <ExamLayout>
@@ -45,110 +85,176 @@ const TakeExam = () => {
 
   return (
     <ExamLayout>
-      <div className="p-4 flex flex-row justify-between items-center">
-        <div className="flex flex-row gap-5 items-center">
-          <img
-            src={profileImg}
-            alt="Profile"
-            className="w-16 h-w-16 rounded-full object-cover"
-          />
-          <div className="flex flex-col gap-2">
-            <h2 className="text-xl font-medium">Udin Paco</h2>
-            <div className="inline-flex items-center px-2 py-0.5 text-white bg-blue-500 rounded-full text-xs font-medium">
-              Mandarin Juara
+      <div className="px-8 py-4 flex flex-col gap-5 min-h-screen">
+        <div>
+          {currentQuestion.questionType !== "guide" ? (
+            <div
+              className="my-6"
+              dangerouslySetInnerHTML={{ __html: currentQuestion.question }}
+            />
+          ) : (
+            <div
+              className="my-6"
+              dangerouslySetInnerHTML={{ __html: currentQuestion.guideForQuestion.guide }}
+            />
+          )}
+          {currentQuestion.questionType === "essay" && (
+            <div className="flex flex-col my-4 gap-2">
+              <Input.TextArea
+                className="py-3 px-4 bg-fiord-100 rounded-2xl"
+                value={currentQuestion.answer[0] || ""}
+                placeholder="Tulis jawaban Anda di sini"
+                autoSize={{ minRows: 3, maxRows: 8 }}
+                onChange={e => {
+                  const newAnswer = [e.target.value];
+                  setQuestionList(prev =>
+                    prev.map((q, idx) =>
+                      idx === number ? { ...q, answer: newAnswer } : q
+                    )
+                  );
+                }}
+              />
             </div>
-          </div>
-        </div>
-        <Button className="bg-[#FFCC00] text-black rounded-2xl" size="large" onClick={() => {}}>
-          Kirim
-        </Button>
-      </div>
-
-      <div className="p-4 flex flex-col gap-5">
-        {questionList.map((question, index) => (
-          <div key={question.id} className="bg-white p-6 shadow rounded-2xl">
-            <h4 className="text-xl font-semibold mb-4">
-              {questionNumberArray[index] ? (
-                `Soal ${questionNumberArray[index]}`
-              ) : "Panduan"}
-            </h4>
-            {question.questionType !== "guide" ? (
-              <div
-                className="my-4 py-3 px-4 bg-fiord-100 rounded-2xl"
-                dangerouslySetInnerHTML={{ __html: question.question }}
-              />
-            ) : (
-              <div
-                className="my-4 py-3 px-4 bg-fiord-100 rounded-2xl"
-                dangerouslySetInnerHTML={{ __html: question.guideForQuestion.guide }}
-              />
-            )}
-            {question.questionType === "essay" && (
-              <div className="flex flex-col my-4 gap-2">
-                <h5 className="text-base font-medium">Jawaban</h5>
-                <div
-                  className="py-3 px-4 bg-fiord-100 rounded-2xl"
-                  dangerouslySetInnerHTML={{ __html: question.answer[0] || "Tidak ada jawaban" }}
-                />
-              </div>
-            )}
-            {question.questionType === "multiple-choice" && (
-              <div className="flex flex-col gap-2">
-                <h5 className="text-base font-medium">Jawaban</h5>
-                {question.options.map((option, idx) => (
-                  <div
-                    key={option.id}
-                    className={`py-2 px-4 rounded-2xl ${
-                      question.answer.includes(option.id) ? "bg-blue-100" : "bg-fiord-100"
-                    }`}
-                  >
+          )}
+          {currentQuestion.questionType === "multiple-choice" && (
+            <div className="flex flex-col gap-2">
+              {currentQuestion.options.map((option, idx) => (
+                <Button
+                  key={option.id}
+                  className={`py-4 pl-4 pr-10 rounded-2xl text-left w-full mb-2 h-auto items-center justify-start`}
+                  type={currentQuestion.answer.includes(option.id) ? "primary" : "default"}
+                  onClick={() => {
+                    setQuestionList(prev =>
+                      prev.map((q, qIdx) => {
+                        if (qIdx !== number) return q;
+                        let newAnswer;
+                        if (q.isMultipleAnswer) {
+                          if (q.answer.includes(option.id)) {
+                            newAnswer = q.answer.filter(a => a !== option.id);
+                          } else {
+                            newAnswer = [...q.answer, option.id];
+                          }
+                        } else {
+                          newAnswer = [option.id];
+                        }
+                        return { ...q, answer: newAnswer };
+                      })
+                    );
+                  }}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className={`w-10 h-10 rounded-full justify-center items-center flex ${currentQuestion.answer.includes(option.id) ? "bg-blue-100 text-[#3377FF]" : "bg-background text-[#3377FF]"}`}>
+                      {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'][idx] || String.fromCharCode(65 + idx)}
+                    </div>
                     {option.option}
                   </div>
-                ))}
-                {question.explanation && (
-                  <div
-                    className="mt-4 p-3 bg-fiord-200 rounded-lg"
-                    dangerouslySetInnerHTML={{ __html: question.explanation }}
-                  />
-                )}
+                </Button>
+              ))}
+            </div>
+          )}
+          {currentQuestion.questionType === "order-arrange" && (
+            <div className="flex flex-col gap-2">
+              <h5 className="text-base font-medium">Susun Kata Di Bawah Ini!</h5>
+              <div className="flex flex-row flex-wrap gap-2">
+                {(() => {
+                  // Ambil kata-kata dari options[0]
+                  const originalOrder = currentQuestion.options[0]
+                    ? currentQuestion.options[0].split("; ").map(s => s.trim())
+                    : [];
+                  // Ambil jawaban user, jika belum ada pakai urutan awal
+                  const userOrder = currentQuestion.answer[0]
+                    ? currentQuestion.answer[0].split("; ").map(s => s.trim())
+                    : originalOrder;
+
+                  const handleDragStart = idx => setDraggedIdx(idx);
+                  const handleDragOver = (e, idx) => {
+                    e.preventDefault();
+                    setDragOverIdx(idx);
+                  };
+                  const handleDrop = idx => {
+                    if (draggedIdx === null || draggedIdx === idx) {
+                      setDraggedIdx(null);
+                      setDragOverIdx(null);
+                      return;
+                    }
+                    setQuestionList(prev =>
+                      prev.map((q, qIdx) => {
+                        if (qIdx !== number) return q;
+                        const arr = [...userOrder];
+                        const [moved] = arr.splice(draggedIdx, 1);
+                        arr.splice(idx, 0, moved);
+                        return { ...q, answer: [arr.join("; ")] };
+                      })
+                    );
+                    setDraggedIdx(null);
+                    setDragOverIdx(null);
+                  };
+                  const handleDragEnd = () => {
+                    setDraggedIdx(null);
+                    setDragOverIdx(null);
+                  };
+
+                  // For smooth animation, use motion.div
+                  return (
+                    <React.Fragment>
+                      {userOrder.map((ans, ansIndex) => (
+                        <motion.div
+                          key={ans}
+                          layout
+                          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                          draggable
+                          onDragStart={() => handleDragStart(ansIndex)}
+                          onDragOver={e => handleDragOver(e, ansIndex)}
+                          onDrop={() => handleDrop(ansIndex)}
+                          onDragEnd={handleDragEnd}
+                          style={{
+                            display: "inline-block",
+                            opacity: draggedIdx === ansIndex ? 0.5 : 1,
+                            zIndex: draggedIdx === ansIndex ? 10 : 1,
+                            outline: dragOverIdx === ansIndex && draggedIdx !== null ? "2px dashed #3377FF" : "none",
+                            cursor: draggedIdx === ansIndex ? "grabbing" : "grab",
+                          }}
+                        >
+                          <Button
+                            className={`rounded-2xl px-6 py-5 mr-2 mb-2 text-blue-500`}
+                            style={{
+                              touchAction: "none",
+                              userSelect: "none",
+                              minWidth: 100,
+                              background: dragOverIdx === ansIndex && draggedIdx !== null ? "#e6f0ff" : undefined,
+                              cursor: draggedIdx === ansIndex ? "grabbing" : "grab",
+                            }}
+                          >
+                            {ans}
+                          </Button>
+                        </motion.div>
+                      ))}
+                    </React.Fragment>
+                  );
+                })()}
               </div>
-            )}
-            {question.questionType === "order-arrange" && (
-              <div className="flex flex-col gap-2">
-                <h5 className="text-base font-medium">Jawaban</h5>
-                <div className="flex flex-row flex-wrap">
-                  {question.answer[0]?.split('; ').map((ans, ansIndex) => (
-                    ans && (
-                      <Button
-                        key={ansIndex}
-                        className="rounded-2xl px-6 py-5 mr-2 mb-2 text-blue-500"
-                        // size="middle"
-                        onClick={() => {}}
-                      >
-                        {ans}
-                      </Button>
-                    )
-                  ))}
-                </div>
-              </div>
-            )}
-            {question.questionType !== "guide" && (
-              <>
-                <div className="w-full h-0.5 bg-fiord-200 my-4" />
-                <div className="flex flex-row items-center gap-2">
-                  <Input
-                    value={question.questionType === 'multiple-choice' || question.questionType === 'order-arrange' ? question.point : undefined}
-                    disabled={question.questionType === "multiple-choice" || question.questionType === "order-arrange"}
-                    type="number"
-                    placeholder="cth: 15"
-                    className="w-24 rounded-2xl"
-                  />
-                  <span className="text-sm font-medium">Poin</span>
-                </div>
-              </>
-            )}
-          </div>
-        ))}
+              <div className="mt-2 text-xs text-gray-500">* Drag & drop untuk mengurutkan</div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="sticky bottom-0 left-0 w-full bg-white p-4 shadow-lg flex justify-between items-center">
+        <Button
+          type="primary"
+          onClick={prevNumber}
+          disabled={number === 0}
+          className="rounded-2xl"
+        >
+          Sebelumnya
+        </Button>
+        <Button
+          type="primary"
+          onClick={nextNumber}
+          className="rounded-2xl"
+        >
+          {number < questionList.length - 1 ? "Selanjutnya" : "Selesai"}
+        </Button>
       </div>
     </ExamLayout>
   );
@@ -164,7 +270,7 @@ const DATA = [
         "explanation": "",
         "options": [],
         "isMultipleAnswer": false,
-        "answer": ['Ini jawaban dari kevin thanes'],
+        "answer": [],
         "image": "",
         "guideForQuestion": {
             "start": 0,
@@ -193,9 +299,7 @@ const DATA = [
             }
         ],
         "isMultipleAnswer": false,
-        "answer": [
-            2
-        ],
+        "answer": [],
         "image": "",
         "guideForQuestion": {
             "start": 0,
@@ -206,30 +310,14 @@ const DATA = [
     },
     {
         "id": 3,
-        "question": "",
-        "questionType": "guide",
-        "explanation": "",
-        "options": [],
-        "isMultipleAnswer": false,
-        "answer": [],
-        "image": "",
-        "guideForQuestion": {
-            "start": 0,
-            "end": 0,
-            "guide": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum mollis nunc a molestie dictum. Mauris venenatis, felis scelerisque aliquet lacinia, nulla nisi venenatis odio, id blandit mauris ipsum id sapien. Vestibulum malesuada orci sit amet pretium facilisis. In lobortis congue augue, a commodo libero tincidunt scelerisque.</p>"
-        },
-        "point": 0
-    },
-    {
-        "id": 4,
         "question": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum mollis nunc a molestie dictum. Mauris venenatis, felis scelerisque aliquet lacinia, nulla nisi venenatis odio, id blandit mauris ipsum id sapien. Vestibulum malesuada orci sit amet pretium facilisis. In lobortis congue augue, a commodo libero tincidunt scelerisque.</p>",
         "questionType": "order-arrange",
         "explanation": "",
-        "options": [],
-        "isMultipleAnswer": false,
-        "answer": [
-            "Urutan 1; Urutan 2; Urutan 3; Urutan 4; Urutan 5"
+        "options": [
+          "Urutan 5; Urutan 1; Urutan 3; Urutan 2; Urutan 4"
         ],
+        "isMultipleAnswer": false,
+        "answer": [],
         "image": "",
         "guideForQuestion": {
             "start": 0,
