@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
       User.belongsTo(models.AffiliateDetail, { foreignKey: 'detail_affiliate' });
       User.hasMany(models.Transaction, { foreignKey: 'user_id', as: 'User' });
       User.hasMany(models.Transaction, { foreignKey: 'affiliator_id', as: 'Affiliator' });
+      User.hasMany(models.JawabanUser, { foreignKey: 'user_id' });
     }
 
     // Fungsi untuk memvalidasi password saat login
