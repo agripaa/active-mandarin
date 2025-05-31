@@ -1,0 +1,265 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;500;600;700&display=swap');
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: 'Poppins', sans-serif;
+  scroll-behavior: smooth;
+}
+html {
+  scroll-behavior: smooth;
+}
+
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.classes{
+  background: url('/public/assets/grids.png') #181B3F no-repeat right;
+  background-size: 80rem;
+}
+
+svg { vertical-align: baseline; }
+
+:where(.lectures, .cates)::-webkit-scrollbar{
+  height: .5vh;
+}
+:where(.lectures, .cates)::-webkit-scrollbar-track{
+  background-color: #FFFFFF;
+}
+.lectures::-webkit-scrollbar-thumb{
+  background: #FFFFFF;
+  border-radius: 30px;
+}
+
+.faq-content ul {
+  list-style-type: disc; /* Bulet default */
+  margin-left: 20px; /* Spasi indentasi */
+  padding-left: 20px;
+}
+
+.faq-content ol {
+  list-style-type: decimal; /* Angka untuk ordered list */
+  margin-left: 20px;
+  padding-left: 20px;
+}
+
+.faq-content li {
+  margin-bottom: 5px; /* Jarak antar item */
+  font-size: 1rem; /* Ukuran teks */
+}
+
+.supp{
+  background: url('/public/assets/supports.png') #181B3F no-repeat center;
+}
+
+/* Animasi masuk modal */
+.modal-enter {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.modal-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.modal-exit {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.modal-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.hover\:shadow-lg:hover {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.menus{
+  position: relative;
+  animation: shows .5s 1;
+  opacity: 1;
+}
+
+.loadings{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #6699FF;
+  width: 3px;
+  height: 20%;
+  border-radius: 30px;
+  animation: loads 2s infinite;
+}
+
+.loadings::before{
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -20px;
+  transform: translate(-50%, -50%);
+  background: #6699FF;
+  width: 3px;
+  height: 50%;
+  border-radius: 30px;
+  animation: loads1 1.8s infinite;
+}
+
+.loadings::after{
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  transform: translate(-50%, -50%);
+  background: #6699FF;
+  width: 3px;
+  height: 90%;
+  border-radius: 30px;
+  animation: loads1 2s infinite;
+}
+
+@keyframes loads1 {
+  0%, 100%{
+    height: 100%;
+  }
+  50%{
+    height: 0%;
+  }
+}
+
+@keyframes loads {
+  0%, 100%{
+    height: 0%;
+  }
+  50%{
+    height: 20%;
+  }
+}
+
+@keyframes shows {
+  0%{
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-in-out;
+}
+
+.animate-slide-in {
+  animation: slide-in 0.5s ease-in-out;
+}
+
+.nav-text::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background: #09072E; /* Warna border */
+  transition: width 0.3s ease-out; /* Durasi animasi */
+}
+
+.nav-text:hover::after,
+.nav-text {
+  width: 100%; 
+}
+
+.active-link {
+  width: 0;
+  color: #09072E;
+}
+
+.active-link::after {
+  content: "";
+  width: 0;
+  color: #09072E;
+}
+
+.nav-text{
+  position: relative; /* Memastikan pseudo-element ::after bekerja relatif terhadap elemen ini */
+}
+
+/* Slick content same height */
+.slick-track
+{
+    display: flex !important;
+}
+
+.slick-slide
+{
+    height: inherit !important;
+}
+
+.slick-slide > div
+{
+    height: 100% !important;
+}
+
+.product-slider .slick-list {
+  padding: 0 20% 0 0 !important;
+}
+
+.home-slider .slick-track .slick-slide {
+  padding: 0 12px;
+}
+
+.home-slider .slick-track .slick-slide:first-child {
+  padding-left: 0;
+}
+
+.home-slider .slick-track .slick-slide:last-child {
+  padding-right: 0;
+}
+
+/* Targeting the previous arrow */
+.slick-prev {
+  color: black; /* Changes the color of the left arrow */
+}
+
+/* Targeting the next arrow */
+.slick-next {
+  color: black; /* Changes the color of the right arrow */
+}
+
+/* Optional: If you want to make sure the arrow color stays black even when hovered */
+.slick-prev:hover, .slick-next:hover {
+  color: black; /* Keeps the arrow color black on hover */
+}

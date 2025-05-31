@@ -1,0 +1,6 @@
+export const LangType = {
+    CHANGE_LANG: 'CHANGE_LANG',
+    GET_LANG: 'GET_LANG',
+    GET_LANG_SUCCESS: 'GET_LANG_SUCCESS',
+    GET_LANG_FAILED: 'GET_LANG_FAILED'
+}
