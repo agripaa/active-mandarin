@@ -8,6 +8,13 @@ const recruitmentRoute = require('./recruitment.route');
 const donationRoute = require('./donation.route');
 const turunanBrandRoutes = require('./turunanBrand.route');
 const userRoute = require('./user.route');
+const ujianRoutes = require('./ujian.route');
+const ujianBrandRoutes = require('./ujianBrand.route');
+const tipeUjianRoutes = require('./tipeUjian.route');
+const listJawabanRoutes = require('./listJawaban.route');
+const soalRoutes = require('./soal.route');
+const jawabanUserRoutes = require('./jawabanUser.route');
+
 
 const router = express.Router();
  
@@ -19,6 +26,12 @@ router.use('/affiliate', affiliateRoute);
 router.use('/recruitment', recruitmentRoute);
 router.use('/donation', donationRoute);
 router.use('/user', userRoute);
-router.use('/turunan-brand', turunanBrandRoutes);
+router.use('/turunan-brand', turunanBrandRoutes);   
+router.use('/ujian', ujianRoutes);   
+router.use('/ujian-brand', ujianBrandRoutes);   
+router.use('/tipe-ujian', tipeUjianRoutes);   
+router.use('/list-jawaban', listJawabanRoutes);   
+router.use('/soal', soalRoutes);   
+router.use('/jawaban-user', jawabanUserRoutes);   
 
 module.exports = router;
