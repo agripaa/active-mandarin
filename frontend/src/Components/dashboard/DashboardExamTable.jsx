@@ -50,7 +50,6 @@ const ExamTable = ({ dataProgram }) => {
     console.error("Gagal memuat ujian:", err);
   }
 };
-
   fetchUjian();
 }, []);
 
@@ -118,7 +117,7 @@ const ExamTable = ({ dataProgram }) => {
       dataIndex: "brand_img",
       key: "brand_img",
       render: (image) => (
-        <img src={`${image}`} alt="Program" className="w-18 h-12 rounded-md" />
+        <img src={`${process.env.REACT_APP_API_IMG}${image}`} alt="Program" className="w-18 h-12 rounded-md" />
       ),
     },
     {
