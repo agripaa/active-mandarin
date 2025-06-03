@@ -1,4 +1,5 @@
 const express = require('express');
+const app = express();
 const roleRoute = require('./role.route');
 const authRoute = require('./auth.route');
 const brandRoute = require('./brand.route');
@@ -15,6 +16,7 @@ const listJawabanRoutes = require('./listJawaban.route');
 const soalRoutes = require('./soal.route');
 const jawabanUserRoutes = require('./jawabanUser.route');
 
+app.use(express.json());
 
 const router = express.Router();
  
