@@ -32,6 +32,9 @@ import NotifikasiTransaksi from "../Pages/NotifikasiTransaksi";
 import NotifikasiUjian from "../Pages/NotifikasiUjian";
 import DashboardExaminate from "../Pages/DashboardExaminate";
 import TakeExam from "../Pages/TakeExam";
+import ExamList from "../Components/dashboard/ExamList";
+import ResultExams from "../Components/dashboard/ResultExams";
+import ResultPage from "../Components/dashboard/ResultPage";
 
 const Routings = () => {
     return(
@@ -72,6 +75,9 @@ const Routings = () => {
                 <Route path="/donasi" element={<Donation/>}/>
                 <Route path="/profile" element={<Profile/>}/>
                 <Route path="/dashboard/exam/add" element={<CreateExam/>}/>
+                <Route path="/exams" element={<ExamList/>}/>
+                <Route path="/result-exam" element={<ResultExams/>}/>
+                <Route path="/result-exam/:id" element={<ResultPage/>}/>
 
                 {/* IDK */}
                 <Route path="/events" element={<Event/>}/>
