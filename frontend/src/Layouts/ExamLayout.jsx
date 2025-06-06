@@ -47,7 +47,7 @@ const ExamLayout = ({ children }) => {
 
       {/* Main content */}
       <div className="flex flex-col flex-grow w-full lg:ml-[260px]">
-        <main className="p-4 bg-[#F5F8FF]">{children}</main>
+        <main className="bg-[#F5F8FF]">{children}</main>
       </div>
     </div>
 

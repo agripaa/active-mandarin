@@ -6,7 +6,7 @@ import { getBrandById } from "../api/brand";
 import { formatRupiah } from "../utils/rupiahFormat";
 import { validateReveralCode } from "../api/affiliate";
 import { getProfile } from "../api/auth";
-import { Spin } from "antd";
+import { Checkbox, Spin } from "antd";
 import Swal from "sweetalert2";
 
 const Checkout = () => {
@@ -144,6 +144,15 @@ const Checkout = () => {
 
                     {/* Kode Referral + Detail Pembayaran */}
                     <div className="bg-white p-6 rounded-lg border md:w-6/12">
+                        {/* For Exam Type */}
+                        {/* Create conditional state later */}
+                        <h2 className="text-lg font-semibold mb-2">Include Certificate</h2>
+                        <div className="flex items-center mb-4">
+                          <Checkbox
+                            defaultChecked
+                          />
+                          <span className="ml-2">+ E-Certificate</span>
+                        </div>
                         <h2 className="text-lg font-semibold mb-2">Kode Referal</h2>
                         <input
                             type="text"

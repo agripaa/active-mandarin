@@ -1,10 +1,15 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
+import Swal from 'sweetalert2';
 import { Table, Button, Input, Select, Form, Upload, Switch } from "antd";
 import { FaChevronRight } from "react-icons/fa";
 import { RiAddFill, RiArrowLeftLine } from "react-icons/ri";
 import { motion } from "motion/react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { useNavigate } from 'react-router-dom';
+import { createUjian } from "../../api/ujian"; 
+import { getAllBrands } from "../../api/brand"; 
+
 
 import { formatRupiah } from "../../utils/rupiahFormat";
 import DashboardLayout from "../../Layouts/DashboardLayout";
@@ -19,6 +24,18 @@ const CreateExam = ({ dataProgram }) => {
   const [timeListening, setTimeListening] = useState(0);
   const [timeReading, setTimeReading] = useState(0);
   const [timeWriting, setTimeWriting] = useState(0);
+
+  const [title, setTitle] = useState("");
+  const [examDetails, setExamDetails] = useState("");
+  const [price, setPrice] = useState("0");
+  const [priceCertif, setPriceCertif] = useState("0");
+  const [discountPrice, setDiscountPrice] = useState("0");
+  const [commission, setCommission] = useState("0");
+  const [level, setLevel] = useState(undefined); 
+  const [programs, setPrograms] = useState([]);  
+  const [imageFile, setImageFile] = useState(null);
+
+
   const [typeData, setTypeData] = useState({
     listening: {
       title: "听力 - Mendengar",
@@ -51,7 +68,32 @@ const CreateExam = ({ dataProgram }) => {
           exit={{ opacity: 0, y: -40 }}
           transition={{ duration: 0.5 }}
         >
-          {show === 'exam' && <Exam setShow={setShow} typeData={typeData} />}
+          {show === 'exam' && <Exam
+            setShow={setShow}
+            typeData={typeData}
+            questionsListening={questionsListening}
+            questionsReading={questionsReading}
+            questionsWriting={questionsWriting}
+            title={title}
+            setTitle={setTitle}
+            examDetails={examDetails}
+            setExamDetails={setExamDetails}
+            price={price}
+            setPrice={setPrice}
+            priceCertif={priceCertif}
+            setPriceCertif={setPriceCertif}
+            discountPrice={discountPrice}
+            setDiscountPrice={setDiscountPrice}
+            commission={commission}
+            setCommission={setCommission}
+            imageFile={imageFile}
+            setImageFile={setImageFile}
+            level={level}
+            setLevel={setLevel}
+            programs={programs}
+            setPrograms={setPrograms}
+          />
+          }
           {show === 'listening' && (
             <DetailExam
               show={'listening'}
@@ -112,14 +154,25 @@ const CreateExam = ({ dataProgram }) => {
   );
 };
 
-const Exam = ({ setShow, typeData }) => {
+  const Exam = ({
+    setShow,
+    typeData,
+    questionsListening,
+    questionsReading,
+    questionsWriting,
+    title, setTitle,
+    examDetails, setExamDetails,
+    price, setPrice,
+    priceCertif, setPriceCertif,
+    discountPrice, setDiscountPrice,
+    commission, setCommission,
+    imageFile, setImageFile,
+    level, setLevel,
+    programs, setPrograms
+  }) => {
   const [form] = Form.useForm();
-  const [title, setTitle] = useState("");
-  const [examDetails, setExamDetails] = useState("");
-  const [price, setPrice] = useState("0");
-  const [priceCertif, setPriceCertif] = useState("0");
-  const [discountPrice, setDiscountPrice] = useState("0");
-  const [commission, setCommission] = useState("0");
+  const [programOptions, setProgramOptions] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Load saved exam data from localStorage
@@ -132,6 +185,8 @@ const Exam = ({ setShow, typeData }) => {
       setPriceCertif(examData.priceCertif || "0");
       setDiscountPrice(examData.discountPrice || "0");
       setCommission(examData.commission || "0");
+      setLevel(examData.level || undefined);
+      setPrograms(examData.programs || []);
     }
   }, []);
 
@@ -144,14 +199,95 @@ const Exam = ({ setShow, typeData }) => {
       priceCertif,
       discountPrice,
       commission,
+      level,
+      programs,
     };
     localStorage.setItem("savedExam", JSON.stringify(examData));
-  }, [title, examDetails, price, priceCertif, discountPrice, commission]);
+  }, [title, examDetails, price, priceCertif, discountPrice, commission, level, programs]);
+
+  useEffect(() => {
+  const fetchProgramOptions = async () => {
+    try {
+      const res = await getAllBrands();
+      if (res.status) {
+        const filtered = res.data.filter((brand) => brand.category_brand === "program");
+        setProgramOptions(filtered);
+      }
+    } catch (err) {
+      console.error("Gagal memuat data program:", err);
+    }
+  };
+
+  fetchProgramOptions();
+}, []);
+
 
   const handleRupiahChange = useCallback((value, setter) => {
     const numericValue = value.replace(/[^0-9]/g, "");
     setter(numericValue);
   }, []);
+
+ const handleSubmit = async () => {
+  try {
+    await form.validateFields();
+
+    const formData = new FormData();
+    formData.append("nama_ujian", title);
+    formData.append("desc", examDetails);
+    formData.append("level", level);
+    formData.append("harga_normal", price);
+    formData.append("harga_certif", priceCertif);
+    formData.append("harga_diskon", discountPrice);
+    formData.append("commission", commission);
+    formData.append("total_skor", 100);
+
+    if (imageFile instanceof File) {
+      formData.append("ujian_img", imageFile);
+    }
+
+    formData.append("ujian_brand", JSON.stringify(programs));
+    formData.append("tipe_ujian", JSON.stringify(typeData));
+    formData.append("soal", JSON.stringify({
+      listening: questionsListening,
+      reading: questionsReading,
+      writing: questionsWriting
+    }));
+
+    const ujianData = await createUjian(formData); // ✅ pakai API helper
+
+    if (!ujianData.status || !ujianData.result?.id) throw new Error("Gagal membuat ujian");
+
+    Swal.fire({
+      title: "Berhasil!",
+      text: "Ujian dan soal berhasil dibuat.",
+      icon: "success",
+    }).then(() => {
+      localStorage.removeItem("savedExam");
+      navigate("/dashboard/exam");
+    });
+
+   } catch (err) {
+  console.error("Gagal menyimpan:", err);
+
+  // Deteksi kemungkinan bentuk error
+    const errorMessage =
+      err?.response?.data?.message || // dari axios error
+      err?.message || // dari throw new Error()
+      "Gagal menyimpan ujian dan soal."; // default
+
+    Swal.fire({
+      title: "Validasi Gagal",
+      text: errorMessage,
+      icon: "error",
+    });
+  }
+};
+
+
+const totalSoal = typeData.listening.questionCount + typeData.reading.questionCount + typeData.writing.questionCount;
+const totalWaktu = Number(typeData.listening.time) + Number(typeData.reading.time) + Number(typeData.writing.time);
+
+
 
   return (
     <>
@@ -163,8 +299,9 @@ const Exam = ({ setShow, typeData }) => {
           value={title}
           size="large"
           onChange={(e) => setTitle(e.target.value)}
+          rules={[{ required: true, message: "Judul ujian harus dipilih." }]}
         />
-        <Button className="bg-[#FFCC00] text-black" size="large" onClick={() => form.submit()}>
+        <Button className="bg-[#FFCC00] text-black" size="large" onClick={handleSubmit}>
           Simpan
         </Button>
       </div>
@@ -175,28 +312,41 @@ const Exam = ({ setShow, typeData }) => {
               <ReactQuill value={examDetails} onChange={setExamDetails} theme="snow" />
             </Form.Item>
 
-            <Form.Item name="level" label="Level">
-              <Select placeholder="Pilih Level Ujian">
+            <Form.Item label="Level">
+              <Select placeholder="Pilih Level Ujian" value={level} onChange={(val) => setLevel(val)}>
                 <Select.Option key={1} value={1}>{1}</Select.Option>
                 <Select.Option key={2} value={2}>{2}</Select.Option>
                 <Select.Option key={3} value={3}>{3}</Select.Option>
               </Select>
             </Form.Item>
 
-            <Form.Item name="program" label="Program Terkait">
-              <Select placeholder="Pilih Program Terkait">
-                <Select.Option key={1} value={1}>{1}</Select.Option>
-                <Select.Option key={2} value={2}>{2}</Select.Option>
-                <Select.Option key={3} value={3}>{3}</Select.Option>
+            <Form.Item
+              name="programs"
+              label="Program Terkait"
+              initialValue={programs}
+            >
+             <Select
+                mode="multiple"
+                placeholder="Pilih Program Terkait"
+                value={programs}
+                onChange={(val) => setPrograms(val)}
+                allowClear
+              >
+                {programOptions.map((brand) => (
+                  <Select.Option key={brand.id} value={brand.id}>
+                    {brand.variant || brand.nama_brand || `Brand ${brand.id}`}
+                  </Select.Option>
+                ))}
               </Select>
             </Form.Item>
+
 
             <Form.Item label="Harga Normal" required>
-              <Input value={formatRupiah(price)} onChange={(e) => handleRupiahChange(e.target.value, setPrice)} placeholder="Masukkan Harga Normal" />
+              <Input value={formatRupiah(price)} onChange={(e) => handleRupiahChange(e.target.value, setPrice)} placeholder="Masukkan Harga Normal" rules={[{ required: true, message: "Harga normal harus dimasukkan." }]} />
             </Form.Item>
 
             <Form.Item label="Harga + Certif" required>
-              <Input value={formatRupiah(priceCertif)} onChange={(e) => handleRupiahChange(e.target.value, setPriceCertif)} placeholder="Masukkan Harga Normal" />
+              <Input value={formatRupiah(priceCertif)} onChange={(e) => handleRupiahChange(e.target.value, setPriceCertif)} placeholder="Masukkan Harga Certif" rules={[{ required: true, message: "Harga harus dimasukkan." }]} />
             </Form.Item>
 
             <Form.Item label="Harga Promo">
@@ -206,14 +356,31 @@ const Exam = ({ setShow, typeData }) => {
             <Form.Item label="Komisi">
               <Input value={formatRupiah(commission)} onChange={(e) => handleRupiahChange(e.target.value, setCommission)} placeholder="Masukkan Harga Promo (Opsional)" />
             </Form.Item>
+
+            {/* Bagian upload image belum ada */}
+            <Form.Item label="Upload Gambar Ujian">
+              <Upload
+                maxCount={1}
+                beforeUpload={() => false}
+                onChange={(info) => {
+                  if (info.fileList.length > 0) {
+                    setImageFile(info.fileList[0].originFileObj);
+                  } else {
+                    setImageFile(null);
+                  }
+                }}
+              >
+                <Button icon={<UploadOutlined />}>Pilih File</Button>
+              </Upload>
+            </Form.Item>
           </Form>
         </div>
         <div className="bg-white shadow rounded-xl p-6 w-full h-fit xl:w-fit xl:min-w-96">
           {/* detail ujian shows title, total question, and total time in minute */}
           <h2 className="text-xl font-medium">Detail Ujian</h2>
           <div className="mt-4">
-            <p className="text-base font-medium flex justify-between">Total Soal <span className="font-semibold">100</span></p>
-            <p className="text-base font-medium flex justify-between">Total Waktu (menit) <span className="font-semibold">50</span></p>
+            <p className="text-base font-medium flex justify-between">Total Soal <span className="font-semibold">{totalSoal}</span></p>
+            <p className="text-base font-medium flex justify-between">Total Waktu (menit) <span className="font-semibold">{totalWaktu}</span></p>
           </div>
         </div>
       </div>

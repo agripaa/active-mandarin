@@ -41,7 +41,9 @@ app.use('/public/proofs', express.static(path.join(__dirname, 'public/proofs')))
 app.use('/public/cv', express.static(path.join(__dirname, 'public/cv')));
 app.use('/public/proof_donation', express.static(path.join(__dirname, 'public/proof_donation')));
 app.use('/public/profile-user', express.static(path.join(__dirname, 'public/profile-user')));
+app.use('/public/ujian', express.static(path.join(__dirname, 'public/ujian')));
 
+createFolderIfNotExists(path.join(__dirname, 'public/ujian'));
 createFolderIfNotExists(path.join(__dirname, 'public/brand'));
 createFolderIfNotExists(path.join(__dirname, 'public/products'));
 createFolderIfNotExists(path.join(__dirname, 'public/proofs'));

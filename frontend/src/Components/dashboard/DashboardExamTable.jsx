@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router";
 import EditProgramModal from "./modal/EditProgramModal";
 import { getDashboardData } from "../../api/transaksi";
+import { getAllUjian, deleteUjian, getUjianById } from "../../api/ujian"; // sesuaikan path-nya
 import { softDeleteBrand, getBrandById } from "../../api/brand";
 import { stripHtml } from '../../utils/stripHtml';
 import { truncateText } from '../../utils/truncateText';
@@ -24,13 +25,33 @@ const ExamTable = ({ dataProgram }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (dataProgram) {
-      setAllData(dataProgram);
-      const options = Object.keys(dataProgram);
-      setTurunanOptions(["Semua", ...options]);
-      setData(options.flatMap(key => dataProgram[key]));
+ const fetchUjian = async () => {
+  try {
+    const res = await getAllUjian();
+    if (res.status && Array.isArray(res.data)) {
+    const ujianData = res.data.map((item) => ({
+        id: item.id,
+        variant: item.nama_ujian,
+        level: item.level,
+        price: item.harga_normal,
+        discount_price: item.harga_diskon,
+        commission: item.commission,
+        sold_sum: item.total_terjual || 0,
+        brand_img: item.ujian_img,
+        detail_brand: item.desc,
+      }));
+      setData(ujianData);
+      setAllData({ Semua: ujianData });
+      setTurunanOptions(["Semua"]);
+    } else {
+      console.error("Data ujian tidak valid:", res);
     }
-  }, [dataProgram]);
+  } catch (err) {
+    console.error("Gagal memuat ujian:", err);
+  }
+};
+  fetchUjian();
+}, []);
 
   const handleFilterTurunan = (value) => {
     setSelectedTurunan(value);
@@ -133,7 +154,7 @@ const ExamTable = ({ dataProgram }) => {
       render: (komisi) => (komisi ? formatRupiah(komisi) : "-"),
     },
     {
-      title: "Komisi",
+      title: "Deskripsi",
       dataIndex: "detail_brand",
       key: "detail_brand",
       render: (detail) => {
