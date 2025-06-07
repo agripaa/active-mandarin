@@ -310,21 +310,129 @@ exports.submitJawaban = async (req, res) => {
   try {
     const { soal_id, user_id, input_jawaban } = req.body;
 
-    let jawaban = await JawabanUser.findOne({ where: { soal_id, user_id } });
+    const soal = await db.Soal.findByPk(soal_id);
+    if (!soal) {
+      return res.status(404).json({ status: false, message: "Soal tidak ditemukan" });
+    }
+
+    const kunci = soal.jawaban_benar?.split(",").map(j => j.trim());
+    const tipe = soal.tipe_soal;
+    const point = soal.point_soal || 0;
+
+    let isTrue = null;
+    let poing = 0;
+
+    if (tipe === "multiple-choice") {
+      const jawabanUser = input_jawaban?.split(",").map(j => j.trim()).sort();
+      const jawabanBenar = [...kunci].sort();
+
+      if (jawabanUser.join(",") === jawabanBenar.join(",")) {
+        isTrue = true;
+        poing = point;
+      } else {
+        isTrue = false;
+        poing = 0;
+      }
+    }
+
+    if (tipe === "order-arrange") {
+      const cleanedInput = input_jawaban.replace(/;\s*$/, ""); 
+      const jawabanUser = cleanedInput.trim();
+      const jawabanBenar = kunci?.join("; ").trim();
+
+      if (jawabanUser === jawabanBenar) {
+        isTrue = true;
+        poing = point;
+      } else {
+        isTrue = false;
+        poing = 0;
+      }
+    }
+
+    if (tipe === "essay") {
+      isTrue = null;
+      poing = 0;
+    }
+
+    let jawaban = await db.JawabanUser.findOne({ where: { soal_id, user_id } });
 
     if (jawaban) {
-      await jawaban.update({ input_jawaban });
+      await jawaban.update({ input_jawaban, isTrue, poing });
     } else {
-      await JawabanUser.create({
+      await db.JawabanUser.create({
         soal_id,
         user_id,
         input_jawaban,
+        isTrue,
+        poing,
       });
     }
 
-    res.status(200).json({ status: true, message: "Jawaban disimpan" });
+    res.status(200).json({ status: true, message: "Jawaban disimpan", isTrue, poing });
   } catch (err) {
-    console.error("Gagal simpan jawaban:", err);
+    console.error("❌ Gagal simpan jawaban:", err);
     res.status(500).json({ status: false, message: "Gagal simpan jawaban" });
+  }
+};
+
+
+exports.getJawabanUserBySoalAndUser = async (req, res) => {
+  try {
+    const { soal_id, user_id } = req.params;
+
+    const jawaban = await db.JawabanUser.findOne({
+      where: { soal_id, user_id },
+    });
+
+    if (!jawaban) {
+      return res.status(200).json({ status: true, data: null });
+    }
+
+    res.status(200).json({
+      status: true,
+      data: jawaban,
+    });
+  } catch (error) {
+    console.error("❌ Gagal mengambil jawaban user:", error);
+    res.status(500).json({ status: false, message: "Gagal mengambil jawaban user" });
+  }
+};
+
+exports.startUjianPhase = async (req, res) => {
+  try {
+    const { user_id, ujian_id, exam_phase } = req.body;
+
+    let progress = await db.UjianProgress.findOne({
+      where: { user_id, ujian_id, exam_phase }
+    });
+
+    if (!progress) {
+      progress = await db.UjianProgress.create({
+        user_id,
+        ujian_id,
+        exam_phase,
+        started_at: new Date()
+      });
+    }
+
+    return res.status(200).json({ status: true, data: progress });
+  } catch (error) {
+    console.error("❌ Error saving ujian progress:", error);
+    return res.status(500).json({ status: false, message: error.message });
+  }
+};
+
+exports.getProgressUjian = async (req, res) => {
+  try {
+    const { user_id, ujian_id, exam_phase } = req.query;
+
+    const progress = await db.UjianProgress.findOne({
+      where: { user_id, ujian_id, exam_phase }
+    });
+
+    return res.status(200).json({ status: true, data: progress });
+  } catch (error) {
+    console.error("❌ Error getting ujian progress:", error);
+    return res.status(500).json({ status: false, message: error.message });
   }
 };

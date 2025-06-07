@@ -3,9 +3,11 @@ import { Button, Spin, Input } from "antd";
 import Swal from "sweetalert2";
 import { useNavigate, useParams } from "react-router";
 import { motion } from "motion/react";
+import { useLocation } from "react-router-dom";
 import ExamLayout from "../Layouts/ExamLayout";
 import { getProfile } from "../api/auth";
-import { submitUjian, getUjianDetail, getUjianSoal } from "../api/ujian";
+import { submitUjian, getUjianDetail, getUjianSoal, getJawabanUser, startUjian, progressUjian } from "../api/ujian";
+import ExamContext from "../context/ExamContext"; 
 
 const TakeExam = () => {
   const [loading, setLoading] = useState(true);
@@ -16,13 +18,33 @@ const TakeExam = () => {
   const [user, setUser] = useState({});
   const [examPhase, setExamPhase] = useState("listening");
   const [timeLeft, setTimeLeft] = useState(600);
+  const [totalQuestions, setTotalQuestions] = useState(0);
+  const [time, setTime] = useState(600);
   const [allQuestions, setAllQuestions] = useState({});
   const [ujianInfo, setUjianInfo] = useState(null);
 
   const navigate = useNavigate();
+  const location = useLocation();
   const { id } = useParams();
 
   const currentQuestion = useMemo(() => questionList[number] || {}, [questionList, number]);
+  const shuffleArray = (array) => {
+    const copy = [...array];
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+  };
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const q = parseInt(params.get("question"), 10);
+    if (!isNaN(q) && q > 0 && q <= questionList.length) {
+      setNumber(q - 1);
+    }
+  }, [location.search, questionList.length]);
+
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -37,19 +59,44 @@ const TakeExam = () => {
         setUjianInfo(ujianData.data);
 
         const soalByPhase = soalData.data;
+        const combinedQuestions = [];
 
         for (const phase in soalByPhase) {
-          soalByPhase[phase].questions = soalByPhase[phase].questions.map((q) => ({
-            ...q,
-            options: q.options?.sort((a, b) => a.position?.localeCompare(b.position)),
-            answer: [],
-          }));
+          soalByPhase[phase].questions = await Promise.all(
+            soalByPhase[phase].questions.map(async (q) => {
+              const processed = {
+                ...q,
+                options: q.options?.sort((a, b) => a.position?.localeCompare(b.position)),
+                answer: [],
+                correctAnswer: q.answer || [],
+                phase
+              };
+
+              const userAnswer = await getJawabanUser(q.id, userData.data.id);
+              if (userAnswer && userAnswer.data?.input_jawaban) {
+                const input = userAnswer.data.input_jawaban;
+                if (q.questionType === "multiple-choice") {
+                  processed.answer = input.split(',').map(j => isNaN(j) ? j : parseInt(j));
+                } else if (q.questionType === "order-arrange" || q.questionType === "essay") {
+                  processed.answer = [input];
+                }
+              } else if (q.questionType === "order-arrange" && processed.correctAnswer.length > 0) {
+                const originalWords = processed.correctAnswer[0].split(";").map(s => s.trim()).filter(Boolean);
+                const shuffled = shuffleArray(originalWords);
+                processed.answer = [shuffled.join("; ")];
+              }
+
+              return processed;
+            })
+          );
+
+          combinedQuestions.push(...soalByPhase[phase].questions);
         }
 
         setAllQuestions(soalByPhase);
-        const initial = soalByPhase[examPhase];
-        setQuestionList(initial.questions);
-        setTimeLeft(parseInt(initial.time) * 60);
+        setQuestionList(combinedQuestions);
+        setTotalQuestions(combinedQuestions.length);
+        setTimeLeft(parseInt(soalByPhase[examPhase]?.time || 1) * 60);
         setLoading(false);
       } catch (error) {
         console.error("❌ Error loading exam:", error);
@@ -62,7 +109,7 @@ const TakeExam = () => {
 
   useEffect(() => {
     if (!allQuestions[examPhase]) return;
-    setQuestionList(allQuestions[examPhase].questions.map(q => ({ ...q, answer: [] })));
+    setQuestionList(allQuestions[examPhase].questions.map(q => ({ ...q }))); // keep existing answers
     setTimeLeft(parseInt(allQuestions[examPhase].time) * 60);
     setNumber(0);
   }, [examPhase]);
@@ -89,6 +136,7 @@ const TakeExam = () => {
         input_jawaban: Array.isArray(current.answer) ? current.answer.join(",") : current.answer,
         user_id: user.id
       });
+      navigate(`/dashboard/take-exam/${id}?question=${number + 2}`);
     } catch (err) {
       console.error("❌ Gagal simpan jawaban:", err);
       Swal.fire("Error", "Gagal menyimpan jawaban.", "error");
@@ -117,6 +165,7 @@ const TakeExam = () => {
   const prevNumber = () => {
     if (number > 0) {
       setNumber(number - 1);
+      navigate(`/dashboard/take-exam/${id}?question=${number}`);
     } else {
       Swal.fire("Sudah di soal pertama", "", "info");
     }
@@ -172,7 +221,7 @@ const TakeExam = () => {
               }}
             >
               <div className="flex items-center w-full justify-start gap-4">
-                <div className={`w-10 h-10 rounded-full flex justify-center items-center ${currentQuestion.answer.includes(option.id) ? "bg-blue-100 text-[#3377FF]" : "bg-blue-100 text-[#3377FF]"}`}>
+                <div className={`w-10 h-10 rounded-full flex justify-center items-center bg-blue-100 text-[#3377FF]`}>
                   {option.position}
                 </div>
                 {option.option || `Pilihan ${idx + 1}`}
@@ -183,91 +232,78 @@ const TakeExam = () => {
       );
     }
 
-      if(currentQuestion.questionType === "order-arrange") {
-            <div className="flex flex-col gap-2">
-              <h5 className="text-base font-medium">Susun Kata Di Bawah Ini!</h5>
-              <div className="flex flex-row flex-wrap gap-2">
-                {(() => {
-                  // Ambil kata-kata dari options[0]
-                  const originalOrder = currentQuestion.options[0]
-                    ? currentQuestion.options[0].split("; ").map(s => s.trim())
-                    : [];
-                  // Ambil jawaban user, jika belum ada pakai urutan awal
-                  const userOrder = currentQuestion.answer[0]
-                    ? currentQuestion.answer[0].split("; ").map(s => s.trim())
-                    : originalOrder;
+    if (currentQuestion.questionType === "order-arrange") {
+      return (
+        <div className="flex flex-col gap-2">
+          <h5 className="text-base font-medium">Susun Kata Di Bawah Ini!</h5>
+          <div className="flex flex-row flex-wrap gap-2">
+            {(() => {
+              const userOrder = currentQuestion.answer[0]
+                ? currentQuestion.answer[0].split(";").map(s => s.trim()).filter(Boolean)
+                : [];
 
-                  const handleDragStart = idx => setDraggedIdx(idx);
-                  const handleDragOver = (e, idx) => {
-                    e.preventDefault();
-                    setDragOverIdx(idx);
-                  };
-                  const handleDrop = idx => {
-                    if (draggedIdx === null || draggedIdx === idx) {
-                      setDraggedIdx(null);
-                      setDragOverIdx(null);
-                      return;
-                    }
-                    setQuestionList(prev =>
-                      prev.map((q, qIdx) => {
-                        if (qIdx !== number) return q;
-                        const arr = [...userOrder];
-                        const [moved] = arr.splice(draggedIdx, 1);
-                        arr.splice(idx, 0, moved);
-                        return { ...q, answer: [arr.join("; ")] };
-                      })
-                    );
-                    setDraggedIdx(null);
-                    setDragOverIdx(null);
-                  };
-                  const handleDragEnd = () => {
-                    setDraggedIdx(null);
-                    setDragOverIdx(null);
-                  };
+              const handleDragStart = idx => setDraggedIdx(idx);
+              const handleDragOver = (e, idx) => {
+                e.preventDefault();
+                setDragOverIdx(idx);
+              };
+              const handleDrop = idx => {
+                if (draggedIdx === null || draggedIdx === idx) return;
+                setQuestionList(prev =>
+                  prev.map((q, qIdx) => {
+                    if (qIdx !== number) return q;
+                    const arr = [...userOrder];
+                    const [moved] = arr.splice(draggedIdx, 1);
+                    arr.splice(idx, 0, moved);
+                    return { ...q, answer: [arr.join("; ")] };
+                  })
+                );
+                setDraggedIdx(null);
+                setDragOverIdx(null);
+              };
+              const handleDragEnd = () => {
+                setDraggedIdx(null);
+                setDragOverIdx(null);
+              };
 
-                  // For smooth animation, use motion.div
-                  return (
-                    <React.Fragment>
-                      {userOrder.map((ans, ansIndex) => (
-                        <motion.div
-                          key={ans}
-                          layout
-                          transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                          draggable
-                          onDragStart={() => handleDragStart(ansIndex)}
-                          onDragOver={e => handleDragOver(e, ansIndex)}
-                          onDrop={() => handleDrop(ansIndex)}
-                          onDragEnd={handleDragEnd}
-                          style={{
-                            display: "inline-block",
-                            opacity: draggedIdx === ansIndex ? 0.5 : 1,
-                            zIndex: draggedIdx === ansIndex ? 10 : 1,
-                            outline: dragOverIdx === ansIndex && draggedIdx !== null ? "2px dashed #3377FF" : "none",
-                            cursor: draggedIdx === ansIndex ? "grabbing" : "grab",
-                          }}
-                        >
-                          <Button
-                            className={`rounded-2xl px-6 py-5 mr-2 mb-2 text-blue-500`}
-                            style={{
-                              touchAction: "none",
-                              userSelect: "none",
-                              minWidth: 100,
-                              background: dragOverIdx === ansIndex && draggedIdx !== null ? "#e6f0ff" : undefined,
-                              cursor: draggedIdx === ansIndex ? "grabbing" : "grab",
-                            }}
-                          >
-                            {ans}
-                          </Button>
-                        </motion.div>
-                      ))}
-                    </React.Fragment>
-                  );
-                })()}
-              </div>
-              <div className="mt-2 text-xs text-gray-500">* Drag & drop untuk mengurutkan</div>
-            </div>
-          }
-
+              return (
+                <>
+                  {userOrder.map((word, idx) => (
+                    <motion.div
+                      key={word + idx}
+                      layout
+                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      draggable
+                      onDragStart={() => handleDragStart(idx)}
+                      onDragOver={e => handleDragOver(e, idx)}
+                      onDrop={() => handleDrop(idx)}
+                      onDragEnd={handleDragEnd}
+                      style={{
+                        display: "inline-block",
+                        opacity: draggedIdx === idx ? 0.5 : 1,
+                        outline: dragOverIdx === idx && draggedIdx !== null ? "2px dashed #3377FF" : "none",
+                        cursor: draggedIdx === idx ? "grabbing" : "grab",
+                      }}
+                    >
+                      <Button
+                        className="rounded-2xl px-6 py-5 mr-2 mb-2 text-blue-500"
+                        style={{
+                          minWidth: 100,
+                          background: dragOverIdx === idx && draggedIdx !== null ? "#e6f0ff" : undefined,
+                        }}
+                      >
+                        {word}
+                      </Button>
+                    </motion.div>
+                  ))}
+                </>
+              );
+            })()}
+          </div>
+          <div className="mt-2 text-xs text-gray-500">* Drag & drop untuk mengurutkan</div>
+        </div>
+      );
+    }
 
     return <p className="text-gray-400 italic">Soal belum tersedia untuk tipe ini.</p>;
   };
@@ -280,28 +316,42 @@ const TakeExam = () => {
         </div>
       </ExamLayout>
     ) : (
-      <ExamLayout>
-        <div className="px-8 py-4 flex flex-col gap-5 min-h-screen pb-28">
-          {ujianInfo && (
-            <div className="mb-4">
-              <h2 className="text-xl font-bold">{ujianInfo.nama_ujian}</h2>
-              <p className="text-sm text-gray-500" dangerouslySetInnerHTML={{ __html: ujianInfo.desc }} />
+      <ExamContext.Provider value={{
+        timeLeft,
+        totalQuestions,
+        examPhase,
+        setTimeLeft,
+        setTotalQuestions,
+        setExamPhase
+      }}>
+        <ExamLayout>
+          <div className="px-8 py-4 flex flex-col gap-5 min-h-screen pb-28">
+            {ujianInfo && (
+              <div className="mb-4">
+                <h2 className="text-xl font-bold">{ujianInfo.nama_ujian}</h2>
+                <p className="text-sm text-gray-500" dangerouslySetInnerHTML={{ __html: ujianInfo.desc }} />
+              </div>
+            )}
+
+            <div className="flex justify-between items-center text-sm text-gray-600">
+              <span>No. Soal: {number + 1} / {questionList.length}</span>
+              <span>Tipe Soal: {currentQuestion.questionType}</span>
             </div>
-          )}
 
-          <div className="my-6" dangerouslySetInnerHTML={{ __html: currentQuestion.question }} />
-          {renderQuestion()}
+            <div className="my-6" dangerouslySetInnerHTML={{ __html: currentQuestion.question }} />
+            {renderQuestion()}
 
-          <div className="fixed bottom-0 left-0 w-full bg-white p-4 shadow-lg flex justify-between items-center z-50">
-            <Button onClick={prevNumber} disabled={number === 0} className="rounded-2xl">
-              Sebelumnya
-            </Button>
-            <Button onClick={nextNumber} className="rounded-2xl">
-              {number < questionList.length - 1 ? "Selanjutnya" : "Selesai"}
-            </Button>
+            <div className="fixed bottom-0 left-0 w-full bg-white p-4 shadow-lg flex justify-between items-center z-50">
+              <Button onClick={prevNumber} disabled={number === 0} className="rounded-2xl">
+                Sebelumnya
+              </Button>
+              <Button onClick={nextNumber} className="rounded-2xl">
+                {number < questionList.length - 1 ? "Selanjutnya" : "Selesai"}
+              </Button>
+            </div>
           </div>
-        </div>
-      </ExamLayout>
+        </ExamLayout>
+      </ExamContext.Provider>
     )
   );
 };

@@ -94,3 +94,33 @@ export const getJawabanListBySoalId = async (id) => {
     throw error.response ? error.response.data : error.message;
   }
 };
+
+export const getJawabanUser = async (soal_id, user_id) => {
+  try {
+    const response = await api.get(`/ujian/jawaban-user/${soal_id}/${user_id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting ujian:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const startUjian = async (data) => {
+  try {
+    const response = await api.post(`/ujian/start`, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting ujian:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const progressUjian = async (params) => {
+  try {
+    const response = await api.get(`/ujian/progress`, { params });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting ujian:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
