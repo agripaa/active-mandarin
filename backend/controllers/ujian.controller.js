@@ -21,6 +21,8 @@ exports.createUjian = async (req, res) => {
       ujian_brand,
     } = req.body;
 
+    const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
     // Parse jika masih berupa string
     try {
       if (typeof tipe_ujian === "string") tipe_ujian = JSON.parse(tipe_ujian);
@@ -39,6 +41,10 @@ exports.createUjian = async (req, res) => {
 
       if (!allowed.includes(ext)) {
         return res.status(400).json({ status: false, message: "File harus berupa gambar JPG/PNG/WebP." });
+      }
+
+      if (req.files.ujian_img > MAX_FILE_SIZE) {
+        return res.status(400).json({ status: false, message: "Ujian Image file size must be less than 5MB!" });
       }
 
       const fileName = `${Date.now()}_${imgFile.name.replace(/\s/g, "_")}`;
@@ -108,12 +114,33 @@ exports.createUjian = async (req, res) => {
         });
 
         if (soal && soal[tipeKey]) {
-          for (const s of soal[tipeKey]) {
+          for (let i = 0; i < soal[tipeKey].length; i++) {
+            const s = soal[tipeKey][i];
+
+            let file_soal_path = '';
+            if (s.image && req.files?.[s.image]) {
+              const file = req.files[s.image];
+              const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+              if (file.size > MAX_FILE_SIZE) {
+                return res.status(400).json({ status: false, message: `Ukuran file ${s.image} melebihi 5MB.` });
+              }
+
+              const fileName = `${Date.now()}_${file.name.replace(/\s/g, "_")}`;
+              const savePath = path.join(__dirname, "../public/soal", fileName);
+              if (!fs.existsSync(path.dirname(savePath))) {
+                fs.mkdirSync(path.dirname(savePath), { recursive: true });
+              }
+
+              await file.mv(savePath);
+              file_soal_path = `/public/soal/${fileName}`;
+            }
+
             await Soal.create({
               tipe_ujian_id: tipeData.id,
               index_soal: s.id,
               pertanyaan: s.question,
-              file_soal: s.image || '',
+              file_soal: file_soal_path || '',
               skor_soal: s.point || 0,
               tipe_soal: s.questionType,
               penjelasan: s.explanation || '',

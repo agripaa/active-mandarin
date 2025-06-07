@@ -33,7 +33,9 @@ const CreateExam = ({ dataProgram }) => {
   const [commission, setCommission] = useState("0");
   const [level, setLevel] = useState(undefined); 
   const [programs, setPrograms] = useState([]);  
-  const [imageFile, setImageFile] = useState(null);
+  const [imageFile, setImageFile] = useState(null); 
+  const [imagePreview, setImagePreview] = useState(null); 
+
 
 
   const [typeData, setTypeData] = useState({
@@ -68,33 +70,36 @@ const CreateExam = ({ dataProgram }) => {
           exit={{ opacity: 0, y: -40 }}
           transition={{ duration: 0.5 }}
         >
-          {show === 'exam' && <Exam
-            setShow={setShow}
-            typeData={typeData}
-            questionsListening={questionsListening}
-            questionsReading={questionsReading}
-            questionsWriting={questionsWriting}
-            title={title}
-            setTitle={setTitle}
-            examDetails={examDetails}
-            setExamDetails={setExamDetails}
-            price={price}
-            setPrice={setPrice}
-            priceCertif={priceCertif}
-            setPriceCertif={setPriceCertif}
-            discountPrice={discountPrice}
-            setDiscountPrice={setDiscountPrice}
-            commission={commission}
-            setCommission={setCommission}
-            imageFile={imageFile}
-            setImageFile={setImageFile}
-            level={level}
-            setLevel={setLevel}
-            programs={programs}
-            setPrograms={setPrograms}
-          />
-          }
-          {show === 'listening' && (
+          <div style={{ display: show === 'exam' ? 'block' : 'none' }}>
+            <Exam
+              setShow={setShow}
+              typeData={typeData}
+              questionsListening={questionsListening}
+              questionsReading={questionsReading}
+              questionsWriting={questionsWriting}
+              title={title}
+              setTitle={setTitle}
+              examDetails={examDetails}
+              setExamDetails={setExamDetails}
+              price={price}
+              setPrice={setPrice}
+              priceCertif={priceCertif}
+              setPriceCertif={setPriceCertif}
+              discountPrice={discountPrice}
+              setDiscountPrice={setDiscountPrice}
+              commission={commission}
+              setCommission={setCommission}
+              imageFile={imageFile}
+              setImageFile={setImageFile}
+              imagePreview={imagePreview}
+              setImagePreview={setImagePreview}
+              level={level}
+              setLevel={setLevel}
+              programs={programs}
+              setPrograms={setPrograms}
+            />
+          </div>
+          <div style={{ display: show === 'listening' ? 'block' : 'none' }}>
             <DetailExam
               show={'listening'}
               setShow={setShow}
@@ -111,26 +116,26 @@ const CreateExam = ({ dataProgram }) => {
                 }
               }))} 
             />
-          )}
-          {show === 'reading' && (
-            <DetailExam
-              show={'reading'}
-              setShow={setShow}
-              questions={questionsReading}
-              setQuestions={setQuestionsReading}
-              time={timeReading}
-              setTime={setTimeReading}
-              sendToParent={(time, questionCount) => setTypeData(prev => ({
-                ...prev,
-                reading: {
-                  ...prev.reading,
-                  time: time,
-                  questionCount: questionCount,
-                }
-              }))}
+          </div>
+          <div style={{ display: show === 'reading' ? 'block' : 'none' }}>
+              <DetailExam
+                show={'reading'}
+                setShow={setShow}
+                questions={questionsReading}
+                setQuestions={setQuestionsReading}
+                time={timeReading}
+                setTime={setTimeReading}
+                sendToParent={(time, questionCount) => setTypeData(prev => ({
+                  ...prev,
+                  reading: {
+                    ...prev.reading,
+                    time: time,
+                    questionCount: questionCount,
+                  }
+                }))}
             />
-          )}
-          {show === 'writing' && (
+          </div>
+          <div style={{ display: show === 'writing' ? 'block' : 'none' }}>
             <DetailExam
               show={'writing'}
               setShow={setShow}
@@ -147,7 +152,7 @@ const CreateExam = ({ dataProgram }) => {
                 }
               }))}
             />
-          )}
+          </div>
         </motion.div>
       </DashboardLayout>
     </>
@@ -167,6 +172,7 @@ const CreateExam = ({ dataProgram }) => {
     discountPrice, setDiscountPrice,
     commission, setCommission,
     imageFile, setImageFile,
+    imagePreview, setImagePreview,
     level, setLevel,
     programs, setPrograms
   }) => {
@@ -175,7 +181,8 @@ const CreateExam = ({ dataProgram }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Load saved exam data from localStorage
+    if (title || examDetails || imagePreview || imageFile) return;
+
     const savedExam = localStorage.getItem("savedExam");
     if (savedExam) {
       const examData = JSON.parse(savedExam);
@@ -187,11 +194,13 @@ const CreateExam = ({ dataProgram }) => {
       setCommission(examData.commission || "0");
       setLevel(examData.level || undefined);
       setPrograms(examData.programs || []);
+      if (examData.imagePreview) {
+        setImagePreview(examData.imagePreview);
+      }
     }
   }, []);
 
   useEffect(() => {
-    // Save exam data to localStorage whenever it changes
     const examData = {
       title,
       examDetails,
@@ -201,9 +210,11 @@ const CreateExam = ({ dataProgram }) => {
       commission,
       level,
       programs,
+      imagePreview, 
     };
     localStorage.setItem("savedExam", JSON.stringify(examData));
-  }, [title, examDetails, price, priceCertif, discountPrice, commission, level, programs]);
+  }, [title, examDetails, price, priceCertif, discountPrice, commission, level, programs, imagePreview]);
+
 
   useEffect(() => {
   const fetchProgramOptions = async () => {
@@ -232,6 +243,21 @@ const CreateExam = ({ dataProgram }) => {
     await form.validateFields();
 
     const formData = new FormData();
+
+    const prepareQuestionsWithFileRefs = (questions, tipe) => {
+      return questions.map((q, idx) => {
+        if (q.fileList?.[0]?.originFileObj) {
+          const filenameRef = `${tipe}_file_${idx}`;
+          formData.append(filenameRef, q.fileList[0].originFileObj);
+          return {
+            ...q,
+            image: filenameRef, 
+          };
+        }
+        return q;
+      });
+    };
+
     formData.append("nama_ujian", title);
     formData.append("desc", examDetails);
     formData.append("level", level);
@@ -247,10 +273,16 @@ const CreateExam = ({ dataProgram }) => {
 
     formData.append("ujian_brand", JSON.stringify(programs));
     formData.append("tipe_ujian", JSON.stringify(typeData));
+    
+
+    const updatedListening = prepareQuestionsWithFileRefs(questionsListening, "listening");
+    const updatedReading = prepareQuestionsWithFileRefs(questionsReading, "reading");
+    const updatedWriting = prepareQuestionsWithFileRefs(questionsWriting, "writing");
+
     formData.append("soal", JSON.stringify({
-      listening: questionsListening,
-      reading: questionsReading,
-      writing: questionsWriting
+      listening: updatedListening,
+      reading: updatedReading,
+      writing: updatedWriting,
     }));
 
     const ujianData = await createUjian(formData); // ✅ pakai API helper
@@ -357,22 +389,52 @@ const totalWaktu = Number(typeData.listening.time) + Number(typeData.reading.tim
               <Input value={formatRupiah(commission)} onChange={(e) => handleRupiahChange(e.target.value, setCommission)} placeholder="Masukkan Harga Promo (Opsional)" />
             </Form.Item>
 
-            {/* Bagian upload image belum ada */}
-            <Form.Item label="Upload Gambar Ujian">
-              <Upload
-                maxCount={1}
-                beforeUpload={() => false}
-                onChange={(info) => {
-                  if (info.fileList.length > 0) {
-                    setImageFile(info.fileList[0].originFileObj);
-                  } else {
-                    setImageFile(null);
+            <Upload
+              maxCount={1}
+              beforeUpload={() => false}
+              onChange={({ fileList }) => {
+                const file = fileList?.[0]?.originFileObj;
+
+                if (file) {
+                  const isAllowedType = ['image/jpeg', 'image/png', 'image/webp'].includes(file.type);
+                  const isUnderSize = file.size <= 5 * 1024 * 1024;
+
+                  if (!isAllowedType) {
+                    alert("File harus berupa JPG, PNG, atau WebP.");
+                    return;
                   }
-                }}
-              >
-                <Button icon={<UploadOutlined />}>Pilih File</Button>
-              </Upload>
-            </Form.Item>
+
+                  if (!isUnderSize) {
+                    alert("Ukuran file tidak boleh lebih dari 5MB.");
+                    return;
+                  }
+
+                  const reader = new FileReader();
+                  reader.onload = (e) => {
+                    setImagePreview(e.target.result); // Base64 for display
+                  };
+                  reader.readAsDataURL(file);
+
+                  setImageFile(file); // Asli File untuk submit
+                } else {
+                  setImageFile(null);
+                  setImagePreview(null);
+                }
+              }}
+            >
+              <Button icon={<UploadOutlined />}>Pilih File</Button>
+            </Upload>
+            {imagePreview && (
+              <img
+                src={imagePreview}
+                alt="Preview Ujian"
+                className="mt-2 max-w-xs rounded shadow"
+              />
+            )}
+
+
+
+
           </Form>
         </div>
         <div className="bg-white shadow rounded-xl p-6 w-full h-fit xl:w-fit xl:min-w-96">
@@ -569,21 +631,34 @@ const QuestionComponent = React.memo(({ index, question, number, onChange }) => 
         <Upload
           maxCount={1}
           beforeUpload={() => false}
-          onChange={(info) => {
-            if (info.fileList.length > 0) {
-              const file = info.fileList[0].originFileObj;
+          fileList={question.fileList || []}
+          onChange={({ fileList }) => {
+            const file = fileList?.[0]?.originFileObj;
+
+            // Validasi jika ada file
+            if (file) {
+              const isUnderSize = file.size <= 5 * 1024 * 1024;
+
+              if (!isUnderSize) {
+                alert("Ukuran file tidak boleh lebih dari 5MB.");
+                return;
+              }
+
               const reader = new FileReader();
               reader.onload = (e) => {
-                onChange(index, 'image', e.target.result);
+                onChange(index, 'image', e.target.result); 
+                onChange(index, 'fileList', fileList);     
               };
               reader.readAsDataURL(file);
             } else {
               onChange(index, 'image', '');
+              onChange(index, 'fileList', []);
             }
           }}
         >
           <Button icon={<UploadOutlined />}>Upload File</Button>
         </Upload>
+
         {question.questionType === 'multiple-choice' && (
           <div className="flex flex-row items-center">
             <Switch
