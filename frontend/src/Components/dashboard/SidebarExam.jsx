@@ -13,7 +13,7 @@ const SidebarExam = ({ onClose }) => {
   const [profileImg, setProfileImg] = useState("/assets/profile-dummy.webp");
   const [loading, setLoading] = useState(true);
 
-  const { timeLeft, totalQuestions, examPhase } = useContext(ExamContext);
+  const { timeLeft, totalQuestions, examPhase, questionList } = useContext(ExamContext);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -132,22 +132,35 @@ const SidebarExam = ({ onClose }) => {
         <hr className="mb-4" />
       </div>
 
-      <div className="flex flex-row flex-wrap gap-1.5 px-4">
-        {[...Array(totalQuestions)].map((_, index) => {
-          const isActive = currentQuestionNumber === index + 1;
-          return (
+    <div className="flex flex-row flex-wrap gap-1.5 px-4">
+    {Array.isArray(questionList) &&
+        (() => {
+        return questionList.map((q, index) => {
+            const displayLabel = index + 1;
+            const isActive = displayLabel === currentQuestionNumber;
+
+
+
+            return (
             <button
-              key={index}
-              className={`w-10 h-10 rounded-lg flex items-center justify-center font-medium transition-colors ${
+                key={index}
+                className={`w-10 h-10 rounded-lg flex items-center justify-center font-medium transition-colors ${
                 isActive ? "bg-[#3377FF] text-white" : "bg-white hover:bg-fiord-200 text-fiord-950"
-              }`}
-              onClick={() => navigate(`/dashboard/take-exam/1?question=${index + 1}`)}
+                }`}
+                onClick={() => {
+                const currentPathId = location.pathname.split("/").pop(); // ambil ID dari URL
+
+                navigate(`/dashboard/take-exam/${currentPathId}?question=${displayLabel}`);
+                }}
             >
-              {index + 1}
+                {displayLabel}
             </button>
-          );
-        })}
-      </div>
+            );
+        });
+        })()
+    }
+    </div>
+
     </aside>
   );
 };

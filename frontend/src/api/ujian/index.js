@@ -124,3 +124,13 @@ export const progressUjian = async (params) => {
     throw error.response ? error.response.data : error.message;
   }
 };
+
+export const finishUjian = async ({user_id, ujian_id, exam_phase}) => {
+  try {
+    const response = await api.post(`/ujian/finish-phase`, {user_id, ujian_id, exam_phase});
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting ujian:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};

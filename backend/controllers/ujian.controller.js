@@ -2,7 +2,7 @@ const db = require('../models');
 const path = require('path');
 const fs = require('fs');
 const { Op } = require('sequelize');
-const { Ujian, TipeUjian, Soal, UjianBrand, ListJawaban, JawabanUser } = db;
+const { Ujian, TipeUjian, Soal, UjianBrand, ListJawaban, JawabanUser, UjianProgress } = db;
 
 exports.createUjian = async (req, res) => {
   try {
@@ -308,14 +308,15 @@ exports.deleteUjian = async (req, res) => {
 
 exports.submitJawaban = async (req, res) => {
   try {
-    const { soal_id, user_id, input_jawaban } = req.body;
+    let { soal_id, user_id, input_jawaban } = req.body;
+    console.log({soal_id, user_id, input_jawaban})
 
-    const soal = await db.Soal.findByPk(soal_id);
+    const soal = await Soal.findByPk(soal_id);
     if (!soal) {
       return res.status(404).json({ status: false, message: "Soal tidak ditemukan" });
     }
 
-    const kunci = soal.jawaban_benar?.split(",").map(j => j.trim());
+    const kunci = soal.jawaban_benar?.split(/[,;]/).map(j => j.trim()).filter(Boolean); // fleksibel koma/;
     const tipe = soal.tipe_soal;
     const point = soal.point_soal || 0;
 
@@ -323,30 +324,49 @@ exports.submitJawaban = async (req, res) => {
     let poing = 0;
 
     if (tipe === "multiple-choice") {
-      const jawabanUser = input_jawaban?.split(",").map(j => j.trim()).sort();
+      const jawabanUser = [...new Set(input_jawaban?.split(/[,;]/).map(j => j.trim()))].sort();
       const jawabanBenar = [...kunci].sort();
 
-      if (jawabanUser.join(",") === jawabanBenar.join(",")) {
-        isTrue = true;
-        poing = point;
+      console.log({ jawabanBenarMutiple: jawabanBenar, jawabanUser });
+
+      const benarSet = new Set(jawabanBenar);
+      const userSet = new Set(jawabanUser);
+
+      const benarDipilih = jawabanUser.filter(j => benarSet.has(j)).length;
+      const salahDipilih = jawabanUser.filter(j => !benarSet.has(j)).length;
+
+      const totalBenar = jawabanBenar.length;
+
+      if (benarDipilih > 0) {
+        const nilaiParsial = (benarDipilih / totalBenar) * point;
+        poing = Math.round(nilaiParsial);
+        isTrue = poing === point; 
       } else {
-        isTrue = false;
         poing = 0;
+        isTrue = false;
       }
+
+      input_jawaban = jawabanUser.join(";");
     }
 
     if (tipe === "order-arrange") {
-      const cleanedInput = input_jawaban.replace(/;\s*$/, ""); 
-      const jawabanUser = cleanedInput.trim();
-      const jawabanBenar = kunci?.join("; ").trim();
+      const cleanedInput = input_jawaban
+        .split(";")
+        .map(i => i.trim())
+        .filter(Boolean)
+        .join(";");
 
-      if (jawabanUser === jawabanBenar) {
+      const jawabanBenar = kunci.map(k => k.trim()).join(";");
+
+      if (cleanedInput === jawabanBenar) {
         isTrue = true;
         poing = point;
       } else {
         isTrue = false;
         poing = 0;
       }
+
+      input_jawaban = cleanedInput;
     }
 
     if (tipe === "essay") {
@@ -354,12 +374,12 @@ exports.submitJawaban = async (req, res) => {
       poing = 0;
     }
 
-    let jawaban = await db.JawabanUser.findOne({ where: { soal_id, user_id } });
+    let jawaban = await JawabanUser.findOne({ where: { soal_id, user_id } });
 
     if (jawaban) {
       await jawaban.update({ input_jawaban, isTrue, poing });
     } else {
-      await db.JawabanUser.create({
+      await JawabanUser.create({
         soal_id,
         user_id,
         input_jawaban,
@@ -380,7 +400,7 @@ exports.getJawabanUserBySoalAndUser = async (req, res) => {
   try {
     const { soal_id, user_id } = req.params;
 
-    const jawaban = await db.JawabanUser.findOne({
+    const jawaban = await JawabanUser.findOne({
       where: { soal_id, user_id },
     });
 
@@ -402,12 +422,12 @@ exports.startUjianPhase = async (req, res) => {
   try {
     const { user_id, ujian_id, exam_phase } = req.body;
 
-    let progress = await db.UjianProgress.findOne({
+    let progress = await UjianProgress.findOne({
       where: { user_id, ujian_id, exam_phase }
     });
 
     if (!progress) {
-      progress = await db.UjianProgress.create({
+      progress = await UjianProgress.create({
         user_id,
         ujian_id,
         exam_phase,
@@ -426,7 +446,7 @@ exports.getProgressUjian = async (req, res) => {
   try {
     const { user_id, ujian_id, exam_phase } = req.query;
 
-    const progress = await db.UjianProgress.findOne({
+    const progress = await UjianProgress.findOne({
       where: { user_id, ujian_id, exam_phase }
     });
 
@@ -434,5 +454,50 @@ exports.getProgressUjian = async (req, res) => {
   } catch (error) {
     console.error("❌ Error getting ujian progress:", error);
     return res.status(500).json({ status: false, message: error.message });
+  }
+};
+
+exports.finishUjianPhase = async (req, res) => {
+  try {
+    const { user_id, ujian_id, exam_phase } = req.body;
+
+    const tipe = await TipeUjian.findOne({
+      where: { ujian_id, category_ujian: exam_phase },
+      include: [{
+        model: Soal,
+        as: 'Soals'
+      }]
+    });
+
+    if (!tipe) {
+      return res.status(404).json({ status: false, message: "Fase ujian tidak ditemukan." });
+    }
+
+    const soalList = tipe.Soals || [];
+
+    const containsEssay = soalList.some((s) => s.tipe_soal === "essay");
+
+    let is_done = !containsEssay;
+    let is_checking = containsEssay;
+
+    const progress = await UjianProgress.findOne({
+      where: { user_id, ujian_id, exam_phase }
+    });
+
+    if (!progress) {
+      return res.status(404).json({ status: false, message: "Progress belum dimulai." });
+    }
+
+    await progress.update({ is_done, is_checking });
+
+    return res.status(200).json({
+      status: true,
+      message: "Status fase ujian diperbarui.",
+      data: progress
+    });
+
+  } catch (err) {
+    console.error("❌ Gagal menyelesaikan fase ujian:", err);
+    return res.status(500).json({ status: false, message: err.message });
   }
 };

@@ -7,6 +7,7 @@ const ExamContext = createContext({
   setTimeLeft: () => {},
   setTotalQuestions: () => {},
   setExamPhase: () => {},
+  questionList: [],
 });
 
 export default ExamContext;
