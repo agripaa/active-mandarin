@@ -35,15 +35,16 @@ export const createUjian = async (formData) => {
   }
 };
 
-export const updateUjian = async (id, data) => {
+export const updateUjian = async (id, formData) => {
   try {
-    const response = await api.put(`/ujian/${id}`, data);
+    const response = await api.put(`/ujian/${id}`, formData);
     return response.data;
   } catch (error) {
     console.error("Error updating ujian:", error);
     throw error.response ? error.response.data : error.message;
   }
 };
+
 
 export const deleteUjian = async (id) => {
   try {

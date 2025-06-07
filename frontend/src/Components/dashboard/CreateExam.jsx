@@ -7,9 +7,12 @@ import { motion } from "motion/react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { useNavigate } from 'react-router-dom';
-import { createUjian } from "../../api/ujian"; 
+import { createUjian, getUjianById, updateUjian } from "../../api/ujian"; 
+import { getUjianBrandByUjianId } from "../../api/ujianBrand"; 
 import { getAllBrands } from "../../api/brand"; 
-
+import { createSoal, getSoalByTipeUjianId, updateSoal } from '../../api/soal';
+import { createTipeUjian, getTipeUjianByUjianId, updateTipeUjian } from '../../api/tipeUjian';
+import { useParams } from 'react-router-dom';
 
 import { formatRupiah } from "../../utils/rupiahFormat";
 import DashboardLayout from "../../Layouts/DashboardLayout";
@@ -34,6 +37,7 @@ const CreateExam = ({ dataProgram }) => {
   const [level, setLevel] = useState(undefined); 
   const [programs, setPrograms] = useState([]);  
   const [imageFile, setImageFile] = useState(null);
+  const [previewImageUrl, setPreviewImageUrl] = useState("");
 
 
   const [typeData, setTypeData] = useState({
@@ -69,31 +73,43 @@ const CreateExam = ({ dataProgram }) => {
           transition={{ duration: 0.5 }}
         >
           {show === 'exam' && <Exam
-            setShow={setShow}
-            typeData={typeData}
-            questionsListening={questionsListening}
-            questionsReading={questionsReading}
-            questionsWriting={questionsWriting}
-            title={title}
-            setTitle={setTitle}
-            examDetails={examDetails}
-            setExamDetails={setExamDetails}
-            price={price}
-            setPrice={setPrice}
-            priceCertif={priceCertif}
-            setPriceCertif={setPriceCertif}
-            discountPrice={discountPrice}
-            setDiscountPrice={setDiscountPrice}
-            commission={commission}
-            setCommission={setCommission}
-            imageFile={imageFile}
-            setImageFile={setImageFile}
-            level={level}
-            setLevel={setLevel}
-            programs={programs}
-            setPrograms={setPrograms}
-          />
-          }
+          setShow={setShow}
+          typeData={typeData}
+          setTypeData={setTypeData} // ✅ tambahkan ini
+          isEditMode={true}
+          previewImageUrl={previewImageUrl}
+          setPreviewImageUrl={setPreviewImageUrl}
+          questionsListening={questionsListening}
+          setQuestionsListening={setQuestionsListening} // ✅
+          questionsReading={questionsReading}
+          setQuestionsReading={setQuestionsReading} // ✅
+          questionsWriting={questionsWriting}
+          setQuestionsWriting={setQuestionsWriting} // ✅
+          timeListening={timeListening}
+          setTimeListening={setTimeListening} // ✅
+          timeReading={timeReading}
+          setTimeReading={setTimeReading} // ✅
+          timeWriting={timeWriting}
+          setTimeWriting={setTimeWriting} // ✅
+          title={title}
+          setTitle={setTitle}
+          examDetails={examDetails}
+          setExamDetails={setExamDetails}
+          price={price}
+          setPrice={setPrice}
+          priceCertif={priceCertif}
+          setPriceCertif={setPriceCertif}
+          discountPrice={discountPrice}
+          setDiscountPrice={setDiscountPrice}
+          commission={commission}
+          setCommission={setCommission}
+          imageFile={imageFile}
+          setImageFile={setImageFile}
+          level={level}
+          setLevel={setLevel}
+          programs={programs}
+          setPrograms={setPrograms}
+        />}
           {show === 'listening' && (
             <DetailExam
               show={'listening'}
@@ -155,24 +171,42 @@ const CreateExam = ({ dataProgram }) => {
 };
 
   const Exam = ({
-    setShow,
-    typeData,
-    questionsListening,
-    questionsReading,
-    questionsWriting,
-    title, setTitle,
-    examDetails, setExamDetails,
-    price, setPrice,
-    priceCertif, setPriceCertif,
-    discountPrice, setDiscountPrice,
-    commission, setCommission,
-    imageFile, setImageFile,
-    level, setLevel,
-    programs, setPrograms
-  }) => {
+  setShow,
+  typeData,
+  setTypeData, // ✅
+
+  questionsListening,
+  setQuestionsListening, // ✅
+  questionsReading,
+  setQuestionsReading, // ✅
+  questionsWriting,
+  setQuestionsWriting, // ✅
+
+  timeListening,
+  setTimeListening, // ✅
+  timeReading,
+  setTimeReading, // ✅
+  timeWriting,
+  setTimeWriting, // ✅
+
+  isEditMode,
+  title, setTitle,
+  examDetails, setExamDetails,
+  price, setPrice,
+  priceCertif, setPriceCertif,
+  discountPrice, setDiscountPrice,
+  commission, setCommission,
+  imageFile, setImageFile,
+  level, setLevel,
+  programs, setPrograms,
+  previewImageUrl, setPreviewImageUrl
+}) => {
+
   const [form] = Form.useForm();
   const [programOptions, setProgramOptions] = useState([]);
   const navigate = useNavigate();
+  const { id } = useParams();
+
 
   useEffect(() => {
     // Load saved exam data from localStorage
@@ -227,10 +261,100 @@ const CreateExam = ({ dataProgram }) => {
     setter(numericValue);
   }, []);
 
- const handleSubmit = async () => {
+useEffect(() => {
+  const fetchEditData = async () => {
+    setImageFile(null); // Kosongkan upload baru
+
+    try {
+      const res = await getUjianById(id);
+      if (res.status) {
+        const data = res.data;
+        setPreviewImageUrl(data.ujian_img);
+        setTitle(data.nama_ujian);
+        setExamDetails(data.desc);
+        setPrice(String(data.harga_normal));
+        setPriceCertif(String(data.harga_certif));
+        setDiscountPrice(String(data.harga_diskon));
+        setCommission(String(data.commission));
+        setLevel(data.level);
+
+        const brandRes = await getUjianBrandByUjianId(id);
+        if (brandRes.status) {
+          const brandIds = brandRes.data.map((item) => item.brand_id);
+          setPrograms(brandIds);
+        }
+
+        // Ambil data tipe ujian
+        const tipeUjianRes = await getTipeUjianByUjianId(id);
+        if (tipeUjianRes.status) {
+          const tipeUjianData = tipeUjianRes.data;
+
+          const newTypeData = { ...typeData };
+
+          for (const tipe of tipeUjianData) {
+            const { category_ujian, time, total_soal, id: tipeUjianId } = tipe;
+
+            // Update waktu dan jumlah soal
+            newTypeData[category_ujian] = {
+              ...newTypeData[category_ujian],
+              time: time,
+              questionCount: total_soal,
+            };
+
+            // Ambil soal untuk tipe ujian ini
+            const soalRes = await getSoalByTipeUjianId(tipeUjianId);
+            if (soalRes.status) {
+              const soalData = soalRes.data.map((soal) => ({
+                id: soal.id,
+                question: soal.pertanyaan,
+                questionType: soal.tipe_soal,
+                explanation: soal.penjelasan,
+                options: soal.options || [],
+                isMultipleAnswer: soal.mutiple,
+                answer: soal.jawaban_benar ? soal.jawaban_benar.split(';') : [],
+                image: soal.file_soal || '',
+                guideForQuestion: {
+                  start: soal.soal_awal || 0,
+                  end: soal.soal_akhir || 0,
+                  guide: soal.guide || '',
+                },
+                point: soal.point_soal || 0,
+                tipe_ujian_id: tipeUjianId,
+              }));
+
+              // Set state soal berdasarkan kategori
+              if (category_ujian === 'listening') {
+                setQuestionsListening(soalData);
+                setTimeListening(time);
+              } else if (category_ujian === 'reading') {
+                setQuestionsReading(soalData);
+                setTimeReading(time);
+              } else if (category_ujian === 'writing') {
+                setQuestionsWriting(soalData);
+                setTimeWriting(time);
+              }
+            }
+          }
+
+          setTypeData(newTypeData);
+        }
+      }
+    } catch (err) {
+      console.error("Gagal memuat data edit:", err);
+    }
+  };
+
+  if (isEditMode && id && programOptions.length > 0) {
+    fetchEditData();
+  }
+}, [isEditMode, id, programOptions]);
+ 
+
+const handleSubmit = async () => {
   try {
     await form.validateFields();
 
+    // --- [1] Siapkan form data ujian ---
     const formData = new FormData();
     formData.append("nama_ujian", title);
     formData.append("desc", examDetails);
@@ -247,41 +371,147 @@ const CreateExam = ({ dataProgram }) => {
 
     formData.append("ujian_brand", JSON.stringify(programs));
     formData.append("tipe_ujian", JSON.stringify(typeData));
-    formData.append("soal", JSON.stringify({
+
+    let ujianId;
+
+    // --- [2] Buat atau update ujian ---
+    if (isEditMode && id) {
+      const ujianUpdate = await updateUjian(id, formData);
+      if (!ujianUpdate.status || !ujianUpdate.data?.id) throw new Error("Gagal memperbarui ujian");
+      ujianId = ujianUpdate.data.id;
+    } else {
+      const ujianCreate = await createUjian(formData);
+      if (!ujianCreate.status || !ujianCreate.result?.id) throw new Error("Gagal membuat ujian");
+      ujianId = ujianCreate.result.id;
+    }
+
+    // --- [3] Dapatkan tipe ujian lama (jika edit) ---
+      let existingTipeUjian = [];
+      if (isEditMode && id) {
+        const tipeUjianRes = await getTipeUjianByUjianId(id);
+        if (tipeUjianRes.status) {
+          // Ambil hanya satu tipe ujian per kategori
+          const seen = new Set();
+          existingTipeUjian = tipeUjianRes.data.filter((item) => {
+            if (seen.has(item.category_ujian)) return false;
+            seen.add(item.category_ujian);
+            return true;
+          });
+        }
+      }
+
+
+    // --- [4] Simpan atau update tipe ujian ---
+    const tipeUjianResponse = [];
+    for (const type of ['listening', 'reading', 'writing']) {
+      const tipeLama = existingTipeUjian.find((t) => t.category_ujian === type);
+      const tipePayload = {
+        category_ujian: type,
+        time: typeData[type].time,
+        total_soal: typeData[type].questionCount,
+        ujian_id: ujianId,
+        total_skor_tipe: 0
+      };
+
+      let res;
+      if (tipeLama) {
+        res = await updateTipeUjian(tipeLama.id, tipePayload);
+      } else {
+        res = await createTipeUjian(tipePayload);
+      }
+
+if (!res.status) {
+  if (res.message?.includes("sudah ada")) {
+    // Ambil tipe yang sudah ada
+    const fallback = await getTipeUjianByUjianId(ujianId);
+    const match = fallback.data.find(item => item.category_ujian === type);
+    if (match) {
+      const update = await updateTipeUjian(match.id, tipePayload);
+      if (update.status) {
+        tipeUjianResponse.push({ type, id: update.data.id });
+        continue; // lanjut ke kategori berikutnya
+      }
+    }
+  }
+  // Kalau bukan error duplikat, baru munculkan error
+  throw new Error(`Gagal menyimpan tipe ujian ${type}`);
+}
+
+
+    }
+
+    const tipeUjianMap = {};
+    tipeUjianResponse.forEach(item => {
+      tipeUjianMap[item.type] = item.id;
+    });
+
+    // --- [5] Siapkan soal berdasarkan tipe ---
+    const questionsByType = {
       listening: questionsListening,
       reading: questionsReading,
       writing: questionsWriting
-    }));
+    };
 
-    const ujianData = await createUjian(formData); // ✅ pakai API helper
+    let soalIndex = 1;
 
-    if (!ujianData.status || !ujianData.result?.id) throw new Error("Gagal membuat ujian");
+    for (const type of ['listening', 'reading', 'writing']) {
+      const questions = questionsByType[type];
 
+      for (const q of questions) {
+        if (q.questionType === 'guide') continue;
+
+        const soalForm = new FormData();
+        soalForm.append('index_soal', soalIndex++);
+        soalForm.append('pertanyaan', q.question);
+        soalForm.append('tipe_soal', q.questionType);
+        soalForm.append('penjelasan', q.explanation || '');
+        soalForm.append('mutiple', q.isMultipleAnswer);
+        soalForm.append('point_soal', q.point || 0);
+        soalForm.append('jawaban_benar', q.answer.join(';'));
+        soalForm.append('soal_awal', q.guideForQuestion?.start || '');
+        soalForm.append('soal_akhir', q.guideForQuestion?.end || '');
+        soalForm.append('skor_soal', q.point || 0);
+        soalForm.append('tipe_ujian_id', q.tipe_ujian_id ?? tipeUjianMap[type]); // ✅ fallback
+        soalForm.append('ujian_id', ujianId);
+
+        if (q.file instanceof File) {
+          soalForm.append('file_soal', q.file);
+        }
+
+const isOldSoal = typeof q.id === 'number' && String(q.id).startsWith('db_');
+
+        // --- [6] Buat atau update soal ---
+       if (isEditMode && isOldSoal) {
+      const res = await updateSoal(q.id, soalForm);
+      if (!res.status) throw new Error(`Gagal update soal: ${q.id}`);
+    } else {
+      const res = await createSoal(soalForm);
+      if (!res.status) throw new Error(`Gagal create soal`);
+  }
+
+      }
+    }
+
+    // --- [7] Berhasil ---
     Swal.fire({
       title: "Berhasil!",
-      text: "Ujian dan soal berhasil dibuat.",
+      text: isEditMode ? "Ujian berhasil diperbarui." : "Ujian berhasil dibuat.",
       icon: "success",
     }).then(() => {
       localStorage.removeItem("savedExam");
       navigate("/dashboard/exam");
     });
 
-   } catch (err) {
-  console.error("Gagal menyimpan:", err);
-
-  // Deteksi kemungkinan bentuk error
-    const errorMessage =
-      err?.response?.data?.message || // dari axios error
-      err?.message || // dari throw new Error()
-      "Gagal menyimpan ujian dan soal."; // default
-
+  } catch (err) {
+    console.error("Gagal menyimpan:", err);
     Swal.fire({
       title: "Validasi Gagal",
-      text: errorMessage,
+      text: err?.message || "Gagal menyimpan ujian dan soal.",
       icon: "error",
     });
   }
 };
+
 
 
 const totalSoal = typeData.listening.questionCount + typeData.reading.questionCount + typeData.writing.questionCount;
@@ -321,9 +551,9 @@ const totalWaktu = Number(typeData.listening.time) + Number(typeData.reading.tim
             </Form.Item>
 
             <Form.Item
-              name="programs"
+              // name="programs"
               label="Program Terkait"
-              initialValue={programs}
+              // initialValue={programs}
             >
              <Select
                 mode="multiple"
@@ -362,17 +592,37 @@ const totalWaktu = Number(typeData.listening.time) + Number(typeData.reading.tim
               <Upload
                 maxCount={1}
                 beforeUpload={() => false}
+                fileList={
+                  imageFile
+                    ? [{ uid: "-1", name: imageFile.name, status: "done" }]
+                    : previewImageUrl
+                    ? [{
+                        uid: "-1",
+                        name: previewImageUrl.split("/").pop(), // ✅ ambil nama file dari URL
+                        status: "done",
+                        url: previewImageUrl
+                      }]
+                    : []
+                }
                 onChange={(info) => {
                   if (info.fileList.length > 0) {
-                    setImageFile(info.fileList[0].originFileObj);
+                    const file = info.fileList[0].originFileObj;
+                    setImageFile(file); // user upload baru
+                    setPreviewImageUrl(""); // hapus preview lama
                   } else {
                     setImageFile(null);
+                  }
+                }}
+                onPreview={() => {
+                  if (previewImageUrl) {
+                    window.open(previewImageUrl, "_blank");
                   }
                 }}
               >
                 <Button icon={<UploadOutlined />}>Pilih File</Button>
               </Upload>
             </Form.Item>
+
           </Form>
         </div>
         <div className="bg-white shadow rounded-xl p-6 w-full h-fit xl:w-fit xl:min-w-96">
@@ -566,18 +816,20 @@ const QuestionComponent = React.memo(({ index, question, number, onChange }) => 
       )}
       <div className="w-full h-0.5 bg-fiord-200 my-4" />
       <div className="flex flex-col justify-start items-start gap-2 md:gap-6 md:flex-row md:items-center">
-        <Upload
+       <Upload
           maxCount={1}
           beforeUpload={() => false}
           onChange={(info) => {
             if (info.fileList.length > 0) {
               const file = info.fileList[0].originFileObj;
+              onChange(index, 'file', file); // ✅ Tambah baris ini untuk menyimpan file
               const reader = new FileReader();
               reader.onload = (e) => {
-                onChange(index, 'image', e.target.result);
+                onChange(index, 'image', e.target.result); // tetap tampilkan preview jika perlu
               };
               reader.readAsDataURL(file);
             } else {
+              onChange(index, 'file', null); // ✅ Tambah ini untuk reset
               onChange(index, 'image', '');
             }
           }}

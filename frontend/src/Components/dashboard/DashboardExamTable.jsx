@@ -75,9 +75,9 @@ const ExamTable = ({ dataProgram }) => {
       cancelButtonText: "Batal",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const { data } = await getBrandById(programId);
+        const { data } = await getUjianById(programId);
         setEditingProgram(data);
-        setIsEditModalOpen(true);
+        navigate(`/dashboard/exam/edit/${programId}`);
       }
     });
   };
@@ -95,7 +95,7 @@ const ExamTable = ({ dataProgram }) => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await softDeleteBrand(id);
+          await deleteUjian(id);
           setData(prev => prev.filter((item) => item.id !== id));
           Swal.fire("Dihapus!", "Program telah dihapus.", "success").then(() => {
             window.location.reload();
@@ -204,13 +204,6 @@ const ExamTable = ({ dataProgram }) => {
           <Table columns={columns} dataSource={filteredData} rowKey="id" pagination={false} />
         </div>
       </div>
-
-      <EditProgramModal
-        isModalOpen={isEditModalOpen}
-        setIsModalOpen={setIsEditModalOpen}
-        programData={editingProgram}
-        refreshData={getDashboardData}
-      />
     </>
   );
 };

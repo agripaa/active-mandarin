@@ -72,6 +72,8 @@ const Routings = () => {
                 <Route path="/donasi" element={<Donation/>}/>
                 <Route path="/profile" element={<Profile/>}/>
                 <Route path="/dashboard/exam/add" element={<CreateExam/>}/>
+                <Route path="/dashboard/exam/edit/:id" element={<CreateExam isEditMode={true} />} />
+
 
                 {/* IDK */}
                 <Route path="/events" element={<Event/>}/>
