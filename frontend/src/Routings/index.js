@@ -32,6 +32,11 @@ import NotifikasiTransaksi from "../Pages/NotifikasiTransaksi";
 import NotifikasiUjian from "../Pages/NotifikasiUjian";
 import DashboardExaminate from "../Pages/DashboardExaminate";
 import TakeExam from "../Pages/TakeExam";
+import ExamList from "../Components/dashboard/ExamList";
+import ResultExams from "../Components/dashboard/ResultExams";
+import ResultPage from "../Components/dashboard/ResultPage";
+import Certificate from "../Components/dashboard/Certificate";
+import CertificateTable from "../Components/dashboard/CertificateTable";
 
 const Routings = () => {
     return(
@@ -74,6 +79,11 @@ const Routings = () => {
                 <Route path="/dashboard/take-exam/:id" element={<TakeExam/>}/>
                 <Route path="/dashboard/examinate/:id" element={<DashboardExaminate/>}/>
                 <Route path="/verifikasi/ujian" element={<NotifikasiUjian/>}/>
+                <Route path="/exams" element={<ExamList/>}/>
+                <Route path="/result-exam" element={<ResultExams/>}/>
+                <Route path="/result-exam/:id" element={<ResultPage/>}/>
+                <Route path="/certificate/:id" element={<Certificate/>}/>
+                <Route path="/certificate-table/:id" element={<CertificateTable/>}/>
 
                 {/* IDK */}
                 <Route path="/events" element={<Event/>}/>

@@ -355,7 +355,7 @@ const Lectures = ({ text }) => {
               {lecture.map((item, index) => (
                 <div key={index} className="h-full">
                   <div className="flex flex-col bg-white border border-[#D5DAE2] rounded-3xl w-full h-full text-center p-4 xl:p-6">
-                    <div className="relative w-48 mx-auto mb-4 flex justify-center items-center aspect-square rounded-full overflow-hidden">
+                    <div className="relative w-48 h-48 mx-auto mb-4 flex justify-center items-center aspect-square rounded-full overflow-hidden">
                       <img
                         src={item.profile}
                         alt={item.name}

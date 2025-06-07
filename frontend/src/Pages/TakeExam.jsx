@@ -183,6 +183,92 @@ const TakeExam = () => {
       );
     }
 
+      if(currentQuestion.questionType === "order-arrange") {
+            <div className="flex flex-col gap-2">
+              <h5 className="text-base font-medium">Susun Kata Di Bawah Ini!</h5>
+              <div className="flex flex-row flex-wrap gap-2">
+                {(() => {
+                  // Ambil kata-kata dari options[0]
+                  const originalOrder = currentQuestion.options[0]
+                    ? currentQuestion.options[0].split("; ").map(s => s.trim())
+                    : [];
+                  // Ambil jawaban user, jika belum ada pakai urutan awal
+                  const userOrder = currentQuestion.answer[0]
+                    ? currentQuestion.answer[0].split("; ").map(s => s.trim())
+                    : originalOrder;
+
+                  const handleDragStart = idx => setDraggedIdx(idx);
+                  const handleDragOver = (e, idx) => {
+                    e.preventDefault();
+                    setDragOverIdx(idx);
+                  };
+                  const handleDrop = idx => {
+                    if (draggedIdx === null || draggedIdx === idx) {
+                      setDraggedIdx(null);
+                      setDragOverIdx(null);
+                      return;
+                    }
+                    setQuestionList(prev =>
+                      prev.map((q, qIdx) => {
+                        if (qIdx !== number) return q;
+                        const arr = [...userOrder];
+                        const [moved] = arr.splice(draggedIdx, 1);
+                        arr.splice(idx, 0, moved);
+                        return { ...q, answer: [arr.join("; ")] };
+                      })
+                    );
+                    setDraggedIdx(null);
+                    setDragOverIdx(null);
+                  };
+                  const handleDragEnd = () => {
+                    setDraggedIdx(null);
+                    setDragOverIdx(null);
+                  };
+
+                  // For smooth animation, use motion.div
+                  return (
+                    <React.Fragment>
+                      {userOrder.map((ans, ansIndex) => (
+                        <motion.div
+                          key={ans}
+                          layout
+                          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                          draggable
+                          onDragStart={() => handleDragStart(ansIndex)}
+                          onDragOver={e => handleDragOver(e, ansIndex)}
+                          onDrop={() => handleDrop(ansIndex)}
+                          onDragEnd={handleDragEnd}
+                          style={{
+                            display: "inline-block",
+                            opacity: draggedIdx === ansIndex ? 0.5 : 1,
+                            zIndex: draggedIdx === ansIndex ? 10 : 1,
+                            outline: dragOverIdx === ansIndex && draggedIdx !== null ? "2px dashed #3377FF" : "none",
+                            cursor: draggedIdx === ansIndex ? "grabbing" : "grab",
+                          }}
+                        >
+                          <Button
+                            className={`rounded-2xl px-6 py-5 mr-2 mb-2 text-blue-500`}
+                            style={{
+                              touchAction: "none",
+                              userSelect: "none",
+                              minWidth: 100,
+                              background: dragOverIdx === ansIndex && draggedIdx !== null ? "#e6f0ff" : undefined,
+                              cursor: draggedIdx === ansIndex ? "grabbing" : "grab",
+                            }}
+                          >
+                            {ans}
+                          </Button>
+                        </motion.div>
+                      ))}
+                    </React.Fragment>
+                  );
+                })()}
+              </div>
+              <div className="mt-2 text-xs text-gray-500">* Drag & drop untuk mengurutkan</div>
+            </div>
+          }
+
+
     return <p className="text-gray-400 italic">Soal belum tersedia untuk tipe ini.</p>;
   };
 

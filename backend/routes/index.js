@@ -15,6 +15,7 @@ const tipeUjianRoutes = require('./tipeUjian.route');
 const listJawabanRoutes = require('./listJawaban.route');
 const soalRoutes = require('./soal.route');
 const jawabanUserRoutes = require('./jawabanUser.route');
+const certificateRoute = require('./certificate.route');
 
 app.use(express.json());
 
@@ -34,6 +35,7 @@ router.use('/ujian-brand', ujianBrandRoutes);
 router.use('/tipe-ujian', tipeUjianRoutes);   
 router.use('/list-jawaban', listJawabanRoutes);   
 router.use('/soal', soalRoutes);   
-router.use('/jawaban-user', jawabanUserRoutes);   
+router.use('/jawaban-user', jawabanUserRoutes);  
+router.use('/certificate', certificateRoute); 
 
 module.exports = router;
