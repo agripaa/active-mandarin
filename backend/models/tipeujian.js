@@ -5,7 +5,10 @@ module.exports = (sequelize, DataTypes) => {
   class TipeUjian extends Model {
     static associate(models) {
       TipeUjian.belongsTo(models.Ujian, { foreignKey: 'ujian_id' });
-      TipeUjian.hasMany(models.Soal, { foreignKey: 'tipe_ujian_id' });
+      TipeUjian.hasMany(models.Soal, {
+        foreignKey: 'tipe_ujian_id',
+        as: 'Soals' 
+      });
     }
   }
 

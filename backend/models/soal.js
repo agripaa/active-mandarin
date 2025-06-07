@@ -4,9 +4,16 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Soal extends Model {
     static associate(models) {
-      Soal.belongsTo(models.TipeUjian, { foreignKey: 'tipe_ujian_id' });
-      Soal.belongsTo(models.ListJawaban, { foreignKey: 'list_jawaban_id' });
-      Soal.hasMany(models.JawabanUser, { foreignKey: 'soal_id' });
+      Soal.belongsTo(models.TipeUjian, {
+        foreignKey: 'tipe_ujian_id',
+        as: 'TipeUjian'
+      });
+
+
+      Soal.hasMany(models.ListJawaban, {
+        foreignKey: 'soal_id',
+        as: 'ListJawabans'
+      });
     }
   }
 
@@ -18,44 +25,20 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER
     },
     tipe_ujian_id: {
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
-    index_soal: {
-      type: DataTypes.INTEGER
-    },
-    pertanyaan: {
-      type: DataTypes.TEXT
-    },
-    file_soal: {
-      type: DataTypes.STRING
-    },
-    skor_soal: {
-      type: DataTypes.INTEGER
-    },
-    tipe_soal: {
-      type: DataTypes.STRING
-    },
-    penjelasan: {
-      type: DataTypes.TEXT
-    },
-    list_jawaban_id: {
-      type: DataTypes.INTEGER
-    },
-    mutiple: {
-      type: DataTypes.BOOLEAN
-    },
-    point_soal: {
-      type: DataTypes.INTEGER
-    },
-    jawaban_benar: {
-      type: DataTypes.STRING
-    },
-    soal_awal: {
-      type: DataTypes.STRING
-    },
-    soal_akhir: {
-      type: DataTypes.STRING
-    }
+    index_soal: DataTypes.INTEGER,
+    pertanyaan: DataTypes.TEXT,
+    file_soal: DataTypes.STRING,
+    skor_soal: DataTypes.INTEGER,
+    tipe_soal: DataTypes.STRING,
+    penjelasan: DataTypes.TEXT,
+    mutiple: DataTypes.BOOLEAN,
+    point_soal: DataTypes.INTEGER,
+    jawaban_benar: DataTypes.STRING,
+    soal_awal: DataTypes.STRING,
+    soal_akhir: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Soal',

@@ -60,18 +60,20 @@ const Routings = () => {
                 <Route path="/dashboard" element={<Dashboard/>}/>
                 <Route path="/dashboard/products" element={<DashboardProduct/>}/>
                 <Route path="/dashboard/programs" element={<DashboardProgram/>}/>
-                <Route path="/dashboard/exam" element={<DashboardExam/>}/>
                 <Route path="/transaksi" element={<Transaksi/>}/>
                 <Route path="/verifikasi/affiliator" element={<NotifikasiAffiliator/>}/>
                 <Route path="/verifikasi/transaksi" element={<NotifikasiTransaksi/>}/>
-                <Route path="/verifikasi/ujian" element={<NotifikasiUjian/>}/>
-                <Route path="/dashboard/examinate/:id" element={<DashboardExaminate/>}/>
-                <Route path="/dashboard/take-exam/:id" element={<TakeExam/>}/>
                 <Route path="/affiliate" element={<Affiliate/>}/>
                 <Route path="/rekrutmen" element={<Rekrutmen/>}/>
                 <Route path="/donasi" element={<Donation/>}/>
                 <Route path="/profile" element={<Profile/>}/>
+
+                {/* exam */}
+                <Route path="/dashboard/exam" element={<DashboardExam/>}/>
                 <Route path="/dashboard/exam/add" element={<CreateExam/>}/>
+                <Route path="/dashboard/take-exam/:id" element={<TakeExam/>}/>
+                <Route path="/dashboard/examinate/:id" element={<DashboardExaminate/>}/>
+                <Route path="/verifikasi/ujian" element={<NotifikasiUjian/>}/>
 
                 {/* IDK */}
                 <Route path="/events" element={<Event/>}/>

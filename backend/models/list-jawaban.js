@@ -4,8 +4,12 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class ListJawaban extends Model {
     static associate(models) {
-        ListJawaban.hasMany(models.Soal, {foreignKey: 'list_jawaban_id'})
-        ListJawaban.hasMany(models.JawabanUser, { foreignKey: 'list_jawaban_id' });
+      ListJawaban.belongsTo(models.Soal, {
+        foreignKey: 'soal_id',
+        as: 'Soal'
+      });
+
+      ListJawaban.hasMany(models.JawabanUser, { foreignKey: 'list_jawaban_id' });
     }
   }
 
@@ -15,6 +19,10 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true,
       type: DataTypes.INTEGER
+    },
+    soal_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
     jawaban: {
       type: DataTypes.STRING

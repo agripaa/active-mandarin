@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "nodemon index.js",
-    "dev": "nodemon --exec babel-node index.js",
-    "production": "nodemon --exec babel-node index.js",
+    "dev": "nodemon index.js",
+    "production": "nodemon index.js",
     "build": "babel src --out-dir dist"
   },
   "author": "",
