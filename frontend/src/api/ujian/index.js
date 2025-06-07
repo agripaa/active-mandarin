@@ -55,3 +55,53 @@ export const deleteUjian = async (id) => {
     throw error.response ? error.response.data : error.message;
   }
 };
+
+export const submitUjian = async ({soal_id, input_jawaban, user_id}) => {
+  try {
+    const response = await api.post(`/ujian/jawaban`, {soal_id, input_jawaban, user_id});
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting ujian:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const getUjianDetail = async (id) => {
+  try {
+    const response = await api.get(`/ujian/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting ujian:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const getUjianSoal = async (id) => {
+  try {
+    const response = await api.get(`/ujian/soal/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting ujian:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const getJawabanListBySoalId = async (id) => {
+  try {
+    const response = await api.get(`/list-jawaban/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting ujian:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const getUjianBrandsByUjianId = async (ujianId) => {
+  try {
+    const response = await api.get(`/ujian-brand/by-ujian/${ujianId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching ujian brands:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};

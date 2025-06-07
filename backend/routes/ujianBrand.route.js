@@ -5,7 +5,7 @@ const middleware = require('../middleware/verifyAuth.middleware');
 
 router.post('/', middleware.authenticateUser, ujianBrandController.createUjianBrand);
 router.get('/', middleware.authenticateUser, ujianBrandController.getAllUjianBrands);
-router.get('/by-ujian', middleware.authenticateUser, ujianBrandController.getUjianBrandByUjianId);
+router.get('/by-ujian/:ujian_id', ujianBrandController.getUjianBrandByUjianId);
 router.get('/:id', middleware.authenticateUser, ujianBrandController.getUjianBrandById);
 router.put('/:id', middleware.authenticateUser, ujianBrandController.updateUjianBrand);
 router.delete('/:id', middleware.authenticateUser, ujianBrandController.deleteUjianBrand);

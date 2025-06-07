@@ -12,13 +12,3 @@ export const createUjianBrand = async (data) => {
     throw error.response ? error.response.data : error.message;
   }
 };
-
-export const getUjianBrandByUjianId = async (ujianId) => {
-  try {
-    const response = await api.get(`/ujian-brand/?ujian_id=${ujianId}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching ujian:", error);
-    throw error.response ? error.response.data : error.message;
-  }
-};

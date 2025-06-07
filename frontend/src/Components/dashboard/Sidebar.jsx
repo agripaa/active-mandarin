@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { RiDashboardFill, RiFileTextLine, RiNotification4Line, RiCheckboxCircleLine, RiLogoutBoxLine, RiUserLine, RiHome4Line, RiSoundModuleLine, RiArrowDownSLine, RiListUnordered } from "react-icons/ri";
+import { RiDashboardFill, RiFileTextLine, RiNotification4Line, RiCheckboxCircleLine, RiLogoutBoxLine, RiUserLine, RiHome4Line, RiSoundModuleLine, RiArrowDownSLine, RiListUnordered, RiFileEditLine, RiFileChartLine } from "react-icons/ri";
 import { MdCoPresent, MdOutlineDashboardCustomize } from "react-icons/md";
 import { SiGoogleclassroom } from "react-icons/si";
 import { getProfile } from "../../api/auth";
@@ -127,6 +127,8 @@ const Sidebar = ({ onClose }) => {
                         <ul>
                             <SidebarItem to={`/dashboard`} icon={<RiDashboardFill />} label="Dashboard" location={location} />
                             <SidebarItem to={`/transaksi`} icon={<RiFileTextLine />} label="Transaksi" location={location} />
+                            <SidebarItem to={`/exams`} icon={<RiFileEditLine />} label="Ujian" location={location} />
+                            <SidebarItem to={`/result-exam`} icon={<RiFileChartLine />} label="Hasil Ujian" location={location} />
                             <SidebarItem to={`/profile`} icon={<RiUserLine />} label="Profile" location={location} />
                             <hr className="my-4" />
                             <SidebarItem to={`/`} icon={<RiHome4Line />} label="Homepage" location={location} />

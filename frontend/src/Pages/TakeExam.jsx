@@ -1,59 +1,113 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Table, Button, Spin, Input } from "antd";
+import { Button, Spin, Input } from "antd";
 import Swal from "sweetalert2";
 import { useNavigate, useParams } from "react-router";
 import { motion } from "motion/react";
 import ExamLayout from "../Layouts/ExamLayout";
+import { getProfile } from "../api/auth";
+import { submitUjian, getUjianDetail, getUjianSoal } from "../api/ujian";
 
 const TakeExam = () => {
   const [loading, setLoading] = useState(true);
-  const [profileImg, setProfileImg] = useState("/assets/profile-dummy.webp");
   const [questionList, setQuestionList] = useState([]);
   const [number, setNumber] = useState(0);
   const [draggedIdx, setDraggedIdx] = useState(null);
   const [dragOverIdx, setDragOverIdx] = useState(null);
+  const [user, setUser] = useState({});
+  const [examPhase, setExamPhase] = useState("listening");
+  const [timeLeft, setTimeLeft] = useState(600);
+  const [allQuestions, setAllQuestions] = useState({});
+  const [ujianInfo, setUjianInfo] = useState(null);
 
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const currentQuestion = useMemo(() => {
-    return questionList[number] || {};
-  }, [questionList, number]);
-
-  const questionNumberArray = useMemo(() => {
-    let count = 0;
-    return questionList.reduce((acc, question) => {
-      if (question.questionType === 'guide') {
-        acc.push(null); // Push null for guide questions to skip them in numbering
-        return acc;
-      }
-      count++;
-      acc.push(count);
-      return acc;
-    }, []);
-  }, [questionList]);
+  const currentQuestion = useMemo(() => questionList[number] || {}, [questionList, number]);
 
   useEffect(() => {
-    setTimeout(() => {
-      // Simulate fetching data
-      setQuestionList(DATA);
-      setLoading(false);
-    }, 1000);
-  }, []);
+    const fetchInitialData = async () => {
+      try {
+        const [userData, ujianData, soalData] = await Promise.all([
+          getProfile(),
+          getUjianDetail(id),
+          getUjianSoal(id)
+        ]);
 
-  const nextNumber = () => {
+        setUser(userData.data);
+        setUjianInfo(ujianData.data);
+
+        const soalByPhase = soalData.data;
+
+        for (const phase in soalByPhase) {
+          soalByPhase[phase].questions = soalByPhase[phase].questions.map((q) => ({
+            ...q,
+            options: q.options?.sort((a, b) => a.position?.localeCompare(b.position)),
+            answer: [],
+          }));
+        }
+
+        setAllQuestions(soalByPhase);
+        const initial = soalByPhase[examPhase];
+        setQuestionList(initial.questions);
+        setTimeLeft(parseInt(initial.time) * 60);
+        setLoading(false);
+      } catch (error) {
+        console.error("❌ Error loading exam:", error);
+        Swal.fire("Gagal Memuat", "Soal atau data ujian tidak tersedia.", "error");
+      }
+    };
+
+    fetchInitialData();
+  }, [id]);
+
+  useEffect(() => {
+    if (!allQuestions[examPhase]) return;
+    setQuestionList(allQuestions[examPhase].questions.map(q => ({ ...q, answer: [] })));
+    setTimeLeft(parseInt(allQuestions[examPhase].time) * 60);
+    setNumber(0);
+  }, [examPhase]);
+
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      if (examPhase === "listening") {
+        setExamPhase("reading");
+      } else if (examPhase === "reading") {
+        setExamPhase("writing");
+      } else {
+        Swal.fire("Ujian selesai", "Semua sesi telah berakhir.", "success");
+      }
+    }
+    const timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
+    return () => clearInterval(timer);
+  }, [timeLeft, examPhase]);
+
+  const nextNumber = async () => {
+    const current = questionList[number];
+    try {
+      await submitUjian({
+        soal_id: current.id,
+        input_jawaban: Array.isArray(current.answer) ? current.answer.join(",") : current.answer,
+        user_id: user.id
+      });
+    } catch (err) {
+      console.error("❌ Gagal simpan jawaban:", err);
+      Swal.fire("Error", "Gagal menyimpan jawaban.", "error");
+    }
+
     if (number < questionList.length - 1) {
       setNumber(number + 1);
     } else {
       Swal.fire({
         title: "Selesai",
-        text: "Anda telah menyelesaikan ujian ini.",
+        text: "Anda telah menyelesaikan sesi ini.",
         icon: "success",
-        confirmButtonText: "Kembali ke Dashboard",
-        showCancelButton: true,
-        cancelButtonText: "Tetap di sini",
-      }).then((result) => {
-        if (result.isConfirmed) {
+        confirmButtonText: "Lanjut",
+      }).then(() => {
+        if (examPhase === "listening") {
+          setExamPhase("reading");
+        } else if (examPhase === "reading") {
+          setExamPhase("writing");
+        } else {
           navigate("/dashboard");
         }
       });
@@ -64,95 +118,72 @@ const TakeExam = () => {
     if (number > 0) {
       setNumber(number - 1);
     } else {
-      Swal.fire({
-        title: "Tidak Bisa Mundur",
-        text: "Anda sudah berada di soal pertama.",
-        icon: "info",
-        confirmButtonText: "OK",
-      });
+      Swal.fire("Sudah di soal pertama", "", "info");
     }
   };
 
-  if (loading) {
-    return (
-      <ExamLayout>
-        <div className="flex justify-center items-center h-[80vh]">
-          <Spin size="large" />
-        </div>
-      </ExamLayout>
-    );
-  }
+  const renderQuestion = () => {
+    if (!currentQuestion || !currentQuestion.questionType) return null;
 
-  return (
-    <ExamLayout>
-      <div className="px-8 py-4 flex flex-col gap-5 min-h-screen">
-        <div>
-          {currentQuestion.questionType !== "guide" ? (
-            <div
-              className="my-6"
-              dangerouslySetInnerHTML={{ __html: currentQuestion.question }}
-            />
-          ) : (
-            <div
-              className="my-6"
-              dangerouslySetInnerHTML={{ __html: currentQuestion.guideForQuestion.guide }}
-            />
-          )}
-          {currentQuestion.questionType === "essay" && (
-            <div className="flex flex-col my-4 gap-2">
-              <Input.TextArea
-                className="py-3 px-4 bg-fiord-100 rounded-2xl"
-                value={currentQuestion.answer[0] || ""}
-                placeholder="Tulis jawaban Anda di sini"
-                autoSize={{ minRows: 3, maxRows: 8 }}
-                onChange={e => {
-                  const newAnswer = [e.target.value];
-                  setQuestionList(prev =>
-                    prev.map((q, idx) =>
-                      idx === number ? { ...q, answer: newAnswer } : q
-                    )
-                  );
-                }}
-              />
-            </div>
-          )}
-          {currentQuestion.questionType === "multiple-choice" && (
-            <div className="flex flex-col gap-2">
-              {currentQuestion.options.map((option, idx) => (
-                <Button
-                  key={option.id}
-                  className={`py-4 pl-4 pr-10 rounded-2xl text-left w-full mb-2 h-auto items-center justify-start`}
-                  type={currentQuestion.answer.includes(option.id) ? "primary" : "default"}
-                  onClick={() => {
-                    setQuestionList(prev =>
-                      prev.map((q, qIdx) => {
-                        if (qIdx !== number) return q;
-                        let newAnswer;
-                        if (q.isMultipleAnswer) {
-                          if (q.answer.includes(option.id)) {
-                            newAnswer = q.answer.filter(a => a !== option.id);
-                          } else {
-                            newAnswer = [...q.answer, option.id];
-                          }
-                        } else {
-                          newAnswer = [option.id];
-                        }
-                        return { ...q, answer: newAnswer };
-                      })
-                    );
-                  }}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-full justify-center items-center flex ${currentQuestion.answer.includes(option.id) ? "bg-blue-100 text-[#3377FF]" : "bg-background text-[#3377FF]"}`}>
-                      {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'][idx] || String.fromCharCode(65 + idx)}
-                    </div>
-                    {option.option}
-                  </div>
-                </Button>
-              ))}
-            </div>
-          )}
-          {currentQuestion.questionType === "order-arrange" && (
+    if (currentQuestion.questionType === "essay") {
+      return (
+        <Input.TextArea
+          className="py-3 px-4 bg-fiord-100 rounded-2xl"
+          value={currentQuestion.answer[0] || ""}
+          placeholder="Tulis jawaban Anda di sini"
+          autoSize={{ minRows: 3, maxRows: 8 }}
+          onChange={e => {
+            const newAnswer = [e.target.value];
+            setQuestionList(prev =>
+              prev.map((q, idx) => (idx === number ? { ...q, answer: newAnswer } : q))
+            );
+          }}
+        />
+      );
+    }
+
+    if (currentQuestion.questionType === "multiple-choice") {
+      if (!currentQuestion.options || currentQuestion.options.length === 0) {
+        return <p className="text-sm text-red-500">Tidak ada pilihan jawaban.</p>;
+      }
+
+      return (
+        <div className="flex flex-col gap-2">
+          {currentQuestion.options.map((option, idx) => (
+            <Button
+              key={option.id || idx}
+              className="py-4 pl-4 pr-10 rounded-2xl text-left w-full mb-2 h-auto"
+              type={currentQuestion.answer.includes(option.id) ? "primary" : "default"}
+              onClick={() => {
+                setQuestionList(prev =>
+                  prev.map((q, qIdx) => {
+                    if (qIdx !== number) return q;
+                    let newAnswer;
+                    if (q.isMultipleAnswer) {
+                      newAnswer = q.answer.includes(option.id)
+                        ? q.answer.filter(a => a !== option.id)
+                        : [...q.answer, option.id];
+                    } else {
+                      newAnswer = [option.id];
+                    }
+                    return { ...q, answer: newAnswer };
+                  })
+                );
+              }}
+            >
+              <div className="flex items-center w-full justify-start gap-4">
+                <div className={`w-10 h-10 rounded-full flex justify-center items-center ${currentQuestion.answer.includes(option.id) ? "bg-blue-100 text-[#3377FF]" : "bg-blue-100 text-[#3377FF]"}`}>
+                  {option.position}
+                </div>
+                {option.option || `Pilihan ${idx + 1}`}
+              </div>
+            </Button>
+          ))}
+        </div>
+      );
+    }
+
+      if(currentQuestion.questionType === "order-arrange") {
             <div className="flex flex-col gap-2">
               <h5 className="text-base font-medium">Susun Kata Di Bawah Ini!</h5>
               <div className="flex flex-row flex-wrap gap-2">
@@ -235,95 +266,44 @@ const TakeExam = () => {
               </div>
               <div className="mt-2 text-xs text-gray-500">* Drag & drop untuk mengurutkan</div>
             </div>
-          )}
-        </div>
-      </div>
+          }
 
-      <div className="sticky bottom-0 left-0 w-full bg-white p-4 shadow-lg flex justify-between items-center">
-        <Button
-          type="primary"
-          onClick={prevNumber}
-          disabled={number === 0}
-          className="rounded-2xl"
-        >
-          Sebelumnya
-        </Button>
-        <Button
-          type="primary"
-          onClick={nextNumber}
-          className="rounded-2xl"
-        >
-          {number < questionList.length - 1 ? "Selanjutnya" : "Selesai"}
-        </Button>
-      </div>
-    </ExamLayout>
+
+    return <p className="text-gray-400 italic">Soal belum tersedia untuk tipe ini.</p>;
+  };
+
+  return (
+    loading ? (
+      <ExamLayout>
+        <div className="flex justify-center items-center h-[80vh]">
+          <Spin size="large" />
+        </div>
+      </ExamLayout>
+    ) : (
+      <ExamLayout>
+        <div className="px-8 py-4 flex flex-col gap-5 min-h-screen pb-28">
+          {ujianInfo && (
+            <div className="mb-4">
+              <h2 className="text-xl font-bold">{ujianInfo.nama_ujian}</h2>
+              <p className="text-sm text-gray-500" dangerouslySetInnerHTML={{ __html: ujianInfo.desc }} />
+            </div>
+          )}
+
+          <div className="my-6" dangerouslySetInnerHTML={{ __html: currentQuestion.question }} />
+          {renderQuestion()}
+
+          <div className="fixed bottom-0 left-0 w-full bg-white p-4 shadow-lg flex justify-between items-center z-50">
+            <Button onClick={prevNumber} disabled={number === 0} className="rounded-2xl">
+              Sebelumnya
+            </Button>
+            <Button onClick={nextNumber} className="rounded-2xl">
+              {number < questionList.length - 1 ? "Selanjutnya" : "Selesai"}
+            </Button>
+          </div>
+        </div>
+      </ExamLayout>
+    )
   );
 };
 
 export default TakeExam;
-
-const DATA = [
-    {
-        "id": 1,
-        "question": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum mollis nunc a molestie dictum. Mauris venenatis, felis scelerisque aliquet lacinia, nulla nisi venenatis odio, id blandit mauris ipsum id sapien. Vestibulum malesuada orci sit amet pretium facilisis. In lobortis congue augue, a commodo libero tincidunt scelerisque.</p>",
-        "questionType": "essay",
-        "explanation": "",
-        "options": [],
-        "isMultipleAnswer": false,
-        "answer": [],
-        "image": "",
-        "guideForQuestion": {
-            "start": 0,
-            "end": 0,
-            "guide": ""
-        },
-        "point": 0
-    },
-    {
-        "id": 2,
-        "question": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum mollis nunc a molestie dictum. Mauris venenatis, felis scelerisque aliquet lacinia, nulla nisi venenatis odio, id blandit mauris ipsum id sapien. Vestibulum malesuada orci sit amet pretium facilisis. In lobortis congue augue, a commodo libero tincidunt scelerisque.</p>",
-        "questionType": "multiple-choice",
-        "explanation": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum mollis nunc a molestie dictum. Mauris venenatis, felis scelerisque aliquet lacinia, nulla nisi venenatis odio, id blandit mauris ipsum id sapien. Vestibulum malesuada orci sit amet pretium facilisis. In lobortis congue augue, a commodo libero tincidunt scelerisque.</p>",
-        "options": [
-            {
-                "id": 1,
-                "option": "Pilihan 1"
-            },
-            {
-                "id": 2,
-                "option": "Pilihan 2"
-            },
-            {
-                "id": 3,
-                "option": "Pilihan 3"
-            }
-        ],
-        "isMultipleAnswer": false,
-        "answer": [],
-        "image": "",
-        "guideForQuestion": {
-            "start": 0,
-            "end": 0,
-            "guide": ""
-        },
-        "point": 15
-    },
-    {
-        "id": 3,
-        "question": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum mollis nunc a molestie dictum. Mauris venenatis, felis scelerisque aliquet lacinia, nulla nisi venenatis odio, id blandit mauris ipsum id sapien. Vestibulum malesuada orci sit amet pretium facilisis. In lobortis congue augue, a commodo libero tincidunt scelerisque.</p>",
-        "questionType": "order-arrange",
-        "explanation": "",
-        "options": [
-          "Urutan 5; Urutan 1; Urutan 3; Urutan 2; Urutan 4"
-        ],
-        "isMultipleAnswer": false,
-        "answer": [],
-        "image": "",
-        "guideForQuestion": {
-            "start": 0,
-            "end": 0,
-            "guide": ""
-        },
-        "point": 20
-    },
-]

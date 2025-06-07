@@ -32,6 +32,11 @@ import NotifikasiTransaksi from "../Pages/NotifikasiTransaksi";
 import NotifikasiUjian from "../Pages/NotifikasiUjian";
 import DashboardExaminate from "../Pages/DashboardExaminate";
 import TakeExam from "../Pages/TakeExam";
+import ExamList from "../Components/dashboard/ExamList";
+import ResultExams from "../Components/dashboard/ResultExams";
+import ResultPage from "../Components/dashboard/ResultPage";
+import Certificate from "../Components/dashboard/Certificate";
+import CertificateTable from "../Components/dashboard/CertificateTable";
 
 const Routings = () => {
     return(
@@ -60,20 +65,27 @@ const Routings = () => {
                 <Route path="/dashboard" element={<Dashboard/>}/>
                 <Route path="/dashboard/products" element={<DashboardProduct/>}/>
                 <Route path="/dashboard/programs" element={<DashboardProgram/>}/>
-                <Route path="/dashboard/exam" element={<DashboardExam/>}/>
                 <Route path="/transaksi" element={<Transaksi/>}/>
                 <Route path="/verifikasi/affiliator" element={<NotifikasiAffiliator/>}/>
                 <Route path="/verifikasi/transaksi" element={<NotifikasiTransaksi/>}/>
-                <Route path="/verifikasi/ujian" element={<NotifikasiUjian/>}/>
-                <Route path="/dashboard/examinate/:id" element={<DashboardExaminate/>}/>
-                <Route path="/dashboard/take-exam/:id" element={<TakeExam/>}/>
                 <Route path="/affiliate" element={<Affiliate/>}/>
                 <Route path="/rekrutmen" element={<Rekrutmen/>}/>
                 <Route path="/donasi" element={<Donation/>}/>
                 <Route path="/profile" element={<Profile/>}/>
+
+                {/* exam */}
+                <Route path="/dashboard/exam" element={<DashboardExam/>}/>
                 <Route path="/dashboard/exam/add" element={<CreateExam/>}/>
                 <Route path="/dashboard/exam/edit/:id" element={<CreateExam isEditMode={true} />} />
 
+                <Route path="/dashboard/take-exam/:id" element={<TakeExam/>}/>
+                <Route path="/dashboard/examinate/:id" element={<DashboardExaminate/>}/>
+                <Route path="/verifikasi/ujian" element={<NotifikasiUjian/>}/>
+                <Route path="/exams" element={<ExamList/>}/>
+                <Route path="/result-exam" element={<ResultExams/>}/>
+                <Route path="/result-exam/:id" element={<ResultPage/>}/>
+                <Route path="/certificate/:id" element={<Certificate/>}/>
+                <Route path="/certificate-table/:id" element={<CertificateTable/>}/>
 
                 {/* IDK */}
                 <Route path="/events" element={<Event/>}/>
