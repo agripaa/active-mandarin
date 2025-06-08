@@ -5,6 +5,7 @@ module.exports = (sequelize, DataTypes) => {
   class Certificate extends Model {
     static associate(models) {
       Certificate.belongsTo(models.User, { foreignKey: 'user_id' });
+      Certificate.belongsTo(models.Ujian, { foreignKey: 'ujian_id' });
     }
   }
 
@@ -12,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
     user_id: {
       type: DataTypes.INTEGER,
       allowNull: false
+    },
+    ujian_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true
     },
     exam_level: {
       type: DataTypes.INTEGER,
