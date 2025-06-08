@@ -160,7 +160,6 @@ exports.getEssayJawabanByUserUjianProgress = async (req, res) => {
           user_id: userId
         }
       });
-      console.log("All jawaban for user:", allJawaban);
       currentScore = allJawaban.reduce((sum, j) => sum + (j.poing || 0), 0);
     }
 
@@ -202,7 +201,89 @@ exports.examineEssayJawaban = async (req, res) => {
       { is_done: true, is_checking: false },
       { where: { user_id: userId, ujian_id: ujianId } }
     );
-    res.json({ status: true, message: "Examination completed and points updated for all phases." });
+
+    // Check if certificate should be included
+    let certificate = null;
+    const transaction = await db.Transaction.findOne({
+      where: { user_id: userId, ujian_id: ujianId }
+    });
+    console.log("Transaction for userId:", userId, "ujianId:", ujianId, "is", transaction);
+    console.log("Transaction include_certif:", transaction?.include_certif);
+    if (transaction && transaction.include_certif) {
+      try {
+      // Fetch user and ujian info for certificate fields
+      const user = await db.User.findByPk(userId);
+      const ujian = await db.Ujian.findByPk(ujianId);
+      // Get all tipe ujian for this ujian
+      const tipeUjians = await db.TipeUjian.findAll({ where: { ujian_id: ujianId } });
+
+      // For each tipeUjian, get all soal for that tipe (not just one)
+      const tipeSoalMap = {};
+      for (const tipe of tipeUjians) {
+        const soalList = await db.Soal.findAll({ where: { tipe_ujian_id: tipe.id } });
+        tipeSoalMap[tipe.category_ujian] = soalList.map(s => s.id);
+      }
+
+      // Get all jawaban user for these soal and this user (all phases, but only sum once)
+      let listening_score = 0;
+      let reading_score = 0;
+      let writing_score = 0;
+
+      // Flatten all soal ids
+      const allSoalIds = Object.values(tipeSoalMap).flat();
+      let jawabanList = [];
+      if (allSoalIds.length > 0) {
+        jawabanList = await db.JawabanUser.findAll({
+        where: {
+          soal_id: allSoalIds,
+          user_id: userId
+        },
+        include: [{ model: db.Soal, as: 'Soal' }]
+        });
+      }
+
+      // Sum poing for each category_ujian
+      for (const tipe of tipeUjians) {
+        const category = tipe.category_ujian;
+        const tipeSoalIds = tipeSoalMap[category] || [];
+        const phaseJawaban = jawabanList.filter(j => tipeSoalIds.includes(j.soal_id));
+        const phaseScore = phaseJawaban.reduce((sum, j) => sum + (j.poing || 0), 0);
+        if (category === 'listening') listening_score = phaseScore;
+        if (category === 'reading') reading_score = phaseScore;
+        if (category === 'writing') writing_score = phaseScore;
+      }
+
+      const total_score = listening_score + reading_score + writing_score;
+      // Generate exam_no as in certificate.controller.js
+      let examPrefix = ujian && ujian.level ? `H${ujian.level}` : '';
+      const date = new Date();
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, "0");
+      const dd = String(date.getDate()).padStart(2, "0");
+      const formattedDate = `${yyyy}${mm}${dd}`;
+      const randomDigits = Math.floor(100 + Math.random() * 900);
+      const exam_no = `${examPrefix}${formattedDate}${randomDigits}`;
+      // Find or create certificate
+      certificate = await db.Certificate.create({
+        user_id: userId,
+        exam_level: ujian.level,
+        gender: user.gender || 'Male',
+        nationality: user.nationality || '印度尼西亚',
+        name: user.name,
+        exam_date: formattedDate,
+        exam_no,
+        listening_score,
+        reading_score,
+        writing_score,
+        total_score,
+        status: 'Passed'
+      });
+      } catch (certErr) {
+      console.error('Certificate creation error:', certErr);
+      }
+    }
+
+    res.json({ status: true, message: "Examination completed and points updated for all phases.", certificate });
   } catch (error) {
     res.status(500).json({ status: false, error: error.message });
   }
@@ -279,8 +360,6 @@ exports.getExamUserResults = async (req, res) => {
         user_id: progress.user_id
       };
     }));
-
-    console.log("Exam results fetched:", results, "records");
 
     res.json({ status: true, data: results });
   } catch (error) {

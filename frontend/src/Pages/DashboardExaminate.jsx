@@ -47,6 +47,7 @@ const DashboardExaminate = () => {
           guideForQuestion: { start: 0, end: 0, guide: "" },
           point: jawaban.poing || 0,
         }));
+        console.log("Fetched data:", data);
         setQuestionList(data);
         setMaxScore(res.maxScore);
         setCurrentScore(res.currentScore);
@@ -83,7 +84,9 @@ const DashboardExaminate = () => {
     try {
       const points = questionList.map(q => ({ jawabanUserId: q.id, poing: q.point }));
       await examineEssayJawaban(id, points);
-      Swal.fire("Sukses", "Pemeriksaan berhasil disimpan!", "success");
+      Swal.fire("Sukses", "Pemeriksaan berhasil disimpan!", "success").then(() => {
+        navigate("/verifikasi/ujian");
+      });
     } catch (err) {
       Swal.fire("Error", err.message || "Gagal menyimpan pemeriksaan.", "error");
     }
