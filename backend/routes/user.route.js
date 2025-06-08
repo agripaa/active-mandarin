@@ -5,6 +5,6 @@ const middleware = require("../middleware/verifyAuth.middleware");
 
 router.get("/", middleware.authenticateUser, userTransactionsController.getUserTransactionsByCategory);
 router.get("/status", middleware.authenticateUser, userTransactionsController.getAllUserTransactions);
-
+router.get("/:id", middleware.authenticateUser, userTransactionsController.getUserById);
 
 module.exports = router;

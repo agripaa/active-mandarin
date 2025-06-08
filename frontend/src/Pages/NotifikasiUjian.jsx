@@ -3,11 +3,9 @@ import { Table, Button, Spin } from "antd";
 import Swal from "sweetalert2";
 import DashboardLayout from "../Layouts/DashboardLayout";
 import { useNavigate } from "react-router";
-import { getHasilUjian } from "../api/ujian";
-// import { getAffiliatorStatusFalse, approveAffiliator, rejectAffiliator } from "../api/affiliate";
+import { getExamUserResults } from "../api/jawabanUser";
 
 const NotifikasiUjian = () => {
-  // const [affiliators, setAffiliators] = useState([]);
   const [todoEvaluate, setTodoEvaluate] = useState({ belum: [], sudah: [] }); 
   const [loading, setLoading] = useState(true);
   const [actionLoadingId, setActionLoadingId] = useState(null);
@@ -15,41 +13,41 @@ const NotifikasiUjian = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const res = await getHasilUjian();
-
-      const belum = res.data.belum_dinilai.map((item, index) => ({
-        key: `belum-${index}`,
-        id: item.ujian_id, // gunakan untuk navigasi
-        exam_name: item.nama_ujian,
-        user_name: item.nama_peserta,
-        type: item.tipe_ujian,
-        score: item.nilai_sementara,
-        user_id: item.user_id,
-      }));
-
-      const sudah = res.data.sudah_dinilai.map((item, index) => ({
-        key: `sudah-${index}`,
-        id: item.ujian_id,
-        exam_name: item.nama_ujian,
-        user_name: item.nama_peserta,
-        type: item.tipe_ujian,
-        score: item.nilai_final,
-        user_id: item.user_id,
-      }));
-
-      setTodoEvaluate({ belum, sudah });
-    } catch (error) {
-      Swal.fire("Gagal", "Gagal mengambil data hasil ujian", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchData();
-}, []);
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const res = await getExamUserResults();
+        // res is expected to be { status: true, data: [...] }
+        const data = res.data || [];
+        // Split into belum dinilai (is_checking) and sudah dinilai (is_done)
+        const belum = data.filter(item => item.status === 'is_checking' || item.status === true || item.status === 1).map((item, index) => ({
+          key: `belum-${index}`,
+          id: item.id, // id progress
+          exam_name: item.nama_ujian,
+          user_name: item.nama_peserta,
+          type: item.tipe_ujian,
+          score: item.nilai_sementara,
+          user_id: item.user_id,
+        }));
+        const sudah = data.filter(item => item.status === 'is_done' || item.status === false || item.status === 0).map((item, index) => ({
+          key: `sudah-${index}`,
+          id: item.id,
+          exam_name: item.nama_ujian,
+          user_name: item.nama_peserta,
+          type: item.tipe_ujian,
+          score: item.nilai_final || item.nilai_sementara,
+          user_id: item.user_id,
+        }));
+        setTodoEvaluate({ belum, sudah });
+      } catch (error) {
+        console.log("Error fetching exam results:", error);
+        Swal.fire("Gagal", "Gagal mengambil data hasil ujian", "error");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const handleConfirm = (record) => {
     navigate(`/dashboard/examinate/${record.id}`)

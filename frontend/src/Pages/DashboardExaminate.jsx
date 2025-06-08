@@ -3,11 +3,17 @@ import { Table, Button, Spin, Input } from "antd";
 import Swal from "sweetalert2";
 import DashboardLayout from "../Layouts/DashboardLayout";
 import { useNavigate, useParams } from "react-router";
+import { getEssayJawabanByUserUjianProgress, examineEssayJawaban } from "../api/jawabanUser";
+import { getUserById } from "../api/user";
 
 const DashboardExaminate = () => {
   const [loading, setLoading] = useState(true);
   const [profileImg, setProfileImg] = useState("/assets/profile-dummy.webp");
   const [questionList, setQuestionList] = useState([]);
+  const [maxScore, setMaxScore] = useState(0);
+  const [currentScore, setCurrentScore] = useState(0);
+  const [userName, setUserName] = useState("");
+  const [userRole, setUserRole] = useState("");
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -16,7 +22,7 @@ const DashboardExaminate = () => {
     let count = 0;
     return questionList.reduce((acc, question) => {
       if (question.questionType === 'guide') {
-        acc.push(null); // Push null for guide questions to skip them in numbering
+        acc.push(null);
         return acc;
       }
       count++;
@@ -26,12 +32,62 @@ const DashboardExaminate = () => {
   }, [questionList]);
 
   useEffect(() => {
-    setTimeout(() => {
-      // Simulate fetching data
-      setQuestionList(DATA);
-      setLoading(false);
-    }, 1000);
-  }, []);
+    setLoading(true);
+    getEssayJawabanByUserUjianProgress(id)
+      .then(async (res) => {
+        const data = res.data.map((jawaban) => ({
+          id: jawaban.id,
+          question: jawaban.Soal?.pertanyaan || "",
+          questionType: jawaban.Soal?.tipe_soal || "essay",
+          explanation: jawaban.Soal?.penjelasan || "",
+          options: [],
+          isMultipleAnswer: false,
+          answer: [jawaban.input_jawaban || "Tidak ada jawaban"],
+          image: "",
+          guideForQuestion: { start: 0, end: 0, guide: "" },
+          point: jawaban.poing || 0,
+        }));
+        setQuestionList(data);
+        setMaxScore(res.maxScore);
+        setCurrentScore(res.currentScore);
+        if (res.user) {
+          setUserName(res.user.name);
+          setUserRole(res.user.role || "");
+          // Fetch user detail for profile image
+          try {
+            const userDetail = await getUserById(res.user.id);
+            setProfileImg(userDetail.data.profile_img || "/assets/profile-dummy.webp");
+          } catch {
+            setProfileImg("/assets/profile-dummy.webp");
+          }
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        Swal.fire("Error", err.message || "Gagal memuat data.", "error");
+      });
+  }, [id]);
+
+  // Handler for point change
+  const handlePointChange = (index, value) => {
+    const newList = [...questionList];
+    const oldPoint = newList[index].point || 0;
+    const newPoint = Number(value) || 0;
+    newList[index].point = newPoint;
+    setQuestionList(newList);
+    setCurrentScore((prev) => prev - oldPoint + newPoint);
+  };
+
+  const handleExamine = async () => {
+    try {
+      const points = questionList.map(q => ({ jawabanUserId: q.id, poing: q.point }));
+      await examineEssayJawaban(id, points);
+      Swal.fire("Sukses", "Pemeriksaan berhasil disimpan!", "success");
+    } catch (err) {
+      Swal.fire("Error", err.message || "Gagal menyimpan pemeriksaan.", "error");
+    }
+  };
 
   if (loading) {
     return (
@@ -53,13 +109,14 @@ const DashboardExaminate = () => {
             className="w-16 h-w-16 rounded-full object-cover"
           />
           <div className="flex flex-col gap-2">
-            <h2 className="text-xl font-medium">Udin Paco</h2>
+            <h2 className="text-xl font-medium">{userName || "-"}</h2>
             <div className="inline-flex items-center px-2 py-0.5 text-white bg-blue-500 rounded-full text-xs font-medium">
-              Mandarin Juara
+              {userRole || "Mandarin Juara"}
             </div>
+            <div className="text-xs mt-1">Skor: {currentScore} / {maxScore}</div>
           </div>
         </div>
-        <Button className="bg-[#FFCC00] text-black rounded-2xl" size="large" onClick={() => {}}>
+        <Button className="bg-[#FFCC00] text-black rounded-2xl" size="large" onClick={handleExamine}>
           Kirim
         </Button>
       </div>
@@ -137,8 +194,8 @@ const DashboardExaminate = () => {
                 <div className="w-full h-0.5 bg-fiord-200 my-4" />
                 <div className="flex flex-row items-center gap-2">
                   <Input
-                    value={question.questionType === 'multiple-choice' || question.questionType === 'order-arrange' ? question.point : undefined}
-                    disabled={question.questionType === "multiple-choice" || question.questionType === "order-arrange"}
+                    value={question.point}
+                    onChange={e => handlePointChange(index, e.target.value)}
                     type="number"
                     placeholder="cth: 15"
                     className="w-24 rounded-2xl"
@@ -155,87 +212,3 @@ const DashboardExaminate = () => {
 };
 
 export default DashboardExaminate;
-
-const DATA = [
-    {
-        "id": 1,
-        "question": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum mollis nunc a molestie dictum. Mauris venenatis, felis scelerisque aliquet lacinia, nulla nisi venenatis odio, id blandit mauris ipsum id sapien. Vestibulum malesuada orci sit amet pretium facilisis. In lobortis congue augue, a commodo libero tincidunt scelerisque.</p>",
-        "questionType": "essay",
-        "explanation": "",
-        "options": [],
-        "isMultipleAnswer": false,
-        "answer": ['Ini jawaban dari kevin thanes'],
-        "image": "",
-        "guideForQuestion": {
-            "start": 0,
-            "end": 0,
-            "guide": ""
-        },
-        "point": 0
-    },
-    {
-        "id": 2,
-        "question": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum mollis nunc a molestie dictum. Mauris venenatis, felis scelerisque aliquet lacinia, nulla nisi venenatis odio, id blandit mauris ipsum id sapien. Vestibulum malesuada orci sit amet pretium facilisis. In lobortis congue augue, a commodo libero tincidunt scelerisque.</p>",
-        "questionType": "multiple-choice",
-        "explanation": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum mollis nunc a molestie dictum. Mauris venenatis, felis scelerisque aliquet lacinia, nulla nisi venenatis odio, id blandit mauris ipsum id sapien. Vestibulum malesuada orci sit amet pretium facilisis. In lobortis congue augue, a commodo libero tincidunt scelerisque.</p>",
-        "options": [
-            {
-                "id": 1,
-                "option": "Pilihan 1"
-            },
-            {
-                "id": 2,
-                "option": "Pilihan 2"
-            },
-            {
-                "id": 3,
-                "option": "Pilihan 3"
-            }
-        ],
-        "isMultipleAnswer": false,
-        "answer": [
-            2
-        ],
-        "image": "",
-        "guideForQuestion": {
-            "start": 0,
-            "end": 0,
-            "guide": ""
-        },
-        "point": 15
-    },
-    {
-        "id": 3,
-        "question": "",
-        "questionType": "guide",
-        "explanation": "",
-        "options": [],
-        "isMultipleAnswer": false,
-        "answer": [],
-        "image": "",
-        "guideForQuestion": {
-            "start": 0,
-            "end": 0,
-            "guide": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum mollis nunc a molestie dictum. Mauris venenatis, felis scelerisque aliquet lacinia, nulla nisi venenatis odio, id blandit mauris ipsum id sapien. Vestibulum malesuada orci sit amet pretium facilisis. In lobortis congue augue, a commodo libero tincidunt scelerisque.</p>"
-        },
-        "point": 0
-    },
-    {
-        "id": 4,
-        "question": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum mollis nunc a molestie dictum. Mauris venenatis, felis scelerisque aliquet lacinia, nulla nisi venenatis odio, id blandit mauris ipsum id sapien. Vestibulum malesuada orci sit amet pretium facilisis. In lobortis congue augue, a commodo libero tincidunt scelerisque.</p>",
-        "questionType": "order-arrange",
-        "explanation": "",
-        "options": [],
-        "isMultipleAnswer": false,
-        "answer": [
-            "Urutan 1; Urutan 2; Urutan 3; Urutan 4; Urutan 5"
-        ],
-        "image": "",
-        "guideForQuestion": {
-            "start": 0,
-            "end": 0,
-            "guide": ""
-        },
-        "point": 20
-    },
-]

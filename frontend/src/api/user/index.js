@@ -19,3 +19,13 @@ export const getAllUserTransactions = async (page = 1, limit = 5) => {
         throw error.response ? error.response.data : error.message;
     }
 };
+
+export const getUserById = async (id) => {
+    try {
+        const response = await api.get(`/user/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching user by id:", error);
+        throw error.response ? error.response.data : error.message;
+    }
+};
