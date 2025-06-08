@@ -84,6 +84,18 @@ export const createTransaction = async (formData) => {
   }
 };
 
+export const createProgramWithExamsTransaction = async (formData) => {
+  try {
+    const response = await api.post(`/transactions/program-with-exams`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error creating transaction:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
 export const updateTransaction = async (id, data) => {
   try {
     const response = await api.patch(`/transactions/${id}`, data);

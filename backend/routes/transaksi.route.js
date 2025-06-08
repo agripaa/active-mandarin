@@ -5,6 +5,7 @@ const verifyAuth = require('../middleware/verifyAuth.middleware');
 const verifyAdmin = require('../middleware/verifyAdmin.middleware')
 
 router.post('/', verifyAuth.authenticateUser, transactionController.createTransaction);
+router.post('/program-with-exams', verifyAuth.authenticateUser, transactionController.createProgramWithExamsTransaction);
 
 router.get('/user', verifyAuth.authenticateUser, transactionController.getTransactionsUser);
 router.get('/summary', verifyAuth.authenticateUser,transactionController.getTransactionSummary);

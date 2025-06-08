@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
       Transaction.belongsTo(models.User, { foreignKey: 'affiliator_id', as: 'Affiliator' });
       Transaction.belongsTo(models.Brand, { foreignKey: "brand_id", as: "Brand" });
       Transaction.belongsTo(models.Ujian, { foreignKey: 'ujian_id', as: 'Ujian' });
+      Transaction.belongsTo(models.Transaction, { foreignKey: 'program_transaction_id', as: 'ProgramTransaction' });
     }
   }
 
@@ -22,6 +23,10 @@ module.exports = (sequelize, DataTypes) => {
     payment_method: DataTypes.STRING,
     proof_transaction: DataTypes.STRING,
     summary_cancel: DataTypes.STRING,
+    program_transaction_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
     transaction_date: DataTypes.DATE,
     expired_date: DataTypes.DATE,
     isDelete: { type: DataTypes.BOOLEAN, defaultValue: false }

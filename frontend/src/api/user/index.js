@@ -1,6 +1,6 @@
 const { default: api } = require("..");
 
-export const getUserTransactionsByCategory = async (category, page = 1, limit = 5) => {
+export const getUserTransactionsByCategory = async (category, page = 1, limit = 9999) => {
     try {
         const response = await api.get(`/user?category=${category}&page=${page}&limit=${limit}`);
         return response.data;

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { RiLink } from "react-icons/ri";
 import { getUserTransactionsByCategory } from "../../api/user";
+import { useNavigate } from "react-router";
 import { Spin } from "antd";
 
 const DashboardUser = () => {
   const [programs, setPrograms] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchUserTransactions();
@@ -49,10 +51,9 @@ const DashboardUser = () => {
                         <RiLink /> <a href={program.link_classroom} target="_blank" rel="noopener noreferrer">Class Room</a>
                     </p>
                     <div className="flex flex-col items-start mt-3 gap-2">
-                      <button className="w-40 bg-[#ffcc003b] text-[#0000003c] px-3 py-3 rounded-xl " disabled={true}>
+                      <button className="w-40 bg-[#ffcc00df] text-black px-3 py-3 rounded-xl " onClick={() => navigate("/exams")}>
                           Kerjakan Ujian
                       </button>
-                      <p className="text-xs ml-1">Coming Soon</p>
                     </div>
                 </div>
               </div>

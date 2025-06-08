@@ -5,7 +5,6 @@ import { getTransactionById } from "../api/transaksi";
 import { useEffect, useState } from "react";
 import { formatDate } from "../utils/formatDate";
 import { getProfile } from "../api/auth";
-import { html2pdf } from "html2pdf.js";
 
 const { useParams, Link, useNavigate } = require("react-router-dom");
 
@@ -15,41 +14,51 @@ const statusMap = {
   cancel: "text-red-500",
 };
 
-const prepareTableData = (data) => {
-  const rows = [];
+  const prepareTableData = (data) => {
+    const rows = [];
 
-  rows.push(data);
+    rows.push(data); // data utama
 
-  if (data.include_certif && data.type_transaction === "ujian") {
-    rows.push({
-      ...data,
-      isCertif: true,
-    });
-  }
+    // Tambahkan sertifikat jika ujian
+    if (data.include_certif && data.type_transaction === "ujian") {
+      rows.push({ ...data, isCertif: true });
+    }
 
-  return rows;
-};
+    // Tambahkan ujian dari program
+    if (data.type_transaction === "brand" && Array.isArray(data.UjianFromProgram)) {
+      for (const ujian of data.UjianFromProgram) {
+        rows.push({
+          type_transaction: "ujian",
+          fromProgram: true,
+          Ujian: ujian,
+          status_transaction: data.status_transaction,
+        });
+      }
+    }
+
+
+    return rows;
+  };
 
 
 const columns = [
   {
     title: "Product Info",
     key: "product",
-    render: (record) =>
-      record.isCertif
-        ? "Certificate"
-        : record.type_transaction === "ujian"
-        ? record.Ujian?.nama_ujian
-        : record.Brand?.variant,
+    render: (record) => {
+      if (record.isCertif) return "Certificate";
+      if (record.type_transaction === "ujian" || record.fromProgram) return record.Ujian?.nama_ujian;
+      return record.Brand?.variant;
+    }
   },
   {
     title: "Price",
     key: "price",
     render: (record) => {
+      if (record.fromProgram || record.program_transaction_id) return "Included Program";
       if (record.isCertif) {
         return formatRupiah(record.Ujian?.harga_certif || 0);
       }
-
       if (record.type_transaction === "ujian") {
         return formatRupiah(record.Ujian?.harga_diskon || record.Ujian?.harga_normal || 0);
       } else {
@@ -213,60 +222,62 @@ const Invoice = () => {
             <Table columns={columns} dataSource={prepareTableData(invoiceData)} pagination={false} />
           </div>
           <div className="w-full h-[1px] bg-fiord-300 mt-4" />
-          <div className="flex mt-4 w-full justify-start md:justify-end">
-            <div className="w-full max-w-[329px]">
-              <h2>Transaction Details</h2>
-              <table className="table-auto border-collapse w-full mt-4">
-                <tbody>
-                  <tr>
-                    <td className="font-medium">Item Price</td>
-                    <td className="font-medium text-right">
-                      {formatRupiah(
-                        invoiceData.type_transaction === "ujian"
-                          ? invoiceData.Ujian?.harga_normal
-                          : invoiceData.Brand?.price
-                      )}
-                    </td>
-                  </tr>
-                  {invoiceData.include_certif && invoiceData.type_transaction === "ujian" && (
+          {!invoiceData.program_transaction_id && (
+            <div className="flex mt-4 w-full justify-start md:justify-end">
+              <div className="w-full max-w-[329px]">
+                <h2>Transaction Details</h2>
+                <table className="table-auto border-collapse w-full mt-4">
+                  <tbody>
                     <tr>
-                      <td className="font-medium">Certificate</td>
+                      <td className="font-medium">Item Price</td>
                       <td className="font-medium text-right">
-                        {formatRupiah(invoiceData.Ujian?.harga_certif || 0)}
+                        {formatRupiah(
+                          invoiceData.type_transaction === "ujian"
+                            ? invoiceData.Ujian?.harga_normal
+                            : invoiceData.Brand?.price
+                        )}
                       </td>
                     </tr>
-                  )}
-                  <tr>
-                    <td className="font-medium">Promo</td>
-                    <td className="font-medium text-right">
-                      {
-                        invoiceData.type_transaction === "ujian"
-                          ? `- ${formatRupiah(invoiceData.Ujian?.harga_normal - invoiceData.Ujian?.harga_diskon)}`
-                          : invoiceData.Brand?.discount_price
-                            ? `- ${formatRupiah(invoiceData.Brand.price - invoiceData.Brand.discount_price)}`
-                            : "Rp -0"
-                      }
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              <table className="table-auto border-collapse w-full mt-4">
-                <tbody>
-                  <tr>
-                    <td className="font-medium">Total Bill</td>
-                    <td className="font-semibold text-right">
-                      {formatRupiah(
-                        invoiceData.type_transaction === "ujian"
-                          ? (parseInt(invoiceData.Ujian?.harga_diskon || 0) +
-                              (invoiceData.include_certif ? parseInt(invoiceData.Ujian?.harga_certif || 0) : 0))
-                          : parseInt(invoiceData.Brand?.discount_price || 0)
-                      )}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                    {invoiceData.include_certif && invoiceData.type_transaction === "ujian" && (
+                      <tr>
+                        <td className="font-medium">Certificate</td>
+                        <td className="font-medium text-right">
+                          {formatRupiah(invoiceData.Ujian?.harga_certif || 0)}
+                        </td>
+                      </tr>
+                    )}
+                    <tr>
+                      <td className="font-medium">Promo</td>
+                      <td className="font-medium text-right">
+                        {
+                          invoiceData.type_transaction === "ujian"
+                            ? `- ${formatRupiah(invoiceData.Ujian?.harga_normal - invoiceData.Ujian?.harga_diskon)}`
+                            : invoiceData.Brand?.discount_price
+                              ? `- ${formatRupiah(invoiceData.Brand.price - invoiceData.Brand.discount_price)}`
+                              : "Rp -0"
+                        }
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <table className="table-auto border-collapse w-full mt-4">
+                  <tbody>
+                    <tr>
+                      <td className="font-medium">Total Bill</td>
+                      <td className="font-semibold text-right">
+                        {formatRupiah(
+                          invoiceData.type_transaction === "ujian"
+                            ? (parseInt(invoiceData.Ujian?.harga_diskon || 0) +
+                                (invoiceData.include_certif ? parseInt(invoiceData.Ujian?.harga_certif || 0) : 0))
+                            : parseInt(invoiceData.Brand?.discount_price || 0)
+                        )}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
+          )}
         </main>
       </div>
       <footer className="mt-12 container w-full mx-auto max-w-[880px] my-8 px-5">

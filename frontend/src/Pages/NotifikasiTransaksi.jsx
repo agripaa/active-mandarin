@@ -20,31 +20,17 @@ const NotifikasiTransaksi = () => {
     try {
       setLoading(true);
       const response = await getPendingTransactions();
-      setTransactions(response.data);
+      const raw = response.data || [];
+      const filtered = raw.filter(tx => {
+        return tx.type_transaction !== "ujian" || !tx.isFromProgram;
+      });
+      setTransactions(filtered);
     } catch (error) {
+      console.error("Gagal fetch transaksi:", error);
     } finally {
       setLoading(false);
     }
   };
-
-  const expandTransactions = (rawData) => {
-    const result = [];
-
-    rawData.forEach((tx) => {
-      result.push(tx);
-
-      if (tx.type_transaction === "ujian" && tx.include_certif) {
-        result.push({
-          ...tx,
-          isCertif: true,
-          id: `${tx.id}-certif`, // Unique ID for React rendering
-        });
-      }
-    });
-
-    return result;
-  };
-
 
   const handleConfirm = (record) => {
     // Hindari popup untuk baris sertifikat

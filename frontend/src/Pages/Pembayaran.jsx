@@ -4,7 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { RiArrowLeftLine } from "react-icons/ri";
 import { getBrandById } from "../api/brand";
 import { getUjianById } from "../api/ujian";
-import { createTransaction } from "../api/transaksi";
+import { createProgramWithExamsTransaction, createTransaction } from "../api/transaksi";
 import Swal from "sweetalert2";
 import { Spin } from "antd";
 
@@ -72,30 +72,39 @@ const Pembayaran = () => {
       Swal.fire("Error!", "Bukti pembayaran wajib diunggah!", "error");
       return;
     }
+
     const includeCertif = localStorage.getItem("include_certif") === "true";
 
     const formData = new FormData();
     formData.append("brand_id", id);
     formData.append("payment_method", metode);
     formData.append("proof_transaction", proof);
-    if (isUjian) {
-      formData.append("type_ujian", "true");
-      formData.append("include_certif", includeCertif);
-    }
     if (brandData?.type_product === "fisik") formData.append("user_address", userAddress);
     if (reveralCode) formData.append("reveral_code", reveralCode);
 
     setLoadingSubmit(true);
+
     try {
-      const response = await createTransaction(formData);
-      Swal.fire("Berhasil!", "Transaksi berhasil dibuat!", "success").then(() => {
-        localStorage.removeItem("reveral_code");
-        localStorage.removeItem("address");
-        localStorage.removeItem("include_certif");
-        setTimeout(() => {
-          navigate(`/invoice/${response.data.id}`);
-        }, 100);
-      });
+      let response;
+
+      // 🔁 Khusus untuk program → createProgramWithExamsTransaction
+      if (!isUjian && brandData?.category_brand === "program") {
+        response = await createProgramWithExamsTransaction(formData);
+        const trxId = response.data.program_transaction.id;
+        navigate(`/invoice/${trxId}`);
+      } else {
+        // 🔁 Untuk ujian biasa & produk lainnya
+        formData.append("type_ujian", isUjian ? "true" : "");
+        formData.append("include_certif", includeCertif);
+        response = await createTransaction(formData);
+        navigate(`/invoice/${response.data.id}`);
+      }
+
+      Swal.fire("Berhasil!", "Transaksi berhasil dibuat!", "success");
+      localStorage.removeItem("reveral_code");
+      localStorage.removeItem("address");
+      localStorage.removeItem("include_certif");
+
     } catch (error) {
       Swal.fire("Error!", error.message || "Terjadi kesalahan", "error");
     } finally {

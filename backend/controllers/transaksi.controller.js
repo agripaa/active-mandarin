@@ -4,7 +4,7 @@ const fs = require('fs');
 const { Op, Sequelize } = require('sequelize');
 const { sendTransactionStatusEmail, sendNewTransactionNotificationToAdmin } = require('../helpers/sendEmail');
 
-const { Transaction, User, Brand, Ujian } = db;
+const { Transaction, User, Brand, Ujian, UjianBrand } = db;
 
 exports.createTransaction = async (req, res) => {
   try {
@@ -106,6 +106,119 @@ exports.createTransaction = async (req, res) => {
     res.status(201).json({ status: true, message: "Transaction created successfully", data: newTransaction });
   } catch (error) {
     res.status(500).json({ status: false, error: error.message });
+  }
+};
+
+exports.createProgramWithExamsTransaction = async (req, res) => {
+  try {
+    const { brand_id, payment_method, proof_transaction } = req.body;
+    const userId = req.userId;
+
+    // Validasi file
+    if (!req.files || !req.files.proof_transaction) {
+      return res.status(400).json({ status: false, message: "Bukti pembayaran wajib diunggah!" });
+    }
+
+    // Ambil program brand
+    const program = await Brand.findOne({ where: { id: brand_id, category_brand: 'program', isDelete: false } });
+    if (!program) return res.status(404).json({ status: false, message: "Program tidak ditemukan" });
+
+    // Cek apakah user sudah beli program ini
+    const existing = await Transaction.findOne({
+      where: {
+        user_id: userId,
+        brand_id: brand_id,
+        type_transaction: 'brand',
+        isDelete: false,
+        status_transaction: { [Op.ne]: 'cancel' }
+      }
+    });
+
+    if (existing) {
+      return res.status(400).json({ status: false, message: "Anda sudah membeli program ini" });
+    }
+
+    // Upload bukti pembayaran
+    const file = req.files.proof_transaction;
+    const ext = path.extname(file.name).toLowerCase();
+    const allowed = [".jpg", ".jpeg", ".png", ".webp", ".pdf"];
+    if (!allowed.includes(ext)) {
+      return res.status(400).json({ status: false, message: "Format file tidak valid" });
+    }
+
+    const fileName = `${Date.now()}_${file.name.replace(/\s/g, "_")}`;
+    const savePath = path.join(__dirname, '../public/proofs', fileName);
+    if (!fs.existsSync(path.dirname(savePath))) fs.mkdirSync(path.dirname(savePath), { recursive: true });
+    await file.mv(savePath);
+    const proofPath = `/public/proofs/${fileName}`;
+
+    // Hitung expired (misal 1 bulan)
+    const expiredDate = new Date();
+    expiredDate.setMonth(expiredDate.getMonth() + 1);
+
+    // Buat transaksi utama (program)
+    const trxProgram = await Transaction.create({
+      user_id: userId,
+      brand_id: brand_id,
+      type_transaction: "brand",
+      payment_method,
+      proof_transaction: proofPath,
+      transaction_date: new Date(),
+      status_transaction: "pending",
+      expired_date: expiredDate
+    });
+
+    // Ambil semua ujian yang terhubung dengan brand/program ini
+    const ujianRelasi = await UjianBrand.findAll({
+      where: { brand_id },
+      include: [{ model: Ujian }]
+    });
+
+    const trxUjians = [];
+
+    for (const rel of ujianRelasi) {
+      const ujian = rel.Ujian;
+      if (!ujian) continue;
+
+      // Cek apakah user sudah punya transaksi ujian ini
+      const existUjian = await Transaction.findOne({
+        where: {
+          user_id: userId,
+          ujian_id: ujian.id,
+          isDelete: false,
+          status_transaction: { [Op.ne]: 'cancel' }
+        }
+      });
+
+      if (existUjian) continue;
+
+      const trxUjian = await Transaction.create({
+        user_id: userId,
+        ujian_id: ujian.id,
+        type_transaction: "ujian",
+        program_transaction_id: trxProgram.id,
+        payment_method,
+        proof_transaction: proofPath,
+        transaction_date: new Date(),
+        status_transaction: "pending",
+        include_certif: false // default
+      });
+
+      trxUjians.push(trxUjian);
+    }
+
+    res.status(201).json({
+      status: true,
+      message: "Transaksi program dan ujian berhasil dibuat",
+      data: {
+        program_transaction: trxProgram,
+        ujian_transactions: trxUjians
+      }
+    });
+
+  } catch (error) {
+    console.error("❌ Error:", error);
+    res.status(500).json({ status: false, message: error.message });
   }
 };
 
@@ -350,33 +463,30 @@ const topExams = await Transaction.findAll({
 exports.getAllTransactionPending = async (req, res) => {
   try {
     const transactions = await Transaction.findAll({
-      where: { [Op.and] : [
-          {isDelete: false},
-          {status_transaction: "pending"}
-      ] },
+      where: {
+        isDelete: false,
+        status_transaction: 'pending',
+      },
       include: [
         { model: User, as: 'User' },
         { model: User, as: 'Affiliator' },
-        { 
-          model: Brand, 
-          as: 'Brand',
-        },
-        { 
-          model: Ujian, 
-          as: 'Ujian',
-        },
+        { model: Brand, as: 'Brand' },
+        { model: Ujian, as: 'Ujian' },
       ],
       order: [['transaction_date', 'DESC']]
     });
 
-    if (transactions.length === 0) {
-      return res.status(404).json({ status: false, message: "No transactions found" });
-    }
-
-    res.json({
-      status: true,
-      data: transactions
+    // Tandai transaksi ujian yang bagian dari program
+    const result = transactions.map(tx => {
+      const isFromProgram = tx.type_transaction === 'ujian' && tx.program_transaction_id !== null;
+      return {
+        ...tx.toJSON(),
+        isFromProgram
+      };
     });
+
+    res.json({ status: true, data: result });
+
 
   } catch (error) {
     res.status(500).json({ status: false, error: error.message });
@@ -434,32 +544,38 @@ exports.getAllTransactions = async (req, res) => {
 
   exports.getTransactionById = async (req, res) => {
     try {
-      const id = parseInt(req.params.id); 
+      const id = parseInt(req.params.id);
       const transaction = await Transaction.findOne({
-            where: { id, isDelete: false, },
+        where: { id, isDelete: false },
         include: [
-          { model: User, as: 'User', },
-          { model: User, as: 'Affiliator', },
-          { model: Brand, as: 'Brand', },
-          { model: Ujian, as: 'Ujian', },
-        ]
+          { model: User, as: "User" },
+          { model: User, as: "Affiliator" },
+          { model: Brand, as: "Brand" },
+          { model: Ujian, as: "Ujian" },
+        ],
       });
-  
+
       if (!transaction) {
         return res.status(404).json({ status: false, message: "Transaction not found" });
       }
-  
-      let affiliator = null;
-      if (transaction.affiliator_id) {
-        affiliator = await User.findOne({
-          where: { id: transaction.affiliator_id },
+
+      // Jika transaksi brand/program, ambil ujian-ujian yang terkait
+      if (transaction.type_transaction === "brand" && transaction.Brand) {
+        const ujianBrandList = await UjianBrand.findAll({
+          where: { brand_id: transaction.Brand.id },
+          include: [{ model: Ujian }]
         });
+
+        // Ambil ujian langsung dari relasi
+        const ujianList = ujianBrandList.map((ub) => ub.Ujian).filter(Boolean);
+
+        transaction.dataValues.UjianFromProgram = ujianList;
       }
-  
-      transaction.dataValues.Affiliator = affiliator;
-  
+
+
       res.json({ status: true, data: transaction });
     } catch (error) {
+      console.error("❌ Error getTransactionById:", error);
       res.status(500).json({ status: false, error: error.message });
     }
   };
@@ -608,6 +724,32 @@ exports.updateTransaction = async (req, res) => {
     if (status_transaction === "success") {
       if (transaction.brand_id) {
         await Brand.increment({ sold_sum: 1 }, { where: { id: transaction.brand_id } });
+
+        const ujianBrandList = await UjianBrand.findAll({ where: { brand_id: transaction.brand_id } });
+        const ujianIds = ujianBrandList.map((ub) => ub.ujian_id);
+
+        const ujianTransactions = await Transaction.findAll({
+          where: {
+            user_id: transaction.user_id,
+            ujian_id: ujianIds,
+            status_transaction: "pending",
+            isDelete: false
+          },
+          include: [{ model: Ujian, as: 'Ujian' }]
+        });
+
+        for (const ujianTx of ujianTransactions) {
+          await Ujian.increment({ sold_sum: 1 }, { where: { id: ujianTx.ujian_id } });
+          await ujianTx.update({ status_transaction: "success" });
+
+          await sendTransactionStatusEmail(
+            transaction.User,
+            ujianTx.Ujian,
+            ujianTx.id,
+            "success",
+            null
+          );
+        }
       } else if (transaction.ujian_id) {
         await Ujian.increment({ sold_sum: 1 }, { where: { id: transaction.ujian_id } });
       }

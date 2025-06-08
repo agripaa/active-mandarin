@@ -497,7 +497,7 @@ const totalWaktu = Number(typeData.listening.time) + Number(typeData.reading.tim
               <Input value={formatRupiah(price)} onChange={(e) => handleRupiahChange(e.target.value, setPrice)} placeholder="Masukkan Harga Normal" rules={[{ required: true, message: "Harga normal harus dimasukkan." }]} />
             </Form.Item>
 
-            <Form.Item label="Harga + Certif" required>
+            <Form.Item label="Harga Certificate" required>
               <Input value={formatRupiah(priceCertif)} onChange={(e) => handleRupiahChange(e.target.value, setPriceCertif)} placeholder="Masukkan Harga Certif" rules={[{ required: true, message: "Harga harus dimasukkan." }]} />
             </Form.Item>
 
