@@ -866,16 +866,49 @@ const generateNilaiFinal = async (user_id, ujian_id) => {
     }]
   });
 
-  let totalScore = 0;
-  let totalMax = 0;
+  const skorPerFase = {
+    listening: { point: 0, max: 0 },
+    reading: { point: 0, max: 0 },
+    writing: { point: 0, max: 0 }
+  };
 
   for (const jawaban of jawabanList) {
     const soal = jawaban.Soal;
-    totalScore += jawaban.poing || 0;
-    totalMax += soal?.point_soal || 0;
+    if (!soal) {
+      console.warn("❌ Soal null untuk jawaban id:", jawaban.id);
+      continue;
+    }
+
+    if (!soal.TipeUjian) {
+      console.warn(`❌ TipeUjian null untuk soal_id=${soal.id}`);
+      continue;
+    }
+    const tipe = soal.TipeUjian.category_ujian;
+    const point = jawaban.poing || 0;
+    const maxPoint = soal.point_soal || 0;
+
+    if (skorPerFase[tipe]) {
+      skorPerFase[tipe].point += point;
+      skorPerFase[tipe].max += maxPoint;
+    }
   }
 
-  const finalScore = totalMax > 0 ? Math.round((totalScore / totalMax) * 100) : 0;
+  const phases = ['listening', 'reading', 'writing'];
+  let totalPhaseScore = 0;
+  let countedPhases = 0;
+
+  for (const phase of phases) {
+    const data = skorPerFase[phase];
+    if (data.max > 0) {
+      const score = Math.round((data.point / data.max) * 100);
+      totalPhaseScore += score;
+      countedPhases++;
+    }
+  }
+
+  const finalScore = countedPhases > 0
+    ? Math.round(totalPhaseScore / countedPhases)
+    : 0;
 
   await Transaction.update(
     {
@@ -903,7 +936,7 @@ const generateSertifikat = async (user_id, ujian_id, finalScore) => {
   });
 
   if (!transaksi) {
-    console.log("❌ Sertifikat tidak dibuat karena tidak memenuhi syarat.");
+    console.log("❌ Sertifikat tidak dibuat karena transaksi tidak memenuhi syarat.");
     return;
   }
 
@@ -911,8 +944,61 @@ const generateSertifikat = async (user_id, ujian_id, finalScore) => {
   const user = await User.findByPk(user_id);
   const date = new Date();
   const exam_level = parseInt(ujian.level) || 1;
+  const exam_no = `H${exam_level}${date.toISOString().slice(0, 10).replace(/-/g, '')}${Math.floor(100 + Math.random() * 900)}`;
 
-  const exam_no = `H${exam_level}${date.toISOString().slice(0,10).replace(/-/g, '')}${Math.floor(100 + Math.random() * 900)}`;
+  const jawabanList = await JawabanUser.findAll({
+    where: { user_id },
+    include: [{
+      model: Soal,
+      as: 'Soal',
+      required: true,
+      include: [{
+        model: TipeUjian,
+        as: 'TipeUjian',
+        where: { ujian_id },
+        required: true
+      }]
+    }]
+  });
+
+  const skorPerFase = {
+    listening: { point: 0, max: 0 },
+    reading: { point: 0, max: 0 },
+    writing: { point: 0, max: 0 }
+  };
+
+  for (const jawaban of jawabanList) {
+    const soal = jawaban.Soal;
+    if (!soal) {
+      console.warn("❌ Soal null untuk jawaban id:", jawaban.id);
+      continue;
+    }
+
+    if (!soal.TipeUjian) {
+      console.warn(`❌ TipeUjian null untuk soal_id=${soal.id}`);
+      continue;
+    }
+    const tipe = soal.TipeUjian.category_ujian;
+    const point = jawaban.poing || 0;
+    const maxPoint = soal.point_soal || 0;
+
+    if (skorPerFase[tipe]) {
+      skorPerFase[tipe].point += point;
+      skorPerFase[tipe].max += maxPoint;
+    }
+  }
+
+  const listening_score = skorPerFase.listening.max > 0
+    ? Math.round((skorPerFase.listening.point / skorPerFase.listening.max) * 100)
+    : 0;
+
+  const reading_score = skorPerFase.reading.max > 0
+    ? Math.round((skorPerFase.reading.point / skorPerFase.reading.max) * 100)
+    : 0;
+
+  const writing_score = skorPerFase.writing.max > 0
+    ? Math.round((skorPerFase.writing.point / skorPerFase.writing.max) * 100)
+    : 0;
 
   await Certificate.create({
     user_id,
@@ -922,12 +1008,15 @@ const generateSertifikat = async (user_id, ujian_id, finalScore) => {
     name: user.name,
     exam_date: date,
     exam_no,
-    listening_score: 0,
-    reading_score: 0,
-    writing_score: 0,
+    listening_score,
+    reading_score,
+    writing_score,
     total_score: finalScore,
     status: finalScore >= 60 ? 'Passed' : 'Not Passed',
   });
 
-  console.log(`✅ Sertifikat berhasil dibuat untuk user ${user_id}, ujian ${ujian_id}`);
+  console.log(`✅ Sertifikat berhasil dibuat:
+  - User: ${user_id}
+  - Ujian: ${ujian_id}
+  - Nilai: L=${listening_score}, R=${reading_score}, W=${writing_score}, Total=${finalScore}`);
 };
