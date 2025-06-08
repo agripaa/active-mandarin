@@ -3,13 +3,16 @@ import Mainlayouts from "../Layouts/MainLayouts";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { RiArrowLeftLine } from "react-icons/ri";
 import { getBrandById } from "../api/brand";
+import { getUjianById } from "../api/ujian";
 import { createTransaction } from "../api/transaksi";
 import Swal from "sweetalert2";
 import { Spin } from "antd";
 
 const Pembayaran = () => {
-  const { id } = useParams();
+  const { id, type } = useParams();
+  const isUjian = type === "ujian";
   const navigate = useNavigate();
+
   const [metode, setMetode] = useState("QRIS");
   const [brandData, setBrandData] = useState({});
   const [showQRIS, setShowQRIS] = useState(false);
@@ -21,15 +24,15 @@ const Pembayaran = () => {
   const reveralCode = localStorage.getItem("reveral_code");
 
   useEffect(() => {
-    fetchBrand();
+    fetchData();
   }, [id]);
 
-  const fetchBrand = async () => {
+  const fetchData = async () => {
     try {
-      const response = await getBrandById(id);
+      const response = isUjian ? await getUjianById(id) : await getBrandById(id);
       setBrandData(response.data);
     } catch (error) {
-      if (error.status == 400 || error.status == 401 || error.status == 403) {
+      if (error.status === 400 || error.status === 401 || error.status === 403) {
         navigate("/", { replace: true });
         return;
       }
@@ -58,42 +61,45 @@ const Pembayaran = () => {
 
   const handleSubmit = async () => {
     const userAddress = localStorage.getItem("address");
+
     if (!userAddress && brandData?.type_product === "fisik") {
-      Swal.fire(
-        "Error!",
-        "Alamat pengiriman wajib diisi! Silakan isi alamat terlebih dahulu.",
-        "error"
-      );
+      Swal.fire("Error!", "Alamat pengiriman wajib diisi!", "error");
       navigate(`/checkout/${id}`, { replace: true });
       return;
     }
-    
+
     if (!proof) {
       Swal.fire("Error!", "Bukti pembayaran wajib diunggah!", "error");
       return;
     }
-    
+    const includeCertif = localStorage.getItem("include_certif") === "true";
+
     const formData = new FormData();
     formData.append("brand_id", id);
     formData.append("payment_method", metode);
     formData.append("proof_transaction", proof);
+    if (isUjian) {
+      formData.append("type_ujian", "true");
+      formData.append("include_certif", includeCertif);
+    }
     if (brandData?.type_product === "fisik") formData.append("user_address", userAddress);
     if (reveralCode) formData.append("reveral_code", reveralCode);
-    
-    setLoadingSubmit(true); // ⏳ Start loading
+
+    setLoadingSubmit(true);
     try {
       const response = await createTransaction(formData);
-      Swal.fire("Berhasil!", "Transaksi berhasil dibuat!", "success").then(
-        () => {
-          localStorage.removeItem("reveral_code");
-          localStorage.removeItem("address");
+      Swal.fire("Berhasil!", "Transaksi berhasil dibuat!", "success").then(() => {
+        localStorage.removeItem("reveral_code");
+        localStorage.removeItem("address");
+        localStorage.removeItem("include_certif");
+        setTimeout(() => {
           navigate(`/invoice/${response.data.id}`);
-        }
-      );
+        }, 100);
+      });
     } catch (error) {
       Swal.fire("Error!", error.message || "Terjadi kesalahan", "error");
     } finally {
-      setLoadingSubmit(false); // ✅ Stop loading
+      setLoadingSubmit(false);
     }
   };
 
@@ -114,7 +120,7 @@ const Pembayaran = () => {
   }
 
   const MAX_LENGTH = 200;
-  const detailBrandText = brandData.detail_brand || "";
+  const detailBrandText = isUjian ? brandData.desc || "" : brandData.detail_brand || "";
 
   return (
     <Mainlayouts>
@@ -130,12 +136,14 @@ const Pembayaran = () => {
         <div className="grid grid-cols-1 md:flex md:items-start md:justify-between gap-10 w-full">
           {/* Detail Produk */}
           <div className="bg-white rounded-lg md:w-5/12">
-            <img
-              src={`${process.env.REACT_APP_API_IMG}${brandData.brand_img}`}
-              alt="Product"
-              className="w-full h-auto border-b pb-4"
-            />
-            <h1 className="text-2xl font-semibold mt-6">{brandData.variant}</h1>
+          <img
+            src={`${process.env.REACT_APP_API_IMG}${isUjian ? brandData.ujian_img : brandData.brand_img}`}
+            alt="Product"
+            className="w-full h-auto border-b pb-4"
+          />
+            <h1 className="text-2xl font-semibold mt-6">
+              {isUjian ? brandData.nama_ujian : brandData.variant}
+            </h1>
             <div
               className="prose text-gray-600 mt-2 leading-relaxed w-full md:w-10/12 
                         [&_a]:text-blue-600 [&_a]:underline 

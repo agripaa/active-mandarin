@@ -4,20 +4,27 @@ const fs = require('fs');
 const { Op, Sequelize } = require('sequelize');
 const { sendTransactionStatusEmail, sendNewTransactionNotificationToAdmin } = require('../helpers/sendEmail');
 
-const { Transaction, User, Brand } = db;
+const { Transaction, User, Brand, Ujian } = db;
 
 exports.createTransaction = async (req, res) => {
   try {
-    const { reveral_code, brand_id, payment_method, user_address } = req.body;
+    const { reveral_code, brand_id, payment_method, user_address, type_ujian, include_certif } = req.body;
 
     let proof_transaction = null;
+    let brand = null;
+    let ujian = null;
     if (!req.files || !req.files.proof_transaction) {
       return res.status(400).json({ status: false, message: "Proof of transaction is required!" });
     }
 
     console.log("req.body", req.body);
-    const brand = await Brand.findByPk(brand_id);
-    if (!brand) return res.status(404).json({ status: false, message: "Brand not found" });
+    if (type_ujian === "true") {
+      ujian = await Ujian.findByPk(brand_id);
+    if (!ujian) return res.status(404).json({ status: false, message: "Ujian not found" });
+    } else {
+      brand = await Brand.findByPk(brand_id);
+      if (!brand) return res.status(404).json({ status: false, message: "Brand not found" });
+    }
     console.log("brand", brand);
 
     const user = await User.findByPk(req.userId);
@@ -56,22 +63,26 @@ exports.createTransaction = async (req, res) => {
 
     const dateNow = new Date();
     let expired_date = null;
-    if (brand.category_brand.toLowerCase() === "program") {
+    if (!ujian && brand.category_brand.toLowerCase() === "program") {
       expired_date = new Date(dateNow.setMonth(dateNow.getMonth() + 1));
     }
 
     const newTransaction = await Transaction.create({
       user_id: user.id,
       affiliator_id: affiliator ? affiliator.id : null,
-      brand_id,
+      brand_id: brand ? brand.id : null,
+      ujian_id: ujian ? ujian.id : null,
+      type_transaction: ujian ? "ujian" : "brand",
+      include_certif: type_ujian === "true" ? include_certif === "true" : false,
       status_transaction: "pending",
       payment_method,
       proof_transaction,
       transaction_date: new Date(),
-      expired_date,
+      expired_date: brand ? expired_date : null
     });
 
-    await sendNewTransactionNotificationToAdmin(user, brand, newTransaction.id, proof_transaction);
+
+    await sendNewTransactionNotificationToAdmin(user, brand || ujian, newTransaction.id, proof_transaction);
 
 
     res.status(201).json({ status: true, message: "Transaction created successfully", data: newTransaction });
@@ -338,7 +349,8 @@ exports.getAllTransactions = async (req, res) => {
         include: [
           { model: User, as: 'User', },
           { model: User, as: 'Affiliator', },
-          { model: Brand, as: 'Brand', }
+          { model: Brand, as: 'Brand', },
+          { model: Ujian, as: 'Ujian', },
         ]
       });
   

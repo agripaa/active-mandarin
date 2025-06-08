@@ -15,41 +15,70 @@ const statusMap = {
   cancel: "text-red-500",
 };
 
+const prepareTableData = (data) => {
+  const rows = [];
+
+  // Baris utama: ujian atau brand
+  rows.push(data);
+
+  // Tambahan baris sertifikat jika include_certif dan type_transaction === 'ujian'
+  if (data.include_certif && data.type_transaction === "ujian") {
+    rows.push({
+      ...data,
+      isCertif: true,
+    });
+  }
+
+  return rows;
+};
+
+
 const columns = [
   {
     title: "Product Info",
-    dataIndex: "Brand",
-    key: "Brand",
-    render: (brand) => <a>{brand.variant}</a>,
+    key: "product",
+    render: (record) =>
+      record.isCertif
+        ? "Certificate"
+        : record.type_transaction === "ujian"
+        ? record.Ujian?.nama_ujian
+        : record.Brand?.variant,
   },
   {
     title: "Price",
-    dataIndex: "Brand",
-    key: "Brand",
-    render: (p) =>
-      p.discount_price ? formatRupiah(p.discount_price) : formatRupiah(p.price) || "-",
+    key: "price",
+    render: (record) => {
+      if (record.isCertif) {
+        return formatRupiah(record.Ujian?.harga_certif || 0);
+      }
+
+      if (record.type_transaction === "ujian") {
+        return formatRupiah(record.Ujian?.harga_diskon || record.Ujian?.harga_normal || 0);
+      } else {
+        return formatRupiah(record.Brand?.discount_price || record.Brand?.price || 0);
+      }
+    },
   },
   {
     title: "Affiliate Code",
-    dataIndex: "Affiliator",
-    key: "Affiliator",
-    render: (a, record) => (record.Affiliator ? record.Affiliator.reveral_code : "-"),
+    key: "AffiliatorCode",
+    render: (record) => (record.isCertif ? "-" : record.Affiliator?.reveral_code || "-"),
   },
   {
     title: "Affiliate",
-    dataIndex: "Affiliator",
     key: "Affiliator",
-    render: (a, record) => (record.Affiliator ? record.Affiliator.name : "-"),
+    render: (record) => (record.isCertif ? "-" : record.Affiliator?.name || "-"),
   },
   {
     title: "Status",
     dataIndex: "status_transaction",
     key: "status_transaction",
-    render: (status) => (
-      <p key={status} className={`font-medium capitalize ${statusMap[status]}`}>
-        {status}
-      </p>
-    ),
+    render: (status, record) =>
+      !record.isCertif && (
+        <p key={status} className={`font-medium capitalize ${statusMap[status]}`}>
+          {status}
+        </p>
+      ),
   },
 ];
 
@@ -77,10 +106,14 @@ const Invoice = () => {
 
     import("html2pdf.js").then((module) => {
       const html2pdf = module.default;
+      const fileNameType = invoiceData.type_transaction === "brand"
+      ? invoiceData.Brand?.category_brand
+      : "ujian";
+
 
       const opt = {
         margin: 0,
-        filename: `Invoice-${formattedDate}-${invoiceData.Brand.category_brand}-${invoiceData.id}.pdf`,
+        filename: `Invoice-${formattedDate}-${fileNameType}-${invoiceData.id}.pdf`,
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: { scale: 2 },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
@@ -125,6 +158,8 @@ const Invoice = () => {
     date.getMonth() + 1
   ).padStart(2, "0")}${date.getFullYear()}`;
 
+  console.log(invoiceData)
+
   return (
     <>
       <div id="invoice-content" className="container w-full mx-auto max-w-[880px] my-8 px-5">
@@ -132,7 +167,7 @@ const Invoice = () => {
           <img src="/assets/active_logo.png" alt="logo" className="h-16 w-auto" />
           <div className="flex flex-col items-end text-right">
             <h1 className="text-xl leading-[30px] font-semibold uppercase">Invoice</h1>
-            <p className="text-sm text-[#3377FF] font-medium">{`INV/${formattedDate}/${invoiceData.Brand.category_brand}/${invoiceData.id}`}</p>
+            <p className="text-sm text-[#3377FF] font-medium">{`INV/${formattedDate}/${invoiceData.type_transaction === "brand" ? invoiceData.Brand?.category_brand: "ujian"}/${invoiceData.id}`}</p>
           </div>
         </header>
         <main className="w-full mt-12">
@@ -177,7 +212,7 @@ const Invoice = () => {
             </div>
           </div>
           <div className="mt-12 overflow-x-auto">
-            <Table columns={columns} dataSource={[invoiceData]} pagination={false} />
+            <Table columns={columns} dataSource={prepareTableData(invoiceData)} pagination={false} />
           </div>
           <div className="w-full h-[1px] bg-fiord-300 mt-4" />
           <div className="flex mt-4 w-full justify-start md:justify-end">
@@ -187,11 +222,33 @@ const Invoice = () => {
                 <tbody>
                   <tr>
                     <td className="font-medium">Item Price</td>
-                    <td className="font-medium text-right">{formatRupiah(invoiceData.Brand.price)}</td>
+                    <td className="font-medium text-right">
+                      {formatRupiah(
+                        invoiceData.type_transaction === "ujian"
+                          ? invoiceData.Ujian?.harga_normal
+                          : invoiceData.Brand?.price
+                      )}
+                    </td>
                   </tr>
+                  {invoiceData.include_certif && invoiceData.type_transaction === "ujian" && (
+                    <tr>
+                      <td className="font-medium">Certificate</td>
+                      <td className="font-medium text-right">
+                        {formatRupiah(invoiceData.Ujian?.harga_certif || 0)}
+                      </td>
+                    </tr>
+                  )}
                   <tr>
                     <td className="font-medium">Promo</td>
-                    <td className="font-medium text-right">{invoiceData.Brand.discount_price ? formatRupiah(invoiceData.Brand.discount_price - invoiceData.Brand.price) : "Rp -0"}</td>
+                    <td className="font-medium text-right">
+                      {
+                        invoiceData.type_transaction === "ujian"
+                          ? `- ${formatRupiah(invoiceData.Ujian?.harga_normal - invoiceData.Ujian?.harga_diskon)}`
+                          : invoiceData.Brand?.discount_price
+                            ? `- ${formatRupiah(invoiceData.Brand.price - invoiceData.Brand.discount_price)}`
+                            : "Rp -0"
+                      }
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -199,7 +256,14 @@ const Invoice = () => {
                 <tbody>
                   <tr>
                     <td className="font-medium">Total Bill</td>
-                    <td className="font-semibold text-right">{formatRupiah(invoiceData.Brand.discount_price)}</td>
+                    <td className="font-semibold text-right">
+                      {formatRupiah(
+                        invoiceData.type_transaction === "ujian"
+                          ? (parseInt(invoiceData.Ujian?.harga_diskon || 0) +
+                              (invoiceData.include_certif ? parseInt(invoiceData.Ujian?.harga_certif || 0) : 0))
+                          : parseInt(invoiceData.Brand?.discount_price || 0)
+                      )}
+                    </td>
                   </tr>
                 </tbody>
               </table>

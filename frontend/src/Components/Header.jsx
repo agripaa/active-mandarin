@@ -176,8 +176,8 @@ const Headers = ({ collapse, funcs }) => {
     const dispatch = useDispatch();
     const { langs } = useSelector((state) => state.LangReducer);
    const navbar ={
-        english: ['Home', 'About Us', 'Our Programs', 'Our Products'],
-        indonesia: ['Beranda', 'Tentang Kami', 'Program Kami', 'Produk Kami']
+        english: ['Home', 'About Us', 'Our Programs', 'Our Products', 'Our Exams'],
+        indonesia: ['Beranda', 'Tentang Kami', 'Program Kami', 'Produk Kami', 'Ujian Kami']
     }
     const text = langs ? navbar?.english : navbar?.indonesia;
     const location = useLocation();
@@ -187,6 +187,7 @@ const Headers = ({ collapse, funcs }) => {
         { name: text?.[1], href: "/about" },
         { name: text?.[2], href: "/class" },
         { name: text?.[3], href: "/products" },
+        { name: text?.[4], href: "/ujian" },
     ];
 
     useEffect(() => {

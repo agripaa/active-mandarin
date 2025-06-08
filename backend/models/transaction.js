@@ -6,7 +6,8 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Transaction.belongsTo(models.User, { foreignKey: 'user_id', as: 'User' });
       Transaction.belongsTo(models.User, { foreignKey: 'affiliator_id', as: 'Affiliator' });
-      Transaction.belongsTo(models.Brand, { foreignKey: "brand_id", as: "Brand" }); // ✅ Alias HARUS "Brand"
+      Transaction.belongsTo(models.Brand, { foreignKey: "brand_id", as: "Brand" });
+      Transaction.belongsTo(models.Ujian, { foreignKey: 'ujian_id', as: 'Ujian' });
     }
   }
 
@@ -14,6 +15,9 @@ module.exports = (sequelize, DataTypes) => {
     user_id: DataTypes.INTEGER,
     affiliator_id: DataTypes.INTEGER,
     brand_id: DataTypes.INTEGER,
+    ujian_id: DataTypes.INTEGER, // ✅ Tambahan untuk transaksi ujian
+    type_transaction: DataTypes.STRING, // optional: "brand" atau "ujian"
+    include_certif: DataTypes.BOOLEAN,
     status_transaction: DataTypes.STRING,
     payment_method: DataTypes.STRING,
     proof_transaction: DataTypes.STRING,

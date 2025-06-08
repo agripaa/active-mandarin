@@ -37,6 +37,7 @@ import ResultExams from "../Components/dashboard/ResultExams";
 import ResultPage from "../Components/dashboard/ResultPage";
 import Certificate from "../Components/dashboard/Certificate";
 import CertificateTable from "../Components/dashboard/CertificateTable";
+import CatalogUjian from "../Pages/CatalogUjian";
 
 const Routings = () => {
     return(
@@ -48,6 +49,7 @@ const Routings = () => {
                 <Route path="/flash" element={<Flashcard/>}/>
                 <Route path="/class" element={<Catalog/>}/>
                 <Route path="/products" element={<CatalogProduct/>}/>
+                <Route path="/ujian" element={<CatalogUjian/>}/>
                 <Route path="/contact" element={<Contact/>}/>
                 <Route path="/join-affiliate" element={<JoinAffiliate/>}/>
                 <Route path="/join-team" element={<Reqruitment/>}/>
@@ -56,9 +58,12 @@ const Routings = () => {
                 <Route path="/kelas-affiliator" element={<KelasAffiliator/>}/>
 
                 {/* Transaction User Page */}
-                <Route path="/detail/:id" element={<DetailPage/>}/>
+                <Route path="/detail/:id" element={<DetailPage />} />
+                <Route path="/detail/:id/:type?" element={<DetailPage />} />
                 <Route path="/checkout/:id" element={<Checkout/>}/>
+                <Route path="/checkout/:id/:type?" element={<Checkout />} />
                 <Route path="/pembayaran/:id" element={<Pembayaran/>}/>
+                <Route path="/pembayaran/:id/:type?" element={<Pembayaran/>}/>
                 <Route path="/invoice/:id" element={<Invoice/>}/>
 
                 {/* Dashboard */}

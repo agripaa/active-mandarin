@@ -7,6 +7,7 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             Ujian.hasMany(models.UjianBrand, { foreignKey: 'ujian_id' });
             Ujian.hasMany(models.TipeUjian, { foreignKey: 'ujian_id' });
+            Ujian.hasMany(models.Transaction, { foreignKey: 'ujian_id' });
         }
     }
 
