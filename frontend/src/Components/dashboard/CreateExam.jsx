@@ -617,12 +617,22 @@ const totalWaktu = Number(typeData.listening.time) + Number(typeData.reading.tim
   )
 }
 
-const QuestionComponent = React.memo(({ index, question, number, onChange }) => {
+const QuestionComponent = React.memo(({ index, question, number, onChange, onDelete }) => {
   return (
     <div className="bg-white p-6 rounded-2xl shadow">
-      <h4 className="text-xl font-semibold mb-3">
-        {question.questionType === 'guide' ? `Panduan` : `Soal ${number}`}
-      </h4>
+      <div className="flex">
+        <h4 className="text-xl font-semibold mb-3 w-1/2">
+          {question.questionType === 'guide' ? `Panduan` : `Soal ${number}`}
+        </h4>
+        <div className="w-1/2 flex justify-end mb-3">
+          <Button
+            danger
+            onClick={() => onDelete(index)}
+          >
+            Hapus Soal
+          </Button>
+        </div>
+      </div>
       {question.questionType === 'essay' && (
         <>
           <ReactQuill
@@ -903,6 +913,15 @@ const DetailExam = ({ show, setShow, sendToParent, questions, setQuestions, time
     })
   }, []);
 
+  const handleDelete = useCallback((index) => {
+  setQuestions(prev => {
+    const updated = [...prev];
+    updated.splice(index, 1); // hapus satu item di index tsb
+    return updated.map((q, i) => ({ ...q, id: i + 1 })); // reset ID
+  });
+}, []);
+
+
   return (
     <>
       <div className="flex flex-col gap-4 p-4 items-start">
@@ -930,6 +949,7 @@ const DetailExam = ({ show, setShow, sendToParent, questions, setQuestions, time
             question={q}
             number={questionNumberArray[index]}
             onChange={onChange}
+            onDelete={handleDelete}
           />
         ))}
         <Button type="default" className="w-fit text-blue-500 rounded-2xl" size="large" variant="outlined" onClick={() => setQuestions([...questions, { id: questionLength + 1, question: '', questionType: 'essay', explanation: '', options: [], isMultipleAnswer: false, answer: [], image: '', guideForQuestion: { start: 0, end: 0, guide: '' }, point: 0 }])}>

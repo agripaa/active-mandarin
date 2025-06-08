@@ -668,6 +668,60 @@ exports.getAllTransactions = async (req, res) => {
         if (!groupedPrograms[turunanKey]) groupedPrograms[turunanKey] = [];
         groupedPrograms[turunanKey].push(program);
       });
+
+      // === TRANSAKSI UJIAN ===
+      const ujianTransactions = await Transaction.findAll({
+      where: {
+        status_transaction: "success",
+        isDelete: false,
+        ujian_id: { [Op.ne]: null } // pastikan hanya transaksi yang memang punya ujian
+      },
+      include: [{
+        model: Ujian,
+        as: 'Ujian'
+      }]
+    });
+
+      const totalUjianTransactions = ujianTransactions.length;
+      const totalUjianRevenue = ujianTransactions.reduce((sum, transaction) => {
+      const price = transaction.Ujian?.harga_diskon || transaction.Ujian?.harga_normal || 0;
+      return sum + parseInt(price);
+    }, 0);
+
+      const monthlyUjianTransactions = await Transaction.findAll({
+      where: {
+        status_transaction: "success",
+        isDelete: false,
+        ujian_id: { [Op.ne]: null } // pastikan hanya transaksi ujian
+      },
+      attributes: [
+        [Sequelize.fn('EXTRACT', Sequelize.literal('MONTH FROM transaction_date')), 'month'],
+        [Sequelize.fn('COUNT', '*'), 'total_transactions']
+      ],
+      group: [Sequelize.literal('EXTRACT(MONTH FROM transaction_date)')],
+      order: [[Sequelize.literal('EXTRACT(MONTH FROM transaction_date)'), 'ASC']]
+    });
+
+      let transactionsByMonthUjian = new Array(12).fill(0);
+      monthlyUjianTransactions.forEach(tx => {
+        const monthIndex = parseInt(tx.dataValues.month) - 1;
+        transactionsByMonthUjian[monthIndex] = parseInt(tx.dataValues.total_transactions);
+      });
+
+     const ujianList = await Ujian.findAll({
+      // where: { isCheck: true },
+      include: [
+        {
+          model: Transaction,
+          as: 'Transactions',
+          where: { status_transaction: 'success', isDelete: false },
+          required: false // agar ujian tetap muncul meski belum ada transaksi
+        }
+      ],
+      order: [['id', 'ASC']]
+    });
+
+      const groupedUjians = { semua: ujianList };
   
       res.json({
         status: true,
@@ -684,7 +738,14 @@ exports.getAllTransactions = async (req, res) => {
           transactions_by_month: transactionsByMonthProgram,
           data: groupedPrograms,
           turunan_options: Array.from(programTurunans)
-        }
+        },
+       ujian: {
+        total_transactions: totalUjianTransactions,
+        total_revenue: totalUjianRevenue,
+        transactions_by_month: transactionsByMonthUjian,
+        data: groupedUjians,
+        turunan_options: ["semua"]
+}
       });
   
     } catch (error) {
@@ -692,9 +753,6 @@ exports.getAllTransactions = async (req, res) => {
       res.status(500).json({ status: false, error: error.message });
     }
   };
-  
-  
- 
 
 exports.updateTransaction = async (req, res) => {
   try {

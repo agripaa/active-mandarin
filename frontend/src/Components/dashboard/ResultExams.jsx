@@ -56,15 +56,39 @@ const ResultExams = () => {
                     <td className="p-3">HSK {transaction.tipe}</td>
                     <td className="p-3">{transaction.nilai}</td>
                     <td className={`p-3 font-semibold ${
-                      transaction.status ? "text-green-500" 
-                      :"text-yellow-500"
+                      transaction.status === "Selesai"
+                        ? "text-green-500"
+                        : transaction.status === "Diperiksa Mentor"
+                        ? "text-yellow-500"
+                        : "text-gray-500"
                     }`}>
-                      {transaction.status ? "Selesai" : "Diperiksa Mentor"}
+                      {transaction.status}
                     </td>
-                    <td className={`p-3 flex gap-3`}>
-                      <button onClick={(e) => handleCertif(e,transaction.id)} className="bg-transparent border-2 border-neutral-600 hover:bg-neutral-600 hover:text-white text-black font-semibold py-3 px-4 rounded-xl flex justify-center items-center">Certificate</button>
-                      <button onClick={(e) => handleReview(e,transaction.id)} className="bg-transparent border-2 border-neutral-600 hover:bg-neutral-600 hover:text-white text-black font-semibold py-3 px-4 rounded-xl flex justify-center items-center">Review Ujian</button>
-                    </td>
+                   <td className={`p-3 flex gap-3`}>
+                    <button
+                      onClick={(e) => handleCertif(e, transaction.id)}
+                      disabled={transaction.status !== "Selesai"}
+                      className={`border-2 py-3 px-4 rounded-xl flex justify-center items-center font-semibold
+                        ${transaction.status !== "Selesai"
+                          ? "bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed"
+                          : "bg-transparent border-neutral-600 hover:bg-neutral-600 hover:text-white text-black"
+                        }`}
+                    >
+                      Certificate
+                    </button>
+
+                    <button
+                      onClick={(e) => handleReview(e, transaction.id)}
+                      disabled={transaction.status !== "Selesai"}
+                      className={`border-2 py-3 px-4 rounded-xl flex justify-center items-center font-semibold
+                        ${transaction.status !== "Selesai"
+                          ? "bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed"
+                          : "bg-transparent border-neutral-600 hover:bg-neutral-600 hover:text-white text-black"
+                        }`}
+                    >
+                      Review Ujian
+                    </button>
+                  </td>
                   </tr>
                 )) : <tr><td colSpan="6" className="p-4 text-center">Anda Belum Melakukan Transaksi!.</td></tr>}
               </tbody>

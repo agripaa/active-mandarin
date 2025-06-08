@@ -39,28 +39,34 @@ const DashboardExam = () => {
     const [chartHeight, setChartHeight] = useState(300);
 
     const fetchDashboardData = async () => {
-        try {
-            const response = await getDashboardData();
-            setTotalTransactions(response.programs.total_transactions);
-            setTotalRevenue(response.programs.total_revenue);
-            setProgramList(response.programs.data);
-            setChartData({
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-                datasets: [{
-                    label: 'Performa Pendapatan',
-                    backgroundColor: '#3377FF',
-                    borderColor: '#3377FF',
-                    borderWidth: 1,
-                    hoverBackgroundColor: '#3377FF',
-                    borderRadius: 15,
-                    data: response.programs.transactions_by_month || new Array(12).fill(0),
-                }]
-            });
-        } catch (error) {
-        } finally { 
-            setLoading(false);
-        }
+    try {
+        const response = await getDashboardData();
+        setTotalTransactions(response.ujian.total_transactions);
+        setTotalRevenue(response.ujian.total_revenue);
+        setProgramList(response.ujian.data.semua || []);
+        setChartData({
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+        datasets: [{
+            label: 'Performa Transaksi Ujian',
+            backgroundColor: '#3377FF',
+            borderColor: '#3377FF',
+            borderWidth: 1,
+            hoverBackgroundColor: '#3377FF',
+            borderRadius: 15,
+            data: response.ujian.transactions_by_month || new Array(12).fill(0),
+        }]
+        });
+        console.log("📦 Response ujian:", response.ujian);
+        console.log("🧪 Data ujian:", response.ujian.data);
+        console.log("🧪 Ujian semua:", response.ujian.data.semua);
+
+    } catch (error) {
+        console.error("❌ Gagal fetch dashboard ujian:", error);
+    } finally {
+        setLoading(false);
+    }
     };
+
 
     const handleYearChange = (year) => {
         setSelectedYear(year);

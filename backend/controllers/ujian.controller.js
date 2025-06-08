@@ -806,27 +806,71 @@ exports.getExamResultsUser = async (req, res) => {
         status_transaction: 'success'
       },
       include: [
-        { model: Ujian, as: 'Ujian' },
-        { model: User, as: 'User' },
+        {
+          model: Ujian,
+          as: 'Ujian',
+          include: [
+            {
+              model: UjianProgress,
+              as: 'UjianProgresses',
+              where: { user_id: req.userId },
+              required: false
+            }
+          ]
+        },
+        {
+          model: User,
+          as: 'User'
+        }
       ],
       order: [['transaction_date', 'DESC']]
     });
 
-    const result = transactions.map(tx => ({
-      id: tx.id,
-      nama_ujian: tx.Ujian?.nama_ujian || '-',
-      nama_peserta: tx.User?.name || '-',
-      tipe: tx.Ujian?.level || '-',
-      nilai: tx.total_skor || '-',
-      is_done: tx.is_done,
-      is_checking: tx.is_checking
-    }));
+    const result = [];
+
+    for (const tx of transactions) {
+      const progresses = tx.Ujian?.UjianProgresses || [];
+      const allDone = progresses.length > 0 && progresses.every(p => p.is_done && !p.is_checking);
+      const anyChecking = progresses.some(p => p.is_checking);
+
+      let status = "Belum Dinilai";
+      if (allDone) status = "Selesai";
+      else if (anyChecking) status = "Diperiksa Mentor";
+
+      let nilaiFinal = "-";
+
+      if (status === "Selesai") {
+        const certificate = await Certificate.findOne({
+          where: {
+            user_id: req.userId,
+            ujian_id: tx.ujian_id // ✅ gunakan ujian_id untuk akurasi
+          }
+        });
+
+        if (certificate) {
+          const phaseCount = progresses.length || 1;
+          const maxScore = phaseCount * 100;
+          nilaiFinal = `${certificate.total_score}/${maxScore}`;
+        }
+      }
+
+      result.push({
+        id: tx.id,
+        nama_ujian: tx.Ujian?.nama_ujian || '-',
+        nama_peserta: tx.User?.name || '-',
+        tipe: tx.Ujian?.level || '-',
+        nilai: nilaiFinal,
+        status
+      });
+    }
 
     return res.json({ status: true, data: result });
   } catch (error) {
+    console.error("❌ Error getExamResultsUser:", error);
     return res.status(500).json({ status: false, error: error.message });
   }
 };
+
 
 exports.checkUjianAccess = async (req, res) => {
   try {
