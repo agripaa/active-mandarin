@@ -49,35 +49,101 @@ const TransaksiAdmin = () => {
   };
 
   const columns = [
-    { title: "Nama Pembeli", dataIndex: "User", key: "buyer", render: (user) => user?.name || "-" },
-    { title: "Nomor Telepon", dataIndex: "User", key: "number", render: (user) => user?.number || "-" },
-    { title: "Category", dataIndex: "Brand", key: "item", render: (brand) => brand?.category_brand || "-" },
-    { title: "Variant", dataIndex: "Brand", key: "variant", render: (brand) => brand?.variant || "-" },
-    { title: "Turunan", dataIndex: "Brand", key: "turunan", render: (brand) => brand?.turunan || "-" },
-    { 
-      title: "Harga", 
-      dataIndex: "Brand", 
-      key: "price", 
-      render: (_, record) => record?.Brand?.discount_price ? formatRupiah(record?.Brand?.discount_price)  : formatRupiah(record?.Brand?.price) },
-    { title: "Tanggal Pembelian", dataIndex: "transaction_date", key: "date", render: (date) => formatDate(date) },
-    { title: "Metode Pembayaran", dataIndex: "payment_method", key: "paymentMethod" },
-    { title: "Affiliate", dataIndex: "Affiliator", key: "affiliate", render: (aff) => aff?.name || "-" },
-    { 
-      title: "Komisi", 
-      dataIndex: "Brand", 
-      key: "commission", 
-      render: (_, record) => record?.Affiliator ? formatRupiah(record.Brand?.commission) : "-" 
+    {
+      title: "Nama Pembeli",
+      dataIndex: "User",
+      key: "buyer",
+      render: (user) => user?.name || "-"
     },
-    { 
-      title: "Aksi", 
-      dataIndex: "id", 
-      key: "id", 
-      render: (id, record) => (
-        <a href={`/invoice/${id}`} className="bg-transparent border-2 border-neutral-600 hover:bg-neutral-600 hover:text-white text-black font-semibold py-2 rounded-xl flex justify-center px-3 items-center">
+    {
+      title: "Nomor Telepon",
+      dataIndex: "User",
+      key: "number",
+      render: (user) => user?.number || "-"
+    },
+    {
+      title: "Category",
+      key: "category",
+      render: (_, record) => {
+        if (record.Ujian) return "ulangan";
+        if (record.Brand) return record.Brand.category_brand || "-";
+        return "-";
+      }
+    },
+    {
+      title: "Variant",
+      key: "variant",
+      render: (_, record) => {
+        if (record.Ujian) return record.Ujian.nama_ujian || "-";
+        if (record.Brand) return record.Brand.variant || "-";
+        return "-";
+      }
+    },
+    {
+      title: "Harga",
+      key: "harga",
+      render: (_, record) => {
+        // CASE: UJIAN
+        if (record.Ujian) {
+          const ujian = record.Ujian;
+          const hargaDasar = ujian.harga_diskon && ujian.harga_diskon !== "0"
+            ? parseInt(ujian.harga_diskon)
+            : parseInt(ujian.harga_normal);
+          const includeCertif = record.include_certif;
+          const certifHarga = includeCertif ? parseInt(ujian.harga_certif || 0) : 0;
+          const total = hargaDasar + certifHarga;
+          return formatRupiah(total);
+        }
+
+        // CASE: BRAND
+        if (record.Brand) {
+          const harga = record.Brand.discount_price || record.Brand.price;
+          return formatRupiah(harga);
+        }
+
+        return "-";
+      }
+    },
+    {
+      title: "Tanggal Pembelian",
+      dataIndex: "transaction_date",
+      key: "date",
+      render: (date) => formatDate(date)
+    },
+    {
+      title: "Metode Pembayaran",
+      dataIndex: "payment_method",
+      key: "paymentMethod"
+    },
+    {
+      title: "Affiliate",
+      dataIndex: "Affiliator",
+      key: "affiliate",
+      render: (aff) => aff?.name || "-"
+    },
+    {
+      title: "Komisi",
+      key: "commission",
+      render: (_, record) => {
+        if (!record.Affiliator) return "-";
+        if (record.Ujian) return formatRupiah(record.Ujian.commission);
+        if (record.Brand) return formatRupiah(record.Brand.commission);
+        return "-";
+      }
+    },
+    {
+      title: "Aksi",
+      dataIndex: "id",
+      key: "id",
+      render: (id) => (
+        <a
+          href={`/invoice/${id}`}
+          className="bg-transparent border-2 border-neutral-600 hover:bg-neutral-600 hover:text-white text-black font-semibold py-2 rounded-xl flex justify-center px-3 items-center"
+        >
           Invoice
         </a>
-      ) 
-    },
+      )
+    }
   ];
 
   return (

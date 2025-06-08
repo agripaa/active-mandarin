@@ -53,7 +53,7 @@ const ResultExams = () => {
                   <tr key={transaction.id} className="border-b">
                     <td className="p-3">{transaction.nama_ujian}</td>
                     <td className="p-3">{transaction.nama_peserta}</td>
-                    <td className="p-3">{transaction.tipe}</td>
+                    <td className="p-3">HSK {transaction.tipe}</td>
                     <td className="p-3">{transaction.nilai}</td>
                     <td className={`p-3 font-semibold ${
                       transaction.status ? "text-green-500" 

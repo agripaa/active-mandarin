@@ -38,6 +38,7 @@ const DashboardAdmin = () => {
     const [totalRevenue, setTotalRevenue] = useState(0);
     const [topProducts, setTopProducts] = useState([]);
     const [topPrograms, setTopPrograms] = useState([]);
+    const [topExams, setTopExams] = useState([]);
 
     const chartContainerRef = useRef(null);
     const [chartHeight, setChartHeight] = useState(300); // Default height
@@ -95,6 +96,7 @@ const DashboardAdmin = () => {
             console.log(response);
             setTopProducts(response.top_products);
             setTopPrograms(response.top_programs);
+            setTopExams(response.top_exams)
         } catch (error) {}
     };
 
@@ -163,7 +165,7 @@ const DashboardAdmin = () => {
             <div className='flex flex-col md:flex-row w-full min-h-[480px] gap-4 p-4'>
                 <ListCard title="Top 5 Produk" link="/dashboard/products" data={topProducts} />
                 <ListCard title="Top 5 Program" link="/dashboard/programs" data={topPrograms} />
-                <ListCard title="Top 5 Ujian" link="/dashboard/programs" data={topPrograms} />
+                <ListCard title="Top 5 Ujian" link="/dashboard/exam" data={topExams} />
             </div>
         </section>
     );
