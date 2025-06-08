@@ -1,43 +1,39 @@
-import React, { useState }  from 'react'
+import React, { useEffect, useState }  from 'react'
 import DashboardLayout from '../../Layouts/DashboardLayout'
 import { Spin } from "antd";
+import { getExamResultsUser } from '../../api/ujian';
 
 const ResultExams = () => {
-    //   const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
+    const [transactions, setTransactions] = useState([]);
       const [currentPage, setCurrentPage] = useState(1);
       const pageSize = 10;
       const [totalPages, setTotalPages] = useState(1);
     
     
-      const goToPage = (page) => {
-        if (page >= 1 && page <= totalPages) {
-          setCurrentPage(page);
-        }
-      };
-    
-      const handleDirectInvoice = (e, id) => {
-        e.preventDefault();
-        window.open(`/invoice/${id}`);
-      }
-    
-    //   if (loading) {
-    //     return <Spin size="large" className="flex justify-center items-center h-screen" />;
-    //   }
+      useEffect(() => {
+    fetchExamResults();
+  }, []);
 
-    const transactions = [
-        {
-            id: 1,
-            nama_ujian: "Soal 1",
-            nama_peserta: "Dicka Taksa",
-            tipe: "HSK 1",
-            nilai: "80/100",
-            status: false,
-        }
-    ]
+  const fetchExamResults = async () => {
+    try {
+      const res = await getExamResultsUser();
+      if (res.status) {
+        setTransactions(res.data);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCertif = (id) => window.open(`/certificate/${id}`);
+  const handleReview = (id) => window.location.href = `/review-ujian/${id}`;
   return (
     <DashboardLayout>
         <div className="p-6 min-h-screen">
-          <h2 className="text-2xl font-semibold text-gray-700 mb-4">Transaksi Mu</h2>
+          <h2 className="text-2xl font-semibold text-gray-700 mb-4">Hasil Ujian Mu</h2>
           
           {/* Table */}
           <div className="bg-white shadow-md rounded-lg overflow-x-auto">
@@ -66,8 +62,8 @@ const ResultExams = () => {
                       {transaction.status ? "Selesai" : "Diperiksa Mentor"}
                     </td>
                     <td className={`p-3 flex gap-3`}>
-                      <button onClick={(e) => handleDirectInvoice(e,transaction.id)} className="bg-transparent border-2 border-neutral-600 hover:bg-neutral-600 hover:text-white text-black font-semibold py-3 px-4 rounded-xl flex justify-center items-center">Certificate</button>
-                      <button onClick={(e) => handleDirectInvoice(e,transaction.id)} className="bg-transparent border-2 border-neutral-600 hover:bg-neutral-600 hover:text-white text-black font-semibold py-3 px-4 rounded-xl flex justify-center items-center">Review Ujian</button>
+                      <button onClick={(e) => handleCertif(e,transaction.id)} className="bg-transparent border-2 border-neutral-600 hover:bg-neutral-600 hover:text-white text-black font-semibold py-3 px-4 rounded-xl flex justify-center items-center">Certificate</button>
+                      <button onClick={(e) => handleReview(e,transaction.id)} className="bg-transparent border-2 border-neutral-600 hover:bg-neutral-600 hover:text-white text-black font-semibold py-3 px-4 rounded-xl flex justify-center items-center">Review Ujian</button>
                     </td>
                   </tr>
                 )) : <tr><td colSpan="6" className="p-4 text-center">Anda Belum Melakukan Transaksi!.</td></tr>}

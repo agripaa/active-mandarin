@@ -27,23 +27,85 @@ const NotifikasiTransaksi = () => {
     }
   };
 
+  const expandTransactions = (rawData) => {
+    const result = [];
+
+    rawData.forEach((tx) => {
+      result.push(tx);
+
+      if (tx.type_transaction === "ujian" && tx.include_certif) {
+        result.push({
+          ...tx,
+          isCertif: true,
+          id: `${tx.id}-certif`, // Unique ID for React rendering
+        });
+      }
+    });
+
+    return result;
+  };
+
+
   const handleConfirm = (record) => {
+    // Hindari popup untuk baris sertifikat
+    if (record.isCertif) return;
+
     setLastRecord(record);
+
+    const isBrand = !!record.Brand;
+    const isUjian = !!record.Ujian;
+
+    const namaProduk = isBrand
+      ? record.Brand?.variant || "-"
+      : record.Ujian?.nama_ujian || "-";
+
+    const hargaProduk = (() => {
+      if (record.Ujian) {
+        const hargaDiskon = parseInt(record.Ujian.harga_diskon || record.Ujian.harga_normal || 0);
+        const hargaCertif = record.include_certif ? parseInt(record.Ujian.harga_certif || 0) : 0;
+        return formatRupiah(hargaDiskon + hargaCertif);
+      } else if (record.Brand) {
+        return record.Brand?.discount_price
+          ? formatRupiah(parseInt(record.Brand?.discount_price))
+          : formatRupiah(parseInt(record.Brand.price));
+      }
+      return "Rp 0";
+    })();
+
+
+    const kategoriLabel = isBrand
+      ? record.Brand?.category_brand === "product"
+        ? "Produk"
+        : "Program"
+      : "Ujian";
+
+    const extraUserInfo =
+      isBrand && record.Brand?.category_brand === "product"
+        ? `
+          <p><strong>Alamat</strong>: ${record?.User?.address || "-"}</p>
+          <p><strong>Email</strong>: ${record?.User?.email || "-"}</p>
+          <p><strong>No Telp</strong>: ${record?.User?.number || "-"}</p>
+        `
+        : "";
+
     Swal.fire({
       title: "Konfirmasi Pembayaran",
       html: `
         <div style="text-align: left">
-          <p><strong>Nama Pembeli</strong><span style="display: inline-block;"></span>: ${record?.User.name || "-"}</p>
-          ${record?.Brand.category_brand === "product" ? `
-            <p><strong>Alamat</strong><span style="display: inline-block;"></span>: ${record?.User.address || "-"}</p>
-            <p><strong>Email</strong><span style="display: inline-block;"></span>: ${record?.User.email || "-"}</p>
-            <p><strong>No Telp</strong><span style="display: inline-block;"></span>: ${record?.User.number || "-"}</p>
-          ` : ""} 
-          <p><strong>Nama ${record?.Brand.category_brand === "product" ? "Produk" : "Program"}</strong><span style="display: inline-block;"></span>: ${record?.Brand.variant || "-"}</p>
-          <p><strong>Harga</strong><span style="display: inline-block;"></span>: ${record?.Brand.discount_price ? formatRupiah(record?.Brand.discount_price) : formatRupiah(record?.Brand.price) || "-"}</p>
-          <p><strong>Metode Pembayaran</strong><span style="display: inline-block;"></span>: ${record.payment_method || "-"}</p>
-          <p><strong>Waktu Pembelian</strong><span style="display: inline-block;"></span>: ${formatDate(record.transaction_date) || "-"}</p>
-          <img src="${process.env.REACT_APP_API_IMG}${record.proof_transaction}" alt="Bukti Pembayaran" style="width: 100%; border-radius: 10px; margin-top: 10px; cursor: pointer;" onclick="window.showImageOverlay && window.showImageOverlay('${process.env.REACT_APP_API_IMG}${record.proof_transaction}')" />
+          <p><strong>Nama Pembeli</strong>: ${record?.User?.name || "-"}</p>
+          ${extraUserInfo}
+          <p><strong>Nama ${kategoriLabel}</strong>: ${namaProduk}</p>
+          <p><strong>Harga</strong>: ${hargaProduk}</p>
+          ${isUjian && record.include_certif ? `
+            <p><strong>Include Sertifikat</strong>: Ya</p>
+          ` : "<p><strong>Include Sertifikat</strong>: Tidak</p>"}
+          <p><strong>Metode Pembayaran</strong>: ${record.payment_method || "-"}</p>
+          <p><strong>Waktu Pembelian</strong>: ${formatDate(record.transaction_date) || "-"}</p>
+          <img src="${process.env.REACT_APP_API_IMG}${record.proof_transaction}" 
+              alt="Bukti Pembayaran"
+              style="width: 100%; border-radius: 10px; margin-top: 10px; cursor: pointer;"
+              onclick="window.showImageOverlay && window.showImageOverlay('${process.env.REACT_APP_API_IMG}${record.proof_transaction}')"
+          />
         </div>
       `,
       showCancelButton: true,
@@ -126,19 +188,69 @@ const NotifikasiTransaksi = () => {
   };
 
   const pembayaranColumns = [
-    { title: "Nama Pembeli", dataIndex: "User", key: "user", render: (user) => user?.name || "-" },
-    { title: "Nama Produk", dataIndex: "Brand", key: "variant", render: (brand) => brand?.variant || "-" },
-    { title: "Harga", dataIndex: "Brand", key: "price", render: (_, record) => record?.Brand?.discount_price ? formatRupiah(record?.Brand?.discount_price) : formatRupiah(record?.Brand?.price) || "-" },
-    { title: "Waktu Pembelian", dataIndex: "transaction_date", key: "transaction_date", render: (date) => formatDate(date) },
-    { title: "Metode Pembayaran", dataIndex: "payment_method", key: "payment_method" },
+    {
+      title: "Nama Pembeli",
+      dataIndex: "User",
+      key: "user",
+      render: (user) => user?.name || "-",
+    },
+    {
+      title: "Nama Produk",
+      key: "produk",
+      render: (record) =>
+        record.type_transaction === "ujian"
+          ? record.Ujian?.nama_ujian || "-"
+          : record.Brand?.variant || "-",
+    },
+    {
+      title: "Tipe Transaksi",
+      key: "type_transaction",
+      render: (record) => {
+        if (record.type_transaction === "ujian") return "Ujian";
+        if (record.Brand?.category_brand === "product") return "Produk";
+        if (record.Brand?.category_brand === "program") return "Program";
+        return "-";
+      },
+    },
+    {
+      title: "Harga",
+      key: "harga",
+      render: (record) => {
+        let totalHarga = 0;
+
+        if (record.Ujian) {
+          const hargaDiskon = parseInt(record.Ujian.harga_diskon || record.Ujian.harga_normal || 0);
+          const hargaCertif = record.include_certif ? parseInt(record.Ujian.harga_certif || 0) : 0;
+          totalHarga = hargaDiskon + hargaCertif;
+        } else if (record.Brand) {
+          totalHarga = parseInt(record.Brand?.discount_price || record.Brand.price || 0);
+        }
+
+        return formatRupiah(totalHarga);
+      },
+    },
+    {
+      title: "Waktu Pembelian",
+      dataIndex: "transaction_date",
+      key: "transaction_date",
+      render: (date) => formatDate(date),
+    },
+    {
+      title: "Metode Pembayaran",
+      dataIndex: "payment_method",
+      key: "payment_method",
+    },
     {
       title: "Aksi",
       key: "action",
-      render: (_, record) => (
-        <Button onClick={() => handleConfirm(record)} className="bg-[#FFCC00] text-black" disabled={actionLoadingId === record.id}>
+      render: (_, record) =>
+        <Button
+          onClick={() => handleConfirm(record)}
+          className="bg-[#FFCC00] text-black"
+          disabled={actionLoadingId === record.id}
+        >
           {actionLoadingId === record.id ? <Spin size="small" /> : "Konfirmasi"}
-        </Button>
-      ),
+        </Button>,
     },
   ];
 

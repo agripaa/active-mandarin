@@ -156,3 +156,13 @@ export const getHasilUjian = async (id) => {
     throw error.response ? error.response.data : error.message;
   }
 };
+
+export const getExamResultsUser = async () => {
+  try {
+    const response = await api.get(`/ujian/ujian-result-user`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching hasil ujian:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};

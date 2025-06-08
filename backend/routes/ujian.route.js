@@ -7,6 +7,7 @@ router.post('/', middleware.authenticateUser, ujianController.createUjian);
 router.get('/', middleware.authenticateUser, ujianController.getAllUjian);
 router.post('/jawaban', middleware.authenticateUser, ujianController.submitJawaban);
 router.post('/finish-phase', ujianController.finishUjianPhase);
+router.get('/ujian-result-user', middleware.authenticateUser, ujianController.getExamResultsUser);
 router.get('/hasil-ujian', middleware.authenticateUser, ujianController.getHasilUjian);
 router.get('/jawaban-user/:soal_id/:user_id', middleware.authenticateUser, ujianController.getJawabanUserBySoalAndUser);
 router.post('/start', middleware.authenticateUser, ujianController.startUjianPhase);

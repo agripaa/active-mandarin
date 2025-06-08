@@ -2,7 +2,7 @@ const db = require('../models');
 const path = require('path');
 const fs = require('fs');
 const { Op } = require('sequelize');
-const { Ujian, TipeUjian, Soal, UjianBrand, ListJawaban, JawabanUser, UjianProgress } = db;
+const { Ujian, TipeUjian, Soal, UjianBrand, ListJawaban, JawabanUser, UjianProgress, User } = db;
 
 exports.createUjian = async (req, res) => {
   try {
@@ -737,5 +737,37 @@ exports.getHasilUjian = async (req, res) => {
   } catch (error) {
     console.error("❌ Gagal ambil data penilaian:", error);
     res.status(500).json({ status: false, message: error.message });
+  }
+};
+
+exports.getExamResultsUser = async (req, res) => {
+  try {
+    const transactions = await db.Transaction.findAll({
+      where: {
+        user_id: req.userId,
+        ujian_id: { [Op.ne]: null },
+        isDelete: false,
+        status_transaction: 'success'
+      },
+      include: [
+        { model: Ujian, as: 'Ujian' },
+        { model: User, as: 'User' },
+      ],
+      order: [['transaction_date', 'DESC']]
+    });
+
+    const result = transactions.map(tx => ({
+      id: tx.id,
+      nama_ujian: tx.Ujian?.nama_ujian || '-',
+      nama_peserta: tx.User?.name || '-',
+      tipe: tx.Ujian?.level || '-',
+      nilai: tx.total_skor || '-',
+      is_done: tx.is_done,
+      is_checking: tx.is_checking
+    }));
+
+    return res.json({ status: true, data: result });
+  } catch (error) {
+    return res.status(500).json({ status: false, error: error.message });
   }
 };

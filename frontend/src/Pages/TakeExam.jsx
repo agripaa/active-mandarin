@@ -39,6 +39,57 @@ const TakeExam = () => {
   };
 
   useEffect(() => {
+    const VIOLATION_KEY = `ujian-violation-${id}`;
+    const MAX_VIOLATION = 3;
+
+    let violationCount = parseInt(localStorage.getItem(VIOLATION_KEY)) || 0;
+
+    const handleViolation = () => {
+      violationCount += 1;
+      localStorage.setItem(VIOLATION_KEY, violationCount);
+
+      if (violationCount >= MAX_VIOLATION) {
+        Swal.fire("Ujian Dihentikan", "Anda terlalu sering meninggalkan halaman.", "error").then(async () => {
+          await finishUjian({
+            user_id: user.id,
+            ujian_id: parseInt(id),
+            exam_phase: examPhase,
+          });
+          localStorage.removeItem(VIOLATION_KEY); 
+          navigate("/result-exam");
+        });
+      } else {
+        Swal.fire({
+          icon: "warning",
+          title: "Perhatian!",
+          text: `Jangan keluar dari halaman ujian. Kesempatan tersisa: ${MAX_VIOLATION - violationCount}`,
+        });
+      }
+    };
+
+    const handleVisibility = () => {
+      if (document.hidden) {
+        handleViolation();
+      }
+    };
+
+    const handleBeforeUnload = (e) => {
+      handleViolation();
+      e.preventDefault();
+      e.returnValue = "";
+    };
+
+    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [user.id, id, examPhase, navigate]);
+
+
+  useEffect(() => {
     const params = new URLSearchParams(location.search);
     const q = parseInt(params.get("question"), 10);
     if (!isNaN(q)) {
@@ -83,9 +134,9 @@ const TakeExam = () => {
         setExamPhase(nextPhase);
         const nextTime = parseInt(allQuestions[nextPhase]?.time || "1") * 60;
         setTimeLeft(nextTime);
-        setNumber(0);
         setQuestionList(allQuestions[nextPhase].questions.map(q => ({ ...q })));
         navigate(`/dashboard/take-exam/${id}?question=1`, { replace: true });
+        setNumber(0);
       } else {
         Swal.fire("Ujian selesai", "Semua sesi telah berakhir.", "success").then(() => {
           navigate("/result-exam");
@@ -183,6 +234,16 @@ const TakeExam = () => {
             const processed = {
               ...q,
               options: q.options?.sort((a, b) => a.position?.localeCompare(b.position)),
+              shuffledOptions:
+                q.questionType === "order-arrange"
+                  ? shuffleArray(
+                      (q.answer?.[0] || "")
+                        .split(";")
+                        .map(word => word.trim())
+                        .filter(Boolean)
+                        .map((opt, idx) => ({ id: idx + 1, option: opt }))
+                    )
+                  : shuffleArray(q.options || []),
               answer: [],
               correctAnswer: q.answer || [],
               phase: activePhase,
@@ -190,9 +251,11 @@ const TakeExam = () => {
 
             const userAnswer = await getJawabanUser(q.id, userId);
             if (userAnswer?.data?.input_jawaban) {
-              const input = userAnswer.data.input_jawaban;
+              const input = userAnswer?.data?.input_jawaban || "";
               if (q.questionType === "multiple-choice") {
                 processed.answer = input.split(/[;,]/).map(j => parseInt(j.trim()));
+              } else if (q.questionType === "order-arrange") {
+                processed.answer = [input];
               } else {
                 processed.answer = [input];
               }
@@ -341,6 +404,10 @@ const TakeExam = () => {
       if (nextPhase) {
         setExamPhase(nextPhase);
         setIsLastQuestionSubmitted(false); // reset
+        
+        // 🔄 Reset ke pertanyaan pertama
+        navigate(`/dashboard/take-exam/${id}?question=1`, { replace: true });
+        setNumber(0);
       } else {
         navigate("/result-exam");
       }
@@ -436,9 +503,11 @@ const TakeExam = () => {
           <h5 className="text-base font-medium">Susun Kata Di Bawah Ini!</h5>
           <div className="flex flex-row flex-wrap gap-2">
             {(() => {
+              const optionWords = currentQuestion.shuffledOptions?.map(opt => opt.option) || [];
               const userOrder = currentQuestion.answer[0]
                 ? currentQuestion.answer[0].split(";").map(s => s.trim()).filter(Boolean)
-                : [];
+                : optionWords; 
+
 
               const handleDragStart = idx => setDraggedIdx(idx);
               const handleDragOver = (e, idx) => {

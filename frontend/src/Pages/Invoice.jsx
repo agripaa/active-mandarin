@@ -18,10 +18,8 @@ const statusMap = {
 const prepareTableData = (data) => {
   const rows = [];
 
-  // Baris utama: ujian atau brand
   rows.push(data);
 
-  // Tambahan baris sertifikat jika include_certif dan type_transaction === 'ujian'
   if (data.include_certif && data.type_transaction === "ujian") {
     rows.push({
       ...data,

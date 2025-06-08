@@ -59,10 +59,10 @@ const CatalogUjian = () => {
                         item.harga_diskon && item.harga_diskon !== "0" ? (
                             <div className="flex items-center gap-2">
                                 <p className="text-sm text-red-500 line-through">
-                                    {formatRupiah(item.harga_diskon)}
+                                    {formatRupiah(item.harga_normal)}
                                 </p>
                                 <p className="text-lg text-gray-900">
-                                    {formatRupiah(item.harga_normal)}
+                                    {formatRupiah(item.harga_diskon)}
                                 </p>
                             </div>
                         ) : (

@@ -18,7 +18,7 @@ exports.createTransaction = async (req, res) => {
     }
 
     console.log("req.body", req.body);
-    if (type_ujian === "true") {
+    if (type_ujian) {
       ujian = await Ujian.findByPk(brand_id);
     if (!ujian) return res.status(404).json({ status: false, message: "Ujian not found" });
     } else {
@@ -29,11 +29,29 @@ exports.createTransaction = async (req, res) => {
 
     const user = await User.findByPk(req.userId);
     if(!user) return res.status(404).json({ status: false, message: "User Not Found!" })
-    
+
     if (user_address) {
       await user.update({ address: user_address });
-    } else {
-      if (!user.address && brand.type_product === "fisik") return res.status(400).json({ status: false, message: "Address is required!" });
+    } else if (!user.address && brand && brand.type_product === "fisik") {
+      return res.status(400).json({ status: false, message: "Address is required!" });
+    }
+
+    const existingTransaction = await Transaction.findOne({
+      where: {
+        user_id: user.id,
+        isDelete: false,
+        status_transaction: { [Op.ne]: 'cancel' },
+        ...(ujian
+          ? { ujian_id: ujian.id }
+          : { brand_id: brand.id })
+      }
+    });
+
+    if (existingTransaction) {
+      return res.status(400).json({
+        status: false,
+        message: `Anda sudah memiliki ${ujian ? 'ujian' : 'produk/program'} ini`
+      });
     }
 
     const proofFile = req.files.proof_transaction;
@@ -148,58 +166,73 @@ exports.getTransactionSummary = async (req, res) => {
   };
   
 exports.getTransactionsUser = async (req, res) => {
-    try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
-        const offset = (page - 1) * limit;
-    
-        const totalTransactions = await Transaction.count({ where: { isDelete: false } });
-    
-        const transactions = await Transaction.findAll({
-          where: {
-            [Op.and]: [
-                {isDelete: false},
-                {user_id: req.userId}
-            ]
-          },
-          include: [
-            { model: User, as: 'User', },
-            { 
-              model: Brand,
-              as: 'Brand',
-            }
-          ],
-          limit,
-          offset,
-          order: [['transaction_date', 'DESC']]
-        });
-    
-        for (const transaction of transactions) {
-            if (transaction.affiliator_id) {
-                affiliator = await User.findOne({
-                  where: { reveral_code: transaction.affiliator_id },
-                });
-    
-                transaction.dataValues.Affiliator = affiliator || null;
-            }
-        }
-    
-        if (transactions.length === 0) {
-          return res.status(404).json({ status: false, message: "No transactions found" });
-        }
-    
-        res.json({
-          status: true,
-          current_page: page,
-          total_pages: Math.ceil(totalTransactions / limit),
-          total_transactions: totalTransactions,
-          per_page: limit,
-          data: transactions
-        });
-    } catch(error) {
-        res.status(500).json({ status: false, error: error.message });
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+    const category = req.query.category;
+
+    const whereClause = {
+      isDelete: false,
+      user_id: req.userId
+    };
+
+    if (category === "ujian") {
+      whereClause.ujian_id = { [Op.ne]: null };
+    } else if (category === "program") {
+      whereClause.brand_id = { [Op.ne]: null };
+      whereClause['$Brand.category_brand$'] = "program";
+    } else if (category === "product") {
+      whereClause.brand_id = { [Op.ne]: null };
+      whereClause['$Brand.category_brand$'] = "product";
     }
-}
+
+    const totalTransactions = await Transaction.count({
+      where: whereClause,
+      include: [
+        { model: Brand, as: 'Brand' },
+        { model: Ujian, as: 'Ujian' },
+      ]
+    });
+
+    const transactions = await Transaction.findAll({
+      where: whereClause,
+      include: [
+        { model: User, as: 'User' },
+        { model: Brand, as: 'Brand' },
+        { model: Ujian, as: 'Ujian' },
+      ],
+      limit,
+      offset,
+      order: [['transaction_date', 'DESC']],
+    });
+
+    for (const transaction of transactions) {
+      if (transaction.affiliator_id) {
+        const affiliator = await User.findOne({
+          where: { reveral_code: transaction.affiliator_id },
+        });
+        transaction.dataValues.Affiliator = affiliator || null;
+      }
+    }
+
+    if (transactions.length === 0) {
+      return res.status(404).json({ status: false, message: "No transactions found" });
+    }
+
+    res.json({
+      status: true,
+      current_page: page,
+      total_pages: Math.ceil(totalTransactions / limit),
+      total_transactions: totalTransactions,
+      per_page: limit,
+      data: transactions
+    });
+  } catch (error) {
+    res.status(500).json({ status: false, error: error.message });
+  }
+};
+
 
 exports.getTopSellingProductsAndPrograms = async (req, res) => {
     try {
@@ -277,7 +310,11 @@ exports.getAllTransactionPending = async (req, res) => {
         { 
           model: Brand, 
           as: 'Brand',
-        }
+        },
+        { 
+          model: Ujian, 
+          as: 'Ujian',
+        },
       ],
       order: [['transaction_date', 'DESC']]
     });
@@ -495,6 +532,7 @@ exports.updateTransaction = async (req, res) => {
       include: [
         { model: User, as: 'User' },
         { model: Brand, as: 'Brand' },
+        { model: Ujian, as: 'Ujian' },
       ],
     });
 
@@ -514,8 +552,13 @@ exports.updateTransaction = async (req, res) => {
     }
 
     if (status_transaction === "success") {
-      await Brand.increment({ sold_sum: 1 }, { where: { id: transaction.brand_id } });
+      if (transaction.brand_id) {
+        await Brand.increment({ sold_sum: 1 }, { where: { id: transaction.brand_id } });
+      } else if (transaction.ujian_id) {
+        await Ujian.increment({ sold_sum: 1 }, { where: { id: transaction.ujian_id } });
+      }
     }
+
 
     await transaction.update({
       status_transaction: status_transaction || transaction.status_transaction,
@@ -523,7 +566,7 @@ exports.updateTransaction = async (req, res) => {
     });
 
     if (["success", "cancel"].includes(status_transaction)) {
-      await sendTransactionStatusEmail(transaction.User, transaction.Brand, transaction.id, status_transaction, summary_cancel);
+      await sendTransactionStatusEmail(transaction.User, transaction.Brand || transaction.Ujian, transaction.id, status_transaction, summary_cancel);
     }
     res.json({ status: true, message: "Transaction updated successfully", data: transaction });
   } catch (error) {
