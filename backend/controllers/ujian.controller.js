@@ -2,7 +2,7 @@ const db = require('../models');
 const path = require('path');
 const fs = require('fs');
 const { Op } = require('sequelize');
-const { Ujian, TipeUjian, Soal, UjianBrand, ListJawaban, JawabanUser, UjianProgress, User } = db;
+const { Ujian, TipeUjian, Soal, UjianBrand, ListJawaban, JawabanUser, UjianProgress, User, Transaction, Certificate } = db;
 
 exports.createUjian = async (req, res) => {
   try {
@@ -82,7 +82,7 @@ exports.createUjian = async (req, res) => {
           time: tipe.time,
           total_soal: tipe.questionCount,
           ujian_id: ujian.id,
-          total_skor_tipe: 0,
+          total_skor_tipe: 100,
         });
 
         if (soal && soal[tipeKey]) {
@@ -305,7 +305,7 @@ exports.updateUjian = async (req, res) => {
       for (const brandId of ujian_brand) {
         if (!brandId || isNaN(brandId)) continue;
 
-        const brand = await db.Brand.findByPk(brandId);
+        const brand = await Brand.findByPk(brandId);
         if (!brand) {
           console.warn(`⚠️ brand_id ${brandId} tidak ditemukan, dilewati`);
           continue;
@@ -340,7 +340,7 @@ exports.updateUjian = async (req, res) => {
 
     // Jika punya id, update
     if (tipe.id) {
-      tipeUjianInstance = await db.TipeUjian.findByPk(tipe.id);
+      tipeUjianInstance = await TipeUjian.findByPk(tipe.id);
       if (tipeUjianInstance) {
         await tipeUjianInstance.update({ time: tipe.time });
       }
@@ -348,7 +348,7 @@ exports.updateUjian = async (req, res) => {
 
     // Jika tidak ada id, buat baru
     if (!tipeUjianInstance) {
-      tipeUjianInstance = await db.TipeUjian.create({
+      tipeUjianInstance = await TipeUjian.create({
         ujian_id: ujian.id,
         category_ujian: tipeKey,
         time: tipe.time
@@ -378,14 +378,14 @@ exports.updateUjian = async (req, res) => {
       let soalInstance;
 
       if (s.id) {
-        soalInstance = await db.Soal.findByPk(s.id);
+        soalInstance = await Soal.findByPk(s.id);
         if (soalInstance) {
           await soalInstance.update(soalData);
         }
       }
 
       if (!soalInstance) {
-        soalInstance = await db.Soal.create(soalData);
+        soalInstance = await Soal.create(soalData);
       }
 
       const soalId = soalInstance.id;
@@ -393,10 +393,10 @@ exports.updateUjian = async (req, res) => {
       // 4. Update ListJawaban jika tipe pilihan ganda
       if (s.questionType === 'multiple-choice' && Array.isArray(s.options)) {
         // Bersihkan dulu jawaban lama
-        await db.ListJawaban.destroy({ where: { soal_id: soalId } });
+        await ListJawaban.destroy({ where: { soal_id: soalId } });
 
         for (const opt of s.options) {
-          await db.ListJawaban.create({
+          await ListJawaban.create({
             soal_id: soalId,
             jawaban: opt.option,
             isTrue: Array.isArray(s.answer) ? s.answer.includes(opt.id) : false,
@@ -585,36 +585,91 @@ exports.getProgressUjian = async (req, res) => {
 exports.finishUjianPhase = async (req, res) => {
   try {
     const { user_id, ujian_id, exam_phase } = req.body;
+    console.log(`➡️  [START] Finish Ujian Phase: user_id=${user_id}, ujian_id=${ujian_id}, phase=${exam_phase}`);
 
+    // 1. Ambil tipe ujian + soal
     const tipe = await TipeUjian.findOne({
       where: { ujian_id, category_ujian: exam_phase },
-      include: [{
-        model: Soal,
-        as: 'Soals'
-      }]
+      include: [{ model: Soal, as: 'Soals' }]
     });
 
     if (!tipe) {
+      console.warn(`❌ Fase "${exam_phase}" tidak ditemukan`);
       return res.status(404).json({ status: false, message: "Fase ujian tidak ditemukan." });
     }
 
     const soalList = tipe.Soals || [];
+    const containsEssay = soalList.some(s => s.tipe_soal === "essay");
+    const is_done = !containsEssay;
+    const is_checking = containsEssay;
 
-    const containsEssay = soalList.some((s) => s.tipe_soal === "essay");
+    console.log(`📘 Jumlah soal: ${soalList.length}, Mengandung essay: ${containsEssay}`);
 
-    let is_done = !containsEssay;
-    let is_checking = containsEssay;
-
-    const progress = await UjianProgress.findOne({
-      where: { user_id, ujian_id, exam_phase }
-    });
-
+    // 2. Update progress
+    const progress = await UjianProgress.findOne({ where: { user_id, ujian_id, exam_phase } });
     if (!progress) {
+      console.warn(`⚠️ Progress belum dimulai untuk ${exam_phase}`);
       return res.status(404).json({ status: false, message: "Progress belum dimulai." });
     }
 
     await progress.update({ is_done, is_checking });
+    console.log(`✅ Progress updated: is_done=${is_done}, is_checking=${is_checking}`);
 
+    // 3. Jika tidak ada essay, langsung hitung nilai
+    if (is_done) {
+      console.log(`📊 Menghitung nilai parsial...`);
+      await generateNilaiFinal(user_id, ujian_id);
+    }
+
+    // 4. Cari semua tipe_ujian yang punya soal
+    const tipeDenganSoal = await TipeUjian.findAll({
+      where: { ujian_id },
+      include: [{
+        model: Soal,
+        as: 'Soals',
+        required: true // <-- hanya ambil yang punya soal
+      }]
+    });
+
+    const faseAktif = tipeDenganSoal.map(t => t.category_ujian);
+    console.log("📚 Fase aktif (yang punya soal):", faseAktif);
+
+    const allProgress = await Promise.all(
+      faseAktif.map(phase =>
+        UjianProgress.findOne({ where: { user_id, ujian_id, exam_phase: phase } })
+      )
+    );
+
+    allProgress.forEach((p, idx) => {
+      const phase = faseAktif[idx];
+      console.log(`  - ${phase}: is_done=${p?.is_done}, is_checking=${p?.is_checking}`);
+    });
+
+    const semuaSelesai = allProgress.every(p => p?.is_done === true && p?.is_checking === false);
+    console.log(`🔍 Semua fase selesai: ${semuaSelesai}`);
+
+    // 5. Cek apakah masih ada soal essay
+    const adaEssay = await Soal.findOne({
+      where: { tipe_soal: 'essay' },
+      include: [{
+        model: TipeUjian,
+        as: 'TipeUjian',
+        where: { ujian_id }
+      }]
+    });
+
+    console.log(`📝 Ada soal essay di ujian: ${!!adaEssay}`);
+
+    // 6. Generate nilai akhir + sertifikat jika semua selesai & tidak ada essay
+    if (semuaSelesai && !adaEssay) {
+      console.log("🏁 Semua fase selesai tanpa essay. Buat nilai akhir dan sertifikat...");
+      const finalScore = await generateNilaiFinal(user_id, ujian_id);
+      await generateSertifikat(user_id, ujian_id, finalScore);
+    } else {
+      console.log(`⛔ Sertifikat tidak dibuat: semuaSelesai=${semuaSelesai}, adaEssay=${!!adaEssay}`);
+    }
+
+    console.log(`✅ [SELESAI] Finish phase "${exam_phase}" untuk user_id=${user_id}`);
     return res.status(200).json({
       status: true,
       message: "Status fase ujian diperbarui.",
@@ -626,26 +681,27 @@ exports.finishUjianPhase = async (req, res) => {
     return res.status(500).json({ status: false, message: err.message });
   }
 };
+
 exports.getHasilUjian = async (req, res) => {
   try {
-    const jawabanList = await db.JawabanUser.findAll({
+    const jawabanList = await JawabanUser.findAll({
       include: [
         {
-          model: db.Soal,
+          model: Soal,
           include: [
             {
-              model: db.TipeUjian,
+              model: TipeUjian,
               as: 'TipeUjian',
-              include: [{ model: db.Ujian }]
+              include: [{ model: Ujian }]
             },
             {
-              model: db.ListJawaban,
+              model: ListJawaban,
               as: 'ListJawabans'
             }
           ]
         },
         {
-          model: db.User
+          model: User
         }
       ]
     });
@@ -742,7 +798,7 @@ exports.getHasilUjian = async (req, res) => {
 
 exports.getExamResultsUser = async (req, res) => {
   try {
-    const transactions = await db.Transaction.findAll({
+    const transactions = await Transaction.findAll({
       where: {
         user_id: req.userId,
         ujian_id: { [Op.ne]: null },
@@ -770,4 +826,108 @@ exports.getExamResultsUser = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ status: false, error: error.message });
   }
+};
+
+exports.checkUjianAccess = async (req, res) => {
+  try {
+    const ujianId = parseInt(req.params.ujianId);
+    const userId = req.userId;
+
+    const transaction = await Transaction.findOne({
+      where: {
+        user_id: userId,
+        ujian_id: ujianId,
+        status_transaction: "success",
+        isDelete: false
+      }
+    });
+
+    if (!transaction) {
+      return res.status(403).json({ status: false, message: "Anda belum melakukan transaksi untuk ujian ini" });
+    }
+
+    res.json({ status: true, message: "Akses diizinkan" });
+  } catch (error) {
+    res.status(500).json({ status: false, error: error.message });
+  }
+};
+
+const generateNilaiFinal = async (user_id, ujian_id) => {
+  const jawabanList = await JawabanUser.findAll({
+    where: { user_id },
+    include: [{
+      model: Soal,
+      as: 'Soal',
+      include: [{
+        model: TipeUjian,
+        as: 'TipeUjian',
+        where: { ujian_id }
+      }]
+    }]
+  });
+
+  let totalScore = 0;
+  let totalMax = 0;
+
+  for (const jawaban of jawabanList) {
+    const soal = jawaban.Soal;
+    totalScore += jawaban.poing || 0;
+    totalMax += soal?.point_soal || 0;
+  }
+
+  const finalScore = totalMax > 0 ? Math.round((totalScore / totalMax) * 100) : 0;
+
+  await Transaction.update(
+    {
+      total_skor: finalScore,
+      is_done: true,
+      is_checking: false
+    },
+    {
+      where: { user_id, ujian_id }
+    }
+  );
+
+  return finalScore;
+};
+
+const generateSertifikat = async (user_id, ujian_id, finalScore) => {
+  const transaksi = await Transaction.findOne({
+    where: {
+      user_id,
+      ujian_id,
+      include_certif: true,
+      status_transaction: 'success',
+      isDelete: false,
+    }
+  });
+
+  if (!transaksi) {
+    console.log("❌ Sertifikat tidak dibuat karena tidak memenuhi syarat.");
+    return;
+  }
+
+  const ujian = await Ujian.findByPk(ujian_id);
+  const user = await User.findByPk(user_id);
+  const date = new Date();
+  const exam_level = parseInt(ujian.level) || 1;
+
+  const exam_no = `H${exam_level}${date.toISOString().slice(0,10).replace(/-/g, '')}${Math.floor(100 + Math.random() * 900)}`;
+
+  await Certificate.create({
+    user_id,
+    exam_level,
+    gender: user.gender || 'Male',
+    nationality: '印度尼西亚',
+    name: user.name,
+    exam_date: date,
+    exam_no,
+    listening_score: 0,
+    reading_score: 0,
+    writing_score: 0,
+    total_score: finalScore,
+    status: finalScore >= 60 ? 'Passed' : 'Not Passed',
+  });
+
+  console.log(`✅ Sertifikat berhasil dibuat untuk user ${user_id}, ujian ${ujian_id}`);
 };
