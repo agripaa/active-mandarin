@@ -10,9 +10,9 @@ export const getAllCertificates = async () => {
   }
 };
 
-export const getCertificateById = async (id) => {
+export const getCertificateById = async (id, examNo) => {
   try {
-    const response = await api.get(`/certificate/${id}`);
+    const response = await api.get(`/certificate/${id}/${examNo}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching certificate by ID:", error);

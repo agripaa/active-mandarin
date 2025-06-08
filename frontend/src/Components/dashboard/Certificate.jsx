@@ -41,7 +41,7 @@ const levelMap = {
 };
 
 const Certificate = () => {
-  const { id } = useParams();
+  const { id, examNo } = useParams();
   const [certificate, setCertificate] = useState(null);
   const token = localStorage.getItem("token");
   const [user, setUser] = useState(null);
@@ -79,7 +79,7 @@ const Certificate = () => {
 
   const fetchCertificate = async () => {
     try {
-      const response = await getCertificateById(id);
+      const response = await getCertificateById(id, examNo);
       setCertificate(response.data);
       console.log(response.data);
     } catch (error) {
@@ -242,10 +242,9 @@ const Certificate = () => {
             <img
               id="Img1"
               src={
-                certificate?.User?.profile_img ??
-                "https://www.highlandernews.org/wp-content/uploads/Portrait_Placeholder-e1665688613225.png"
+                certificate?.User?.profile_img ? `${process.env.REACT_APP_API_IMG}${certificate?.User?.profile_img}` : "/assets/profile-dummy.webp"
               }
-              alt="logo"
+              alt="profile"
               className="h-auto w-full max-w-[200px]"
             />
           </div>
@@ -431,10 +430,12 @@ const Certificate = () => {
         </main>
         <div className="flex flex-col justify-between mt-6 container w-full mx-auto max-w-[880px] my-8 px-5 gap-5 lg:flex-row">
           <div className="flex flex-col">
+          {certificate?.exam_no && certificate.ujian_id && (
             <QRCode
-              value={`${window.location.origin}/certificate-table/${certificate?.id}`}
-              style={{ width: 128, height: 128, aspectRatio: 1 / 1 }}
+              value={`${window.location.origin}/certificate-table/${certificate.ujian_id}/${certificate.exam_no}`}
+              style={{ width: 128, height: 128, aspectRatio: 1 }}
             />
+          )}
             <p>南京市 • 中国</p>
             <p>Nanjing • China</p>
           </div>

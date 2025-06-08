@@ -28,8 +28,14 @@ const ResultExams = () => {
     }
   };
 
-  const handleCertif = (id) => window.open(`/certificate/${id}`);
-  const handleReview = (id) => window.location.href = `/review-ujian/${id}`;
+  const handleCertif = (e, id, examNo) => {
+    e.preventDefault();
+    window.open(`/certificate/${id}/${examNo}`);
+  }
+  const handleReview = (e, id) => {
+    e.preventDefault();
+    window.location.href = `/result-exam/${id}`;
+  }
   return (
     <DashboardLayout>
         <div className="p-6 min-h-screen">
@@ -66,7 +72,7 @@ const ResultExams = () => {
                     </td>
                    <td className={`p-3 flex gap-3`}>
                     <button
-                      onClick={(e) => handleCertif(e, transaction.id)}
+                      onClick={(e) => handleCertif(e, transaction.ujian_id, transaction.exam_no)}
                       disabled={transaction.status !== "Selesai"}
                       className={`border-2 py-3 px-4 rounded-xl flex justify-center items-center font-semibold
                         ${transaction.status !== "Selesai"
@@ -78,7 +84,7 @@ const ResultExams = () => {
                     </button>
 
                     <button
-                      onClick={(e) => handleReview(e, transaction.id)}
+                      onClick={(e) => handleReview(e, transaction.ujian_id)}
                       disabled={transaction.status !== "Selesai"}
                       className={`border-2 py-3 px-4 rounded-xl flex justify-center items-center font-semibold
                         ${transaction.status !== "Selesai"

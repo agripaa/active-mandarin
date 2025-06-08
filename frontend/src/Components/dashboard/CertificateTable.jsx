@@ -8,6 +8,7 @@ import { formatDate } from "../../utils/formatDate";
 import { getProfile } from "../../api/auth";
 import { html2pdf } from "html2pdf.js";
 import PercentileRankData from "../../Store/Constants/PercentileRank";
+import Swal from "sweetalert2";
 
 const { useParams, Link, useNavigate } = require("react-router-dom");
 
@@ -21,7 +22,7 @@ const levelMap = {
 };
 
 const CertificateTable = () => {
-  const { id } = useParams();
+  const { id, examNo } = useParams();
   const [certificate, setCertificate] = useState(null);
   const token = localStorage.getItem("token");
   const [user, setUser] = useState(null);
@@ -41,16 +42,24 @@ const CertificateTable = () => {
 
   const fetchCertificate = async () => {
     try {
-      const response = await getCertificateById(id);
+      const response = await getCertificateById(id, examNo);
       setCertificate(response.data);
       console.log(response.data);
     } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.response?.data?.message || "Failed to fetch certificate",
+      }).then(() => {
+        navigate("/dashboard", { replace: true });
+      });
       if ([400, 401, 403].includes(error.status)) {
         navigate("/", { replace: true });
         return;
       }
     }
   };
+
 
   useEffect(() => {
     fetchCertificate();
@@ -99,8 +108,7 @@ const CertificateTable = () => {
                     >
                       <img
                         src={
-                          certificate?.User?.profile_img ??
-                          "https://www.highlandernews.org/wp-content/uploads/Portrait_Placeholder-e1665688613225.png"
+                          certificate?.User?.profile_img ? `${process.env.REACT_APP_API_IMG}${certificate?.User?.profile_img}` : "/assets/profile-dummy.webp"
                         }
                         className="p-2 h-auto"
                       />

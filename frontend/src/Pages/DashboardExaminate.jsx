@@ -8,7 +8,7 @@ import { getUserById } from "../api/user";
 
 const DashboardExaminate = () => {
   const [loading, setLoading] = useState(true);
-  const [profileImg, setProfileImg] = useState("/assets/profile-dummy.webp");
+  const [profileImg, setProfileImg] = useState("/assets/profile-dummy.png");
   const [questionList, setQuestionList] = useState([]);
   const [maxScore, setMaxScore] = useState(0);
   const [currentScore, setCurrentScore] = useState(0);

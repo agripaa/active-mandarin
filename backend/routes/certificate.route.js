@@ -6,7 +6,7 @@ const middlewareAdmin = require('../middleware/verifyAdmin.middleware');
 
 router.post('/', middlewareAdmin.authenticateAdmin, certificateController.createCertificate);
 router.get('/', middleware.authenticateUser, certificateController.getCertificates);
-router.get('/:id', certificateController.getCertificateById);
+router.get('/:id/:examNo', certificateController.getCertificateById);
 router.put('/:id', middleware.authenticateUser, certificateController.updateCertificate);
 router.delete('/:id', middleware.authenticateUser, certificateController.deleteCertificate);
 router.get('/user/:user_id', middleware.authenticateUser, certificateController.getCertificatesByUserId);

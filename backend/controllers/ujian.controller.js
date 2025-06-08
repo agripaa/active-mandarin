@@ -838,12 +838,13 @@ exports.getExamResultsUser = async (req, res) => {
       else if (anyChecking) status = "Diperiksa Mentor";
 
       let nilaiFinal = "-";
+      let examNo = null;
 
       if (status === "Selesai") {
         const certificate = await Certificate.findOne({
           where: {
             user_id: req.userId,
-            ujian_id: tx.ujian_id // ✅ gunakan ujian_id untuk akurasi
+            ujian_id: tx.ujian_id
           }
         });
 
@@ -851,15 +852,18 @@ exports.getExamResultsUser = async (req, res) => {
           const phaseCount = progresses.length || 1;
           const maxScore = phaseCount * 100;
           nilaiFinal = `${certificate.total_score}/${maxScore}`;
+          examNo = certificate.exam_no || null;
         }
       }
 
       result.push({
         id: tx.id,
+        ujian_id: tx.ujian_id,
         nama_ujian: tx.Ujian?.nama_ujian || '-',
         nama_peserta: tx.User?.name || '-',
         tipe: tx.Ujian?.level || '-',
         nilai: nilaiFinal,
+        exam_no: examNo,
         status
       });
     }
@@ -1047,6 +1051,7 @@ const generateSertifikat = async (user_id, ujian_id, finalScore) => {
   await Certificate.create({
     user_id,
     exam_level,
+    ujian_id ,
     gender: user.gender || 'Male',
     nationality: '印度尼西亚',
     name: user.name,
@@ -1063,4 +1068,70 @@ const generateSertifikat = async (user_id, ujian_id, finalScore) => {
   - User: ${user_id}
   - Ujian: ${ujian_id}
   - Nilai: L=${listening_score}, R=${reading_score}, W=${writing_score}, Total=${finalScore}`);
+};
+
+exports.getUjianReviewResult = async (req, res) => {
+  try {
+    const { ujian_id } = req.params;
+    const user_id = req.userId;
+
+    const certificate = await db.Certificate.findOne({
+      where: { ujian_id, user_id }
+    });
+
+    if (!certificate) {
+      return res.status(404).json({ status: false, message: "Sertifikat tidak ditemukan" });
+    }
+
+    // Cek fase mana yang aktif berdasarkan keberadaan soal
+    const tipeUjianList = await db.TipeUjian.findAll({
+      where: { ujian_id },
+      include: [{
+        model: db.Soal,
+        as: 'Soals',
+        required: true
+      }]
+    });
+
+    const availablePhases = tipeUjianList.map(t => t.category_ujian); // yang ada soal
+
+    const phases = ['listening', 'reading', 'writing'];
+    const result = {
+      total: {
+        point: 0,
+        max: 0,
+        score: 0
+      },
+      per_phase: {}
+    };
+
+    for (const phase of phases) {
+      const score = certificate[`${phase}_score`];
+      const isAvailable = availablePhases.includes(phase);
+
+      if (isAvailable && score !== null && score !== undefined) {
+        result.per_phase[phase] = {
+          score,
+          point: score,
+          max: 100,
+          available: true
+        };
+
+        result.total.point += score;
+        result.total.max += 100;
+      } else {
+        result.per_phase[phase] = {
+          available: false
+        };
+      }
+    }
+
+    result.total.score = result.total.point;
+
+    return res.json({ status: true, data: result });
+
+  } catch (err) {
+    console.error("❌ Gagal ambil review nilai ujian:", err);
+    res.status(500).json({ status: false, message: err.message });
+  }
 };

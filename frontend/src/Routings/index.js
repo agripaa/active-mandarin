@@ -88,9 +88,9 @@ const Routings = () => {
                 <Route path="/verifikasi/ujian" element={<NotifikasiUjian/>}/>
                 <Route path="/exams" element={<ExamList/>}/>
                 <Route path="/result-exam" element={<ResultExams/>}/>
-                <Route path="/result-exam/:id" element={<ResultPage/>}/>
-                <Route path="/certificate/:id" element={<Certificate/>}/>
-                <Route path="/certificate-table/:id" element={<CertificateTable/>}/>
+                <Route path="/result-exam/:ujian_id" element={<ResultPage/>}/>
+                <Route path="/certificate/:id/:examNo" element={<Certificate/>}/>
+                <Route path="/certificate-table/:id/:examNo" element={<CertificateTable/>}/>
 
                 {/* IDK */}
                 <Route path="/events" element={<Event/>}/>

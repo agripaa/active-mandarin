@@ -267,6 +267,7 @@ exports.examineEssayJawaban = async (req, res) => {
       certificate = await db.Certificate.create({
         user_id: userId,
         exam_level: ujian.level,
+        ujian_id: ujianId,
         gender: user.gender || 'Male',
         nationality: user.nationality || '印度尼西亚',
         name: user.name,

@@ -49,7 +49,8 @@ exports.getCertificates = async (req, res) => {
 // Get Certificate by ID
 exports.getCertificateById = async (req, res) => {
   try {
-    const certificate = await Certificate.findByPk(req.params.id, {
+    const certificate = await Certificate.findOne({
+      where: { ujian_id: req.params.id, exam_no: req.params.examNo },
       include: {
         model: User,
         attributes: ["name", "profile_img"],
