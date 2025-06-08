@@ -626,3 +626,116 @@ exports.finishUjianPhase = async (req, res) => {
     return res.status(500).json({ status: false, message: err.message });
   }
 };
+exports.getHasilUjian = async (req, res) => {
+  try {
+    const jawabanList = await db.JawabanUser.findAll({
+      include: [
+        {
+          model: db.Soal,
+          include: [
+            {
+              model: db.TipeUjian,
+              as: 'TipeUjian',
+              include: [{ model: db.Ujian }]
+            },
+            {
+              model: db.ListJawaban,
+              as: 'ListJawabans'
+            }
+          ]
+        },
+        {
+          model: db.User
+        }
+      ]
+    });
+
+    const grouped = {};
+
+    for (const jawaban of jawabanList) {
+      const soal = jawaban.Soal;
+      const tipe = soal?.TipeUjian;
+      const ujian = tipe?.Ujian;
+      const user = jawaban.User;
+
+      if (!soal || !tipe || !ujian || !user) continue;
+
+      const key = `${ujian.id}-${user.id}-${tipe.category_ujian}`;
+
+      if (!grouped[key]) {
+        grouped[key] = {
+          nama_ujian: ujian.nama_ujian,
+          tipe_ujian: tipe.category_ujian,
+          nama_peserta: user.name,
+          user_id: user.id,
+          ujian_id: ujian.id,
+          total_poin: 0,
+          total_max: 0,
+          semua_essay_ternilai: true
+        };
+      }
+
+      let poing = 0;
+
+      // 🔄 Jika soal multiple-choice dan belum dinilai manual (isTrue null), hitung otomatis
+      if (
+        soal.tipe_soal === "multiple-choice" &&
+        jawaban.isTrue === null &&
+        jawaban.list_jawaban_id &&
+        soal.ListJawabans
+      ) {
+        const jawabanUser = soal.ListJawabans.find(
+          j => j.id === jawaban.list_jawaban_id
+        );
+        if (jawabanUser?.isTrue) {
+          poing = soal.point_soal || 0;
+        } else {
+          poing = 0;
+        }
+      } else {
+        // Gunakan nilai dari DB
+        poing = jawaban.poing || 0;
+      }
+
+      grouped[key].total_poin += poing;
+      grouped[key].total_max += soal.point_soal || 0;
+
+      // ✅ Semua soal dengan isTrue null dianggap belum dinilai
+      if (jawaban.isTrue === null) {
+        grouped[key].semua_essay_ternilai = false;
+      }
+    }
+
+    const belum_dinilai = [];
+    const sudah_dinilai = [];
+
+    Object.values(grouped).forEach(item => {
+      const nilaiStr = `${item.total_poin}/${item.total_max}`;
+      const base = {
+        nama_ujian: item.nama_ujian,
+        nama_peserta: item.nama_peserta,
+        tipe_ujian: item.tipe_ujian,
+        user_id: item.user_id,
+        ujian_id: item.ujian_id
+      };
+
+      if (item.semua_essay_ternilai) {
+        sudah_dinilai.push({ ...base, nilai_final: nilaiStr });
+      } else {
+        belum_dinilai.push({ ...base, nilai_sementara: nilaiStr });
+      }
+    });
+
+    res.json({
+      status: true,
+      data: {
+        belum_dinilai,
+        sudah_dinilai
+      }
+    });
+
+  } catch (error) {
+    console.error("❌ Gagal ambil data penilaian:", error);
+    res.status(500).json({ status: false, message: error.message });
+  }
+};

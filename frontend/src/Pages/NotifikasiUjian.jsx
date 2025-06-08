@@ -3,27 +3,53 @@ import { Table, Button, Spin } from "antd";
 import Swal from "sweetalert2";
 import DashboardLayout from "../Layouts/DashboardLayout";
 import { useNavigate } from "react-router";
+import { getHasilUjian } from "../api/ujian";
 // import { getAffiliatorStatusFalse, approveAffiliator, rejectAffiliator } from "../api/affiliate";
 
 const NotifikasiUjian = () => {
   // const [affiliators, setAffiliators] = useState([]);
-  const [todoEvaluate, setTodoEvaluate] = useState([]);
+  const [todoEvaluate, setTodoEvaluate] = useState({ belum: [], sudah: [] }); 
   const [loading, setLoading] = useState(true);
   const [actionLoadingId, setActionLoadingId] = useState(null);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    // give a mock data for todoEvaluate
+  const fetchData = async () => {
     setLoading(true);
-    const mockData = [
-      { id: 1, exam_name: "Ujian Pasti Bisa", user_name: "John Doe", type: "HSK 1", score: 85 },
-      { id: 2, exam_name: "Ujian Pasti Bisa", user_name: "Jane Smith", type: "HSK 1", score: 90 },
-    ];
+    try {
+      const res = await getHasilUjian();
 
-    setTodoEvaluate(mockData);
-    setLoading(false);
-  }, []);
+      const belum = res.data.belum_dinilai.map((item, index) => ({
+        key: `belum-${index}`,
+        id: item.ujian_id, // gunakan untuk navigasi
+        exam_name: item.nama_ujian,
+        user_name: item.nama_peserta,
+        type: item.tipe_ujian,
+        score: item.nilai_sementara,
+        user_id: item.user_id,
+      }));
+
+      const sudah = res.data.sudah_dinilai.map((item, index) => ({
+        key: `sudah-${index}`,
+        id: item.ujian_id,
+        exam_name: item.nama_ujian,
+        user_name: item.nama_peserta,
+        type: item.tipe_ujian,
+        score: item.nilai_final,
+        user_id: item.user_id,
+      }));
+
+      setTodoEvaluate({ belum, sudah });
+    } catch (error) {
+      Swal.fire("Gagal", "Gagal mengambil data hasil ujian", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchData();
+}, []);
 
   const handleConfirm = (record) => {
     navigate(`/dashboard/examinate/${record.id}`)
@@ -69,7 +95,7 @@ const NotifikasiUjian = () => {
         <div className="bg-white p-6 shadow-lg rounded-xl">
           <h4 className="text-lg font-semibold mb-4">Belum Dinilai</h4>
           <div className="overflow-x-auto">
-            <Table columns={todoEvaluateColumns} dataSource={todoEvaluate} pagination={false} />
+            <Table columns={todoEvaluateColumns} dataSource={todoEvaluate.belum} pagination={false} />
           </div>
         </div>
       </div>
@@ -79,7 +105,7 @@ const NotifikasiUjian = () => {
         <div className="bg-white p-6 shadow-lg rounded-xl">
           <h4 className="text-lg font-semibold mb-4">Sudah Dinilai</h4>
           <div className="overflow-x-auto">
-            <Table columns={alreadyEvaluatedColumns} dataSource={[]} pagination={false} />
+            <Table columns={alreadyEvaluatedColumns} dataSource={todoEvaluate.sudah} pagination={false} /> 
           </div>
         </div>
       </div>
