@@ -6,7 +6,7 @@ import { motion } from "motion/react";
 import { useLocation } from "react-router-dom";
 import ExamLayout from "../Layouts/ExamLayout";
 import { getProfile } from "../api/auth";
-import { submitUjian, getUjianDetail, getUjianSoal, getJawabanUser, startUjian, progressUjian, finishUjian } from "../api/ujian";
+import { submitUjian, getUjianDetail, getUjianSoal, getJawabanUser, startUjian, progressUjian, finishUjian, checkUjianAccess } from "../api/ujian";
 import ExamContext from "../context/ExamContext"; 
 
 const TakeExam = () => {
@@ -37,6 +37,21 @@ const TakeExam = () => {
     }
     return copy;
   };
+
+  const checkAccess = async () => {
+    try {
+      const data = await checkUjianAccess(id);
+      if (!data.status) {
+        throw new Error(data.message || "Akses ditolak");
+      }
+    } catch (err) {
+      Swal.fire("Akses Ditolak", err.message || "Anda tidak memiliki akses ke ujian ini", "error").then(() => {
+        navigate("/dashboard");
+      });
+    }
+  };
+
+
 
   useEffect(() => {
     const VIOLATION_KEY = `ujian-violation-${id}`;
@@ -178,6 +193,7 @@ const TakeExam = () => {
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
+        await checkAccess();
         const [userData, ujianData, soalData] = await Promise.all([
           getProfile(),
           getUjianDetail(id),
@@ -409,7 +425,18 @@ const TakeExam = () => {
         navigate(`/dashboard/take-exam/${id}?question=1`, { replace: true });
         setNumber(0);
       } else {
-        navigate("/result-exam");
+        const lastPhase = allQuestions[examPhase];
+        const hasEssay = lastPhase.questions?.some(q => q.questionType === "essay");
+
+        if (!hasEssay) {
+          Swal.fire("Ujian selesai", "Semua sesi telah berakhir. Nilai Anda sedang diproses.", "success").then(() => {
+            navigate("/result-exam");
+          });
+        } else {
+          Swal.fire("Ujian selesai", "Jawaban essay Anda akan dinilai secara manual.", "info").then(() => {
+            navigate("/result-exam");
+          });
+        }
       }
     } catch (err) {
       console.error("❌ Gagal menyelesaikan fase:", err);

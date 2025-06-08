@@ -5,9 +5,10 @@ module.exports = (sequelize, DataTypes) => {
   class Soal extends Model {
     static associate(models) {
       Soal.belongsTo(models.TipeUjian, {
-        foreignKey: 'tipe_ujian_id',
-        as: 'TipeUjian'
-      });
+      foreignKey: 'tipe_ujian_id',
+      as: 'TipeUjian' // ← pakai alias
+    });
+
 
 
       Soal.hasMany(models.ListJawaban, {

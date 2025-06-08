@@ -141,29 +141,51 @@ exports.getTransactionsByMonthAdmin = async (req, res) => {
   };
 
 exports.getTransactionSummary = async (req, res) => {
-    try {
-      const transactions = await Transaction.findAll({
-        where: { [Op.and]: [{status_transaction: "success"}, {isDelete: false}] },
-                include: [{ model: Brand, as: 'Brand',  attributes: ['price', 'discount_price'] }],
-      });
-  
-      const totalTransactions = transactions.length;
-  
-      const totalRevenue = transactions.reduce((sum, transaction) => {
-        const price = transaction.Brand?.discount_price || transaction.Brand?.price || 0;
-        return sum + parseInt(price);
-      }, 0);
-  
-      res.json({
-        status: true,
-        total_transactions: totalTransactions,
-        total_revenue: totalRevenue
-      });
-  
-    } catch (error) {
-      res.status(500).json({ status: false, error: error.message });
-    }
-  };
+  try {
+    const transactions = await Transaction.findAll({
+      where: {
+        [Op.and]: [
+          { status_transaction: "success" },
+          { isDelete: false }
+        ]
+      },
+      include: [
+        { model: Brand, as: 'Brand', attributes: ['price', 'discount_price'] },
+        { model: Ujian, as: 'Ujian', attributes: ['harga_diskon', 'harga_normal', 'harga_certif'] }
+      ],
+    });
+
+    const totalTransactions = transactions.length;
+
+    const totalRevenue = transactions.reduce((sum, trx) => {
+      let price = 0;
+
+      // Brand
+      if (trx.Brand) {
+        price = parseInt(trx.Brand.discount_price || trx.Brand.price || 0);
+      }
+
+      // Ujian
+      if (trx.Ujian) {
+        const ujianHarga = parseInt(trx.Ujian.harga_diskon || trx.Ujian.harga_normal || 0);
+        const certifHarga = trx.include_certif ? parseInt(trx.Ujian.harga_certif || 0) : 0;
+        price = ujianHarga + certifHarga;
+      }
+
+      return sum + price;
+    }, 0);
+
+    res.json({
+      status: true,
+      total_transactions: totalTransactions,
+      total_revenue: totalRevenue
+    });
+
+  } catch (error) {
+    res.status(500).json({ status: false, error: error.message });
+  }
+};
+
   
 exports.getTransactionsUser = async (req, res) => {
   try {

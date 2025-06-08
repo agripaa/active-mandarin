@@ -185,3 +185,13 @@ exports.getAllUserTransactions = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.getUserById = async (req, res) => {
+  try {
+    const user = await db.User.findByPk(req.params.id);
+    if (!user) return res.status(404).json({ status: false, message: "User not found" });
+    res.json({ status: true, data: user });
+  } catch (error) {
+    res.status(500).json({ status: false, error: error.message });
+  }
+};
