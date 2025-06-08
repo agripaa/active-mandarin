@@ -9,6 +9,7 @@ import { getProfile } from "../../api/auth";
 import { html2pdf } from "html2pdf.js";
 import PercentileRankData from "../../Store/Constants/PercentileRank";
 import { QRCode } from "react-qrcode-logo";
+import Swal from "sweetalert2";
 
 const { useParams, Link, useNavigate } = require("react-router-dom");
 
@@ -82,6 +83,13 @@ const Certificate = () => {
       setCertificate(response.data);
       console.log(response.data);
     } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.response?.data?.message || "Failed to fetch certificate",
+      }).then(() => {
+        navigate("/dashboard", { replace: true });
+      });
       if ([400, 401, 403].includes(error.status)) {
         navigate("/", { replace: true });
         return;
