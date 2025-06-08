@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { useParams } from "react-router-dom";
 import Swal from 'sweetalert2';
 import { Table, Button, Input, Select, Form, Upload, Switch } from "antd";
 import { FaChevronRight } from "react-icons/fa";
@@ -7,7 +8,7 @@ import { motion } from "motion/react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { useNavigate } from 'react-router-dom';
-import { createUjian } from "../../api/ujian"; 
+import { createUjian, getUjianById, updateUjian, getUjianBrandsByUjianId, getUjianSoal } from "../../api/ujian"; 
 import { getAllBrands } from "../../api/brand"; 
 
 
@@ -16,6 +17,9 @@ import DashboardLayout from "../../Layouts/DashboardLayout";
 import { UploadOutlined } from "@ant-design/icons";
 
 const CreateExam = ({ dataProgram }) => {
+  
+  const { id } = useParams();
+  const isEditMode = !!id;
   // type 'exam' | 'listening' | 'reading' | 'writing'
   const [show, setShow] = useState('exam');
   const [questionsListening, setQuestionsListening] = useState([]);
@@ -35,6 +39,8 @@ const CreateExam = ({ dataProgram }) => {
   const [programs, setPrograms] = useState([]);  
   const [imageFile, setImageFile] = useState(null); 
   const [imagePreview, setImagePreview] = useState(null); 
+  const [isFetchedOnce, setIsFetchedOnce] = useState(false);
+
 
 
 
@@ -77,6 +83,13 @@ const CreateExam = ({ dataProgram }) => {
               questionsListening={questionsListening}
               questionsReading={questionsReading}
               questionsWriting={questionsWriting}
+              setTypeData={setTypeData}                
+              setQuestionsListening={setQuestionsListening}
+              setQuestionsReading={setQuestionsReading}
+              setQuestionsWriting={setQuestionsWriting}
+              setTimeListening={setTimeListening}
+              setTimeReading={setTimeReading}
+              setTimeWriting={setTimeWriting}           
               title={title}
               setTitle={setTitle}
               examDetails={examDetails}
@@ -97,25 +110,29 @@ const CreateExam = ({ dataProgram }) => {
               setLevel={setLevel}
               programs={programs}
               setPrograms={setPrograms}
+              isEditMode={isEditMode}  
+              id={id}       
+              isFetchedOnce={isFetchedOnce}
+              setIsFetchedOnce={setIsFetchedOnce}
             />
           </div>
           <div style={{ display: show === 'listening' ? 'block' : 'none' }}>
             <DetailExam
-              show={'listening'}
-              setShow={setShow}
-              questions={questionsListening}
-              setQuestions={setQuestionsListening}
-              time={timeListening}
-              setTime={setTimeListening}
-              sendToParent={(time, questionCount) => setTypeData(prev => ({
-                ...prev,
-                listening: {
-                  ...prev.listening,
-                  time: time,
-                  questionCount: questionCount,
-                }
-              }))} 
-            />
+            show={'listening'}
+            setShow={setShow}
+            questions={questionsListening}
+            setQuestions={setQuestionsListening}
+            time={timeListening}
+            setTime={setTimeListening}
+            sendToParent={(time, questionCount) => setTypeData(prev => ({
+              ...prev,
+              listening: {
+                ...prev.listening,
+                time: time,
+                questionCount: questionCount,
+              }
+            }))}
+          />
           </div>
           <div style={{ display: show === 'reading' ? 'block' : 'none' }}>
               <DetailExam
@@ -162,9 +179,13 @@ const CreateExam = ({ dataProgram }) => {
   const Exam = ({
     setShow,
     typeData,
+    setTypeData,              
     questionsListening,
+    setQuestionsListening,   
     questionsReading,
+    setQuestionsReading,   
     questionsWriting,
+    setQuestionsWriting,    
     title, setTitle,
     examDetails, setExamDetails,
     price, setPrice,
@@ -174,11 +195,20 @@ const CreateExam = ({ dataProgram }) => {
     imageFile, setImageFile,
     imagePreview, setImagePreview,
     level, setLevel,
-    programs, setPrograms
+    programs, setPrograms,
+    isEditMode, id,
+    setTimeListening,
+    setTimeReading,
+    setTimeWriting,
+    isFetchedOnce, setIsFetchedOnce
   }) => {
   const [form] = Form.useForm();
   const [programOptions, setProgramOptions] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+  form.setFieldsValue({ programs });
+  }, [programs]);
 
   useEffect(() => {
     if (title || examDetails || imagePreview || imageFile) return;
@@ -232,6 +262,80 @@ const CreateExam = ({ dataProgram }) => {
   fetchProgramOptions();
 }, []);
 
+  useEffect(() => {
+  if (!isEditMode || isFetchedOnce) return;
+
+  const fetchUjian = async () => {
+    try {
+      const res = await getUjianById(id);
+      if (!res.status) throw new Error("Gagal mengambil data ujian");
+
+      const ujian = res.data;
+
+      setTitle(ujian.nama_ujian || "");
+      setExamDetails(ujian.desc || "");
+      setPrice(ujian.harga_normal || "0");
+      setPriceCertif(ujian.harga_certif || "0");
+      setDiscountPrice(ujian.harga_diskon || "0");
+      setCommission(ujian.commission || "0");
+      setLevel(ujian.level || undefined);
+      setImagePreview(ujian.ujian_img_url || null);
+
+      // Ambil tipe ujian dan soal
+    const soalRes = await getUjianSoal(id);
+    if (soalRes.status && soalRes.data) {
+      const tipe = soalRes.data;
+
+        setTypeData(prev => ({
+        listening: {
+          ...prev.listening,
+          id: tipe?.listening?.id,
+          time: tipe?.listening?.time ?? 0,
+          questionCount: tipe?.listening?.questions?.length ?? 0,
+        },
+        reading: {
+          ...prev.reading,
+          id: tipe?.reading?.id,
+          time: tipe?.reading?.time ?? 0,
+          questionCount: tipe?.reading?.questions?.length ?? 0,
+        },
+        writing: {
+          ...prev.writing,
+          id: tipe?.writing?.id,
+          time: tipe?.writing?.time ?? 0,
+          questionCount: tipe?.writing?.questions?.length ?? 0,
+        }
+      }));
+
+      setQuestionsListening(tipe?.listening?.questions || []);
+      setQuestionsReading(tipe?.reading?.questions || []);
+      setQuestionsWriting(tipe?.writing?.questions || []);
+
+      setTimeListening(tipe?.listening?.time ?? 0);
+      setTimeReading(tipe?.reading?.time ?? 0);
+      setTimeWriting(tipe?.writing?.time ?? 0);
+    }
+
+      // ⬇️ Tambahkan logic ini untuk ambil ujian_brand berdasarkan id
+      const brandRes = await getUjianBrandsByUjianId(id);
+    if (brandRes.status) {
+      const brandIds = brandRes.data.map((item) => item.brand_id);
+      setPrograms(brandIds);
+      form.setFieldsValue({ programs: brandIds }); // ⬅️ update nilai Form
+    }
+    } catch (err) {
+      console.error("Gagal memuat data ujian:", err);
+      Swal.fire("Error", "Gagal memuat data ujian", "error");
+    }
+  };
+
+  fetchUjian().then(() => {
+  setIsFetchedOnce(true); // ⬅️ hanya setelah fetch berhasil
+});
+}, [id]);
+
+
+
 
   const handleRupiahChange = useCallback((value, setter) => {
     const numericValue = value.replace(/[^0-9]/g, "");
@@ -245,16 +349,20 @@ const CreateExam = ({ dataProgram }) => {
     const formData = new FormData();
 
     const prepareQuestionsWithFileRefs = (questions, tipe) => {
-      return questions.map((q, idx) => {
-        if (q.fileList?.[0]?.originFileObj) {
-          const filenameRef = `${tipe}_file_${idx}`;
-          formData.append(filenameRef, q.fileList[0].originFileObj);
-          return {
-            ...q,
-            image: filenameRef, 
-          };
-        }
-        return q;
+      const tipeId = typeData[tipe]?.id;
+        return questions.map((q, idx) => {
+          const newSoal = {
+        ...q,
+        tipe_ujian_id: tipeId, // ✅ tambahkan ini
+      };
+
+      if (q.fileList?.[0]?.originFileObj) {
+        const filenameRef = `${tipe}_file_${idx}`;
+        formData.append(filenameRef, q.fileList[0].originFileObj);
+        newSoal.image = filenameRef;
+      }
+
+      return newSoal;
       });
     };
 
@@ -271,7 +379,7 @@ const CreateExam = ({ dataProgram }) => {
       formData.append("ujian_img", imageFile);
     }
 
-    formData.append("ujian_brand", JSON.stringify(programs));
+    formData.append("ujian_brand", JSON.stringify(programs || []));
     formData.append("tipe_ujian", JSON.stringify(typeData));
     
 
@@ -285,22 +393,34 @@ const CreateExam = ({ dataProgram }) => {
       writing: updatedWriting,
     }));
 
-    const ujianData = await createUjian(formData); // ✅ pakai API helper
+    const ujianData = isEditMode
+    ? await updateUjian(id, formData)
+    : await createUjian(formData);
+    // ✅ pakai API helper
 
-    if (!ujianData.status || !ujianData.result?.id) throw new Error("Gagal membuat ujian");
+    if (!ujianData.status)
+      throw new Error("Gagal memperbarui ujian");
+
+    const ujianId = ujianData.data?.id || id;
+    console.log("📦 Response update ujian:", ujianData);
+
 
     Swal.fire({
-      title: "Berhasil!",
-      text: "Ujian dan soal berhasil dibuat.",
-      icon: "success",
-    }).then(() => {
-      localStorage.removeItem("savedExam");
-      navigate("/dashboard/exam");
-    });
+  title: "Berhasil!",
+  text: isEditMode
+    ? "Ujian dan soal berhasil diperbarui."
+    : "Ujian dan soal berhasil dibuat.",
+  icon: "success",
+}).then(() => {
+  localStorage.removeItem("savedExam");
+
+  navigate("/dashboard/exam");
+});
+
 
    } catch (err) {
   console.error("Gagal menyimpan:", err);
-
+    
   // Deteksi kemungkinan bentuk error
     const errorMessage =
       err?.response?.data?.message || // dari axios error
@@ -355,13 +475,15 @@ const totalWaktu = Number(typeData.listening.time) + Number(typeData.reading.tim
             <Form.Item
               name="programs"
               label="Program Terkait"
-              initialValue={programs}
+              rules={[{ required: true, message: 'Pilih minimal satu program terkait' }]}
             >
-             <Select
+              <Select
                 mode="multiple"
                 placeholder="Pilih Program Terkait"
-                value={programs}
-                onChange={(val) => setPrograms(val)}
+                onChange={(val) => {
+                  setPrograms(val);
+                  form.setFieldsValue({ programs: val }); // sync dengan Form
+                }}
                 allowClear
               >
                 {programOptions.map((brand) => (
@@ -371,8 +493,6 @@ const totalWaktu = Number(typeData.listening.time) + Number(typeData.reading.tim
                 ))}
               </Select>
             </Form.Item>
-
-
             <Form.Item label="Harga Normal" required>
               <Input value={formatRupiah(price)} onChange={(e) => handleRupiahChange(e.target.value, setPrice)} placeholder="Masukkan Harga Normal" rules={[{ required: true, message: "Harga normal harus dimasukkan." }]} />
             </Form.Item>

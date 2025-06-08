@@ -111,3 +111,28 @@ exports.deleteUjianBrand = async (req, res) => {
     res.status(500).json({ status: false, error: error.message });
   }
 };
+
+
+// GET /api/v2/ujian-brand/by-ujian/:ujian_id
+exports.getUjianBrandByUjianId = async (req, res) => {
+  try {
+    const { ujian_id } = req.params;
+
+    if (!ujian_id) {
+      return res.status(400).json({ status: false, message: "ujian_id is required" });
+    }
+
+    const ujianBrands = await db.UjianBrand.findAll({
+      where: { ujian_id },
+      include: [
+        { model: db.Brand, as: 'Brand' } // opsional
+      ]
+    });
+
+    res.json({ status: true, data: ujianBrands });
+  } catch (error) {
+    console.error("Error fetching ujianBrand by ujian_id:", error);
+    res.status(500).json({ status: false, error: error.message });
+  }
+};
+

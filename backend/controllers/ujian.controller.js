@@ -216,6 +216,7 @@ exports.getSoalByUjianId = async (req, res) => {
       });
 
       result[tipe.category_ujian] = {
+        id: tipe.id,
         time: parseInt(tipe.time),
         questions: soalList,
       };
@@ -251,6 +252,7 @@ exports.updateUjian = async (req, res) => {
 
     let ujian_img = ujian.ujian_img;
 
+    // Proses upload gambar jika ada
     if (req.files && req.files.ujian_img) {
       const imgFile = req.files.ujian_img;
       const ext = path.extname(imgFile.name).toLowerCase();
@@ -271,6 +273,7 @@ exports.updateUjian = async (req, res) => {
       ujian_img = `/public/ujian/${fileName}`;
     }
 
+    // Update data utama ujian
     await ujian.update({
       nama_ujian,
       level,
@@ -286,11 +289,133 @@ exports.updateUjian = async (req, res) => {
       isCheck,
     });
 
+    // Update ujian_brand
+    let ujian_brand = req.body.ujian_brand;
+    try {
+      if (typeof ujian_brand === "string") ujian_brand = JSON.parse(ujian_brand);
+    } catch (err) {
+      return res.status(400).json({ status: false, message: "Format ujian_brand tidak valid" });
+    }
+
+    if (Array.isArray(ujian_brand)) {
+      // Hapus semua relasi lama
+      await UjianBrand.destroy({ where: { ujian_id: ujian.id } });
+
+      let inserted = 0;
+      for (const brandId of ujian_brand) {
+        if (!brandId || isNaN(brandId)) continue;
+
+        const brand = await db.Brand.findByPk(brandId);
+        if (!brand) {
+          console.warn(`⚠️ brand_id ${brandId} tidak ditemukan, dilewati`);
+          continue;
+        }
+
+        await UjianBrand.create({ ujian_id: ujian.id, brand_id: brandId });
+        inserted++;
+      }
+
+      if (inserted === 0) {
+        return res.status(400).json({ status: false, message: "Minimal satu program (brand) harus valid." });
+      }
+    }
+
+    // 1. Parsing tipe_ujian dan soal
+  let tipe_ujian = req.body.tipe_ujian;
+  let soal = req.body.soal;
+
+  try {
+    if (typeof tipe_ujian === 'string') tipe_ujian = JSON.parse(tipe_ujian);
+    if (typeof soal === 'string') soal = JSON.parse(soal);
+  } catch (err) {
+    return res.status(400).json({ status: false, message: "Format tipe_ujian atau soal tidak valid" });
+  }
+
+  // 2. Loop tiap tipe ujian
+  for (const tipeKey of ['listening', 'reading', 'writing']) {
+    const tipe = tipe_ujian[tipeKey];
+    if (!tipe) continue;
+
+    let tipeUjianInstance;
+
+    // Jika punya id, update
+    if (tipe.id) {
+      tipeUjianInstance = await db.TipeUjian.findByPk(tipe.id);
+      if (tipeUjianInstance) {
+        await tipeUjianInstance.update({ time: tipe.time });
+      }
+    }
+
+    // Jika tidak ada id, buat baru
+    if (!tipeUjianInstance) {
+      tipeUjianInstance = await db.TipeUjian.create({
+        ujian_id: ujian.id,
+        category_ujian: tipeKey,
+        time: tipe.time
+      });
+    }
+
+    const tipeUjianId = tipeUjianInstance.id;
+
+    // 3. Update atau Tambah Soal
+    const soalList = soal[tipeKey];
+    if (!Array.isArray(soalList)) continue;
+
+    for (const s of soalList) {
+      const soalData = {
+        tipe_ujian_id: tipeUjianId,
+        pertanyaan: s.question,
+        tipe_soal: s.questionType,
+        penjelasan: s.explanation || '',
+        soal_awal: s.guideForQuestion?.start || null,
+        soal_akhir: s.guideForQuestion?.end || null,
+        jawaban_benar: Array.isArray(s.answer) ? s.answer.join(',') : '',
+        mutiple: s.isMultipleAnswer || false,
+        point_soal: s.point || 0,
+        file_soal: s.image || '',
+      };
+
+      let soalInstance;
+
+      if (s.id) {
+        soalInstance = await db.Soal.findByPk(s.id);
+        if (soalInstance) {
+          await soalInstance.update(soalData);
+        }
+      }
+
+      if (!soalInstance) {
+        soalInstance = await db.Soal.create(soalData);
+      }
+
+      const soalId = soalInstance.id;
+
+      // 4. Update ListJawaban jika tipe pilihan ganda
+      if (s.questionType === 'multiple-choice' && Array.isArray(s.options)) {
+        // Bersihkan dulu jawaban lama
+        await db.ListJawaban.destroy({ where: { soal_id: soalId } });
+
+        for (const opt of s.options) {
+          await db.ListJawaban.create({
+            soal_id: soalId,
+            jawaban: opt.option,
+            isTrue: Array.isArray(s.answer) ? s.answer.includes(opt.id) : false,
+            position: opt.position || null,
+          });
+        }
+      }
+    }
+  }
+
+
     res.json({ status: true, message: "Ujian updated successfully", data: ujian });
+
   } catch (error) {
+    console.error("❌ Gagal update ujian:", error);
     res.status(500).json({ status: false, error: error.message });
   }
 };
+
 
 exports.deleteUjian = async (req, res) => {
   try {
@@ -499,5 +624,118 @@ exports.finishUjianPhase = async (req, res) => {
   } catch (err) {
     console.error("❌ Gagal menyelesaikan fase ujian:", err);
     return res.status(500).json({ status: false, message: err.message });
+  }
+};
+exports.getHasilUjian = async (req, res) => {
+  try {
+    const jawabanList = await db.JawabanUser.findAll({
+      include: [
+        {
+          model: db.Soal,
+          include: [
+            {
+              model: db.TipeUjian,
+              as: 'TipeUjian',
+              include: [{ model: db.Ujian }]
+            },
+            {
+              model: db.ListJawaban,
+              as: 'ListJawabans'
+            }
+          ]
+        },
+        {
+          model: db.User
+        }
+      ]
+    });
+
+    const grouped = {};
+
+    for (const jawaban of jawabanList) {
+      const soal = jawaban.Soal;
+      const tipe = soal?.TipeUjian;
+      const ujian = tipe?.Ujian;
+      const user = jawaban.User;
+
+      if (!soal || !tipe || !ujian || !user) continue;
+
+      const key = `${ujian.id}-${user.id}-${tipe.category_ujian}`;
+
+      if (!grouped[key]) {
+        grouped[key] = {
+          nama_ujian: ujian.nama_ujian,
+          tipe_ujian: tipe.category_ujian,
+          nama_peserta: user.name,
+          user_id: user.id,
+          ujian_id: ujian.id,
+          total_poin: 0,
+          total_max: 0,
+          semua_essay_ternilai: true
+        };
+      }
+
+      let poing = 0;
+
+      // 🔄 Jika soal multiple-choice dan belum dinilai manual (isTrue null), hitung otomatis
+      if (
+        soal.tipe_soal === "multiple-choice" &&
+        jawaban.isTrue === null &&
+        jawaban.list_jawaban_id &&
+        soal.ListJawabans
+      ) {
+        const jawabanUser = soal.ListJawabans.find(
+          j => j.id === jawaban.list_jawaban_id
+        );
+        if (jawabanUser?.isTrue) {
+          poing = soal.point_soal || 0;
+        } else {
+          poing = 0;
+        }
+      } else {
+        // Gunakan nilai dari DB
+        poing = jawaban.poing || 0;
+      }
+
+      grouped[key].total_poin += poing;
+      grouped[key].total_max += soal.point_soal || 0;
+
+      // ✅ Semua soal dengan isTrue null dianggap belum dinilai
+      if (jawaban.isTrue === null) {
+        grouped[key].semua_essay_ternilai = false;
+      }
+    }
+
+    const belum_dinilai = [];
+    const sudah_dinilai = [];
+
+    Object.values(grouped).forEach(item => {
+      const nilaiStr = `${item.total_poin}/${item.total_max}`;
+      const base = {
+        nama_ujian: item.nama_ujian,
+        nama_peserta: item.nama_peserta,
+        tipe_ujian: item.tipe_ujian,
+        user_id: item.user_id,
+        ujian_id: item.ujian_id
+      };
+
+      if (item.semua_essay_ternilai) {
+        sudah_dinilai.push({ ...base, nilai_final: nilaiStr });
+      } else {
+        belum_dinilai.push({ ...base, nilai_sementara: nilaiStr });
+      }
+    });
+
+    res.json({
+      status: true,
+      data: {
+        belum_dinilai,
+        sudah_dinilai
+      }
+    });
+
+  } catch (error) {
+    console.error("❌ Gagal ambil data penilaian:", error);
+    res.status(500).json({ status: false, message: error.message });
   }
 };

@@ -81,6 +81,8 @@ const Routings = () => {
                 {/* exam */}
                 <Route path="/dashboard/exam" element={<DashboardExam/>}/>
                 <Route path="/dashboard/exam/add" element={<CreateExam/>}/>
+                <Route path="/dashboard/exam/edit/:id" element={<CreateExam isEditMode={true} />} />
+
                 <Route path="/dashboard/take-exam/:id" element={<TakeExam/>}/>
                 <Route path="/dashboard/examinate/:id" element={<DashboardExaminate/>}/>
                 <Route path="/verifikasi/ujian" element={<NotifikasiUjian/>}/>

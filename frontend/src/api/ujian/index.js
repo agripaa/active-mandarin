@@ -35,15 +35,16 @@ export const createUjian = async (formData) => {
   }
 };
 
-export const updateUjian = async (id, data) => {
+export const updateUjian = async (id, formData) => {
   try {
-    const response = await api.put(`/ujian/${id}`, data);
+    const response = await api.put(`/ujian/${id}`, formData);
     return response.data;
   } catch (error) {
     console.error("Error updating ujian:", error);
     throw error.response ? error.response.data : error.message;
   }
 };
+
 
 export const deleteUjian = async (id) => {
   try {
@@ -95,6 +96,17 @@ export const getJawabanListBySoalId = async (id) => {
   }
 };
 
+export const getUjianBrandsByUjianId = async (ujianId) => {
+  try {
+    const response = await api.get(`/ujian-brand/by-ujian/${ujianId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching ujian brands:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+
 export const getJawabanUser = async (soal_id, user_id) => {
   try {
     const response = await api.get(`/ujian/jawaban-user/${soal_id}/${user_id}`);
@@ -131,6 +143,16 @@ export const finishUjian = async ({user_id, ujian_id, exam_phase}) => {
     return response.data;
   } catch (error) {
     console.error("Error deleting ujian:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const getHasilUjian = async (id) => {
+  try {
+    const response = await api.get(`/ujian/hasil-ujian`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching hasil ujian:", error);
     throw error.response ? error.response.data : error.message;
   }
 };
