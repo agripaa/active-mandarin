@@ -278,6 +278,30 @@ exports.getTopSellingProductsAndPrograms = async (req, res) => {
             limit: 5
         });
 
+const topExams = await Transaction.findAll({
+  where: {
+    status_transaction: "success",
+    isDelete: false
+  },
+  include: [{
+    model: Ujian,
+    as: 'Ujian',
+    required: true,
+    attributes: []
+  }],
+  attributes: [
+    [Sequelize.col('Ujian.id'), 'id'],
+    [Sequelize.col('Ujian.nama_ujian'), 'name'],
+    [Sequelize.fn('COUNT', Sequelize.fn('DISTINCT', Sequelize.col('Transaction.id'))), 'total_sold']
+  ],
+  group: ['Ujian.id', 'Ujian.nama_ujian'],
+  order: [[Sequelize.literal('total_sold'), 'DESC']],
+  limit: 5,
+  raw: true
+});
+
+
+
         res.json({
             status: true,
             top_products: topProducts.map(p => ({
@@ -287,6 +311,10 @@ exports.getTopSellingProductsAndPrograms = async (req, res) => {
             top_programs: topPrograms.map(p => ({
                 name: p.dataValues.name,
                 sold: parseInt(p.dataValues.total_sold, 10)
+            })),
+            top_exams: topExams.map(exam => ({
+              name: exam.name,
+              sold: parseInt(exam.total_sold, 10)
             }))
         });
 
@@ -352,6 +380,10 @@ exports.getAllTransactions = async (req, res) => {
           { 
             model: Brand, 
             as: 'Brand',
+          },
+          { 
+            model: Ujian, 
+            as: 'Ujian',
           }
         ],
         limit,
