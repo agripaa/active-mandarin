@@ -3,6 +3,7 @@ import Mainlayouts from "../Layouts/MainLayouts";
 import { useSelector } from "react-redux";
 import Slider from "react-slick";
 import { getBrandCategoryTurunan } from "../api/brand";
+import { getMyPurchases } from "../api/transaksi";
 import { formatRupiah } from "../utils/rupiahFormat";
 import { Spin } from "antd";
 import { getAllTurunanBrand } from "../api/turunan";
@@ -19,11 +20,14 @@ const Catalog = () => {
   const [turunan, setTurunan] = useState([]);
   const [groupedData, setGroupedData] = useState({});
   const [user, setUser] = useState(null);
+  const [programYangSudahDibeli, setProgramYangSudahDibeli] = useState([]);
+  
 
   useEffect(() => {
     handleProfileUser();
     fetchTurunanData();
     fetchData();
+    fetchMyPurchases()
   }, []);
 
   const handleProfileUser = async () => {
@@ -36,6 +40,18 @@ const Catalog = () => {
       setUser(null);
     }
   };
+
+  const fetchMyPurchases = async () => {
+  try {
+    const trxRes = await getMyPurchases();
+    if (trxRes.status && trxRes.data && Array.isArray(trxRes.data.program)) {
+      setProgramYangSudahDibeli(trxRes.data.program);
+    }
+  } catch (error) {
+    console.error("Gagal mengambil data transaksi program:", error);
+  }
+};
+
 
   const fetchTurunanData = async () => {
     try {
@@ -204,6 +220,7 @@ const Catalog = () => {
                     handleClickItem={() => handleClickItem(item.id)}
                     user={user}
                     isDegreeProgram={item.turunan === "Non - Degree Program" || item.turunan === "Degree Program"}
+                    isPurchased={programYangSudahDibeli.includes(item.id)} 
                   />
                 ))}
               </div>
@@ -216,7 +233,7 @@ const Catalog = () => {
   );
 };
 
-const CardCatalog = ({ item, handleClickItem, user, isMonthlyProgram, isDegreeProgram }) => {
+const CardCatalog = ({ item, handleClickItem, user, isMonthlyProgram, isDegreeProgram, isPurchased }) => {
   const { _, langs } = useSelector((state) => state.LangReducer);
 
   return (
@@ -229,6 +246,11 @@ const CardCatalog = ({ item, handleClickItem, user, isMonthlyProgram, isDegreePr
           className="w-full aspect-video object-fill rounded-t-2xl cursor-pointer"
         />
         <div className="flex flex-col justify-between items-start px-4 py-5">
+          {isPurchased && (
+          <p className="text-red-500 text-sm font-medium">
+            Anda sudah membeli program ini
+          </p>
+        )}
           <h2
             onClick={handleClickItem}
             className="text-lg font-semibold text-gray-800 mb-2 cursor-pointer"

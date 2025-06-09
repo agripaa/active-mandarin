@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Mainlayouts from "../Layouts/MainLayouts";
 import { useNavigate } from "react-router-dom";
 import { getAllUjian } from "../api/ujian";
+import { getMyPurchases } from "../api/transaksi";
 import { Spin } from "antd";
 import { formatRupiah } from "../utils/rupiahFormat";
 
@@ -9,23 +10,27 @@ const CatalogUjian = () => {
   const [loading, setLoading] = useState(true);
   const [dataUjian, setDataUjian] = useState([]);
   const navigate = useNavigate();
+  const [ujianYangSudahDibeli, setUjianYangSudahDibeli] = useState([]);
 
   useEffect(() => {
     fetchUjian();
   }, []);
 
-  const fetchUjian = async () => {
-    try {
-      const res = await getAllUjian();
-      if (res.status) {
-        setDataUjian(res.data);
-      }
-    } catch (error) {
-      console.error("Gagal mengambil ujian", error);
-    } finally {
-      setLoading(false);
+const fetchUjian = async () => {
+  try {
+    const res = await getAllUjian();
+    const trxRes = await getMyPurchases();
+
+    if (res.status) setDataUjian(res.data);
+    if (trxRes.status && trxRes.data && Array.isArray(trxRes.data.ujian)) {
+      setUjianYangSudahDibeli(trxRes.data.ujian);
     }
-  };
+  } catch (error) {
+    console.error("Gagal mengambil data:", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleClickUjian = (id) => {
     navigate(`/detail/${id}/ujian`);
@@ -52,6 +57,11 @@ const CatalogUjian = () => {
                   className="w-full aspect-video object-cover"
                 />
                 <div className="flex flex-col gap-1 p-4">
+                  {ujianYangSudahDibeli.includes(item.id) && (
+                    <p className="text-red-500 text-sm font-medium">
+                      Anda sudah membeli ujian ini
+                    </p>
+                  )}
                   <h2 className="text-lg font-semibold text-gray-800 mb-1">
                     {item.nama_ujian}
                   </h2>

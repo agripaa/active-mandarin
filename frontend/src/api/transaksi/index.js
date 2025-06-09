@@ -152,3 +152,13 @@ export const exportTransactionsToExcel = async () => {
     throw error.response ? error.response.data : error.message;
   }
 };
+
+export const getMyPurchases = async () => {
+  try {
+    const response = await api.get(`/transactions/my-purchases`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user purchases:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};

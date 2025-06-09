@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { RiDashboardFill, RiFileTextLine, RiNotification4Line, RiCheckboxCircleLine, RiLogoutBoxLine, RiUserLine, RiHome4Line, RiSoundModuleLine, RiArrowDownSLine, RiListUnordered, RiFileEditLine, RiFileChartLine } from "react-icons/ri";
-import { MdCoPresent, MdOutlineDashboardCustomize } from "react-icons/md";
+import { MdCoPresent, MdOutlineDashboardCustomize, MdFileCopy } from "react-icons/md";
 import { SiGoogleclassroom } from "react-icons/si";
 import { getProfile } from "../../api/auth";
 
@@ -134,6 +134,7 @@ const Sidebar = ({ onClose }) => {
                             <SidebarItem to={`/`} icon={<RiHome4Line />} label="Homepage" location={location} />
                             <SidebarItem to={`/class`} icon={<MdCoPresent />} label="Explore Program" location={location} />
                             <SidebarItem to={`/products`} icon={<MdOutlineDashboardCustomize />} label="Explore Product" location={location} />
+                            <SidebarItem to={`/ujian`} icon={<MdFileCopy />} label="Explore Exam" location={location} />
                         </ul>
                     )}
                 </nav>

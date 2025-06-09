@@ -12,6 +12,7 @@ router.get('/summary', verifyAuth.authenticateUser,transactionController.getTran
 router.get('/monthly-summary-admin', verifyAuth.authenticateUser, transactionController.getTransactionsByMonthAdmin);
 router.get('/top-products-programs', verifyAuth.authenticateUser, transactionController.getTopSellingProductsAndPrograms);
 router.get('/pending', verifyAuth.authenticateUser, transactionController.getAllTransactionPending);
+router.get('/my-purchases', verifyAuth.authenticateUser, transactionController.getMyPurchases);
 
 router.get('/dashboard-data', verifyAuth.authenticateUser, transactionController.getTransactionDashboardData);
 

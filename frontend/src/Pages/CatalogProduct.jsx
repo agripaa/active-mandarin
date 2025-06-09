@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import Mainlayouts from "../Layouts/MainLayouts";
 import { useSelector } from "react-redux";
 import { getBrandCategoryTurunan } from "../api/brand";
+import { getMyPurchases } from "../api/transaksi";
 import { formatRupiah } from "../utils/rupiahFormat";
 import { Spin } from "antd";
 import { getAllTurunanBrand } from "../api/turunan";
@@ -19,11 +20,14 @@ const CatalogProduct = () => {
   const [activeSlide, setActiveSlide] = useState(0);
   const [galleryData, setGalleryData] = useState([]);
   const [user, setUser] = useState(null);
+  const [productYangSudahDibeli, setProductYangSudahDibeli] = useState([]);
+  
 
   useEffect(() => {
     handleProfileUser();
     fetchTurunanData(); 
     fetchSliderImage();
+    fetchMyPurchases(); // Tambahkan ini
   }, []);
 
   const handleProfileUser = async () => {
@@ -36,6 +40,18 @@ const CatalogProduct = () => {
       setUser(null);
     }
   };
+
+  const fetchMyPurchases = async () => {
+  try {
+    const trxRes = await getMyPurchases();
+    if (trxRes.status && trxRes.data && Array.isArray(trxRes.data.product)) {
+      setProductYangSudahDibeli(trxRes.data.product);
+    }
+  } catch (error) {
+    console.error("Gagal mengambil data transaksi:", error);
+  }
+};
+
 
   const fetchTurunanData = async () => {
     try {
@@ -209,6 +225,7 @@ const CatalogProduct = () => {
                                 item.type_product === "program" &&
                                 item.is_degree_program
                               }
+                              isPurchased={productYangSudahDibeli.includes(item.id)}
                             />
                           ))}
                         </div>
@@ -223,7 +240,7 @@ const CatalogProduct = () => {
   );
 };
 
-const CardCatalog = ({ item, handleClickItem, user, isMonthlyProgram, isDegreeProgram }) => {
+const CardCatalog = ({ item, handleClickItem, user, isMonthlyProgram, isDegreeProgram, isPurchased }) => {
   const { _, langs } = useSelector((state) => state.LangReducer);
 
   const capitalize = useCallback((str) => {
@@ -241,6 +258,11 @@ const CardCatalog = ({ item, handleClickItem, user, isMonthlyProgram, isDegreePr
           className="w-full aspect-video object-fill rounded-t-2xl cursor-pointer"
         />
         <div className="flex flex-col justify-between items-start px-4 py-5">
+        {isPurchased && (
+          <p className="text-red-500 text-sm font-medium">
+            Anda sudah membeli product ini
+          </p>
+        )}
           <h2
             onClick={handleClickItem}
             className="text-lg font-semibold text-gray-800 mb-2 cursor-pointer"

@@ -845,3 +845,39 @@ exports.deleteTransaction = async (req, res) => {
     res.status(500).json({ status: false, error: error.message });
   }
 };
+
+exports.getMyPurchases = async (req, res) => {
+  try {
+    const transactions = await Transaction.findAll({
+      where: {
+        user_id: req.userId,
+        status_transaction: "success",
+        isDelete: false
+      },
+      include: [
+        { model: Brand, as: 'Brand' },
+        { model: Ujian, as: 'Ujian' }
+      ]
+    });
+
+    const result = {
+      ujian: [],
+      program: [],
+      product: []
+    };
+
+    transactions.forEach(tx => {
+      if (tx.ujian_id) {
+        result.ujian.push(tx.ujian_id);
+      } else if (tx.Brand) {
+        const cat = tx.Brand.category_brand;
+        if (cat === "program") result.program.push(tx.brand_id);
+        else if (cat === "product") result.product.push(tx.brand_id);
+      }
+    });
+
+    res.json({ status: true, data: result });
+  } catch (error) {
+    res.status(500).json({ status: false, error: error.message });
+  }
+};
