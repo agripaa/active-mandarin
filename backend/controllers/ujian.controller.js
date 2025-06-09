@@ -2,7 +2,7 @@ const db = require('../models');
 const path = require('path');
 const fs = require('fs');
 const { Op } = require('sequelize');
-const { Ujian, TipeUjian, Soal, UjianBrand, ListJawaban, JawabanUser, UjianProgress, User, Transaction, Certificate } = db;
+const { Ujian, TipeUjian, Soal, UjianBrand, ListJawaban, JawabanUser, UjianProgress, User, Transaction, Certificate, Brand } = db;
 
 exports.createUjian = async (req, res) => {
   try {
