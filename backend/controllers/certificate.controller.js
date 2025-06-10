@@ -19,7 +19,7 @@ exports.createCertificate = async (req, res) => {
     const dd = String(date.getDate()).padStart(2, "0");
     const formattedDate = `${yyyy}${mm}${dd}`;
     const exam_no = `${examPrefix}${formattedDate}${randomDigits}`;
-
+    
     const certificate = await Certificate.create({
       ...rest,
       exam_level,

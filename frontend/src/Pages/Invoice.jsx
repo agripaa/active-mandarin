@@ -60,9 +60,13 @@ const columns = [
         return formatRupiah(record.Ujian?.harga_certif || 0);
       }
       if (record.type_transaction === "ujian") {
-        return formatRupiah(record.Ujian?.harga_diskon || record.Ujian?.harga_normal || 0);
+        return record.Ujian.harga_diskon && record.Ujian?.harga_diskon !== "0" ? 
+        formatRupiah(record.Ujian?.harga_diskon) :
+        formatRupiah(record.Ujian?.harga_normal)
       } else {
-        return formatRupiah(record.Brand?.discount_price || record.Brand?.price || 0);
+        return record.Brand?.discount_price && record.Brand?.discount_price !== "0" ?
+        formatRupiah(record.Brand?.discount_price) :
+        formatRupiah(record.Brand?.price)
       }
     },
   },
@@ -251,10 +255,14 @@ const Invoice = () => {
                       <td className="font-medium text-right">
                         {
                           invoiceData.type_transaction === "ujian"
-                            ? `- ${formatRupiah(invoiceData.Ujian?.harga_normal - invoiceData.Ujian?.harga_diskon)}`
-                            : invoiceData.Brand?.discount_price
+                            ? `- ${
+                            invoiceData.Ujian?.harga_diskon && invoiceData.Ujian?.harga_diskon !== "0" ?
+                            formatRupiah(invoiceData.Ujian?.harga_normal - invoiceData.Ujian?.harga_diskon)
+                            : "Rp 0"
+                            }`
+                            : invoiceData.Brand?.discount_price && invoiceData.Brand?.discount_price !== "0"
                               ? `- ${formatRupiah(invoiceData.Brand.price - invoiceData.Brand.discount_price)}`
-                              : "Rp -0"
+                              : "- Rp 0"
                         }
                       </td>
                     </tr>
@@ -267,8 +275,9 @@ const Invoice = () => {
                       <td className="font-semibold text-right">
                         {formatRupiah(
                           invoiceData.type_transaction === "ujian"
-                            ? (parseInt(invoiceData.Ujian?.harga_diskon || 0) +
-                                (invoiceData.include_certif ? parseInt(invoiceData.Ujian?.harga_certif || 0) : 0))
+                            ? (invoiceData.Ujian?.harga_diskon && invoiceData.Ujian?.harga_diskon !== "0" ?
+                              parseInt(invoiceData.Ujian?.harga_diskon || 0) : parseInt(invoiceData.Ujian?.harga_normal || 0) 
+                              + (invoiceData.include_certif ? parseInt(invoiceData.Ujian?.harga_certif || 0) : 0))
                             : parseInt(invoiceData.Brand?.discount_price || 0)
                         )}
                       </td>

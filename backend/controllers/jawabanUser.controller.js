@@ -205,7 +205,13 @@ exports.examineEssayJawaban = async (req, res) => {
     // Check if certificate should be included
     let certificate = null;
     const transaction = await db.Transaction.findOne({
-      where: { user_id: userId, ujian_id: ujianId }
+      where: { 
+        user_id: userId, 
+        ujian_id: ujianId, 
+        include_certif: true,
+        status_transaction: 'success',
+        isDelete: false
+      }
     });
     console.log("Transaction for userId:", userId, "ujianId:", ujianId, "is", transaction);
     console.log("Transaction include_certif:", transaction?.include_certif);
@@ -228,6 +234,14 @@ exports.examineEssayJawaban = async (req, res) => {
       let listening_score = 0;
       let reading_score = 0;
       let writing_score = 0;
+
+      let passing_score;
+
+      if([1, 2].includes(parseInt(ujian.level))) {
+        passing_score = 120;
+      } else if([3, 4, 5, 6].includes(parseInt(ujian.level))) {
+        passing_score =  180;
+      }
 
       // Flatten all soal ids
       const allSoalIds = Object.values(tipeSoalMap).flat();
@@ -273,6 +287,7 @@ exports.examineEssayJawaban = async (req, res) => {
         name: user.name,
         exam_date: formattedDate,
         exam_no,
+        passing_score,
         listening_score,
         reading_score,
         writing_score,

@@ -601,10 +601,11 @@ const TakeExam = () => {
     if (currentQuestion.questionType === "guide") {
       return(
         <div className="flex flex-col gap-2">
-          <h5 className="text-xl font-bold">Arahan Untuk</h5>
+          <h5 className="text-2xl font-bold">Arahan Untuk</h5>
           <h6 className="rounded-2xl mr-2 mb-2 text-blue-500">
-            Soal {currentQuestion.guideForQuestion.start} - Soal {currentQuestion.guideForQuestion.end} 
+            Soal {parseInt(currentQuestion.guideForQuestion.start) + 1} - Soal {parseInt(currentQuestion.guideForQuestion.end) + 1} 
           </h6>
+          <h5 className="text-xl font-bold">{currentQuestion.guideForQuestion?.guide}</h5>
         </div>
       )
     }

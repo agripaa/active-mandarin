@@ -20,9 +20,9 @@ export const getBrandById = async (id) => {
     }
 };
 
-export const getAllBrands = async () => {
+export const getAllBrands = async (page=1, limit=10) => {
   try {
-    const response = await api.get(`/brand`);
+    const response = await api.get(`/brand?page=${page}&limit=${limit}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching transactions:", error);

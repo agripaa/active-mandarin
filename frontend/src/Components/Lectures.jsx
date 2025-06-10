@@ -373,9 +373,11 @@ const Lectures = ({ text }) => {
                       <h2 className="text-lg font-semibold text-gray-800">
                         {item.name}
                       </h2>
-                      <span className=" w-full py-1 text-center text-[#8493AC] font-medium text-sm">
-                        {item.university_name}
-                      </span>
+                      {item.university_name && (
+                        <span className=" w-full py-1 text-center text-[#8493AC] font-medium text-sm">
+                          {item.university_name}
+                        </span>
+                      )}
                     </div>
                     <div className="mt-auto">
                       <Button
@@ -427,7 +429,7 @@ const Lectures = ({ text }) => {
                   {currentLecturer.name}
                 </h1>
               </div>
-              {currentLecturer.name === "Vemas Alvieno Dian Saputra" ? null :
+              {currentLecturer.cat_certificate &&
                 <span className="bg-[#3377FF] w-fit mx-auto py-1 px-3 text-center text-white font-medium rounded-full text-sm mt-auto md:mx-0">
                   {currentLecturer.cat_certificate}
                 </span>

@@ -249,7 +249,8 @@ const CreateExam = ({ dataProgram }) => {
   useEffect(() => {
   const fetchProgramOptions = async () => {
     try {
-      const res = await getAllBrands();
+      const res = await getAllBrands(1, 9999);
+      console.log({res})
       if (res.status) {
         const filtered = res.data.filter((brand) => brand.category_brand === "program");
         setProgramOptions(filtered);
@@ -466,9 +467,12 @@ const totalWaktu = Number(typeData.listening.time) + Number(typeData.reading.tim
 
             <Form.Item label="Level">
               <Select placeholder="Pilih Level Ujian" value={level} onChange={(val) => setLevel(val)}>
-                <Select.Option key={1} value={1}>{1}</Select.Option>
-                <Select.Option key={2} value={2}>{2}</Select.Option>
-                <Select.Option key={3} value={3}>{3}</Select.Option>
+                <Select.Option key={1} value={1}>HSK 1</Select.Option>
+                <Select.Option key={2} value={2}>HSK 2</Select.Option>
+                <Select.Option key={3} value={3}>HSK 3</Select.Option>
+                <Select.Option key={4} value={4}>HSK 4</Select.Option>
+                <Select.Option key={5} value={5}>HSK 5</Select.Option>
+                <Select.Option key={6} value={6}>HSK 6</Select.Option>
               </Select>
             </Form.Item>
 

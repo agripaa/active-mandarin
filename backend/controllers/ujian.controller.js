@@ -114,6 +114,7 @@ exports.createUjian = async (req, res) => {
               jawaban_benar: Array.isArray(s.answer) ? s.answer.join(',') : s.answer,
               soal_awal: s.guideForQuestion?.start || null,
               soal_akhir: s.guideForQuestion?.end || null,
+              guide: s.guideForQuestion?.guide || null,
             });
 
             if (s.questionType === 'multiple-choice' && Array.isArray(s.options)) {
@@ -170,14 +171,22 @@ exports.getSoalByUjianId = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const tipeUjianList = await TipeUjian.findAll({
-      where: { ujian_id: id },
+  const tipeUjianList = await TipeUjian.findAll({
+    where: { ujian_id: id },
+    include: [{
+      model: Soal,
+      as: 'Soals',
       include: [{
-        model: Soal,
-        as: 'Soals',
-        include: [{ model: ListJawaban, as: 'ListJawabans' }]
+        model: ListJawaban,
+        as: 'ListJawabans',
       }],
-    });
+    }],
+    order: [
+      ['id', 'ASC'], // Urutan tipe ujian
+      [{ model: Soal, as: 'Soals' }, 'id', 'ASC'], // Urutan soal
+      [{ model: Soal, as: 'Soals' }, { model: ListJawaban, as: 'ListJawabans' }, 'position', 'ASC'] // Urutan jawaban
+    ]
+  });
 
     if (!tipeUjianList || tipeUjianList.length === 0) {
       return res.status(404).json({ status: false, message: "Soal tidak ditemukan untuk ujian ini." });
@@ -208,7 +217,7 @@ exports.getSoalByUjianId = async (req, res) => {
           guideForQuestion: {
             start: soal.soal_awal,
             end: soal.soal_akhir,
-            guide: ""
+            guide: soal.guide
           },
           point: soal.point_soal,
           tipeUjian: tipe.category_ujian
@@ -369,6 +378,7 @@ exports.updateUjian = async (req, res) => {
         penjelasan: s.explanation || '',
         soal_awal: s.guideForQuestion?.start || null,
         soal_akhir: s.guideForQuestion?.end || null,
+        guide: s.guideForQuestion?.guide || null,
         jawaban_benar: Array.isArray(s.answer) ? s.answer.join(',') : '',
         mutiple: s.isMultipleAnswer || false,
         point_soal: s.point || 0,
@@ -994,6 +1004,14 @@ const generateSertifikat = async (user_id, ujian_id, finalScore) => {
   const exam_level = parseInt(ujian.level) || 1;
   const exam_no = `H${exam_level}${date.toISOString().slice(0, 10).replace(/-/g, '')}${Math.floor(100 + Math.random() * 900)}`;
 
+  let passing_score;
+
+  if([1, 2].includes(parseInt(ujian.level))) {
+    passing_score = 120;
+  } else if([3, 4, 5, 6].includes(parseInt(ujian.level))) {
+    passing_score =  180;
+  }
+
   const jawabanList = await JawabanUser.findAll({
     where: { user_id },
     include: [{
@@ -1059,6 +1077,7 @@ const generateSertifikat = async (user_id, ujian_id, finalScore) => {
     exam_no,
     listening_score,
     reading_score,
+    passing_score,
     writing_score,
     total_score: finalScore,
     status: finalScore >= 60 ? 'Passed' : 'Not Passed',

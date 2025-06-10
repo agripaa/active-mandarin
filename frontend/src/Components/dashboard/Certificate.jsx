@@ -143,14 +143,14 @@ const Certificate = () => {
             alt="logo"
             className="h-16 w-fit"
           />
-          <div className="flex flex-col items-center text-center mt-6">
-            <h1 className="text-xl leading-[30px] font-semibold uppercase">
+          <div className="flex flex-col items-center text-center mt-3">
+            <h1 className="text-lg leading-[30px] font-semibold uppercase">
               汉语水平测试模拟成绩单
             </h1>
             <p className="text-base">HSK Mock Test Score Report</p>
           </div>
-          <div className="flex flex-col items-center text-center mt-6">
-            <h1 className="text-xl leading-[30px] font-semibold uppercase">
+          <div className="flex flex-col items-center text-center mt-3">
+            <h1 className="text-lg leading-[30px] font-semibold uppercase">
               {levelMap[certificate?.exam_level]?.mandarin}
             </h1>
             <p className="text-base">
@@ -158,9 +158,9 @@ const Certificate = () => {
             </p>
           </div>
         </header>
-        <main className="w-full mt-6">
+        <main className="w-full mt-3">
           <div className="flex flex-col md:flex-row gap-6 w-full">
-            <div className="flex flex-col gap-4 grow">
+            <div className="flex flex-col gap-2 grow">
               {/* Name */}
               <div className="flex flex-row gap-3 items-center">
                 <div className="flex flex-col">
@@ -255,15 +255,15 @@ const Certificate = () => {
                 <table className="w-full table-auto border-collapse rounded-xl overflow-hidden">
                   <thead>
                     <tr className="bg-slate-200 text-left">
-                      <th className="px-4 py-2"></th>
-                      <th className="px-4 py-2 w-max text-center">
+                      <th className="px-4 py-1"></th>
+                      <th className="px-4 py-1 w-max text-center">
                         <span className="font-semibold">满分</span>
                         <br />
                         <span className="font-normal w-max text-xs">
                           Full Score
                         </span>
                       </th>
-                      <th className="px-4 py-2 w-max text-center">
+                      <th className="px-4 py-1 w-max text-center">
                         <span className="font-semibold">你的成绩</span>
                         <br />
                         <span className="font-normal w-max text-xs">
@@ -301,19 +301,19 @@ const Certificate = () => {
                           },
                         ].map((item, index) => (
                           <tr key={index} className="text-left font-normal">
-                            <td className="px-4 py-2">
+                            <td className="px-4">
                               <span className="font-semibold">
                                 {item.subject}
                               </span>
                               <br />
-                              <span className="font-normal text-xs">
+                              <span className="font-normal pb-2 text-xs">
                                 {item.english}
                               </span>
                             </td>
-                            <td className="px-4 py-2 text-center">
+                            <td className="px-4 text-center pb-2 pt-1 text-sm">
                               {item.maxScore}
                             </td>
-                            <td className="px-4 py-2 text-center">
+                            <td className="px-4 text-center pb-2 pt-1 text-sm">
                               {item.score}
                             </td>
                           </tr>
@@ -339,19 +339,19 @@ const Certificate = () => {
                           },
                         ].map((item, index) => (
                           <tr key={index} className="text-left font-normal">
-                            <td className="px-4 py-2">
+                            <td className="px-4">
                               <span className="font-semibold">
                                 {item.subject}
                               </span>
                               <br />
-                              <span className="font-normal text-xs">
+                              <span className="font-normal pb-2 text-xs">
                                 {item.english}
                               </span>
                             </td>
-                            <td className="px-4 py-2 text-center">
+                            <td className="px-4 text-center pb-2 pt-1 text-sm">
                               {item.maxScore}
                             </td>
-                            <td className="px-4 py-2 text-center">
+                            <td className="px-4 text-center pb-2 pt-1 text-sm">
                               {item.score}
                             </td>
                           </tr>
@@ -372,20 +372,20 @@ const Certificate = () => {
               <table className="w-full table-auto border-collapse rounded-xl overflow-hidden">
                 <thead>
                   <tr className="bg-slate-200 text-left">
-                    <th className="px-4 py-2 w-max text-center">
+                    <th className="px-4 py-1 w-max text-center">
                       <span className="font-semibold">听力</span>
                       <br />
                       <span className="font-normal w-max text-xs">
                         Listening
                       </span>
                     </th>
-                    <th className="px-4 py-2 w-max text-center">
+                    <th className="px-4 py-1 w-max text-center">
                       <span className="font-semibold">阅读</span>
                       <br />
                       <span className="font-normal w-max text-xs">Reading</span>
                     </th>
                     {certificate?.exam_level > 2 ? (
-                      <th className="px-4 py-2 w-max text-center">
+                      <th className="px-4 py-1 w-max text-center">
                         <span className="font-semibold">满分</span>
                         <br />
                         <span className="font-normal w-max text-xs">
@@ -393,14 +393,14 @@ const Certificate = () => {
                         </span>
                       </th>
                     ) : null}
-                    <th className="px-4 py-2 w-max text-center">
+                    <th className="px-4 py-1 w-max text-center">
                       <span className="font-semibold">总分</span>
                       <br />
                       <span className="font-normal w-max text-xs">
                         Total Score
                       </span>
                     </th>
-                    <th className="px-4 py-2 w-max text-center">
+                    <th className="px-4 py-1 w-max text-center">
                       <span className="font-semibold">百分等级</span>
                       <br />
                       <span className="font-normal w-max text-xs">
@@ -414,13 +414,13 @@ const Certificate = () => {
                     certificate?.exam_level
                   ]?.percentile_ranks.map((item, index) => (
                     <tr key={index} className="text-center font-normal">
-                      <td className="px-4 py-2">{item.Listening}</td>
-                      <td className="px-4 py-2">{item.Reading}</td>
+                      <td className="px-4 pt-1 pb-2 text-sm">{item.Listening}</td>
+                      <td className="px-4 pt-1 pb-2 text-sm">{item.Reading}</td>
                       {certificate?.exam_level > 2 ? (
-                        <td className="px-4 py-2">{item.Writing}</td>
+                        <td className="px-4 pt-1 pb-2 text-sm">{item.Writing}</td>
                       ) : null}
-                      <td className="px-4 py-2">{item.Total}</td>
-                      <td className="px-4 py-2">{item.Percentile}</td>
+                      <td className="px-4 pt-1 pb-2 text-sm">{item.Total}</td>
+                      <td className="px-4 pt-1 pb-2 text-sm">{item.Percentile}</td>
                     </tr>
                   ))}
                 </tbody>
