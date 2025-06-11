@@ -84,6 +84,7 @@ const Routings = () => {
                 <Route path="/dashboard/exam/edit/:id" element={<CreateExam isEditMode={true} />} />
 
                 <Route path="/dashboard/take-exam/:id" element={<TakeExam/>}/>
+                <Route path="/dashboard/take-exam/:id/review-hasil" element={<TakeExam/>}/>
                 <Route path="/dashboard/examinate/:id" element={<DashboardExaminate/>}/>
                 <Route path="/verifikasi/ujian" element={<NotifikasiUjian/>}/>
                 <Route path="/exams" element={<ExamList/>}/>

@@ -3,15 +3,18 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { RiArrowDownSLine } from "react-icons/ri";
 import { getProfile } from "../../api/auth";
 import ExamContext from "../../context/ExamContext";
+import { useParams } from "react-router-dom";
 
 const SidebarExam = ({ onClose }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { id } = useParams(); 
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
   const [name, setName] = useState("");
   const [profileImg, setProfileImg] = useState("/assets/profile-dummy.webp");
   const [loading, setLoading] = useState(true);
+  const isReviewMode = location.pathname.includes("review-hasil");
 
   const { timeLeft, totalQuestions, examPhase, questionList } = useContext(ExamContext);
 
@@ -120,12 +123,14 @@ const SidebarExam = ({ onClose }) => {
           <h3 className="text-xl font-semibold">{getPhaseLabel(examPhase)}</h3>
         </div>
 
-        <div className="flex flex-col gap-2 mb-4">
-          <p className="text-base font-medium text-fiord-950">Sisa Waktu</p>
-          <div className="rounded-full bg-background py-2.5">
-            <p className="text-xl font-medium text-[#3377FF] text-center">{formatTime(timeLeft)}</p>
+        {!isReviewMode && (
+          <div className="flex flex-col gap-2 mb-4">
+            <p className="text-base font-medium text-fiord-950">Sisa Waktu</p>
+            <div className="rounded-full bg-background py-2.5">
+              <p className="text-xl font-medium text-[#3377FF] text-center">{formatTime(timeLeft)}</p>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <div className="px-4">
@@ -139,21 +144,21 @@ const SidebarExam = ({ onClose }) => {
             const displayLabel = index + 1;
             const isActive = displayLabel === currentQuestionNumber;
 
-
-
             return (
             <button
-                key={index}
-                className={`w-10 h-10 rounded-lg flex items-center justify-center font-medium transition-colors ${
+              key={index}
+              className={`w-10 h-10 rounded-lg flex items-center justify-center font-medium transition-colors ${
                 isActive ? "bg-[#3377FF] text-white" : "bg-white hover:bg-fiord-200 text-fiord-950"
-                }`}
-                onClick={() => {
-                const currentPathId = location.pathname.split("/").pop(); // ambil ID dari URL
+              }`}
+              onClick={() => {
+                const targetUrl = isReviewMode
+                  ? `/dashboard/take-exam/${id}/review-hasil?question=${displayLabel}`
+                  : `/dashboard/take-exam/${id}?question=${displayLabel}`;
 
-                navigate(`/dashboard/take-exam/${currentPathId}?question=${displayLabel}`);
-                }}
+                navigate(targetUrl);
+              }}
             >
-                {displayLabel}
+              {displayLabel}
             </button>
             );
         });
