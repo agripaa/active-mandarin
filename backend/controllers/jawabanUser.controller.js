@@ -382,3 +382,96 @@ exports.getExamUserResults = async (req, res) => {
     res.status(500).json({ status: false, error: error.message });
   }
 };
+
+exports.getReviewJawabanByUserUjian = async (req, res) => {
+  try {
+    const rawId = req.params.id;
+    const userId = req.userId;
+
+    let progress = await db.UjianProgress.findByPk(rawId);
+
+    // Jika bukan progressId, berarti rawId adalah ujianId
+    if (!progress) {
+      progress = await db.UjianProgress.findOne({
+        where: {
+          user_id: userId,
+          ujian_id: rawId
+        },
+        order: [['createdAt', 'DESC']] // ambil progress terakhir
+      });
+    }
+
+    if (!progress) {
+      return res.status(404).json({ status: false, message: "Progress ujian tidak ditemukan" });
+    }
+
+    const ujianId = progress.ujian_id;
+
+    // Ambil semua tipe ujian untuk ujian ini
+    const tipeUjians = await db.TipeUjian.findAll({ where: { ujian_id: ujianId } });
+    const tipeUjianIds = tipeUjians.map(t => t.id);
+
+    const soalList = await db.Soal.findAll({
+      where: {
+        tipe_ujian_id: tipeUjianIds,
+        // tipe_soal: 'multiple-choice'
+      },
+      include: [{
+        model: db.ListJawaban,
+        as: 'ListJawabans'
+      }]
+    });
+
+    const soalIds = soalList.map(s => s.id);
+
+    const jawabanList = await db.JawabanUser.findAll({
+      where: {
+        soal_id: soalIds,
+        user_id: progress.user_id
+      },
+      attributes: ['soal_id', 'input_jawaban', 'poing', 'isTrue']
+    });
+
+    const response = soalList.map(soal => {
+    const jawabanUser = jawabanList.find(j => j.soal_id === soal.id);
+
+    let jawaban_benar;
+    if (soal.tipe_soal === 'multiple-choice') {
+      jawaban_benar = soal.ListJawabans.filter(j => j.isTrue).map(j => j.position?.trim());
+   } else if (soal.tipe_soal === 'order-arrange') {
+      const raw = String(soal.jawaban_benar || '').trim();
+      jawaban_benar = raw
+        .split(';')
+        .map(s => s.trim())
+        .filter(Boolean);
+    }
+
+
+    return {
+      soal_id: soal.id,
+      pertanyaan: soal.pertanyaan,
+      tipe_soal: soal.tipe_soal,
+      jawaban_benar: 
+        soal.tipe_soal === 'multiple-choice'
+          ? soal.ListJawabans.filter(j => j.isTrue).map(j => j.position?.trim())
+          : soal.tipe_soal === 'order-arrange'
+            ? (soal.jawaban_benar || '').split(';').map(s => s.trim())
+            : undefined,
+      list_jawaban: soal.ListJawabans,
+      jawaban_user: jawabanUser
+        ? {
+            input_jawaban: jawabanUser.input_jawaban,
+            poing: jawabanUser.poing,
+            isTrue: jawabanUser.isTrue
+          }
+        : null
+    };
+  });
+
+    return res.json({ status: true, data: response });
+
+  } catch (error) {
+    console.error("Error in getReviewJawabanByUserUjian:", error);
+    return res.status(500).json({ status: false, message: "Terjadi kesalahan server", error: error.message });
+  }
+};

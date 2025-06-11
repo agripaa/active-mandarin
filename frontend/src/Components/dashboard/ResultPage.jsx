@@ -50,7 +50,7 @@ const ResultPage = () => {
     <DashboardLayout>
       <div className='p-6'>
         <button
-          onClick={() => navigate(-1)}
+           onClick={() => navigate('/result-exam/')}
           className="text-md font-normal flex items-center justify-center text-blue-500 mb-4 gap-2"
         >
           <RiArrowLeftLine size={20}/> Kembali
@@ -76,6 +76,12 @@ const ResultPage = () => {
                     </span>
                 ) : null
                 )}
+                <button
+                  onClick={() => navigate(`/dashboard/take-exam/${ujian_id}/review-hasil`)}
+                  className="mt-6 w-full bg-blue-600 text-white py-3 px-4 rounded-xl hover:bg-blue-700 text-center font-semibold"
+                >
+                  Lihat Detail Ujian
+                </button>
             </div>
           </div>
         </div>

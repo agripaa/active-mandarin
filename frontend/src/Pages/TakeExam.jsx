@@ -7,7 +7,9 @@ import { useLocation } from "react-router-dom";
 import ExamLayout from "../Layouts/ExamLayout";
 import { getProfile } from "../api/auth";
 import { submitUjian, getUjianDetail, getUjianSoal, getJawabanUser, startUjian, progressUjian, finishUjian, checkUjianAccess } from "../api/ujian";
+import { getReviewByUjianId } from "../api/jawabanUser";
 import ExamContext from "../context/ExamContext"; 
+
 
 const TakeExam = () => {
   const [loading, setLoading] = useState(true);
@@ -24,11 +26,98 @@ const TakeExam = () => {
   const [ujianInfo, setUjianInfo] = useState(null);
   const [isLastQuestionSubmitted, setIsLastQuestionSubmitted] = useState(false);
 
+  const [reviewData, setReviewData] = useState([]);
+  const [loadingReview, setLoadingReview] = useState(true);
+
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams();
+  const isReviewMode = location.pathname.includes("review-hasil");
 
-  const currentQuestion = useMemo(() => questionList[number] || {}, [questionList, number]);
+  const generateQuestionUrl = (questionNo) => {
+  return isReviewMode
+    ? `/dashboard/take-exam/${id}/review-hasil?question=${questionNo}`
+    : `/dashboard/take-exam/${id}?question=${questionNo}`;
+};
+
+  const numberToPosition = (num) => {
+    const map = ["A", "B", "C", "D"];
+    return map[num - 1] || null;
+  };
+
+
+  const currentQuestion = useMemo(() => {
+  const q = questionList[number] || {};
+
+  if (!isReviewMode || reviewData.length === 0) return q;
+
+  const reviewMatch = reviewData.find((r) => r.soal_id === q.id);
+  
+  if (reviewMatch) {
+  let userAnswer = [];
+  let correct = [];
+ if (reviewMatch.tipe_soal === "multiple-choice") {
+  const inputRaw = reviewMatch.jawaban_user?.input_jawaban || "";
+  
+  const inputIndexes = inputRaw
+    .split(/[;,]/)
+    .map(i => parseInt(i.trim()))
+    .filter(i => !isNaN(i));
+
+ userAnswer = inputIndexes
+  .map(idx => reviewMatch.list_jawaban?.[idx - 1]?.position?.trim()) // << dikurangi 1 karena index mulai dari 1
+  .filter(Boolean);
+}
+
+  if (reviewMatch.tipe_soal === "multiple-choice") {
+  const inputRaw = reviewMatch.jawaban_user?.input_jawaban || "";
+  
+  const inputIndexes = inputRaw
+    .split(/[;,]/)
+    .map(i => parseInt(i.trim()))
+    .filter(i => !isNaN(i));
+
+  userAnswer = inputIndexes
+  .map(idx => reviewMatch.list_jawaban?.[idx - 1]?.position?.trim()) // << dikurangi 1 karena index mulai dari 1
+  .filter(Boolean);
+
+  correct = (reviewMatch.jawaban_benar || []).map(p => p?.replace(/['"]+/g, "").trim());
+  reviewMatch.list_jawaban = reviewMatch.list_jawaban.map(j => ({
+  ...j,
+  position: j.position?.replace(/['"]+/g, "").trim(), 
+}));
+
+}
+
+
+
+if (reviewMatch.tipe_soal === "order-arrange") {
+  correct = reviewMatch.jawaban_benar || [];
+  userAnswer = [reviewMatch.jawaban_user?.input_jawaban || ""];
+}
+
+  if (reviewMatch.tipe_soal === "essay") {
+  userAnswer = [reviewMatch.jawaban_user?.input_jawaban || ""];
+}
+
+const cleanOptions = (reviewMatch.list_jawaban || []).map((j) => ({
+      ...j,
+      position: j.position?.replace(/['"]+/g, "").trim(),
+    }));
+
+    return {
+      ...q,
+      correctAnswer: correct,
+      answer: userAnswer,
+      isCorrect: reviewMatch.jawaban_user?.isTrue,
+      jawaban_user: reviewMatch.jawaban_user,
+      options: cleanOptions,
+    };
+  }
+
+  return q;
+}, [questionList, number, isReviewMode, reviewData]);
+
   const shuffleArray = (array) => {
     const copy = [...array];
     for (let i = copy.length - 1; i > 0; i--) {
@@ -51,9 +140,37 @@ const TakeExam = () => {
     }
   };
 
+ useEffect(() => {
+  if (isReviewMode) {
+    const fetchReview = async () => {
+      try {
+        const res = await getReviewByUjianId(id); // ✅ gunakan ujian_id (bukan progress id)
+        if (res.status) {
+          setReviewData(res.data);
+        } else {
+          console.warn("❗ Gagal mendapatkan review data:", res.message);
+        }
+      } catch (err) {
+        console.error("❌ Error fetching review data:", err);
+      } finally {
+        setLoadingReview(false);
+      }
+    };
+    fetchReview();
+  }
+}, [isReviewMode, id]);
+
+useEffect(() => {
+  if (!isReviewMode || !currentQuestion?.phase) return;
+
+  if (examPhase !== currentQuestion.phase) {
+    setExamPhase(currentQuestion.phase);
+  }
+}, [currentQuestion?.phase, isReviewMode]);
 
 
   useEffect(() => {
+    if (isReviewMode) return; 
     const VIOLATION_KEY = `ujian-violation-${id}`;
     const MAX_VIOLATION = 3;
 
@@ -105,14 +222,16 @@ const TakeExam = () => {
 
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const q = parseInt(params.get("question"), 10);
-    if (!isNaN(q)) {
-      const actualIdx = getQuestionIndexFromNumber(q);
-      setNumber(actualIdx);
-    }
+  const params = new URLSearchParams(location.search);
+  const q = parseInt(params.get("question"), 10);
 
-  }, [location.search, questionList]);
+  if (!isNaN(q) && questionList.length > 0) {
+    const actualIdx = getQuestionIndexFromNumber(q);
+    setNumber(actualIdx);
+  }
+}, [location.search, questionList.length]);
+
+
 
   const getNextAvailablePhase = (currentPhase) => {
     const order = ["listening", "reading", "writing"];
@@ -129,6 +248,8 @@ const TakeExam = () => {
   };
 
   useEffect(() => {
+    if (isReviewMode) return;
+
     if (timeLeft <= 0) {
       handlePhaseChange();
     }
@@ -150,7 +271,7 @@ const TakeExam = () => {
         const nextTime = parseInt(allQuestions[nextPhase]?.time || "1") * 60;
         setTimeLeft(nextTime);
         setQuestionList(allQuestions[nextPhase].questions.map(q => ({ ...q })));
-        navigate(`/dashboard/take-exam/${id}?question=1`, { replace: true });
+        navigate(generateQuestionUrl(1), { replace: true });
         setNumber(0);
       } else {
         Swal.fire("Ujian selesai", "Semua sesi telah berakhir.", "success").then(() => {
@@ -191,33 +312,69 @@ const TakeExam = () => {
     };
 
   useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        await checkAccess();
-        const [userData, ujianData, soalData] = await Promise.all([
-          getProfile(),
-          getUjianDetail(id),
-          getUjianSoal(id),
-        ]);
+  const fetchInitialData = async () => {
+    try {
+      await checkAccess();
+      const [userData, ujianData] = await Promise.all([
+        getProfile(),
+        getUjianDetail(id),
+      ]);
 
-        const userId = userData.data.id;
-        const ujianId = parseInt(id);
-        const soalByPhase = soalData.data;
+      const userId = userData.data.id;
+      const ujianId = parseInt(id);
 
-        setUser(userData.data);
-        setUjianInfo(ujianData.data);
-        setAllQuestions(soalByPhase);
+      setUser(userData.data);
+      setUjianInfo(ujianData.data);
 
-        const phaseOrder = ["listening", "reading", "writing"];
-        const activePhase = await getActivePhase(userId, ujianId, phaseOrder, soalByPhase);
+      const soalData = await getUjianSoal(id);
+      const soalByPhase = soalData.data;
+      setAllQuestions(soalByPhase);
 
-        if (!activePhase) {
-          Swal.fire("Ujian selesai", "Sesi telah berakhir.", "success").then(() => {
-            navigate('/result-exam')
-          });
-          return;
+      if (isReviewMode) {
+        const phases = ["listening", "reading", "writing"];
+        for (const phase of phases) {
+          if (soalByPhase[phase]) {
+            const questions = await Promise.all(
+              soalByPhase[phase].questions.map(async q => {
+                const userAnswer = await getJawabanUser(q.id, userId);
+                const input = userAnswer?.data?.input_jawaban || "";
+
+                return {
+                  ...q,
+                  questionType: q.questionType || q.tipe_soal || "", // ← ini kuncinya!
+                  answer: input ? [input] : [],
+                  correctAnswer: q.answer,
+                  options: q.options?.sort((a, b) => a.position?.localeCompare(b.position)),
+                  shuffledOptions: q.options || [],
+                  phase,
+                };
+              })
+            );
+
+
+            if (questions.length > 0) {
+              setExamPhase(phase);
+              setQuestionList(questions);
+              setTotalQuestions(questions.length);
+              break;
+            }
+          }
         }
 
+        setLoading(false);
+        return;
+      }
+
+      // ORIGINAL TAKE-EXAM LOGIC (dipertahankan)
+      const phaseOrder = ["listening", "reading", "writing"];
+      const activePhase = await getActivePhase(userId, ujianId, phaseOrder, soalByPhase);
+
+      if (!activePhase) {
+        Swal.fire("Ujian selesai", "Sesi telah berakhir.", "success").then(() => {
+          navigate('/result-exam');
+        });
+        return;
+      }
         setExamPhase(activePhase);
 
         // Mulai fase
@@ -298,7 +455,21 @@ const TakeExam = () => {
     };
 
     fetchInitialData();
-  }, [id]);
+  }, [id, isReviewMode]);
+
+  useEffect(() => {
+  if (
+    currentQuestion?.questionType === "order-arrange" &&
+    (!currentQuestion.answer || !currentQuestion.answer[0])
+  ) {
+    const optionWords = currentQuestion.shuffledOptions?.map(opt => opt.option) || [];
+    const initialOrder = optionWords.join("; ");
+    setQuestionList(prev =>
+      prev.map((q, idx) => (idx === number ? { ...q, answer: [initialOrder] } : q))
+    );
+  }
+}, [number, currentQuestion]);
+
 
   useEffect(() => {
     const initExamPhase = async () => {
@@ -351,6 +522,8 @@ const TakeExam = () => {
   }, [examPhase, allQuestions, user.id]);
 
   useEffect(() => {
+    if (isReviewMode) return;
+
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
@@ -363,7 +536,7 @@ const TakeExam = () => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [examPhase, allQuestions]);
+  }, [examPhase, allQuestions, isReviewMode]);
 
   const mapAnswerToPositionIndex = (answerIds, options) => {
     return answerIds
@@ -377,26 +550,37 @@ const TakeExam = () => {
   const nextNumber = async () => {
     const current = questionList[number];
 
-    let inputJawabanFinal = current.answer;
-    if (current.questionType === "multiple-choice") {
-      inputJawabanFinal = mapAnswerToPositionIndex(current.answer, current.options).join(";");
-    } else if (Array.isArray(current.answer)) {
-      inputJawabanFinal = current.answer.join(";");
-    }
+  let inputJawabanFinal = "";
+
+  if (current.questionType === "multiple-choice") {
+    inputJawabanFinal = mapAnswerToPositionIndex(current.answer, current.options).join(";");
+  } else if (current.questionType === "order-arrange") {
+    inputJawabanFinal = current.answer.join("; ");
+  } else if (current.questionType === "essay") {
+    inputJawabanFinal = current.answer[0]?.trim() || "";
+      console.log("📝 Essay Answer:", inputJawabanFinal);
+  } else {
+    inputJawabanFinal = Array.isArray(current.answer) ? current.answer.join(";") : "";
+  }
 
     try {
      await submitUjian({
       soal_id: current.id,
       input_jawaban: inputJawabanFinal,
       user_id: user.id,
-    });
 
+      
+    });
+    if (current.questionType === "essay" && !inputJawabanFinal) {
+      Swal.fire("Jawaban kosong", "Silakan isi jawaban Anda terlebih dahulu.", "warning");
+      return;
+    }
 
       let nextIdx = number + 1;
 
       if (nextIdx < questionList.length) {
         const questionNo = getQuestionNumberFromIndex(nextIdx);
-        navigate(`/dashboard/take-exam/${id}?question=${questionNo}`, { replace: true });
+        navigate(generateQuestionUrl(questionNo), { replace: true });
         setNumber(nextIdx);
       } else {
         setIsLastQuestionSubmitted(true); // 👉 Tandai bahwa soal terakhir sudah disubmit
@@ -422,7 +606,7 @@ const TakeExam = () => {
         setIsLastQuestionSubmitted(false); // reset
         
         // 🔄 Reset ke pertanyaan pertama
-        navigate(`/dashboard/take-exam/${id}?question=1`, { replace: true });
+        navigate(generateQuestionUrl(1), { replace: true });
         setNumber(0);
       } else {
         const lastPhase = allQuestions[examPhase];
@@ -449,29 +633,40 @@ const TakeExam = () => {
   const prevNumber = () => {
     if (number > 0) {
       number < questionList.length - 1 ? setNumber(number - 1) : setNumber(1)
-      navigate(`/dashboard/take-exam/${id}?question=${number}`, { replace: true });
+      navigate(generateQuestionUrl(number), { replace: true });
     } else {
       Swal.fire("Sudah di soal pertama", "", "info");
     }
   };
 
   const renderQuestion = () => {
+    const isEssayOrArrange = ["essay", "order-arrange"].includes(currentQuestion.questionType);
     if (!currentQuestion || !currentQuestion.questionType) return null;
 
     if (currentQuestion.questionType === "essay") {
       return (
-        <Input.TextArea
-          className="py-3 px-4 bg-fiord-100 rounded-2xl"
-          value={currentQuestion.answer[0] || ""}
-          placeholder="Tulis jawaban Anda di sini"
-          autoSize={{ minRows: 3, maxRows: 8 }}
-          onChange={e => {
-            const newAnswer = [e.target.value];
-            setQuestionList(prev =>
-              prev.map((q, idx) => (idx === number ? { ...q, answer: newAnswer } : q))
-            );
-          }}
-        />
+        <div className="flex flex-col gap-2">
+          {isReviewMode && (
+            <div className="text-sm text-gray-600 font-medium text-right">
+              Poin: {currentQuestion?.jawaban_user?.poing ?? 0}
+            </div>
+          )}
+          <Input.TextArea
+            // disabled={isReviewMode}
+            readOnly={isReviewMode}
+            className={`py-3 px-4 bg-gray-100 rounded-2xl ${isReviewMode ? "pointer-events-none" : ""}`}
+            value={currentQuestion.answer[0] || ""}
+            placeholder="Tulis jawaban Anda di sini"
+            autoSize={{ minRows: 3, maxRows: 8 }}
+            onChange={(e) => {
+              if (isReviewMode) return;
+              const val = e.target.value;
+              setQuestionList(prev =>
+                prev.map((q, idx) => (idx === number ? { ...q, answer: [val] } : q))
+              );
+            }}
+          />
+        </div>
       );
     }
 
@@ -482,12 +677,35 @@ const TakeExam = () => {
 
       return (
         <div className="flex flex-col gap-2">
+          {isReviewMode && (
+            <div className="text-sm text-gray-600 font-medium text-right">
+              Poin: {currentQuestion?.jawaban_user?.poing ?? 0}
+            </div>
+          )}
           {currentQuestion.options.map((option, idx) => (
               <Button
                 key={option.id || idx}
-                className="py-4 pl-4 pr-10 rounded-2xl text-left w-full mb-2 h-auto"
-                type={currentQuestion.answer.includes(option.id) ? "primary" : "default"}
+                // type={!isReviewMode && currentQuestion.answer.includes(option.id) ? "primary" : "default"}
+               className={`py-4 pl-4 pr-10 rounded-2xl text-left w-full mb-2 h-auto 
+  ${isReviewMode ? "pointer-events-none" : ""}
+  ${
+    isReviewMode
+      ? currentQuestion.answer.includes(option.position?.trim())
+        ? currentQuestion.correctAnswer.includes(option.position?.trim())
+          ? "bg-green-500 text-white border border-green-600" // ✅ benar & dipilih
+          : "bg-red-100 border border-red-300"                // ❌ dipilih & salah
+        : currentQuestion.correctAnswer.includes(option.position?.trim())
+          ? "bg-green-100 border border-green-300"            // ✅ benar tapi tidak dipilih
+          : "bg-white border border-gray-300 text-blue-500"   // ❌ tidak dipilih & salah
+      : currentQuestion.answer.includes(option.id)
+        ? "bg-blue-100 border border-blue-400 text-blue-700"
+        : "bg-white border border-gray-300 text-blue-500"
+  }
+`}
+
+
                 onClick={() => {
+                  if (isReviewMode) return;
                   setQuestionList(prev =>
                     prev.map((q, qIdx) => {
                       if (qIdx !== number) return q;
@@ -525,79 +743,119 @@ const TakeExam = () => {
     }
 
     if (currentQuestion.questionType === "order-arrange") {
-      return (
-        <div className="flex flex-col gap-2">
-          <h5 className="text-base font-medium">Susun Kata Di Bawah Ini!</h5>
-          <div className="flex flex-row flex-wrap gap-2">
-            {(() => {
-              const optionWords = currentQuestion.shuffledOptions?.map(opt => opt.option) || [];
-              const userOrder = currentQuestion.answer[0]
-                ? currentQuestion.answer[0].split(";").map(s => s.trim()).filter(Boolean)
-                : optionWords; 
+    const optionWords = currentQuestion.shuffledOptions?.map(opt => opt.option) || [];
+    const isCorrect = isReviewMode && currentQuestion?.jawaban_user?.isTrue === true;
+    const isWrong = isReviewMode && currentQuestion?.jawaban_user?.isTrue === false;
 
 
-              const handleDragStart = idx => setDraggedIdx(idx);
-              const handleDragOver = (e, idx) => {
-                e.preventDefault();
-                setDragOverIdx(idx);
-              };
-              const handleDrop = idx => {
-                if (draggedIdx === null || draggedIdx === idx) return;
-                setQuestionList(prev =>
-                  prev.map((q, qIdx) => {
-                    if (qIdx !== number) return q;
-                    const arr = [...userOrder];
-                    const [moved] = arr.splice(draggedIdx, 1);
-                    arr.splice(idx, 0, moved);
-                    return { ...q, answer: [arr.join("; ")] };
-                  })
-                );
-                setDraggedIdx(null);
-                setDragOverIdx(null);
-              };
-              const handleDragEnd = () => {
-                setDraggedIdx(null);
-                setDragOverIdx(null);
-              };
+    const userOrder = currentQuestion.answer[0]
+      ? currentQuestion.answer[0].split(";").map(s => s.trim()).filter(Boolean)
+      : optionWords;
 
-              return (
-                <>
-                  {userOrder.map((word, idx) => (
-                    <motion.div
-                      key={word + idx}
-                      layout
-                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                      draggable
-                      onDragStart={() => handleDragStart(idx)}
-                      onDragOver={e => handleDragOver(e, idx)}
-                      onDrop={() => handleDrop(idx)}
-                      onDragEnd={handleDragEnd}
-                      style={{
-                        display: "inline-block",
-                        opacity: draggedIdx === idx ? 0.5 : 1,
-                        outline: dragOverIdx === idx && draggedIdx !== null ? "2px dashed #3377FF" : "none",
-                        cursor: draggedIdx === idx ? "grabbing" : "grab",
-                      }}
-                    >
-                      <Button
-                        className="rounded-2xl px-6 py-5 mr-2 mb-2 text-blue-500"
-                        style={{
-                          minWidth: 100,
-                          background: dragOverIdx === idx && draggedIdx !== null ? "#e6f0ff" : undefined,
-                        }}
-                      >
-                        {word}
-                      </Button>
-                    </motion.div>
-                  ))}
-                </>
-              );
-            })()}
-          </div>
-          <div className="mt-2 text-xs text-gray-500">* Drag & drop untuk mengurutkan</div>
-        </div>
+    const handleDragStart = idx => setDraggedIdx(idx);
+    const handleDragOver = (e, idx) => {
+      e.preventDefault();
+      setDragOverIdx(idx);
+    };
+    const handleDrop = idx => {
+      if (draggedIdx === null || draggedIdx === idx) return;
+
+      setQuestionList(prev =>
+        prev.map((q, qIdx) => {
+          if (qIdx !== number) return q;
+          const arr = [...userOrder];
+          const [moved] = arr.splice(draggedIdx, 1);
+          arr.splice(idx, 0, moved);
+          return { ...q, answer: [arr.join("; ")] };
+        })
       );
-    }
+
+      setDraggedIdx(null);
+      setDragOverIdx(null);
+    };
+    const handleDragEnd = () => {
+      setDraggedIdx(null);
+      setDragOverIdx(null);
+    };
+
+    return (
+    <div className="flex flex-col gap-2">
+      {isReviewMode && (
+        <div className="text-sm text-gray-600 font-medium text-right">
+          Poin: {currentQuestion?.jawaban_user?.poing ?? 0}
+        </div>
+      )}
+      <h5 className="text-base font-medium">Susun Kata Di Bawah Ini!</h5>
+      <div className="flex flex-row flex-wrap gap-2">
+        {userOrder.map((word, idx) => (
+          <motion.div
+            key={word + idx}
+            layout
+            transition={{ type: "spring", stiffness: 500, damping: 30 }}
+            draggable={!isReviewMode}
+            onDragStart={isReviewMode ? undefined : () => handleDragStart(idx)}
+            onDragOver={isReviewMode ? undefined : (e) => handleDragOver(e, idx)}
+            onDrop={isReviewMode ? undefined : () => handleDrop(idx)}
+            onDragEnd={isReviewMode ? undefined : handleDragEnd}
+            style={{
+              display: "inline-block",
+              opacity: draggedIdx === idx ? 0.5 : 1,
+              outline: dragOverIdx === idx && draggedIdx !== null ? "2px dashed #3377FF" : "none",
+              cursor: isReviewMode ? "default" : draggedIdx === idx ? "grabbing" : "grab",
+            }}
+          >
+            <Button
+              // disabled={isReviewMode}
+              className={`rounded-2xl px-6 py-5 mr-2 mb-2 ${isReviewMode ? "pointer-events-none" : ""}
+                ${isReviewMode
+                  ? currentQuestion?.jawaban_user?.isTrue === true
+                    ? "bg-green-100 border border-green-500 text-green-700"
+                    : currentQuestion?.jawaban_user?.isTrue === false
+                      ? "bg-red-100 border border-red-500 text-red-700"
+                      : "bg-white border border-gray-300 text-blue-500"
+                  : "bg-white border border-gray-300 text-blue-500"
+                }
+              `}
+              style={{
+                minWidth: 100,
+                background:
+                  dragOverIdx === idx && draggedIdx !== null && !isReviewMode
+                    ? "#e6f0ff"
+                    : undefined,
+              }}
+            >
+              {word}
+            </Button>
+          </motion.div>
+        ))}
+      </div>
+      <div className="mt-2 text-xs text-gray-500">
+        {isReviewMode ? "* Ini adalah jawaban yang Anda susun" : "* Drag & drop untuk mengurutkan"}
+      </div>
+
+      {isReviewMode && currentQuestion?.jawaban_user?.isTrue === false && (
+        <div className="mt-6">
+          <h5 className="text-base font-medium text-red-500 mb-2">Jawaban yang benar:</h5>
+          <div className="flex flex-row flex-wrap gap-2">
+            {(currentQuestion.correctAnswer || []).map((word, idx) => (
+              <div key={`correct-${idx}`}>
+                <Button
+                  // disabled
+                  className={`bg-green-100 border border-green-500 text-green-700 rounded-2xl px-6 py-5 mr-2 mb-2 ${isReviewMode ? "pointer-events-none" : ""}`}
+                  style={{ minWidth: 100 }}
+                >
+                  {word}
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
     if (currentQuestion.questionType === "guide") {
       return(
         <div className="flex flex-col gap-2">
@@ -613,6 +871,21 @@ const TakeExam = () => {
 
     return <p className="text-gray-400 italic">Soal belum tersedia untuk tipe ini.</p>;
   };
+
+  useEffect(() => {
+  if (
+    !isReviewMode &&
+    currentQuestion.questionType === "order-arrange" &&
+    (!currentQuestion.answer || !currentQuestion.answer[0])
+  ) {
+    const optionWords = currentQuestion.shuffledOptions?.map(opt => opt.option) || [];
+    const initialOrder = optionWords.join("; ");
+    setQuestionList(prev =>
+      prev.map((q, idx) => (idx === number ? { ...q, answer: [initialOrder] } : q))
+    );
+  }
+}, [number, currentQuestion, isReviewMode]);
+
   
   const renderMediaPreview = (filePath) => {
     if (!filePath) return null;
@@ -686,6 +959,16 @@ const TakeExam = () => {
       }}>
         <ExamLayout>
           <div className="px-8 py-4 flex flex-col gap-5 min-h-screen pb-28">
+            {isReviewMode && (
+            <div className="flex flex-wrap justify-end items-center mt-2 mb-4">
+              <Button
+                onClick={() => navigate(`/result-exam/${id}`)}
+                className="rounded-xl bg-gray-100 hover:bg-gray-200 border border-gray-400"
+              >
+                Kembali ke Hasil Ujian
+              </Button>
+            </div>
+          )}
             {ujianInfo && (
               <div className="mb-4">
                 <h2 className="text-xl font-bold">{ujianInfo.nama_ujian}</h2>
@@ -706,33 +989,83 @@ const TakeExam = () => {
             </div>
 
             <div className="fixed bottom-0 left-0 w-full bg-white p-4 shadow-lg flex justify-between items-center z-50">
-              <Button onClick={prevNumber} disabled={number === 0} className="rounded-2xl">
-                Sebelumnya
-              </Button>
-              {number < questionList.length - 1 ? (
-                <Button onClick={nextNumber} className="rounded-2xl">
-                  Selanjutnya
-                </Button>
-              ) : (
-                <div className="flex gap-2">
-                  {!isLastQuestionSubmitted ? (
-                    <Button onClick={nextNumber} className="rounded-2xl">
-                      Submit
-                    </Button>
-                  ) : (
-                    <>
-                      <Button onClick={nextNumber} className="rounded-2xl">
-                        Update Jawaban
-                      </Button>
-                      <Button onClick={finishCurrentPhase} type="primary" className="rounded-2xl">
-                        Selesai Fase
-                      </Button>
-                    </>
-                  )}
-                </div>
-              )}
+            <Button
+              onClick={() => {
+                if (number > 0) {
+                  const prevIdx = number - 1;
+                  const questionNo = getQuestionNumberFromIndex(prevIdx);
+                  navigate(generateQuestionUrl(questionNo), { replace: true });
+                  setNumber(prevIdx);
+                } else {
+                  Swal.fire("Sudah di soal pertama", "", "info");
+                }
+              }}
+              className="rounded-2xl"
+            >
+              Sebelumnya
+            </Button>
 
-            </div>
+            {isReviewMode && (
+                  <div className="flex gap-2 mt-2 justify-end">
+                    {Object.keys(allQuestions).map((phaseKey) => (
+                      <Button
+                        key={phaseKey}
+                        type={phaseKey === examPhase ? "primary" : "default"}
+                        className="rounded-xl"
+                        onClick={() => {
+                          setExamPhase(phaseKey);
+                          const questions = allQuestions[phaseKey]?.questions || [];
+                          setQuestionList(questions);
+                          setNumber(0);
+                          navigate(generateQuestionUrl(1), { replace: true });
+                        }}
+                      >
+                        {phaseKey === "listening" ? "Listening" :
+                        phaseKey === "reading" ? "Reading" :
+                        phaseKey === "writing" ? "Writing" : phaseKey}
+                      </Button>
+                    ))}
+                  </div>
+                )}
+
+            {number < questionList.length - 1 ? (
+              <Button
+              onClick={() => {
+                if (isReviewMode) {
+                  const nextIdx = number + 1;
+                  if (nextIdx < questionList.length) {
+                    const questionNo = getQuestionNumberFromIndex(nextIdx);
+                    navigate(generateQuestionUrl(questionNo), { replace: true });
+                    setNumber(nextIdx);
+                  }
+                } else {
+                  nextNumber();
+                }
+              }}
+              className="rounded-2xl"
+            >
+              Selanjutnya
+            </Button>
+            ) : (
+              <div className="flex gap-2">
+                {!isReviewMode && !isLastQuestionSubmitted && (
+                  <Button onClick={nextNumber} className="rounded-2xl">
+                    Submit
+                  </Button>
+                )}
+                {!isReviewMode && isLastQuestionSubmitted && (
+                  <>
+                    <Button onClick={nextNumber} className="rounded-2xl">
+                      Update Jawaban
+                    </Button>
+                    <Button onClick={finishCurrentPhase} type="primary" className="rounded-2xl">
+                      Selesai Fase
+                    </Button>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
           </div>
         </ExamLayout>
       </ExamContext.Provider>

@@ -29,3 +29,8 @@ export const getExamUserResults = async () => {
     throw error.response ? error.response.data : error.message;
   }
 };
+
+export const getReviewByUjianId = async (ujianOrProgressId) => {
+  const response = await api.get(`/jawaban-user/review/${ujianOrProgressId}`);
+  return response.data;
+};
