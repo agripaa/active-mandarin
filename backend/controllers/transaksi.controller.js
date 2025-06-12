@@ -260,7 +260,8 @@ exports.getTransactionSummary = async (req, res) => {
       where: {
         [Op.and]: [
           { status_transaction: "success" },
-          { isDelete: false }
+          { isDelete: false },
+          { program_transaction_id: null }
         ]
       },
       include: [
