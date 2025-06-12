@@ -227,7 +227,8 @@ exports.getTransactionsByMonthAdmin = async (req, res) => {
       const transactions = await Transaction.findAll({
         where: {
           status_transaction: "success",
-          isDelete: false
+          isDelete: false,
+          program_transaction_id: null
         },
         attributes: [
           [Sequelize.fn('EXTRACT', Sequelize.literal('MONTH FROM transaction_date')), 'month'],
@@ -584,10 +585,19 @@ exports.getAllTransactions = async (req, res) => {
   exports.getTransactionDashboardData = async (req, res) => {
     try {
       const productTransactions = await Transaction.findAll({
-        where: { status_transaction: "success", isDelete: false },
-        include: [{ model: Brand, as: 'Brand', where: { category_brand: "product" }, include: ['TurunanBrand'] }]
+        where: { 
+          status_transaction: "success", 
+          isDelete: false, 
+          program_transaction_id: null
+        },
+        include: [{ 
+          model: Brand, 
+          as: 'Brand', 
+          where: { category_brand: "product" }, 
+          include: ['TurunanBrand'] 
+        }]
       });
-  
+
       const totalProductTransactions = productTransactions.length;
       const totalProductRevenue = productTransactions.reduce((sum, transaction) => {
         const price = transaction.Brand?.discount_price || transaction.Brand?.price || 0;
@@ -595,8 +605,17 @@ exports.getAllTransactions = async (req, res) => {
       }, 0);
   
       const monthlyProductTransactions = await Transaction.findAll({
-        where: { status_transaction: "success", isDelete: false },
-        include: [{ model: Brand, as: 'Brand', where: { category_brand: "product" }, attributes: [] }],
+        where: { 
+          status_transaction: "success", 
+          isDelete: false, 
+          program_transaction_id: null
+        },
+        include: [{ 
+          model: Brand, 
+          as: 'Brand', 
+          where: { category_brand: "product" }, 
+          attributes: [] 
+        }],
         attributes: [
           [Sequelize.fn('EXTRACT', Sequelize.literal('MONTH FROM transaction_date')), 'month'],
           [Sequelize.fn('COUNT', '*'), 'total_transactions']
@@ -627,8 +646,17 @@ exports.getAllTransactions = async (req, res) => {
       });
   
       const programTransactions = await Transaction.findAll({
-        where: { status_transaction: "success", isDelete: false },
-        include: [{ model: Brand, as: 'Brand', where: { category_brand: "program" }, include: ['TurunanBrand'] }]
+        where: { 
+          status_transaction: "success", 
+          isDelete: false, 
+          program_transaction_id: null
+        },
+        include: [{ 
+          model: Brand, 
+          as: 'Brand', 
+          where: { category_brand: "program" }, 
+          include: ['TurunanBrand'] 
+        }]
       });
   
       const totalProgramTransactions = programTransactions.length;
@@ -638,8 +666,17 @@ exports.getAllTransactions = async (req, res) => {
       }, 0);
   
       const monthlyProgramTransactions = await Transaction.findAll({
-        where: { status_transaction: "success", isDelete: false },
-        include: [{ model: Brand, as: 'Brand', where: { category_brand: "program" }, attributes: [] }],
+        where: { 
+          status_transaction: "success", 
+          isDelete: false, 
+          program_transaction_id: null
+        },
+        include: [{ 
+          model: Brand, 
+          as: 'Brand', 
+          where: { category_brand: "program" }, 
+          attributes: [] 
+        }],
         attributes: [
           [Sequelize.fn('EXTRACT', Sequelize.literal('MONTH FROM transaction_date')), 'month'],
           [Sequelize.fn('COUNT', '*'), 'total_transactions']
@@ -647,7 +684,7 @@ exports.getAllTransactions = async (req, res) => {
         group: [Sequelize.literal('EXTRACT(MONTH FROM transaction_date)')],
         order: [[Sequelize.literal('EXTRACT(MONTH FROM transaction_date)'), 'ASC']]
       });
-  
+
       let transactionsByMonthProgram = new Array(12).fill(0);
       monthlyProgramTransactions.forEach(tx => {
         const monthIndex = parseInt(tx.dataValues.month) - 1;
@@ -671,16 +708,18 @@ exports.getAllTransactions = async (req, res) => {
 
       // === TRANSAKSI UJIAN ===
       const ujianTransactions = await Transaction.findAll({
-      where: {
-        status_transaction: "success",
-        isDelete: false,
-        ujian_id: { [Op.ne]: null } // pastikan hanya transaksi yang memang punya ujian
-      },
-      include: [{
-        model: Ujian,
-        as: 'Ujian'
-      }]
-    });
+        where: {
+          status_transaction: "success",
+          isDelete: false,
+          ujian_id: { [Op.ne]: null },
+          program_transaction_id: null
+        },
+        include: [{
+          model: Ujian,
+          as: 'Ujian'
+        }]
+      });
+
 
       const totalUjianTransactions = ujianTransactions.length;
       const totalUjianRevenue = ujianTransactions.reduce((sum, transaction) => {
@@ -688,11 +727,12 @@ exports.getAllTransactions = async (req, res) => {
       return sum + parseInt(price);
     }, 0);
 
-      const monthlyUjianTransactions = await Transaction.findAll({
+    const monthlyUjianTransactions = await Transaction.findAll({
       where: {
         status_transaction: "success",
         isDelete: false,
-        ujian_id: { [Op.ne]: null } // pastikan hanya transaksi ujian
+        ujian_id: { [Op.ne]: null },
+        program_transaction_id: null
       },
       attributes: [
         [Sequelize.fn('EXTRACT', Sequelize.literal('MONTH FROM transaction_date')), 'month'],
