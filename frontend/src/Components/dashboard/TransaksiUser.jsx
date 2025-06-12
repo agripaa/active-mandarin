@@ -66,7 +66,7 @@ const TransaksiUser = () => {
                     <img src={transaction.brand_image ? `${process.env.REACT_APP_API_IMG}${transaction.brand_image}` : "/assets/product-default.png"} alt={transaction.item} className="w-full h-38 md:h-26 lg:w-36 lg:h-20 rounded-md" />
                   </td>
                   <td className="p-3">{transaction.item}</td>
-                  <td className="p-3">{transaction.discount_price ? formatRupiah(transaction.discount_price) : formatRupiah(transaction.price)}</td>
+                  <td className="p-3">{transaction.discount_price && transaction.discount_price !== "0" ? formatRupiah(transaction.discount_price) : formatRupiah(transaction.price)}</td>
                   <td className="p-3">{formatDate(transaction.transaction_date)}</td>
                   <td className={`p-3 font-semibold ${
                     transaction.status_transaction === "success" ? "text-green-500" 
