@@ -78,7 +78,7 @@ const ResultPage = () => {
                 )}
                 <button
                   onClick={() => navigate(`/dashboard/take-exam/${ujian_id}/review-hasil`)}
-                  className="mt-6 w-full bg-blue-600 text-white py-3 px-4 rounded-xl hover:bg-blue-700 text-center font-semibold"
+                  className="mt-6 w-full bg-yellow-400 text-white py-3 px-4 rounded-xl hover:bg-yellow-500 text-center font-semibold"
                 >
                   Lihat Detail Ujian
                 </button>

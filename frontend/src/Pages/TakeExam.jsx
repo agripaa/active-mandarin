@@ -145,6 +145,7 @@ const cleanOptions = (reviewMatch.list_jawaban || []).map((j) => ({
     const fetchReview = async () => {
       try {
         const res = await getReviewByUjianId(id); // ✅ gunakan ujian_id (bukan progress id)
+        console.log({review: res})
         if (res.status) {
           setReviewData(res.data);
         } else {
@@ -654,7 +655,7 @@ useEffect(() => {
           <Input.TextArea
             // disabled={isReviewMode}
             readOnly={isReviewMode}
-            className={`py-3 px-4 bg-gray-100 rounded-2xl ${isReviewMode ? "pointer-events-none" : ""}`}
+            className={`py-3 px-4 ${isReviewMode && currentQuestion?.jawaban_user?.poing > 0 ? "bg-green-100" : "bg-gray-100"} rounded-2xl ${isReviewMode ? "pointer-events-none" : "bg-gray-100"}`}
             value={currentQuestion.answer[0] || ""}
             placeholder="Tulis jawaban Anda di sini"
             autoSize={{ minRows: 3, maxRows: 8 }}
