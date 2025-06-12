@@ -34,6 +34,24 @@ const TakeExam = () => {
   const { id } = useParams();
   const isReviewMode = location.pathname.includes("review-hasil");
 
+  // Group review data by tipe_ujian
+  const groupedReview = useMemo(() => {
+    const groups = {
+      listening: [],
+      reading: [],
+      writing: [],
+    };
+
+    reviewData.forEach(item => {
+      if (groups[item.tipe_ujian]) {
+        groups[item.tipe_ujian].push(item);
+      }
+    });
+
+    return groups;
+  }, [reviewData]);
+
+
   const generateQuestionUrl = (questionNo) => {
   return isReviewMode
     ? `/dashboard/take-exam/${id}/review-hasil?question=${questionNo}`
@@ -1007,28 +1025,33 @@ useEffect(() => {
             </Button>
 
             {isReviewMode && (
-                  <div className="flex gap-2 mt-2 justify-end">
-                    {Object.keys(allQuestions).map((phaseKey) => (
-                      <Button
-                        key={phaseKey}
-                        type={phaseKey === examPhase ? "primary" : "default"}
-                        className="rounded-xl"
-                        onClick={() => {
-                          setExamPhase(phaseKey);
-                          const questions = allQuestions[phaseKey]?.questions || [];
-                          setQuestionList(questions);
-                          setNumber(0);
-                          navigate(generateQuestionUrl(1), { replace: true });
-                        }}
-                      >
-                        {phaseKey === "listening" ? "Listening" :
-                        phaseKey === "reading" ? "Reading" :
-                        phaseKey === "writing" ? "Writing" : phaseKey}
-                      </Button>
-                    ))}
-                  </div>
-                )}
+              <div className="flex gap-2 mt-2 justify-end">
+                {Object.keys(allQuestions).map((phaseKey) => {
+                  const isVisible = groupedReview[phaseKey]?.length > 0;
 
+                  if (!isVisible) return null; // ❌ sembunyikan jika tidak ada soal untuk fase ini
+
+                  return (
+                    <Button
+                      key={phaseKey}
+                      type={phaseKey === examPhase ? "primary" : "default"}
+                      className="rounded-xl"
+                      onClick={() => {
+                        setExamPhase(phaseKey);
+                        const questions = allQuestions[phaseKey]?.questions || [];
+                        setQuestionList(questions);
+                        setNumber(0);
+                        navigate(generateQuestionUrl(1), { replace: true });
+                      }}
+                    >
+                      {phaseKey === "listening" ? "Listening" :
+                      phaseKey === "reading" ? "Reading" :
+                      phaseKey === "writing" ? "Writing" : phaseKey}
+                    </Button>
+                  );
+                })}
+              </div>
+            )}
             {number < questionList.length - 1 ? (
               <Button
               onClick={() => {

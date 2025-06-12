@@ -411,11 +411,19 @@ exports.getReviewJawabanByUserUjian = async (req, res) => {
       where: {
         tipe_ujian_id: tipeUjianIds,
       },
-      include: [{
-        model: db.ListJawaban,
-        as: 'ListJawabans'
-      }]
+      include: [
+        {
+          model: db.ListJawaban,
+          as: 'ListJawabans'
+        },
+        {
+          model: db.TipeUjian,
+          as: "TipeUjian",
+          attributes: ['id', 'category_ujian'],
+        }
+      ]
     });
+
 
     const soalIds = soalList.map(s => s.id);
 
@@ -446,6 +454,7 @@ exports.getReviewJawabanByUserUjian = async (req, res) => {
         soal_id: soal.id,
         pertanyaan: soal.pertanyaan,
         tipe_soal: soal.tipe_soal,
+        tipe_ujian: soal.TipeUjian ? soal.TipeUjian.category_ujian : null,
         jawaban_benar: 
           soal.tipe_soal === 'multiple-choice'
             ? soal.ListJawabans.filter(j => j.isTrue).map(j => j.position?.trim())
