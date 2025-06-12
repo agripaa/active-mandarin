@@ -14,5 +14,7 @@ router.get('/', middleware.authenticateUser, jawabanUserController.getAllJawaban
 router.get('/:id', middleware.authenticateUser, jawabanUserController.getJawabanUserById);
 router.put('/:id', middleware.authenticateUser, jawabanUserController.updateJawabanUser);
 router.delete('/:id', middleware.authenticateUser, jawabanUserController.deleteJawabanUser);
+router.get('/essay/transaction/:id', middleware.authenticateUser, jawabanUserController.getEssayJawabanByTransactionId);
+router.post('/essay/transaction/:id/examine', middleware.authenticateUser, jawabanUserController.examineEssayJawabanByTransactionId);
 
 module.exports = router;

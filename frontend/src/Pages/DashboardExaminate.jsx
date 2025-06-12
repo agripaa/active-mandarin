@@ -3,7 +3,7 @@ import { Table, Button, Spin, Input } from "antd";
 import Swal from "sweetalert2";
 import DashboardLayout from "../Layouts/DashboardLayout";
 import { useNavigate, useParams } from "react-router";
-import { getEssayJawabanByUserUjianProgress, examineEssayJawaban } from "../api/jawabanUser";
+import { getEssayJawabanByUserUjianProgress, examineEssayJawaban, examineEssayJawabanByTransactionId, getEssayJawabanByTransactionId } from "../api/jawabanUser";
 import { getUserById } from "../api/user";
 
 const DashboardExaminate = () => {
@@ -33,7 +33,7 @@ const DashboardExaminate = () => {
 
   useEffect(() => {
     setLoading(true);
-    getEssayJawabanByUserUjianProgress(id)
+    getEssayJawabanByTransactionId(id)
       .then(async (res) => {
         const data = res.data.map((jawaban) => ({
           id: jawaban.id,
@@ -46,6 +46,7 @@ const DashboardExaminate = () => {
           image: "",
           guideForQuestion: { start: 0, end: 0, guide: "" },
           point: jawaban.poing || 0,
+          reason: jawaban.reason || "",
         }));
         console.log("Fetched data:", data);
         setQuestionList(data);
@@ -80,10 +81,16 @@ const DashboardExaminate = () => {
     setCurrentScore((prev) => prev - oldPoint + newPoint);
   };
 
+  const handleReasonChange = (index, value) => {
+    const newList = [...questionList];
+    newList[index].reason = value;
+    setQuestionList(newList);
+  };
+
   const handleExamine = async () => {
     try {
-      const points = questionList.map(q => ({ jawabanUserId: q.id, poing: q.point }));
-      await examineEssayJawaban(id, points);
+      const points = questionList.map(q => ({ jawabanUserId: q.id, poing: q.point, reason: q.reason }));
+      await examineEssayJawabanByTransactionId(id, points);
       Swal.fire("Sukses", "Pemeriksaan berhasil disimpan!", "success").then(() => {
         navigate("/verifikasi/ujian");
       });
@@ -195,7 +202,7 @@ const DashboardExaminate = () => {
             {question.questionType !== "guide" && (
               <>
                 <div className="w-full h-0.5 bg-fiord-200 my-4" />
-                <div className="flex flex-row items-center gap-2">
+                <div className="flex flex-row items-center gap-2 mb-2">
                   <Input
                     value={question.point}
                     onChange={e => handlePointChange(index, e.target.value)}
@@ -204,6 +211,16 @@ const DashboardExaminate = () => {
                     className="w-24 rounded-2xl"
                   />
                   <span className="text-sm font-medium">Poin</span>
+                </div>
+                <div className="flex flex-row items-center gap-2">
+                  <Input
+                    value={question.reason}
+                    onChange={e => handleReasonChange(index, e.target.value)}
+                    type="text"
+                    placeholder="Alasan penilaian (opsional)"
+                    className="w-full rounded-2xl"
+                  />
+                  <span className="text-sm font-medium">Alasan</span>
                 </div>
               </>
             )}

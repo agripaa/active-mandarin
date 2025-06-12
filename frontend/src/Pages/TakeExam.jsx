@@ -129,6 +129,7 @@ const cleanOptions = (reviewMatch.list_jawaban || []).map((j) => ({
       answer: userAnswer,
       isCorrect: reviewMatch.jawaban_user?.isTrue,
       jawaban_user: reviewMatch.jawaban_user,
+      penjelasan: reviewMatch.penjelasan || "",
       options: cleanOptions,
     };
   }
@@ -1005,6 +1006,12 @@ useEffect(() => {
               <div className="my-6" dangerouslySetInnerHTML={{ __html: currentQuestion.question }} />
               {currentQuestion.isMultipleAnswer && <h4 className="text-gray-500 text-sm mb-2">Silahkan Pilih Jawaban Lebih Dari Satu!</h4>}
               {renderQuestion()}
+              {(isReviewMode && currentQuestion?.penjelasan) && (
+                <div className="rounded-lg mb-4 mt-6">
+                  <h5 className="text-base font-semibold mb-2">Penjelasan:</h5>
+                  <div className="text-sm text-gray-700" dangerouslySetInnerHTML={{ __html: currentQuestion.penjelasan }} />
+                </div>
+              )}
             </div>
 
             <div className="fixed bottom-0 left-0 w-full bg-white p-4 shadow-lg flex justify-between items-center z-50">

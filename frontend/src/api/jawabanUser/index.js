@@ -34,3 +34,23 @@ export const getReviewByUjianId = async (ujianOrProgressId) => {
   const response = await api.get(`/jawaban-user/review/${ujianOrProgressId}`);
   return response.data;
 };
+
+export const getEssayJawabanByTransactionId = async (id) => {
+  try {
+    const response = await api.get(`/jawaban-user/essay/transaction/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching essay jawaban by transactionId:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const examineEssayJawabanByTransactionId = async (id, points) => {
+  try {
+    const response = await api.post(`/jawaban-user/essay/transaction/${id}/examine`, { points });
+    return response.data;
+  } catch (error) {
+    console.error("Error examining essay jawaban by transactionId:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};

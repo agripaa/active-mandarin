@@ -20,6 +20,7 @@ const NotifikasiUjian = () => {
         // res is expected to be { status: true, data: [...] }
         const data = res.data || [];
         // Split into belum dinilai (is_checking) and sudah dinilai (is_done)
+        console.log("Fetched exam results:", data);
         const belum = data.filter(item => item.status === 'is_checking' || item.status === true || item.status === 1).map((item, index) => ({
           key: `belum-${index}`,
           id: item.id, // id progress

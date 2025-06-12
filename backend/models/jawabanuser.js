@@ -34,7 +34,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     isTrue: {
       type: DataTypes.BOOLEAN
-    }
+    },
+    reason: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
   }, {
     sequelize,
     modelName: 'JawabanUser',
