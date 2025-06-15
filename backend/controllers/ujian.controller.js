@@ -104,7 +104,6 @@ exports.createUjian = async (req, res) => {
             const soalBaru = await Soal.create({
               tipe_ujian_id: tipeData.id,
               index_soal: s.id,
-              pertanyaan: s.question,
               file_soal: file_soal_path || '',
               skor_soal: s.point || 0,
               tipe_soal: s.questionType,
@@ -114,7 +113,9 @@ exports.createUjian = async (req, res) => {
               jawaban_benar: Array.isArray(s.answer) ? s.answer.join(',') : s.answer,
               soal_awal: s.guideForQuestion?.start || null,
               soal_akhir: s.guideForQuestion?.end || null,
-              guide: s.guideForQuestion?.guide || null,
+              pertanyaan: s.questionType === 'guide'
+              ? s.guideForQuestion?.guide || ''
+              : s.question,
             });
 
             if (s.questionType === 'multiple-choice' && Array.isArray(s.options)) {
@@ -217,7 +218,7 @@ exports.getSoalByUjianId = async (req, res) => {
           guideForQuestion: {
             start: soal.soal_awal,
             end: soal.soal_akhir,
-            guide: soal.guide
+            guide: soal.tipe_soal === 'guide' ? soal.pertanyaan : soal.guide
           },
           point: soal.point_soal,
           tipeUjian: tipe.category_ujian
@@ -373,12 +374,13 @@ exports.updateUjian = async (req, res) => {
     for (const s of soalList) {
       const soalData = {
         tipe_ujian_id: tipeUjianId,
-        pertanyaan: s.question,
         tipe_soal: s.questionType,
         penjelasan: s.explanation || '',
         soal_awal: s.guideForQuestion?.start || null,
         soal_akhir: s.guideForQuestion?.end || null,
-        guide: s.guideForQuestion?.guide || null,
+        pertanyaan: s.questionType === 'guide'
+        ? s.guideForQuestion?.guide || ''
+        : s.question,
         jawaban_benar: Array.isArray(s.answer) ? s.answer.join(',') : '',
         mutiple: s.isMultipleAnswer || false,
         point_soal: s.point || 0,

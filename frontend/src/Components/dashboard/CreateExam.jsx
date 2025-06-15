@@ -267,27 +267,41 @@ const CreateExam = ({ dataProgram }) => {
   if (!isEditMode || isFetchedOnce) return;
 
   const fetchUjian = async () => {
-    try {
-      const res = await getUjianById(id);
-      if (!res.status) throw new Error("Gagal mengambil data ujian");
+  try {
+    const res = await getUjianById(id);
+    if (!res.status) throw new Error("Gagal mengambil data ujian");
 
-      const ujian = res.data;
+    const ujian = res.data;
 
-      setTitle(ujian.nama_ujian || "");
-      setExamDetails(ujian.desc || "");
-      setPrice(ujian.harga_normal || "0");
-      setPriceCertif(ujian.harga_certif || "0");
-      setDiscountPrice(ujian.harga_diskon || "0");
-      setCommission(ujian.commission || "0");
-      setLevel(ujian.level || undefined);
-      setImagePreview(ujian.ujian_img_url || null);
+    setTitle(ujian.nama_ujian || "");
+    setExamDetails(ujian.desc || "");
+    setPrice(ujian.harga_normal || "0");
+    setPriceCertif(ujian.harga_certif || "0");
+    setDiscountPrice(ujian.harga_diskon || "0");
+    setCommission(ujian.commission || "0");
+    setLevel(ujian.level || undefined);
+    setImagePreview(ujian.ujian_img_url || null);
 
-      // Ambil tipe ujian dan soal
     const soalRes = await getUjianSoal(id);
     if (soalRes.status && soalRes.data) {
       const tipe = soalRes.data;
 
-        setTypeData(prev => ({
+      // 🔧 Normalisasi jawaban (["1"] → option.id yang sesuai)
+      const normalizeAnswerFromPosition = (questions) => {
+        return questions.map((q) => {
+          if (q.questionType === 'multiple-choice' && Array.isArray(q.answer)) {
+            const newAnswer = q.answer.map(pos => {
+              const index = parseInt(pos, 10) - 1;
+              const opt = q.options?.[index];
+              return opt?.id;
+            }).filter(Boolean);
+            return { ...q, answer: newAnswer };
+          }
+          return q;
+        });
+      };
+
+      setTypeData(prev => ({
         listening: {
           ...prev.listening,
           id: tipe?.listening?.id,
@@ -308,35 +322,31 @@ const CreateExam = ({ dataProgram }) => {
         }
       }));
 
-      setQuestionsListening(tipe?.listening?.questions || []);
-      setQuestionsReading(tipe?.reading?.questions || []);
-      setQuestionsWriting(tipe?.writing?.questions || []);
-
+      setQuestionsListening(normalizeAnswerFromPosition(tipe?.listening?.questions || []));
+      setQuestionsReading(normalizeAnswerFromPosition(tipe?.reading?.questions || []));
+      setQuestionsWriting(normalizeAnswerFromPosition(tipe?.writing?.questions || []));
       setTimeListening(tipe?.listening?.time ?? 0);
       setTimeReading(tipe?.reading?.time ?? 0);
       setTimeWriting(tipe?.writing?.time ?? 0);
     }
 
-      // ⬇️ Tambahkan logic ini untuk ambil ujian_brand berdasarkan id
-      const brandRes = await getUjianBrandsByUjianId(id);
+    const brandRes = await getUjianBrandsByUjianId(id);
     if (brandRes.status) {
       const brandIds = brandRes.data.map((item) => item.brand_id);
       setPrograms(brandIds);
-      form.setFieldsValue({ programs: brandIds }); // ⬅️ update nilai Form
+      form.setFieldsValue({ programs: brandIds });
     }
-    } catch (err) {
-      console.error("Gagal memuat data ujian:", err);
-      Swal.fire("Error", "Gagal memuat data ujian", "error");
-    }
-  };
+  } catch (err) {
+    console.error("Gagal memuat data ujian:", err);
+    Swal.fire("Error", "Gagal memuat data ujian", "error");
+  }
+};
+
 
   fetchUjian().then(() => {
   setIsFetchedOnce(true); // ⬅️ hanya setelah fetch berhasil
 });
 }, [id]);
-
-
-
 
   const handleRupiahChange = useCallback((value, setter) => {
     const numericValue = value.replace(/[^0-9]/g, "");
