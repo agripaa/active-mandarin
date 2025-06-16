@@ -140,9 +140,11 @@ const SidebarExam = ({ onClose }) => {
     <div className="flex flex-row flex-wrap gap-1.5 px-4">
     {Array.isArray(questionList) &&
         (() => {
+          let numberCounter = 1;
         return questionList.map((q, index) => {
-            const displayLabel = index + 1;
-            const isActive = displayLabel === currentQuestionNumber;
+            const isGuide = q.questionType === "guide";
+            const displayLabel = isGuide ? "!" : numberCounter++;
+            const isActive = index === currentQuestionNumber - 1;
 
             const isAnswered = !isReviewMode &&
               Array.isArray(q.answer) &&
@@ -151,24 +153,26 @@ const SidebarExam = ({ onClose }) => {
                 : q.answer.length > 0);
 
             return (
-            <button
-              key={index}
-              className={`w-10 h-10 rounded-lg flex items-center justify-center font-medium transition-colors
-                ${isActive
-                  ? "bg-[#3377FF] text-white"
-                  : isAnswered
-                    ? "bg-gray-300 text-white"
-                    : "bg-white hover:bg-fiord-200 text-fiord-950"
-                }
-              `}
-              onClick={() => {
-                const targetUrl = isReviewMode
-                  ? `/dashboard/take-exam/${id}/review-hasil?question=${displayLabel}`
-                  : `/dashboard/take-exam/${id}?question=${displayLabel}`;
+              <button
+                key={index}
+                className={`w-10 h-10 rounded-lg flex items-center justify-center font-medium transition-colors
+                  ${isGuide
+                    ? "bg-yellow-300 text-black"
+                    : isActive
+                      ? "bg-[#3377FF] text-white"
+                      : isAnswered
+                        ? "bg-gray-300 text-black"
+                        : "bg-white hover:bg-fiord-200 text-fiord-950"
+                  }
+                `}
+                onClick={() => {
+                  const targetUrl = isReviewMode
+                    ? `/dashboard/take-exam/${id}/review-hasil?question=${index + 1}`
+                    : `/dashboard/take-exam/${id}?question=${index + 1}`;
 
-                navigate(targetUrl);
-              }}
-            >
+                  navigate(targetUrl);
+                }}
+              >
               {displayLabel}
             </button>
             );

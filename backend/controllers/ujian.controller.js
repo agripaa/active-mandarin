@@ -90,7 +90,27 @@ exports.createUjian = async (req, res) => {
             const s = soal[tipeKey][i];
 
             let file_soal_path = '';
-            if (s.image && req.files?.[s.image]) {
+
+            if (Array.isArray(s.image)) {
+              const filePaths = [];
+
+              for (const filename of s.image) {
+                const file = req.files?.[filename];
+                if (!file) continue;
+
+                const fileName = `${Date.now()}_${file.name.replace(/\s/g, "_")}`;
+                const savePath = path.join(__dirname, "../public/soal", fileName);
+
+                if (!fs.existsSync(path.dirname(savePath))) {
+                  fs.mkdirSync(path.dirname(savePath), { recursive: true });
+                }
+
+                await file.mv(savePath);
+                filePaths.push(`/public/soal/${fileName}`);
+              }
+
+              file_soal_path = filePaths.join(";"); // atau simpan sebagai array kalau database kamu dukung
+            } else if (s.image && req.files?.[s.image]) {
               const file = req.files[s.image];
               const fileName = `${Date.now()}_${file.name.replace(/\s/g, "_")}`;
               const savePath = path.join(__dirname, "../public/soal", fileName);
@@ -372,6 +392,41 @@ exports.updateUjian = async (req, res) => {
     if (!Array.isArray(soalList)) continue;
 
     for (const s of soalList) {
+        let file_soal_path = '';
+
+if (Array.isArray(s.image)) {
+  const filePaths = [];
+
+  for (const filename of s.image) {
+    const file = req.files?.[filename];
+    if (!file) continue;
+
+    const fileName = `${Date.now()}_${file.name.replace(/\s/g, "_")}`;
+    const savePath = path.join(__dirname, "../public/soal", fileName);
+
+    if (!fs.existsSync(path.dirname(savePath))) {
+      fs.mkdirSync(path.dirname(savePath), { recursive: true });
+    }
+
+    await file.mv(savePath);
+    filePaths.push(`/public/soal/${fileName}`);
+  }
+
+  file_soal_path = filePaths.join(";");
+} else if (s.image && req.files?.[s.image]) {
+  const file = req.files[s.image];
+  const fileName = `${Date.now()}_${file.name.replace(/\s/g, "_")}`;
+  const savePath = path.join(__dirname, "../public/soal", fileName);
+  if (!fs.existsSync(path.dirname(savePath))) {
+    fs.mkdirSync(path.dirname(savePath), { recursive: true });
+  }
+  await file.mv(savePath);
+  file_soal_path = `/public/soal/${fileName}`;
+} else if (typeof s.image === "string") {
+  // Jika tidak ada upload baru, gunakan file lama (string tunggal/semicolon separated)
+  file_soal_path = s.image;
+}
+
       const soalData = {
         tipe_ujian_id: tipeUjianId,
         tipe_soal: s.questionType,
@@ -384,7 +439,7 @@ exports.updateUjian = async (req, res) => {
         jawaban_benar: Array.isArray(s.answer) ? s.answer.join(',') : '',
         mutiple: s.isMultipleAnswer || false,
         point_soal: s.point || 0,
-        file_soal: s.image || '',
+        file_soal: file_soal_path || '',
       };
 
       let soalInstance;
@@ -1154,5 +1209,43 @@ exports.getUjianReviewResult = async (req, res) => {
   } catch (err) {
     console.error("❌ Gagal ambil review nilai ujian:", err);
     res.status(500).json({ status: false, message: err.message });
+  }
+};
+
+exports.deleteSoal = async (req, res) => {
+  try {
+    const { ujianId, soalId } = req.params;  // Ambil ID ujian dan soal dari parameter URL
+
+    // Cari soal berdasarkan ID
+    const soal = await Soal.findByPk(soalId);
+    if (!soal) {
+      return res.status(404).json({ status: false, message: "Soal tidak ditemukan" });
+    }
+
+    // Pastikan soal tersebut terkait dengan ujian yang benar
+    const tipeUjian = await TipeUjian.findOne({ where: { ujian_id: ujianId } });
+    if (!tipeUjian) {
+      return res.status(404).json({ status: false, message: "Tipe Ujian tidak ditemukan untuk ujian ini" });
+    }
+
+    // Hapus soal
+    await soal.destroy();  // Hapus soal dari database
+
+    // Hapus file soal jika ada
+    if (soal.file_soal) {
+      const filePath = path.join(__dirname, '..', soal.file_soal);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);  // Hapus file dari sistem file
+      }
+    }
+
+    // Hapus jawaban yang terkait dengan soal tersebut
+    await ListJawaban.destroy({ where: { soal_id: soalId } });
+
+    res.json({ status: true, message: "Soal berhasil dihapus" });
+
+  } catch (error) {
+    console.error("❌ Gagal menghapus soal:", error);
+    res.status(500).json({ status: false, message: "Terjadi kesalahan saat menghapus soal" });
   }
 };
