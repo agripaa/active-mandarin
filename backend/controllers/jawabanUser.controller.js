@@ -525,24 +525,37 @@ exports.getExamUserResults = async (req, res) => {
     for (const transaction of transactions) {
       const userId = transaction.user_id;
       const ujianId = transaction.ujian_id;
-      const progressList = transaction.Ujian.UjianProgresses || [];
-      // Find the latest progress for this user and ujian
+
+      // Logging jika Ujian null
+      if (!transaction.Ujian) {
+        console.warn(`⚠️ Ujian null untuk transaction ID: ${transaction.id}`);
+      }
+
+      const progressList = transaction.Ujian?.UjianProgresses || [];
+
       const latestProgressId = progressList
         .filter(p => p.user_id === userId && p.ujian_id === ujianId)
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0]?.id;
-      const isChecking = progressList.some(p => p.user_id === userId && p.ujian_id === ujianId && p.is_checking);
+
+      const isChecking = progressList.some(
+        p => p.user_id === userId && p.ujian_id === ujianId && p.is_checking
+      );
 
       // Get all tipe ujian for this ujian
-      const tipeUjians = await db.TipeUjian.findAll({ where: { ujian_id: ujianId } });
+      const tipeUjians = await db.TipeUjian.findAll({
+        where: { ujian_id: ujianId }
+      });
       const tipeUjianIds = tipeUjians.map(t => t.id);
-      // Get all soal for this ujian
+
+      // Get all soal
       const soal = await db.Soal.findAll({
         where: {
-          tipe_ujian_id: tipeUjianIds,
+          tipe_ujian_id: tipeUjianIds
         }
       });
       const soalIds = soal.map(s => s.id);
-      // Get all jawaban user for these soal and this user (all phases, but only sum once)
+
+      // Get jawaban user
       let current = 0;
       if (soalIds.length > 0) {
         const jawabanList = await db.JawabanUser.findAll({
@@ -553,13 +566,16 @@ exports.getExamUserResults = async (req, res) => {
         });
         current = jawabanList.reduce((sum, j) => sum + (j.poing || 0), 0);
       }
-      // Tipe ujian (level)
+
+      // Determine tipe ujian & max score
       let tipeUjian = '-';
       let maxScore = 200;
-      if (transaction.Ujian && transaction.Ujian.level) {
-        tipeUjian = `HSK ${transaction.Ujian.level}`;
-        if (Number(transaction.Ujian.level) > 2) maxScore = 300;
+      const ujianLevel = transaction.Ujian?.level;
+      if (ujianLevel) {
+        tipeUjian = `HSK ${ujianLevel}`;
+        if (Number(ujianLevel) > 2) maxScore = 300;
       }
+
       const nilaiSementara = `${current}/${maxScore}`;
 
       result.push({
@@ -570,10 +586,12 @@ exports.getExamUserResults = async (req, res) => {
         nilai_sementara: nilaiSementara,
         status: isChecking ? 'is_checking' : 'is_done',
         user_id: userId,
-        ujian_id: ujianId,
+        ujian_id: ujianId
       });
     }
-    const results = result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    // Optional: tambahkan createdAt di result jika ingin sorting valid
+    const results = result.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
     res.json({ status: true, data: results });
   } catch (error) {
@@ -581,6 +599,7 @@ exports.getExamUserResults = async (req, res) => {
     res.status(500).json({ status: false, error: error.message });
   }
 };
+
 
 exports.getReviewJawabanByUserUjian = async (req, res) => {
   try {
