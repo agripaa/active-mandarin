@@ -144,12 +144,23 @@ const SidebarExam = ({ onClose }) => {
             const displayLabel = index + 1;
             const isActive = displayLabel === currentQuestionNumber;
 
+            const isAnswered = !isReviewMode &&
+              Array.isArray(q.answer) &&
+              (q.questionType === "essay"
+                ? q.answer[0]?.trim()?.length > 0
+                : q.answer.length > 0);
+
             return (
             <button
               key={index}
-              className={`w-10 h-10 rounded-lg flex items-center justify-center font-medium transition-colors ${
-                isActive ? "bg-[#3377FF] text-white" : "bg-white hover:bg-fiord-200 text-fiord-950"
-              }`}
+              className={`w-10 h-10 rounded-lg flex items-center justify-center font-medium transition-colors
+                ${isActive
+                  ? "bg-[#3377FF] text-white"
+                  : isAnswered
+                    ? "bg-gray-300 text-white"
+                    : "bg-white hover:bg-fiord-200 text-fiord-950"
+                }
+              `}
               onClick={() => {
                 const targetUrl = isReviewMode
                   ? `/dashboard/take-exam/${id}/review-hasil?question=${displayLabel}`

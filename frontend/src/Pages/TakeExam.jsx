@@ -883,7 +883,9 @@ useEffect(() => {
           <h6 className="rounded-2xl mr-2 mb-2 text-blue-500">
             Soal {parseInt(currentQuestion.guideForQuestion.start) + 1} - Soal {parseInt(currentQuestion.guideForQuestion.end) + 1} 
           </h6>
-          <h5 className="text-xl font-bold">{currentQuestion.guideForQuestion?.guide}</h5>
+          {currentQuestion.questionType !== "guide" && (
+            <div className="my-6" dangerouslySetInnerHTML={{ __html: currentQuestion.question }} />
+          )}
         </div>
       )
     }
