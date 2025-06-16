@@ -1,6 +1,6 @@
 const db = require('../models');
 const { Op } = require('sequelize');
-const { JawabanUser, User, Soal, ListJawaban } = db;
+const { JawabanUser, User, Soal, ListJawaban, UjianProgress, TipeUjian, Transaction } = db;
 
 //  Create
 exports.createJawabanUser = async (req, res) => {
@@ -105,26 +105,26 @@ exports.getEssayJawabanByUserUjianProgress = async (req, res) => {
   try {
     const progressId = req.params.id;
     // Find the user_ujian_progress record
-    const progress = await db.UjianProgress.findByPk(progressId);
+    const progress = await UjianProgress.findByPk(progressId);
     if (!progress) return res.status(404).json({ status: false, message: "User ujian progress not found" });
     const userId = progress.user_id;
     const ujianId = progress.ujian_id;
 
     // Find all user_ujian_progress records for this user and ujian (all phases)
-    const allProgress = await db.UjianProgress.findAll({
+    const allProgress = await UjianProgress.findAll({
       where: { user_id: userId, ujian_id: ujianId }
     });
 
     // Find all Soal with tipe_soal 'essay' for the given ujian
-    const tipeUjians = await db.TipeUjian.findAll({ where: { ujian_id: ujianId } });
+    const tipeUjians = await TipeUjian.findAll({ where: { ujian_id: ujianId } });
     const tipeUjianIds = tipeUjians.map(t => t.id);
-    const soalEssay = await db.Soal.findAll({
+    const soalEssay = await Soal.findAll({
       where: {
         tipe_ujian_id: tipeUjianIds,
         tipe_soal: 'essay'
       }
     });
-    const soalAll = await db.Soal.findAll({
+    const soalAll = await Soal.findAll({
       where: {
         tipe_ujian_id: tipeUjianIds
       }
@@ -133,20 +133,20 @@ exports.getEssayJawabanByUserUjianProgress = async (req, res) => {
     const soalAllIds = soalAll.map(s => s.id);
 
     // Get all JawabanUser for these soal and for this user (all progress/phase)
-    const jawabanList = await db.JawabanUser.findAll({
+    const jawabanList = await JawabanUser.findAll({
       where: {
         soal_id: soalIds,
         user_id: userId
       },
       include: [
-        { model: db.User, as: 'User' },
-        { model: db.Soal, as: 'Soal' }
+        { model: User, as: 'User' },
+        { model: Soal, as: 'Soal' }
       ],
       order: [['createdAt', 'DESC']]
     });
 
     // Fetch ujian to get the level
-    const ujian = await db.Ujian.findByPk(ujianId);
+    const ujian = await Ujian.findByPk(ujianId);
     let maxScore = 200;
     if (ujian && ujian.level && Number(ujian.level) > 2) {
       maxScore = 300;
@@ -154,7 +154,7 @@ exports.getEssayJawabanByUserUjianProgress = async (req, res) => {
     // Calculate current poing sum for this ujian (for this user, only essay, all phases, same as getExamUserResults)
     let currentScore = 0;
     if (soalAllIds.length > 0) {
-      const allJawaban = await db.JawabanUser.findAll({
+      const allJawaban = await JawabanUser.findAll({
         where: {
           soal_id: soalAllIds,
           user_id: userId
@@ -180,26 +180,26 @@ exports.getEssayJawabanByTransactionId = async (req, res) => {
   try {
     const transactionId = req.params.id;
     // Find the transaction record
-    const transaction = await db.Transaction.findByPk(transactionId);
+    const transaction = await Transaction.findByPk(transactionId);
     if (!transaction) return res.status(404).json({ status: false, message: "Transaction not found" });
     const userId = transaction.user_id;
     const ujianId = transaction.ujian_id;
 
     // Find all user_ujian_progress records for this user and ujian (all phases)
-    const allProgress = await db.UjianProgress.findAll({
+    const allProgress = await UjianProgress.findAll({
       where: { user_id: userId, ujian_id: ujianId }
     });
 
     // Find all Soal with tipe_soal 'essay' for the given ujian
-    const tipeUjians = await db.TipeUjian.findAll({ where: { ujian_id: ujianId } });
+    const tipeUjians = await TipeUjian.findAll({ where: { ujian_id: ujianId } });
     const tipeUjianIds = tipeUjians.map(t => t.id);
-    const soalEssay = await db.Soal.findAll({
+    const soalEssay = await Soal.findAll({
       where: {
         tipe_ujian_id: tipeUjianIds,
         tipe_soal: 'essay'
       }
     });
-    const soalAll = await db.Soal.findAll({
+    const soalAll = await Soal.findAll({
       where: {
         tipe_ujian_id: tipeUjianIds
       }
@@ -208,20 +208,20 @@ exports.getEssayJawabanByTransactionId = async (req, res) => {
     const soalAllIds = soalAll.map(s => s.id);
 
     // Get all JawabanUser for these soal and for this user (all progress/phase)
-    const jawabanList = await db.JawabanUser.findAll({
+    const jawabanList = await JawabanUser.findAll({
       where: {
         soal_id: soalIds,
         user_id: userId
       },
       include: [
-        { model: db.User, as: 'User' },
-        { model: db.Soal, as: 'Soal' }
+        { model: User, as: 'User' },
+        { model: Soal, as: 'Soal' }
       ],
       order: [['createdAt', 'DESC']]
     });
 
     // Fetch ujian to get the level
-    const ujian = await db.Ujian.findByPk(ujianId);
+    const ujian = await Ujian.findByPk(ujianId);
     let maxScore = 200;
     if (ujian && ujian.level && Number(ujian.level) > 2) {
       maxScore = 300;
@@ -229,7 +229,7 @@ exports.getEssayJawabanByTransactionId = async (req, res) => {
     // Calculate current poing sum for this ujian (for this user, only essay, all phases, same as getExamUserResults)
     let currentScore = 0;
     if (soalAllIds.length > 0) {
-      const allJawaban = await db.JawabanUser.findAll({
+      const allJawaban = await JawabanUser.findAll({
         where: {
           soal_id: soalAllIds,
           user_id: userId
@@ -256,7 +256,7 @@ exports.examineEssayJawaban = async (req, res) => {
   try {
     const progressId = req.params.id;
     // Find the user_ujian_progress record
-    const progress = await db.UjianProgress.findByPk(progressId);
+    const progress = await UjianProgress.findByPk(progressId);
     if (!progress) return res.status(404).json({ status: false, message: "User ujian progress not found" });
     const userId = progress.user_id;
     const ujianId = progress.ujian_id;
@@ -266,20 +266,20 @@ exports.examineEssayJawaban = async (req, res) => {
     }
     // Update each JawabanUser's poing and reason
     for (const { jawabanUserId, poing, reason } of points) {
-      await db.JawabanUser.update(
+      await JawabanUser.update(
         { poing, reason },
         { where: { id: jawabanUserId } }
       );
     }
     // Mark all user_ujian_progress for this user and ujian as checked
-    await db.UjianProgress.update(
+    await UjianProgress.update(
       { is_done: true, is_checking: false },
       { where: { user_id: userId, ujian_id: ujianId } }
     );
 
     // Check if certificate should be included
     let certificate = null;
-    const transaction = await db.Transaction.findOne({
+    const transaction = await Transaction.findOne({
       where: { 
         user_id: userId, 
         ujian_id: ujianId, 
@@ -293,15 +293,15 @@ exports.examineEssayJawaban = async (req, res) => {
     if (transaction && transaction.include_certif) {
       try {
       // Fetch user and ujian info for certificate fields
-      const user = await db.User.findByPk(userId);
-      const ujian = await db.Ujian.findByPk(ujianId);
+      const user = await User.findByPk(userId);
+      const ujian = await Ujian.findByPk(ujianId);
       // Get all tipe ujian for this ujian
-      const tipeUjians = await db.TipeUjian.findAll({ where: { ujian_id: ujianId } });
+      const tipeUjians = await TipeUjian.findAll({ where: { ujian_id: ujianId } });
 
       // For each tipeUjian, get all soal for that tipe (not just one)
       const tipeSoalMap = {};
       for (const tipe of tipeUjians) {
-        const soalList = await db.Soal.findAll({ where: { tipe_ujian_id: tipe.id } });
+        const soalList = await Soal.findAll({ where: { tipe_ujian_id: tipe.id } });
         tipeSoalMap[tipe.category_ujian] = soalList.map(s => s.id);
       }
 
@@ -322,12 +322,12 @@ exports.examineEssayJawaban = async (req, res) => {
       const allSoalIds = Object.values(tipeSoalMap).flat();
       let jawabanList = [];
       if (allSoalIds.length > 0) {
-        jawabanList = await db.JawabanUser.findAll({
+        jawabanList = await JawabanUser.findAll({
         where: {
           soal_id: allSoalIds,
           user_id: userId
         },
-        include: [{ model: db.Soal, as: 'Soal' }]
+        include: [{ model: Soal, as: 'Soal' }]
         });
       }
 
@@ -353,7 +353,7 @@ exports.examineEssayJawaban = async (req, res) => {
       const randomDigits = Math.floor(100 + Math.random() * 900);
       const exam_no = `${examPrefix}${formattedDate}${randomDigits}`;
       // Find or create certificate
-      certificate = await db.Certificate.create({
+      certificate = await Certificate.create({
         user_id: userId,
         exam_level: ujian.level,
         ujian_id: ujianId,
@@ -388,20 +388,20 @@ exports.examineEssayJawabanByTransactionId = async (req, res) => {
       return res.status(400).json({ status: false, message: "Points array is required" });
     }
     // Find the transaction record
-    const transaction = await db.Transaction.findByPk(transactionId);
+    const transaction = await Transaction.findByPk(transactionId);
     if (!transaction) return res.status(404).json({ status: false, message: "Transaction not found" });
     const userId = transaction.user_id;
     const ujianId = transaction.ujian_id;
 
     // Update each JawabanUser's poing and reason
     for (const { jawabanUserId, poing, reason } of points) {
-      await db.JawabanUser.update(
+      await JawabanUser.update(
         { poing, reason },
         { where: { id: jawabanUserId } }
       );
     }
     // Mark all user_ujian_progress for this user and ujian as checked
-    await db.UjianProgress.update(
+    await UjianProgress.update(
       { is_done: true, is_checking: false },
       { where: { user_id: userId, ujian_id: ujianId } }
     );
@@ -411,14 +411,14 @@ exports.examineEssayJawabanByTransactionId = async (req, res) => {
     if (transaction.include_certif && transaction.status_transaction === 'success' && transaction.isDelete === false) {
       try {
         // Fetch user and ujian info for certificate fields
-        const user = await db.User.findByPk(userId);
-        const ujian = await db.Ujian.findByPk(ujianId);
+        const user = await User.findByPk(userId);
+        const ujian = await Ujian.findByPk(ujianId);
         // Get all tipe ujian for this ujian
-        const tipeUjians = await db.TipeUjian.findAll({ where: { ujian_id: ujianId } });
+        const tipeUjians = await TipeUjian.findAll({ where: { ujian_id: ujianId } });
         // For each tipeUjian, get all soal for that tipe (not just one)
         const tipeSoalMap = {};
         for (const tipe of tipeUjians) {
-          const soalList = await db.Soal.findAll({ where: { tipe_ujian_id: tipe.id } });
+          const soalList = await Soal.findAll({ where: { tipe_ujian_id: tipe.id } });
           tipeSoalMap[tipe.category_ujian] = soalList.map(s => s.id);
         }
         // Get all jawaban user for these soal and this user (all phases, but only sum once)
@@ -435,12 +435,12 @@ exports.examineEssayJawabanByTransactionId = async (req, res) => {
         const allSoalIds = Object.values(tipeSoalMap).flat();
         let jawabanList = [];
         if (allSoalIds.length > 0) {
-          jawabanList = await db.JawabanUser.findAll({
+          jawabanList = await JawabanUser.findAll({
             where: {
               soal_id: allSoalIds,
               user_id: userId
             },
-            include: [{ model: db.Soal, as: 'Soal' }]
+            include: [{ model: Soal, as: 'Soal' }]
           });
         }
         // Sum poing for each category_ujian
@@ -464,7 +464,7 @@ exports.examineEssayJawabanByTransactionId = async (req, res) => {
         const randomDigits = Math.floor(100 + Math.random() * 900);
         const exam_no = `${examPrefix}${formattedDate}${randomDigits}`;
         // Find or create certificate
-        certificate = await db.Certificate.create({
+        certificate = await Certificate.create({
           user_id: userId,
           exam_level: ujian.level,
           ujian_id: ujianId,
@@ -494,7 +494,7 @@ exports.examineEssayJawabanByTransactionId = async (req, res) => {
 // API to get list of exam user results after exam is done or being checked, grouped by user_id and ujian_id
 exports.getExamUserResults = async (req, res) => {
   try {
-    const transactions = await db.Transaction.findAll({
+    const transactions = await Transaction.findAll({
       where: {
         ujian_id: { [Op.ne]: null },
         isDelete: false,
@@ -502,18 +502,18 @@ exports.getExamUserResults = async (req, res) => {
       },
       include: [
         {
-          model: db.Ujian,
+          model: Ujian,
           as: 'Ujian',
           include: [
             {
-              model: db.UjianProgress,
+              model: UjianProgress,
               as: 'UjianProgresses',
               required: false
             }
           ]
         },
         {
-          model: db.User,
+          model: User,
           as: 'User'
         }
       ],
@@ -533,10 +533,10 @@ exports.getExamUserResults = async (req, res) => {
       const isChecking = progressList.some(p => p.user_id === userId && p.ujian_id === ujianId && p.is_checking);
 
       // Get all tipe ujian for this ujian
-      const tipeUjians = await db.TipeUjian.findAll({ where: { ujian_id: ujianId } });
+      const tipeUjians = await TipeUjian.findAll({ where: { ujian_id: ujianId } });
       const tipeUjianIds = tipeUjians.map(t => t.id);
       // Get all soal for this ujian
-      const soal = await db.Soal.findAll({
+      const soal = await Soal.findAll({
         where: {
           tipe_ujian_id: tipeUjianIds,
         }
@@ -545,7 +545,7 @@ exports.getExamUserResults = async (req, res) => {
       // Get all jawaban user for these soal and this user (all phases, but only sum once)
       let current = 0;
       if (soalIds.length > 0) {
-        const jawabanList = await db.JawabanUser.findAll({
+        const jawabanList = await JawabanUser.findAll({
           where: {
             soal_id: soalIds,
             user_id: userId
@@ -582,101 +582,110 @@ exports.getExamUserResults = async (req, res) => {
   }
 };
 
-exports.getReviewJawabanByUserUjian = async (req, res) => {
+exports.getExamUserResults = async (req, res) => {
   try {
-    const rawId = req.params.id;
-    const userId = req.userId;
-
-    // Jika bukan progressId, berarti rawId adalah ujianId
-    const progress = await db.UjianProgress.findOne({
+    const transactions = await db.Transaction.findAll({
       where: {
-        user_id: userId,
-        ujian_id: rawId
-      },
-      order: [['createdAt', 'DESC']]
-    });
-
-    if (!progress) {
-      return res.status(404).json({ status: false, message: "Progress ujian tidak ditemukan" });
-    }
-
-    const ujianId = progress.ujian_id;
-
-    // Ambil semua tipe ujian untuk ujian ini
-    const tipeUjians = await db.TipeUjian.findAll({ where: { ujian_id: ujianId } });
-    const tipeUjianIds = tipeUjians.map(t => t.id);
-
-    const soalList = await db.Soal.findAll({
-      where: {
-        tipe_ujian_id: tipeUjianIds,
+        ujian_id: { [Op.ne]: null },
+        isDelete: false,
+        status_transaction: 'success'
       },
       include: [
         {
-          model: db.ListJawaban,
-          as: 'ListJawabans'
+          model: db.Ujian,
+          as: 'Ujian',
+          include: [
+            {
+              model: db.UjianProgress,
+              as: 'UjianProgresses',
+              required: false
+            }
+          ]
         },
         {
-          model: db.TipeUjian,
-          as: "TipeUjian",
-          attributes: ['id', 'category_ujian'],
+          model: db.User,
+          as: 'User'
         }
-      ]
+      ],
+      order: [['transaction_date', 'ASC']]
     });
 
+    const result = [];
 
-    const soalIds = soalList.map(s => s.id);
+    for (const transaction of transactions) {
+      const userId = transaction.user_id;
+      const ujianId = transaction.ujian_id;
 
-    const jawabanList = await db.JawabanUser.findAll({
-      where: {
-        soal_id: soalIds,
-        user_id: progress.user_id
-      },
-      attributes: ['soal_id', 'input_jawaban', 'poing', 'isTrue', 'reason']
-    });
-
-    const response = soalList.map(soal => {
-      const jawabanUser = jawabanList.find(j => j.soal_id === soal.id);
-
-      let jawaban_benar;
-      if (soal.tipe_soal === 'multiple-choice') {
-        jawaban_benar = soal.ListJawabans.filter(j => j.isTrue).map(j => j.position?.trim());
-    } else if (soal.tipe_soal === 'order-arrange') {
-        const raw = String(soal.jawaban_benar || '').trim();
-        jawaban_benar = raw
-          .split(';')
-          .map(s => s.trim())
-          .filter(Boolean);
+      // Logging jika Ujian null
+      if (!transaction.Ujian) {
+        console.warn(`⚠️ Ujian null untuk transaction ID: ${transaction.id}`);
       }
 
+      const progressList = transaction.Ujian?.UjianProgresses || [];
 
-      return {
-        soal_id: soal.id,
-        pertanyaan: soal.pertanyaan,
-        penjelasan: soal.penjelasan || jawabanUser?.reason || null,
-        tipe_soal: soal.tipe_soal,
-        tipe_ujian: soal.TipeUjian ? soal.TipeUjian.category_ujian : null,
-        jawaban_benar: 
-          soal.tipe_soal === 'multiple-choice'
-            ? soal.ListJawabans.filter(j => j.isTrue).map(j => j.position?.trim())
-            : soal.tipe_soal === 'order-arrange'
-              ? (soal.jawaban_benar || '').split(';').map(s => s.trim())
-              : undefined,
-        list_jawaban: soal.ListJawabans,
-        jawaban_user: jawabanUser
-          ? {
-              input_jawaban: jawabanUser.input_jawaban,
-              poing: jawabanUser.poing,
-              isTrue: jawabanUser.isTrue,
-              reason: jawabanUser.reason
-            }
-          : null
-      };
-    });
+      const latestProgressId = progressList
+        .filter(p => p.user_id === userId && p.ujian_id === ujianId)
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0]?.id;
 
-    return res.json({ status: true, data: response });
+      const isChecking = progressList.some(
+        p => p.user_id === userId && p.ujian_id === ujianId && p.is_checking
+      );
 
+      // Get all tipe ujian for this ujian
+      const tipeUjians = await db.TipeUjian.findAll({
+        where: { ujian_id: ujianId }
+      });
+      const tipeUjianIds = tipeUjians.map(t => t.id);
+
+      // Get all soal
+      const soal = await db.Soal.findAll({
+        where: {
+          tipe_ujian_id: tipeUjianIds
+        }
+      });
+      const soalIds = soal.map(s => s.id);
+
+      // Get jawaban user
+      let current = 0;
+      if (soalIds.length > 0) {
+        const jawabanList = await db.JawabanUser.findAll({
+          where: {
+            soal_id: soalIds,
+            user_id: userId
+          }
+        });
+        current = jawabanList.reduce((sum, j) => sum + (j.poing || 0), 0);
+      }
+
+      // Determine tipe ujian & max score
+      let tipeUjian = '-';
+      let maxScore = 200;
+      const ujianLevel = transaction.Ujian?.level;
+      if (ujianLevel) {
+        tipeUjian = `HSK ${ujianLevel}`;
+        if (Number(ujianLevel) > 2) maxScore = 300;
+      }
+
+      const nilaiSementara = `${current}/${maxScore}`;
+
+      result.push({
+        id: transaction.id,
+        nama_ujian: transaction.Ujian?.nama_ujian || '-',
+        nama_peserta: transaction.User?.name || '-',
+        tipe_ujian: tipeUjian,
+        nilai_sementara: nilaiSementara,
+        status: isChecking ? 'is_checking' : 'is_done',
+        user_id: userId,
+        ujian_id: ujianId
+      });
+    }
+
+    // Optional: tambahkan createdAt di result jika ingin sorting valid
+    const results = result.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+    res.json({ status: true, data: results });
   } catch (error) {
-    console.error("Error in getReviewJawabanByUserUjian:", error);
-    return res.status(500).json({ status: false, message: "Terjadi kesalahan server", error: error.message });
+    console.error("Error in getExamUserResults:", error);
+    res.status(500).json({ status: false, error: error.message });
   }
 };
