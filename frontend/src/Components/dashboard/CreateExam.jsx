@@ -359,12 +359,15 @@ const CreateExam = ({ dataProgram }) => {
 
     const formData = new FormData();
 
-    const prepareQuestionsWithFileRefs = (questions, tipe) => {
-      const tipeId = typeData[tipe]?.id;
-        return questions.map((q, idx) => {
-          const newSoal = {
+  const prepareQuestionsWithFileRefs = (questions, tipe) => {
+    const tipeId = typeData[tipe]?.id;
+    return questions.map((q, idx) => {
+      const isNew = !q.isFromDB; // ← pastikan flag soal baru
+
+      const newSoal = {
         ...q,
-        tipe_ujian_id: tipeId, // ✅ tambahkan ini
+        ...(isNew ? {} : { id: q.id }), // hanya kirim id jika soal dari DB
+        tipe_ujian_id: tipeId,
       };
 
       if (q.fileList?.[0]?.originFileObj) {
@@ -374,8 +377,8 @@ const CreateExam = ({ dataProgram }) => {
       }
 
       return newSoal;
-      });
-    };
+    });
+  };
 
     formData.append("nama_ujian", title);
     formData.append("desc", examDetails);

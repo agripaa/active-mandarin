@@ -393,13 +393,15 @@ exports.updateUjian = async (req, res) => {
         soalInstance = await Soal.findByPk(s.id);
         if (soalInstance) {
           await soalInstance.update(soalData);
+        } else {
+          // ID diberikan tapi tidak ditemukan di DB → buat baru saja
+          soalInstance = await Soal.create(soalData);
         }
-      }
-
-      if (!soalInstance) {
+      } else {
+        // Soal baru → buat langsung
         soalInstance = await Soal.create(soalData);
       }
-
+      
       const soalId = soalInstance.id;
 
       // 4. Update ListJawaban jika tipe pilihan ganda
