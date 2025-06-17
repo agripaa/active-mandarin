@@ -291,19 +291,15 @@ const CreateExam = ({ dataProgram }) => {
       const tipe = soalRes.data;
 
       // 🔧 Normalisasi jawaban (["1"] → option.id yang sesuai)
-    const normalizeAnswerFromPosition = (questions) => {
-      return questions.map((q) => {
-        if (q.questionType === 'multiple-choice' && Array.isArray(q.answer)) {
-          const newAnswer = q.answer.map(pos => {
-            const index = parseInt(pos, 10) - 1;
-            const opt = q.options?.[index];
-            return opt?.id;
-          }).filter(Boolean);
-          return { ...q, answer: newAnswer };
-        }
-        return q;
-      });
-    };
+      const normalizeAnswerFromPosition = (questions) => {
+        return questions.map((q) => {
+          if (q.questionType === 'multiple-choice' && Array.isArray(q.answer)) {
+            const newAnswer = q.answer.map(pos => Number(pos)).filter(Boolean);
+            return { ...q, answer: newAnswer };
+          }
+          return q;
+        });
+      };
 
       setTypeData(prev => ({
         listening: {
@@ -691,8 +687,6 @@ const QuestionComponent = React.memo(({ index, question, number, onChange, onDel
   }
 };
 
-
-
   return (
     <div className="bg-white p-6 rounded-2xl shadow">
       <div className="flex">
@@ -731,17 +725,35 @@ const QuestionComponent = React.memo(({ index, question, number, onChange, onDel
                   <input
                     type={question.isMultipleAnswer ? 'checkbox' : 'radio'}
                     name={`correct-answer-${index}`}
-                    checked={option.isTrue === true}
+                    checked={question.isMultipleAnswer
+                      ? question.answer?.some(a => Number(a) === Number(option.id))
+                      : Number(question.answer?.[0]) === Number(option.id)}
                     onChange={() => {
-                      const newAnswer = question.isMultipleAnswer
-                        ? question.answer.includes(option.id)
-                          ? question.answer.filter(id => id !== option.id)
-                          : [...question.answer, option.id]
-                        : [option.id];
+                      let newAnswer = [];
+                      const newOptions = [...question.options];
 
-                      onChange(index, 'answer', newAnswer);
+                      if (question.isMultipleAnswer) {
+                        if (question.answer.map(Number).includes(option.id)) {
+                          newAnswer = question.answer.map(Number).filter(a => a !== option.id);
+                        } else {
+                          newAnswer = [...question.answer.map(Number), option.id];
+                        }
+
+
+                        newOptions.forEach((opt) => {
+                          opt.isTrue = newAnswer.includes(opt.id);
+                        });
+                      } else {
+                        newAnswer = [option.id];
+                        newOptions.forEach((opt) => {
+                          opt.isTrue = opt.id === option.id;
+                        });
+                      }
+
+                      onChange(index, 'options', newOptions);
+                      onChange(index, 'answer', newAnswer.map(Number));
                     }}
-                    className="cursor-pointer accent-blue-500"
+                    className="cursor-pointer accent-blue-500 w-5 h-5"
                   />
                   <Input
                     value={option.option}

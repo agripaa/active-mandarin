@@ -392,21 +392,43 @@ exports.updateUjian = async (req, res) => {
         }
 
         if (s.questionType === 'multiple-choice' && Array.isArray(s.options)) {
-          await ListJawaban.destroy({ where: { soal_id: soalInstance.id } });
+          // Ambil semua jawaban lama
+          const existingJawaban = await ListJawaban.findAll({ where: { soal_id: soalInstance.id } });
+          const existingMap = new Map(existingJawaban.map(j => [j.id, j]));
+
+          // ID yang masih dipakai (untuk keperluan cleanup nanti)
+          const usedIds = new Set();
+
+          // ✅ Tambahkan ini:
+          const parsedAnswer = Array.isArray(s.answer) ? s.answer.map(a => parseInt(a, 10)) : [];
+
 
           for (const opt of s.options) {
-            const isCorrect = Array.isArray(s.answer) ? s.answer.includes(opt.id) : false;
+            const isCorrect = parsedAnswer.includes(opt.id);
 
-            console.log(`✅ Menyimpan jawaban: "${opt.option}"`);
-            console.log(`   - ID Opsi: ${opt.id}`);
-            console.log(`   - Apakah benar? ${isCorrect}`);
-            
-            await ListJawaban.create({
-              soal_id: soalInstance.id,
-              jawaban: opt.option,
-              isTrue: isCorrect,
-              position: opt.position || null,
-            });
+            if (opt.id && existingMap.has(opt.id)) {
+              const existing = existingMap.get(opt.id);
+              await existing.update({
+                jawaban: opt.option,
+                isTrue: isCorrect,
+                position: opt.position || null,
+              });
+              usedIds.add(opt.id);
+            } else {
+              const newJawaban = await ListJawaban.create({
+                soal_id: soalInstance.id,
+                jawaban: opt.option,
+                isTrue: isCorrect,
+                position: opt.position || null,
+              });
+              usedIds.add(newJawaban.id);
+            }
+          }
+
+          for (const old of existingJawaban) {
+            if (!usedIds.has(old.id)) {
+              await old.destroy();
+            }
           }
         }
       }
