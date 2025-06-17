@@ -203,7 +203,7 @@ exports.getProfile = async (req, res) => {
 
 exports.editUser = async (req, res) => {
   const { userId } = req;
-  const { name, email, number, oldPassword, newPassword } = req.body;
+  const { name, chinese_name, email, number, oldPassword, newPassword } = req.body;
 
   try {
     const user = await User.findOne({ where: { id: userId } });
@@ -256,12 +256,12 @@ exports.editUser = async (req, res) => {
       await user.update({ password: hashedPassword });
     }
 
-    await user.update({ name, email, number, profile_img });
+    await user.update({ name, chinese_name, email, number, profile_img });
 
     res.status(200).json({
       status: true,
       message: "User updated successfully",
-      data: { id: user.id, name: user.name, number: user.number, email: user.email, profile_img }
+      data: { id: user.id, name: user.name, chinese_name: user.chinese_name, number: user.number, email: user.email, profile_img }
     });
 
   } catch (error) {

@@ -82,7 +82,7 @@ const CertificateTable = () => {
             中文考试成绩在线验证结果查询
           </h2>
           <h4 className="text-base lg:text-lg my-2.5">
-            汉考国际教育科技（北京）有限公司（CTI）
+            PT Active Edulang Global
           </h4>
         </center>
         <div className="mb-5 bg-white border border-[#ddd] rounded-[4px] shadow-sm">
@@ -112,6 +112,14 @@ const CertificateTable = () => {
                         }
                         className="p-2 h-auto"
                       />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="border border-[#ddd] bg-[#f5f5f5] p-2 text-right align-top leading-[1.42857143] border-x-0">
+                      Chinese Name
+                    </td>
+                    <td className="border border-[#ddd] p-2 text-left align-top leading-[1.42857143] border-r-0">
+                      {certificate?.User?.chinese_name || "-"}
                     </td>
                   </tr>
                   <tr>
@@ -154,10 +162,21 @@ const CertificateTable = () => {
                       Test Type
                     </td>
                     <td
-                      colspan="2"
+                      colspan="3"
                       className="border border-[#ddd] p-2 text-left align-top leading-[1.42857143] border-r-0 border-b-0"
                     >
                       {levelMap[certificate?.exam_level]}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="border border-[#ddd] bg-[#f5f5f5] p-2 text-right align-top leading-[1.42857143] border-x-0 border-b-0">
+                      Test Time
+                    </td>
+                    <td
+                      colspan="3"
+                      className="border border-[#ddd] p-2 text-left align-top leading-[1.42857143] border-r-0 border-b-0"
+                    >
+                      {certificate?.exam_date}
                     </td>
                   </tr>
                 </tbody>
@@ -234,7 +253,7 @@ const CertificateTable = () => {
             </div>
 
             <center>
-              <h6>最终解释权归汉考国际所有</h6>
+              <h6>最终解释权归 PT Active Edulang Global 所有</h6>
             </center>
           </div>
         </div>

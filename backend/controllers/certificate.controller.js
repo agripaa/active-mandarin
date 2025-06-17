@@ -53,7 +53,7 @@ exports.getCertificateById = async (req, res) => {
       where: { ujian_id: req.params.id, exam_no: req.params.examNo },
       include: {
         model: User,
-        attributes: ["name", "profile_img"],
+        attributes: ["name", "chinese_name", "profile_img"],
       },
     });
     if (!certificate)
