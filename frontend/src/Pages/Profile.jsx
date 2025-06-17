@@ -7,6 +7,7 @@ import { Spin } from "antd";
 
 const Profile = () => {
   const [name, setName] = useState("");
+  const [chineseName, setChineseName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [avatar, setAvatar] = useState("/assets/profile-dummy.webp");
@@ -26,6 +27,7 @@ const Profile = () => {
     try {
       const response = await getProfile();
       setName(response.data.name);
+      setChineseName(response.data.chinese_name || "");
       setEmail(response.data.email);
       setPhone(response.data.number);
       if (response.data.profile_img) {
@@ -72,6 +74,7 @@ const Profile = () => {
     try {
       const formData = new FormData();
       formData.append("name", name);
+      formData.append("chinese_name", chineseName);
       formData.append("email", email);
       formData.append("number", phone);
       if (selectedFile) {
@@ -127,6 +130,16 @@ const Profile = () => {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              className="w-full px-3 py-2 border rounded-md mt-1 focus:ring focus:ring-yellow-300"
+            />
+          </div>
+
+          <div className="mt-6">
+            <label className="block text-md font-medium text-gray-700">Nama Chinese</label>
+            <input
+              type="text"
+              value={chineseName}
+              onChange={(e) => setChineseName(e.target.value)}
               className="w-full px-3 py-2 border rounded-md mt-1 focus:ring focus:ring-yellow-300"
             />
           </div>

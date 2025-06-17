@@ -250,123 +250,113 @@ const Certificate = () => {
           </div>
           <hr className="w-full my-5" />
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-            <div className="col-span-1 lg:col-span-5">
-              <div className="overflow-x-auto border border-slate-300 rounded-xl">
-                <table className="w-full table-auto border-collapse rounded-xl overflow-hidden">
-                  <thead>
-                    <tr className="bg-slate-200 text-left">
-                      <th className="px-4 py-1"></th>
-                      <th className="px-4 py-1 w-max text-center">
-                        <span className="font-semibold">满分</span>
-                        <br />
-                        <span className="font-normal w-max text-xs">
-                          Full Score
-                        </span>
-                      </th>
-                      <th className="px-4 py-1 w-max text-center">
-                        <span className="font-semibold">你的成绩</span>
-                        <br />
-                        <span className="font-normal w-max text-xs">
-                          Your Score
-                        </span>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {certificate?.exam_level > 2
-                      ? [
-                          {
-                            subject: "听力",
-                            english: "Listening",
-                            score: certificate?.listening_score,
-                            maxScore: 100,
-                          },
-                          {
-                            subject: "阅读",
-                            english: "Reading",
-                            score: certificate?.reading_score,
-                            maxScore: 100,
-                          },
-                          {
-                            subject: "写作",
-                            english: "Writing",
-                            score: certificate?.writing_score,
-                            maxScore: 100,
-                          },
-                          {
-                            subject: "总分",
-                            english: "Total Score",
-                            score: certificate?.total_score,
-                            maxScore: 300,
-                          },
-                        ].map((item, index) => (
-                          <tr key={index} className="text-left font-normal">
-                            <td className="px-4">
-                              <span className="font-semibold">
-                                {item.subject}
-                              </span>
-                              <br />
-                              <span className="font-normal pb-2 text-xs">
-                                {item.english}
-                              </span>
-                            </td>
-                            <td className="px-4 text-center pb-2 pt-1 text-sm">
-                              {item.maxScore}
-                            </td>
-                            <td className="px-4 text-center pb-2 pt-1 text-sm">
-                              {item.score}
-                            </td>
-                          </tr>
-                        ))
-                      : [
-                          {
-                            subject: "听力",
-                            english: "Listening",
-                            score: certificate?.listening_score,
-                            maxScore: 100,
-                          },
-                          {
-                            subject: "阅读",
-                            english: "Reading",
-                            score: certificate?.reading_score,
-                            maxScore: 100,
-                          },
-                          {
-                            subject: "总分",
-                            english: "Total Score",
-                            score: certificate?.total_score,
-                            maxScore: 200,
-                          },
-                        ].map((item, index) => (
-                          <tr key={index} className="text-left font-normal">
-                            <td className="px-4">
-                              <span className="font-semibold">
-                                {item.subject}
-                              </span>
-                              <br />
-                              <span className="font-normal pb-2 text-xs">
-                                {item.english}
-                              </span>
-                            </td>
-                            <td className="px-4 text-center pb-2 pt-1 text-sm">
-                              {item.maxScore}
-                            </td>
-                            <td className="px-4 text-center pb-2 pt-1 text-sm">
-                              {item.score}
-                            </td>
-                          </tr>
-                        ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="flex flex-row items-center gap-1 mt-4 mb-4">
-                <p className="font-semibold">
-                  总分{certificate?.passing_score}分为合格
-                </p>
-                <p className="font-normal text-sm">
-                  (Passing Score: {certificate?.passing_score})
-                </p>
-              </div>
+            <div className="overflow-x-auto border border-slate-300 rounded-xl col-span-1 lg:col-span-5">
+              <table className="w-full h-full table-auto border-collapse rounded-xl overflow-hidden">
+                <thead>
+                  <tr className="bg-slate-200 text-left">
+                    <th className="px-4 py-1"></th>
+                    <th className="px-4 py-1 w-max text-center">
+                      <span className="font-semibold">满分</span>
+                      <br />
+                      <span className="font-normal w-max text-xs">
+                        Full Score
+                      </span>
+                    </th>
+                    <th className="px-4 py-1 w-max text-center">
+                      <span className="font-semibold">你的成绩</span>
+                      <br />
+                      <span className="font-normal w-max text-xs">
+                        Your Score
+                      </span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {certificate?.exam_level > 2
+                    ? [
+                        {
+                          subject: "听力",
+                          english: "Listening",
+                          score: certificate?.listening_score,
+                          maxScore: 100,
+                        },
+                        {
+                          subject: "阅读",
+                          english: "Reading",
+                          score: certificate?.reading_score,
+                          maxScore: 100,
+                        },
+                        {
+                          subject: "写作",
+                          english: "Writing",
+                          score: certificate?.writing_score,
+                          maxScore: 100,
+                        },
+                        {
+                          subject: "总分",
+                          english: "Total Score",
+                          score: certificate?.total_score,
+                          maxScore: 300,
+                        },
+                      ].map((item, index) => (
+                        <tr key={index} className="text-left font-normal">
+                          <td className="px-4">
+                            <span className="font-semibold">
+                              {item.subject}
+                            </span>
+                            <br />
+                            <span className="font-normal pb-2 text-xs">
+                              {item.english}
+                            </span>
+                          </td>
+                          <td className="px-4 text-center pb-2 pt-1 text-sm">
+                            {item.maxScore}
+                          </td>
+                          <td className="px-4 text-center pb-2 pt-1 text-sm">
+                            {item.score}
+                          </td>
+                        </tr>
+                      ))
+                    : [
+                        {
+                          subject: "听力",
+                          english: "Listening",
+                          score: certificate?.listening_score,
+                          maxScore: 100,
+                        },
+                        {
+                          subject: "阅读",
+                          english: "Reading",
+                          score: certificate?.reading_score,
+                          maxScore: 100,
+                        },
+                        {
+                          subject: "总分",
+                          english: "Total Score",
+                          score: certificate?.total_score,
+                          maxScore: 200,
+                        },
+                      ].map((item, index) => (
+                        <tr key={index} className="text-left font-normal">
+                          <td className="px-4">
+                            <span className="font-semibold">
+                              {item.subject}
+                            </span>
+                            <br />
+                            <span className="font-normal pb-2 text-xs">
+                              {item.english}
+                            </span>
+                          </td>
+                          <td className="px-4 text-center pb-2 pt-1 text-sm">
+                            {item.maxScore}
+                          </td>
+                          <td className="px-4 text-center pb-2 pt-1 text-sm">
+                            {item.score}
+                          </td>
+                        </tr>
+                      ))}
+                </tbody>
+              </table>
             </div>
             <div className="overflow-x-auto border border-slate-300 rounded-xl col-span-1 w-full lg:col-span-7">
               <table className="w-full table-auto border-collapse rounded-xl overflow-hidden">
@@ -426,6 +416,14 @@ const Certificate = () => {
                 </tbody>
               </table>
             </div>
+          </div>
+          <div className="flex flex-row items-center gap-1 mt-4 mb-4">
+            <p className="font-semibold">
+              总分{certificate?.passing_score}分为合格
+            </p>
+            <p className="font-normal text-sm">
+              (Passing Score: {certificate?.passing_score})
+            </p>
           </div>
         </main>
         <div className="flex flex-col justify-between mt-6 container w-full mx-auto max-w-[880px] my-8 px-5 gap-5 lg:flex-row">
