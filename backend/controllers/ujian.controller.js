@@ -90,7 +90,27 @@ exports.createUjian = async (req, res) => {
             const s = soal[tipeKey][i];
 
             let file_soal_path = '';
-            if (s.image && req.files?.[s.image]) {
+
+            if (Array.isArray(s.image)) {
+              const filePaths = [];
+
+              for (const filename of s.image) {
+                const file = req.files?.[filename];
+                if (!file) continue;
+
+                const fileName = `${Date.now()}_${file.name.replace(/\s/g, "_")}`;
+                const savePath = path.join(__dirname, "../public/soal", fileName);
+
+                if (!fs.existsSync(path.dirname(savePath))) {
+                  fs.mkdirSync(path.dirname(savePath), { recursive: true });
+                }
+
+                await file.mv(savePath);
+                filePaths.push(`/public/soal/${fileName}`);
+              }
+
+              file_soal_path = filePaths.join(";"); // atau simpan sebagai array kalau database kamu dukung
+            } else if (s.image && req.files?.[s.image]) {
               const file = req.files[s.image];
               const fileName = `${Date.now()}_${file.name.replace(/\s/g, "_")}`;
               const savePath = path.join(__dirname, "../public/soal", fileName);
@@ -243,10 +263,7 @@ exports.updateUjian = async (req, res) => {
   try {
     console.log("🛠️ [1] Mencari ujian...");
     const ujian = await Ujian.findByPk(req.params.id);
-    if (!ujian) {
-      console.log("❌ Ujian tidak ditemukan.");
-      return res.status(404).json({ status: false, message: "Ujian not found" });
-    }
+    if (!ujian) return res.status(404).json({ status: false, message: "Ujian not found" });
 
     console.log("📥 [2] Parsing body ujian...");
     const {
@@ -257,71 +274,40 @@ exports.updateUjian = async (req, res) => {
 
     let ujian_img = ujian.ujian_img;
 
-    if (req.files && req.files.ujian_img) {
-      console.log("🖼️ [3] Mengupload gambar ujian...");
+    if (req.files?.ujian_img) {
       const imgFile = req.files.ujian_img;
       const ext = path.extname(imgFile.name).toLowerCase();
-      const allowedExt = [".jpg", ".jpeg", ".png", ".webp"];
-
-      if (!allowedExt.includes(ext)) {
-        console.log("❌ Ekstensi file tidak valid:", ext);
+      const allowed = [".jpg", ".jpeg", ".png", ".webp"];
+      if (!allowed.includes(ext)) {
         return res.status(400).json({ status: false, message: "Only image files are allowed!" });
       }
 
       const fileName = `${Date.now()}_${imgFile.name.replace(/\s/g, "_")}`;
       const filePath = path.join(__dirname, '../public/ujian', fileName);
-
-      if (!fs.existsSync(path.dirname(filePath))) {
-        fs.mkdirSync(path.dirname(filePath), { recursive: true });
-        console.log("📁 Folder upload dibuat:", path.dirname(filePath));
-      }
-
+      fs.mkdirSync(path.dirname(filePath), { recursive: true });
       await imgFile.mv(filePath);
       ujian_img = `/public/ujian/${fileName}`;
-      console.log("✅ Gambar berhasil diupload:", ujian_img);
     }
 
-    console.log("📝 [4] Mengupdate data utama ujian...");
+    console.log("📝 [3] Mengupdate data ujian...");
     await ujian.update({
       nama_ujian, level, harga_normal, harga_diskon,
       harga_certif, ujian_img, commission,
       total_skor, desc, isProgres, isDone, isCheck,
     });
 
-    console.log("🔗 [5] Mengupdate ujian_brand...");
+    // Update ujian_brand
+    console.log("🔗 [4] Update ujian_brand...");
     let ujian_brand = req.body.ujian_brand;
-    if (typeof ujian_brand === "string") {
-      try {
-        ujian_brand = JSON.parse(ujian_brand);
-      } catch {
-        console.log("❌ Format ujian_brand invalid");
-        return res.status(400).json({ status: false, message: "Format ujian_brand tidak valid" });
-      }
-    }
-
-    if (Array.isArray(ujian_brand)) {
-      await UjianBrand.destroy({ where: { ujian_id: ujian.id } });
-      let inserted = 0;
-
-      for (const brandId of ujian_brand) {
-        if (!brandId || isNaN(brandId)) continue;
-        const brand = await Brand.findByPk(brandId);
-        if (!brand) {
-          console.warn(`⚠️ brand_id ${brandId} tidak ditemukan`);
-          continue;
-        }
-
+    if (typeof ujian_brand === 'string') ujian_brand = JSON.parse(ujian_brand);
+    await UjianBrand.destroy({ where: { ujian_id: ujian.id } });
+    for (const brandId of ujian_brand || []) {
+      if (brandId && !isNaN(brandId)) {
         await UjianBrand.create({ ujian_id: ujian.id, brand_id: brandId });
-        inserted++;
-      }
-
-      if (inserted === 0) {
-        console.log("❌ Tidak ada program valid yang dipilih.");
-        return res.status(400).json({ status: false, message: "Minimal satu program harus valid." });
       }
     }
 
-    console.log("📦 [6] Parsing soal dan tipe_ujian...");
+    console.log("📦 [5] Parsing soal dan tipe_ujian...");
     let tipe_ujian = req.body.tipe_ujian;
     let soal = req.body.soal;
     if (typeof tipe_ujian === 'string') tipe_ujian = JSON.parse(tipe_ujian);
@@ -334,53 +320,54 @@ exports.updateUjian = async (req, res) => {
       if (!tipe) continue;
 
       let tipeUjianInstance = null;
-
       if (tipe.id) {
         tipeUjianInstance = await TipeUjian.findByPk(tipe.id);
-        if (tipeUjianInstance) {
-          await tipeUjianInstance.update({ time: tipe.time });
-          console.log(`🔄 Update waktu tipe '${tipeKey}':`, tipe.time);
-        }
+        if (tipeUjianInstance) await tipeUjianInstance.update({ time: tipe.time });
       }
-
       if (!tipeUjianInstance) {
         tipeUjianInstance = await TipeUjian.create({
-          ujian_id: ujian.id,
-          category_ujian: tipeKey,
-          time: tipe.time,
+          ujian_id: ujian.id, category_ujian: tipeKey, time: tipe.time
         });
-        console.log(`➕ Buat tipe '${tipeKey}':`, tipeUjianInstance.id);
       }
 
-      mapTipe[tipeKey] = tipeUjianInstance;
-    }
+      const tipeId = tipeUjianInstance.id;
+      mapTipe[tipeKey] = tipeId;
 
-    console.log("📋 [7] Mulai proses update/buat soal...");
-    for (const tipeKey of ['listening', 'reading', 'writing']) {
       const soalList = soal[tipeKey];
-      const tipeId = mapTipe[tipeKey]?.id;
-
-      const jumlahSoal = await Soal.count({
-        where: { tipe_ujian_id: tipeId }
-      });
-
-      await TipeUjian.update(
-        { total_soal: jumlahSoal },
-        { where: { id: tipeId } }
-      );
-
-      console.log(`🔢 total_soal untuk '${tipeKey}' diupdate: ${jumlahSoal}`);
-
       if (!Array.isArray(soalList)) continue;
-      if (!tipeId) {
-        console.warn(`⚠️ tipeId untuk ${tipeKey} tidak ditemukan, soal dilewati.`);
-        continue;
-      }
 
-      soalList.forEach(async (s, index) => {
+      for (let i = 0; i < soalList.length; i++) {
+        const s = soalList[i];
+
+        // === Upload File Soal ===
+        let file_soal_path = '';
+        if (Array.isArray(s.image)) {
+          const filePaths = [];
+          for (const filename of s.image) {
+            const file = req.files?.[filename];
+            if (file) {
+              const fileName = `${Date.now()}_${file.name.replace(/\s/g, "_")}`;
+              const savePath = path.join(__dirname, "../public/soal", fileName);
+              fs.mkdirSync(path.dirname(savePath), { recursive: true });
+              await file.mv(savePath);
+              filePaths.push(`/public/soal/${fileName}`);
+            }
+          }
+          file_soal_path = filePaths.join(';');
+        } else if (typeof s.image === 'string' && req.files?.[s.image]) {
+          const file = req.files[s.image];
+          const fileName = `${Date.now()}_${file.name.replace(/\s/g, "_")}`;
+          const savePath = path.join(__dirname, "../public/soal", fileName);
+          fs.mkdirSync(path.dirname(savePath), { recursive: true });
+          await file.mv(savePath);
+          file_soal_path = `/public/soal/${fileName}`;
+        } else {
+          file_soal_path = s.image || '';
+        }
+
         const soalData = {
           tipe_ujian_id: tipeId,
-          index_soal: index + 1, 
+          index_soal: i + 1,
           tipe_soal: s.questionType,
           penjelasan: s.explanation || '',
           soal_awal: s.guideForQuestion?.start || null,
@@ -389,42 +376,36 @@ exports.updateUjian = async (req, res) => {
           jawaban_benar: Array.isArray(s.answer) ? s.answer.join(',') : '',
           mutiple: s.isMultipleAnswer || false,
           point_soal: s.point || 0,
-          file_soal: s.image || '',
+          file_soal: file_soal_path,
         };
 
         let soalInstance;
-
         if (s.id) {
           soalInstance = await Soal.findByPk(s.id);
           if (soalInstance && soalInstance.tipe_ujian_id === tipeId) {
             await soalInstance.update(soalData);
-            console.log(`📝 Soal ${s.id} diupdate (tipe cocok)`);
           } else {
             soalInstance = await Soal.create(soalData);
-            console.log(`➕ Soal baru dibuat karena tipe tidak cocok atau ID tidak valid`);
           }
         } else {
           soalInstance = await Soal.create(soalData);
-          console.log("➕ Soal baru dibuat (tanpa ID)");
         }
 
-        const soalId = soalInstance.id;
-
         if (s.questionType === 'multiple-choice' && Array.isArray(s.options)) {
-          await ListJawaban.destroy({ where: { soal_id: soalId } });
-
+          await ListJawaban.destroy({ where: { soal_id: soalInstance.id } });
           for (const opt of s.options) {
             await ListJawaban.create({
-              soal_id: soalId,
+              soal_id: soalInstance.id,
               jawaban: opt.option,
               isTrue: Array.isArray(s.answer) ? s.answer.includes(opt.id) : false,
               position: opt.position || null,
             });
           }
-
-          console.log(`✅ Jawaban soal ${soalId} diperbarui (pilihan ganda)`);
         }
-      });
+      }
+
+      const jumlahSoal = await Soal.count({ where: { tipe_ujian_id: tipeId } });
+      await TipeUjian.update({ total_soal: jumlahSoal }, { where: { id: tipeId } });
     }
 
     console.log("🎉 Semua proses update berhasil");
@@ -435,6 +416,7 @@ exports.updateUjian = async (req, res) => {
     return res.status(500).json({ status: false, error: error.message });
   }
 };
+
 
 
 exports.deleteUjian = async (req, res) => {
@@ -1162,5 +1144,43 @@ exports.getUjianReviewResult = async (req, res) => {
   } catch (err) {
     console.error("❌ Gagal ambil review nilai ujian:", err);
     res.status(500).json({ status: false, message: err.message });
+  }
+};
+
+exports.deleteSoal = async (req, res) => {
+  try {
+    const { ujianId, soalId } = req.params;  // Ambil ID ujian dan soal dari parameter URL
+
+    // Cari soal berdasarkan ID
+    const soal = await Soal.findByPk(soalId);
+    if (!soal) {
+      return res.status(404).json({ status: false, message: "Soal tidak ditemukan" });
+    }
+
+    // Pastikan soal tersebut terkait dengan ujian yang benar
+    const tipeUjian = await TipeUjian.findOne({ where: { ujian_id: ujianId } });
+    if (!tipeUjian) {
+      return res.status(404).json({ status: false, message: "Tipe Ujian tidak ditemukan untuk ujian ini" });
+    }
+
+    // Hapus soal
+    await soal.destroy();  // Hapus soal dari database
+
+    // Hapus file soal jika ada
+    if (soal.file_soal) {
+      const filePath = path.join(__dirname, '..', soal.file_soal);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);  // Hapus file dari sistem file
+      }
+    }
+
+    // Hapus jawaban yang terkait dengan soal tersebut
+    await ListJawaban.destroy({ where: { soal_id: soalId } });
+
+    res.json({ status: true, message: "Soal berhasil dihapus" });
+
+  } catch (error) {
+    console.error("❌ Gagal menghapus soal:", error);
+    res.status(500).json({ status: false, message: "Terjadi kesalahan saat menghapus soal" });
   }
 };

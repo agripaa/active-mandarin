@@ -881,7 +881,7 @@ useEffect(() => {
         <div className="flex flex-col gap-2">
           <h5 className="text-2xl font-bold">Arahan Untuk</h5>
           <h6 className="rounded-2xl mr-2 mb-2 text-blue-500">
-            Soal {parseInt(currentQuestion.guideForQuestion.start) + 1} - Soal {parseInt(currentQuestion.guideForQuestion.end) + 1} 
+            Soal {parseInt(currentQuestion.guideForQuestion.start)} - Soal {parseInt(currentQuestion.guideForQuestion.end)} 
           </h6>
           {currentQuestion.questionType !== "guide" && (
             <div className="my-6" dangerouslySetInnerHTML={{ __html: currentQuestion.question }} />
@@ -908,59 +908,73 @@ useEffect(() => {
   }
 }, [number, currentQuestion, isReviewMode]);
 
-  
-  const renderMediaPreview = (filePath) => {
-    if (!filePath) return null;
-    
-    console.log("🔗 Image URL:", `${process.env.REACT_APP_API_IMG}${filePath}`);
-    const url = `${process.env.REACT_APP_API_IMG}${filePath}`;
-    const ext = filePath.split('.').pop().toLowerCase();
+  const renderMediaPreview = (imageString) => {
+  if (!imageString) return null;
 
-    if (["jpg", "jpeg", "png", "gif", "webp"].includes(ext)) {
-      return (
-        <img
-          src={url}
-          alt="Preview"
-          className="rounded-xl max-w-full max-h-[300px] object-contain mb-4"
-        />
-      );
-    }
+  const filePaths = imageString.split(";").map(f => f.trim()).filter(Boolean);
 
-    if (["mp3", "wav", "ogg"].includes(ext)) {
-      return (
-        <audio controls className="mb-4 w-full">
-          <source src={url} type={`audio/${ext}`} />
-          Browser Anda tidak mendukung elemen audio.
-        </audio>
-      );
-    }
+  return (
+    <div className="flex flex-col gap-4 mb-4">
+      {filePaths.map((filePath, idx) => {
+        const url = `${process.env.REACT_APP_API_IMG}${filePath}`;
+        const ext = filePath.split('.').pop().toLowerCase();
 
-    if (["mp4", "webm", "ogg"].includes(ext)) {
-      return (
-        <video controls className="mb-4 w-full max-h-[360px] rounded-lg">
-          <source src={url} type={`video/${ext}`} />
-          Browser Anda tidak mendukung elemen video.
-        </video>
-      );
-    }
+        if (["jpg", "jpeg", "png", "gif", "webp"].includes(ext)) {
+          return (
+            <img
+              key={idx}
+              src={url}
+              alt={`Preview ${idx}`}
+              className="rounded-xl max-w-full max-h-[300px] object-contain"
+            />
+          );
+        }
 
-    if (ext === "pdf") {
-      return (
-        <iframe
-          src={url}
-          className="w-full h-[400px] rounded-lg border mb-4"
-          title="Preview PDF"
-        />
-      );
-    }
+        if (["mp3", "wav", "ogg"].includes(ext)) {
+          return (
+            <audio key={idx} controls className="w-full">
+              <source src={url} type={`audio/${ext}`} />
+              Browser Anda tidak mendukung elemen audio.
+            </audio>
+          );
+        }
 
-    return (
-      <div className="bg-gray-100 p-4 rounded-lg mb-4 text-sm text-gray-600">
-        File tidak bisa ditampilkan langsung, tapi tersedia di: <code>{filePath}</code>
-      </div>
-    );
-  };
+        if (["mp4", "webm", "ogg"].includes(ext)) {
+          return (
+            <video key={idx} controls className="w-full max-h-[360px] rounded-lg">
+              <source src={url} type={`video/${ext}`} />
+              Browser Anda tidak mendukung elemen video.
+            </video>
+          );
+        }
 
+        if (ext === "pdf") {
+          return (
+            <iframe
+              key={idx}
+              src={url}
+              className="w-full h-[400px] rounded-lg border"
+              title={`PDF Preview ${idx}`}
+            />
+          );
+        }
+
+        return (
+          <div
+            key={idx}
+            className="bg-gray-100 p-4 rounded-lg text-sm text-gray-600"
+          >
+            File tidak bisa ditampilkan langsung: <code>{filePath}</code>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+  const totalVisibleQuestions = questionList.filter(q => q.questionType !== "guide").length;
+    const currentVisibleNumber = questionList
+    .filter(q => q.questionType !== "guide")
+    .findIndex(q => q.id === currentQuestion?.id) + 1;
 
   return (
     loading ? (
@@ -999,7 +1013,7 @@ useEffect(() => {
             )}
 
             <div className="flex justify-between items-center text-sm text-gray-600">
-              <span>No. Soal: {number + 1} / {questionList.length}</span>
+              <span>No. Soal: {currentVisibleNumber} / {totalVisibleQuestions}</span>
               <span>Tipe Soal: {currentQuestion.questionType}</span>
             </div>
 

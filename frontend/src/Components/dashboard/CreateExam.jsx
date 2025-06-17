@@ -8,7 +8,7 @@ import { motion } from "motion/react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { useNavigate } from 'react-router-dom';
-import { createUjian, getUjianById, updateUjian, getUjianBrandsByUjianId, getUjianSoal } from "../../api/ujian"; 
+import { createUjian, getUjianById, updateUjian, getUjianBrandsByUjianId, getUjianSoal, deleteSoal } from "../../api/ujian"; 
 import { getAllBrands } from "../../api/brand"; 
 
 
@@ -132,6 +132,7 @@ const CreateExam = ({ dataProgram }) => {
                 questionCount: questionCount,
               }
             }))}
+            ujianId={id}
           />
           </div>
           <div style={{ display: show === 'reading' ? 'block' : 'none' }}>
@@ -150,6 +151,7 @@ const CreateExam = ({ dataProgram }) => {
                     questionCount: questionCount,
                   }
                 }))}
+                ujianId={id}
             />
           </div>
           <div style={{ display: show === 'writing' ? 'block' : 'none' }}>
@@ -168,6 +170,7 @@ const CreateExam = ({ dataProgram }) => {
                   questionCount: questionCount,
                 }
               }))}
+              ujianId={id}
             />
           </div>
         </motion.div>
@@ -370,11 +373,22 @@ const CreateExam = ({ dataProgram }) => {
         tipe_ujian_id: tipeId,
       };
 
-      if (q.fileList?.[0]?.originFileObj) {
-        const filenameRef = `${tipe}_file_${idx}`;
-        formData.append(filenameRef, q.fileList[0].originFileObj);
-        newSoal.image = filenameRef;
+      if (q.id) {
+      newSoal.id = q.id; // ⬅️ kirim ID-nya agar backend tahu ini soal lama
       }
+
+      if (q.fileList && q.fileList.length > 0) {
+        const fileNames = [];
+
+        q.fileList.forEach((fileObj, fileIdx) => {
+          const filenameRef = `${tipe}_file_${idx}_${fileIdx}`;
+          formData.append(filenameRef, fileObj.originFileObj);
+          fileNames.push(filenameRef);
+        });
+
+        newSoal.image = fileNames; // array of filenames
+      }
+
 
       return newSoal;
     });
@@ -641,7 +655,43 @@ const totalWaktu = Number(typeData.listening.time) + Number(typeData.reading.tim
   )
 }
 
-const QuestionComponent = React.memo(({ index, question, number, onChange, onDelete }) => {
+const QuestionComponent = React.memo(({ index, question, number, onChange, onDelete, ujianId }) => {
+   const handleDelete = async (index) => {
+  try {
+    // Jika soal belum punya id dari DB, langsung hapus dari frontend
+    if (!question.id || typeof question.id !== "number") {
+      onDelete(index);
+      return;
+    }
+
+    // Jika soal sudah disimpan, hapus dari backend
+    const response = await deleteSoal(ujianId, question.id);
+
+    if (response.status) {
+      onDelete(index);
+      Swal.fire({
+        title: 'Soal Dihapus!',
+        text: response.message,
+        icon: 'success'
+      });
+    } else {
+      Swal.fire({
+        title: 'Gagal Menghapus Soal!',
+        text: response.message,
+        icon: 'error'
+      });
+    }
+  } catch (error) {
+    Swal.fire({
+      title: 'Error!',
+      text: 'Gagal menghapus soal',
+      icon: 'error'
+    });
+  }
+};
+
+
+
   return (
     <div className="bg-white p-6 rounded-2xl shadow">
       <div className="flex">
@@ -651,7 +701,7 @@ const QuestionComponent = React.memo(({ index, question, number, onChange, onDel
         <div className="w-1/2 flex justify-end mb-3">
           <Button
             danger
-            onClick={() => onDelete(index)}
+            onClick={() => handleDelete(index)}
           >
             Hapus Soal
           </Button>
@@ -769,6 +819,14 @@ const QuestionComponent = React.memo(({ index, question, number, onChange, onDel
               placeholder="Masukkan jawaban yang benar dengan setiap kata dipisahkan dengan titik koma (;). cth: Active; Mandarin; Indonesia"
             />
           </div>
+          <div className="w-full my-4 flex flex-col gap-2">
+            <label className="text-base font-medium">Penjelasan</label>
+            <ReactQuill
+              value={question.explanation}
+              onChange={(value) => onChange(index, 'explanation', value)}
+              theme="snow"
+            />
+          </div>
         </>
       )}
       {question.questionType === 'guide' && (
@@ -783,31 +841,33 @@ const QuestionComponent = React.memo(({ index, question, number, onChange, onDel
       <div className="w-full h-0.5 bg-fiord-200 my-4" />
       <div className="flex flex-col justify-start items-start gap-2 md:gap-6 md:flex-row md:items-center">
         <Upload
-          maxCount={1}
+          multiple
           beforeUpload={() => false}
           fileList={question.fileList || []}
           onChange={({ fileList }) => {
-            const file = fileList?.[0]?.originFileObj;
-
-            // Validasi jika ada file
-            if (file) {
+            // Validasi semua file
+            const validFiles = fileList.filter(file => {
               const isUnderSize = file.size <= 5 * 1024 * 1024;
-
               if (!isUnderSize) {
-                alert("Ukuran file tidak boleh lebih dari 5MB.");
-                return;
+                alert(`${file.name} melebihi ukuran 5MB.`);
+                return false;
               }
+              return true;
+            });
 
+            // Generate preview untuk semua file (hanya jika ingin preview)
+            validFiles.forEach(file => {
               const reader = new FileReader();
               reader.onload = (e) => {
-                onChange(index, 'image', e.target.result); 
-                onChange(index, 'fileList', fileList);     
+                // Catatan: jika kamu hanya simpan `image`, ini akan tertimpa.
+                // Lebih baik `image` jadi array base64 jika ingin preview banyak
+                // Contoh: onChange(index, 'imagePreviews', [...prev, e.target.result])
               };
-              reader.readAsDataURL(file);
-            } else {
-              onChange(index, 'image', '');
-              onChange(index, 'fileList', []);
-            }
+              reader.readAsDataURL(file.originFileObj);
+            });
+
+            // Simpan fileList yang valid ke state
+            onChange(index, 'fileList', validFiles);
           }}
         >
           <Button icon={<UploadOutlined />}>Upload File</Button>
@@ -879,7 +939,7 @@ const QuestionComponent = React.memo(({ index, question, number, onChange, onDel
   );
 });
 
-const DetailExam = ({ show, setShow, sendToParent, questions, setQuestions, time, setTime }) => {
+const DetailExam = ({ show, setShow, sendToParent, questions, setQuestions, time, setTime, ujianId }) => {
   /**
    * State to manage questions and time for the exam.
    * {
@@ -940,11 +1000,10 @@ const DetailExam = ({ show, setShow, sendToParent, questions, setQuestions, time
   const handleDelete = useCallback((index) => {
   setQuestions(prev => {
     const updated = [...prev];
-    updated.splice(index, 1); // hapus satu item di index tsb
-    return updated.map((q, i) => ({ ...q, id: i + 1 })); // reset ID
+    updated.splice(index, 1); // hapus satu item
+    return updated; // ❌ jangan reset id! biarkan tetap pakai id dari DB
   });
 }, []);
-
 
   return (
     <>
@@ -974,9 +1033,10 @@ const DetailExam = ({ show, setShow, sendToParent, questions, setQuestions, time
             number={questionNumberArray[index]}
             onChange={onChange}
             onDelete={handleDelete}
+            ujianId={ujianId}
           />
         ))}
-        <Button type="default" className="w-fit text-blue-500 rounded-2xl" size="large" variant="outlined" onClick={() => setQuestions([...questions, { id: questionLength + 1, question: '', questionType: 'essay', explanation: '', options: [], isMultipleAnswer: false, answer: [], image: '', guideForQuestion: { start: 0, end: 0, guide: '' }, point: 0 }])}>
+        <Button type="default" className="w-fit text-blue-500 rounded-2xl" size="large" variant="outlined" onClick={() => setQuestions([...questions, { id: undefined, question: '', questionType: 'essay', explanation: '', options: [], isMultipleAnswer: false, answer: [], image: '', guideForQuestion: { start: 0, end: 0, guide: '' }, point: 0 }])}>
           Tambahkan Soal
         </Button>
       </div>

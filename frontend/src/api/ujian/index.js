@@ -185,3 +185,17 @@ export const getUjianReviewResult = async (id) => {
     throw error.response ? error.response.data : error.message;
   }
 };
+
+export const deleteSoal = async (ujianId, soalId) => {
+  try {
+    const response = await api.delete(`/ujian/${ujianId}/soal/${soalId}`, {
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem("token")}`
+  },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting question:', error);
+    throw new Error('Gagal menghapus soal');
+  }
+};

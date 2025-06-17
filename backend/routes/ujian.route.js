@@ -18,5 +18,6 @@ router.get('/soal/:id', middleware.authenticateUser, ujianController.getSoalByUj
 router.get('/:id', middleware.authenticateUser, ujianController.getUjianById);
 router.put('/:id', middleware.authenticateUser, ujianController.updateUjian);
 router.delete('/:id', middleware.authenticateUser, ujianController.deleteUjian);
+router.delete('/:ujianId/soal/:soalId', middleware.authenticateUser, ujianController.deleteSoal);
 
 module.exports = router;
