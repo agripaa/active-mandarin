@@ -241,34 +241,30 @@ exports.getSoalByUjianId = async (req, res) => {
 
 exports.updateUjian = async (req, res) => {
   try {
+    console.log("🛠️ [1] Mencari ujian...");
     const ujian = await Ujian.findByPk(req.params.id);
     if (!ujian) {
+      console.log("❌ Ujian tidak ditemukan.");
       return res.status(404).json({ status: false, message: "Ujian not found" });
     }
 
+    console.log("📥 [2] Parsing body ujian...");
     const {
-      nama_ujian,
-      level,
-      harga_normal,
-      harga_diskon,
-      harga_certif,
-      commission,
-      total_skor,
-      desc,
-      isProgres,
-      isDone,
-      isCheck,
+      nama_ujian, level, harga_normal, harga_diskon,
+      harga_certif, commission, total_skor, desc,
+      isProgres, isDone, isCheck,
     } = req.body;
 
     let ujian_img = ujian.ujian_img;
 
-    // Proses upload gambar jika ada
     if (req.files && req.files.ujian_img) {
+      console.log("🖼️ [3] Mengupload gambar ujian...");
       const imgFile = req.files.ujian_img;
       const ext = path.extname(imgFile.name).toLowerCase();
       const allowedExt = [".jpg", ".jpeg", ".png", ".webp"];
 
       if (!allowedExt.includes(ext)) {
+        console.log("❌ Ekstensi file tidak valid:", ext);
         return res.status(400).json({ status: false, message: "Only image files are allowed!" });
       }
 
@@ -277,47 +273,41 @@ exports.updateUjian = async (req, res) => {
 
       if (!fs.existsSync(path.dirname(filePath))) {
         fs.mkdirSync(path.dirname(filePath), { recursive: true });
+        console.log("📁 Folder upload dibuat:", path.dirname(filePath));
       }
 
       await imgFile.mv(filePath);
       ujian_img = `/public/ujian/${fileName}`;
+      console.log("✅ Gambar berhasil diupload:", ujian_img);
     }
 
-    // Update data utama ujian
+    console.log("📝 [4] Mengupdate data utama ujian...");
     await ujian.update({
-      nama_ujian,
-      level,
-      harga_normal,
-      harga_diskon,
-      harga_certif,
-      ujian_img,
-      commission,
-      total_skor,
-      desc,
-      isProgres,
-      isDone,
-      isCheck,
+      nama_ujian, level, harga_normal, harga_diskon,
+      harga_certif, ujian_img, commission,
+      total_skor, desc, isProgres, isDone, isCheck,
     });
 
-    // Update ujian_brand
+    console.log("🔗 [5] Mengupdate ujian_brand...");
     let ujian_brand = req.body.ujian_brand;
-    try {
-      if (typeof ujian_brand === "string") ujian_brand = JSON.parse(ujian_brand);
-    } catch (err) {
-      return res.status(400).json({ status: false, message: "Format ujian_brand tidak valid" });
+    if (typeof ujian_brand === "string") {
+      try {
+        ujian_brand = JSON.parse(ujian_brand);
+      } catch {
+        console.log("❌ Format ujian_brand invalid");
+        return res.status(400).json({ status: false, message: "Format ujian_brand tidak valid" });
+      }
     }
 
     if (Array.isArray(ujian_brand)) {
-      // Hapus semua relasi lama
       await UjianBrand.destroy({ where: { ujian_id: ujian.id } });
-
       let inserted = 0;
+
       for (const brandId of ujian_brand) {
         if (!brandId || isNaN(brandId)) continue;
-
         const brand = await Brand.findByPk(brandId);
         if (!brand) {
-          console.warn(`⚠️ brand_id ${brandId} tidak ditemukan, dilewati`);
+          console.warn(`⚠️ brand_id ${brandId} tidak ditemukan`);
           continue;
         }
 
@@ -326,107 +316,123 @@ exports.updateUjian = async (req, res) => {
       }
 
       if (inserted === 0) {
-        return res.status(400).json({ status: false, message: "Minimal satu program (brand) harus valid." });
+        console.log("❌ Tidak ada program valid yang dipilih.");
+        return res.status(400).json({ status: false, message: "Minimal satu program harus valid." });
       }
     }
 
-    // 1. Parsing tipe_ujian dan soal
-  let tipe_ujian = req.body.tipe_ujian;
-  let soal = req.body.soal;
-
-  try {
+    console.log("📦 [6] Parsing soal dan tipe_ujian...");
+    let tipe_ujian = req.body.tipe_ujian;
+    let soal = req.body.soal;
     if (typeof tipe_ujian === 'string') tipe_ujian = JSON.parse(tipe_ujian);
     if (typeof soal === 'string') soal = JSON.parse(soal);
-  } catch (err) {
-    return res.status(400).json({ status: false, message: "Format tipe_ujian atau soal tidak valid" });
-  }
 
-  // 2. Loop tiap tipe ujian
-  for (const tipeKey of ['listening', 'reading', 'writing']) {
-    const tipe = tipe_ujian[tipeKey];
-    if (!tipe) continue;
+    const mapTipe = {};
 
-    let tipeUjianInstance;
+    for (const tipeKey of ['listening', 'reading', 'writing']) {
+      const tipe = tipe_ujian[tipeKey];
+      if (!tipe) continue;
 
-    // Jika punya id, update
-    if (tipe.id) {
-      tipeUjianInstance = await TipeUjian.findByPk(tipe.id);
-      if (tipeUjianInstance) {
-        await tipeUjianInstance.update({ time: tipe.time });
+      let tipeUjianInstance = null;
+
+      if (tipe.id) {
+        tipeUjianInstance = await TipeUjian.findByPk(tipe.id);
+        if (tipeUjianInstance) {
+          await tipeUjianInstance.update({ time: tipe.time });
+          console.log(`🔄 Update waktu tipe '${tipeKey}':`, tipe.time);
+        }
       }
+
+      if (!tipeUjianInstance) {
+        tipeUjianInstance = await TipeUjian.create({
+          ujian_id: ujian.id,
+          category_ujian: tipeKey,
+          time: tipe.time,
+        });
+        console.log(`➕ Buat tipe '${tipeKey}':`, tipeUjianInstance.id);
+      }
+
+      mapTipe[tipeKey] = tipeUjianInstance;
     }
 
-    // Jika tidak ada id, buat baru
-    if (!tipeUjianInstance) {
-      tipeUjianInstance = await TipeUjian.create({
-        ujian_id: ujian.id,
-        category_ujian: tipeKey,
-        time: tipe.time
+    console.log("📋 [7] Mulai proses update/buat soal...");
+    for (const tipeKey of ['listening', 'reading', 'writing']) {
+      const soalList = soal[tipeKey];
+      const tipeId = mapTipe[tipeKey]?.id;
+
+      const jumlahSoal = await Soal.count({
+        where: { tipe_ujian_id: tipeId }
+      });
+
+      await TipeUjian.update(
+        { total_soal: jumlahSoal },
+        { where: { id: tipeId } }
+      );
+
+      console.log(`🔢 total_soal untuk '${tipeKey}' diupdate: ${jumlahSoal}`);
+
+      if (!Array.isArray(soalList)) continue;
+      if (!tipeId) {
+        console.warn(`⚠️ tipeId untuk ${tipeKey} tidak ditemukan, soal dilewati.`);
+        continue;
+      }
+
+      soalList.forEach(async (s, index) => {
+        const soalData = {
+          tipe_ujian_id: tipeId,
+          index_soal: index + 1, 
+          tipe_soal: s.questionType,
+          penjelasan: s.explanation || '',
+          soal_awal: s.guideForQuestion?.start || null,
+          soal_akhir: s.guideForQuestion?.end || null,
+          pertanyaan: s.questionType === 'guide' ? s.guideForQuestion?.guide || '' : s.question,
+          jawaban_benar: Array.isArray(s.answer) ? s.answer.join(',') : '',
+          mutiple: s.isMultipleAnswer || false,
+          point_soal: s.point || 0,
+          file_soal: s.image || '',
+        };
+
+        let soalInstance;
+
+        if (s.id) {
+          soalInstance = await Soal.findByPk(s.id);
+          if (soalInstance && soalInstance.tipe_ujian_id === tipeId) {
+            await soalInstance.update(soalData);
+            console.log(`📝 Soal ${s.id} diupdate (tipe cocok)`);
+          } else {
+            soalInstance = await Soal.create(soalData);
+            console.log(`➕ Soal baru dibuat karena tipe tidak cocok atau ID tidak valid`);
+          }
+        } else {
+          soalInstance = await Soal.create(soalData);
+          console.log("➕ Soal baru dibuat (tanpa ID)");
+        }
+
+        const soalId = soalInstance.id;
+
+        if (s.questionType === 'multiple-choice' && Array.isArray(s.options)) {
+          await ListJawaban.destroy({ where: { soal_id: soalId } });
+
+          for (const opt of s.options) {
+            await ListJawaban.create({
+              soal_id: soalId,
+              jawaban: opt.option,
+              isTrue: Array.isArray(s.answer) ? s.answer.includes(opt.id) : false,
+              position: opt.position || null,
+            });
+          }
+
+          console.log(`✅ Jawaban soal ${soalId} diperbarui (pilihan ganda)`);
+        }
       });
     }
 
-    const tipeUjianId = tipeUjianInstance.id;
-
-    // 3. Update atau Tambah Soal
-    const soalList = soal[tipeKey];
-    if (!Array.isArray(soalList)) continue;
-
-    for (const s of soalList) {
-      const soalData = {
-        tipe_ujian_id: tipeUjianId,
-        tipe_soal: s.questionType,
-        penjelasan: s.explanation || '',
-        soal_awal: s.guideForQuestion?.start || null,
-        soal_akhir: s.guideForQuestion?.end || null,
-        pertanyaan: s.questionType === 'guide'
-        ? s.guideForQuestion?.guide || ''
-        : s.question,
-        jawaban_benar: Array.isArray(s.answer) ? s.answer.join(',') : '',
-        mutiple: s.isMultipleAnswer || false,
-        point_soal: s.point || 0,
-        file_soal: s.image || '',
-      };
-
-      let soalInstance;
-
-      if (s.id) {
-        soalInstance = await Soal.findByPk(s.id);
-        if (soalInstance) {
-          await soalInstance.update(soalData);
-        } else {
-          // ID diberikan tapi tidak ditemukan di DB → buat baru saja
-          soalInstance = await Soal.create(soalData);
-        }
-      } else {
-        // Soal baru → buat langsung
-        soalInstance = await Soal.create(soalData);
-      }
-      
-      const soalId = soalInstance.id;
-
-      // 4. Update ListJawaban jika tipe pilihan ganda
-      if (s.questionType === 'multiple-choice' && Array.isArray(s.options)) {
-        // Bersihkan dulu jawaban lama
-        await ListJawaban.destroy({ where: { soal_id: soalId } });
-
-        for (const opt of s.options) {
-          await ListJawaban.create({
-            soal_id: soalId,
-            jawaban: opt.option,
-            isTrue: Array.isArray(s.answer) ? s.answer.includes(opt.id) : false,
-            position: opt.position || null,
-          });
-        }
-      }
-    }
-  }
-
-
-    res.json({ status: true, message: "Ujian updated successfully", data: ujian });
+    console.log("🎉 Semua proses update berhasil");
+    return res.json({ status: true, message: "Ujian updated successfully", data: ujian });
 
   } catch (error) {
-    console.error("❌ Gagal update ujian:", error);
-    res.status(500).json({ status: false, error: error.message });
+    console.error("❌ ERROR di updateUjian:", error);
+    return res.status(500).json({ status: false, error: error.message });
   }
 };
 

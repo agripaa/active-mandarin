@@ -412,6 +412,13 @@ const CreateExam = ({ dataProgram }) => {
     : await createUjian(formData);
     // ✅ pakai API helper
 
+    console.log("SOAL YANG DIKIRIM:", {
+      listening: updatedListening.length,
+      reading: updatedReading.length,
+      writing: updatedWriting.length,
+    });
+
+
     if (!ujianData.status)
       throw new Error("Gagal memperbarui ujian");
 
