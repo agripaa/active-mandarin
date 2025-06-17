@@ -10,6 +10,7 @@ import "react-quill/dist/quill.snow.css";
 import { useNavigate } from 'react-router-dom';
 import { createUjian, getUjianById, updateUjian, getUjianBrandsByUjianId, getUjianSoal, deleteSoal } from "../../api/ujian"; 
 import { getAllBrands } from "../../api/brand"; 
+import { v4 as uuidv4 } from 'uuid';
 
 
 import { formatRupiah } from "../../utils/rupiahFormat";
@@ -290,19 +291,19 @@ const CreateExam = ({ dataProgram }) => {
       const tipe = soalRes.data;
 
       // 🔧 Normalisasi jawaban (["1"] → option.id yang sesuai)
-      const normalizeAnswerFromPosition = (questions) => {
-        return questions.map((q) => {
-          if (q.questionType === 'multiple-choice' && Array.isArray(q.answer)) {
-            const newAnswer = q.answer.map(pos => {
-              const index = parseInt(pos, 10) - 1;
-              const opt = q.options?.[index];
-              return opt?.id;
-            }).filter(Boolean);
-            return { ...q, answer: newAnswer };
-          }
-          return q;
-        });
-      };
+    const normalizeAnswerFromPosition = (questions) => {
+      return questions.map((q) => {
+        if (q.questionType === 'multiple-choice' && Array.isArray(q.answer)) {
+          const newAnswer = q.answer.map(pos => {
+            const index = parseInt(pos, 10) - 1;
+            const opt = q.options?.[index];
+            return opt?.id;
+          }).filter(Boolean);
+          return { ...q, answer: newAnswer };
+        }
+        return q;
+      });
+    };
 
       setTypeData(prev => ({
         listening: {
@@ -730,13 +731,14 @@ const QuestionComponent = React.memo(({ index, question, number, onChange, onDel
                   <input
                     type={question.isMultipleAnswer ? 'checkbox' : 'radio'}
                     name={`correct-answer-${index}`}
-                    checked={question.answer.includes(option.id)}
+                    checked={option.isTrue === true}
                     onChange={() => {
                       const newAnswer = question.isMultipleAnswer
                         ? question.answer.includes(option.id)
                           ? question.answer.filter(id => id !== option.id)
                           : [...question.answer, option.id]
                         : [option.id];
+
                       onChange(index, 'answer', newAnswer);
                     }}
                     className="cursor-pointer accent-blue-500"
@@ -872,6 +874,17 @@ const QuestionComponent = React.memo(({ index, question, number, onChange, onDel
         >
           <Button icon={<UploadOutlined />}>Upload File</Button>
         </Upload>
+        {question.image && (
+          <div className="mt-4 space-y-2">
+            <label className="font-medium text-sm text-gray-600">File Terkait:</label>
+            {Array.isArray(question.image)
+              ? question.image.map((fileUrl, idx) => (
+                  <RenderMedia key={idx} url={fileUrl} index={idx} />
+                ))
+              : <RenderMedia url={question.image} />}
+          </div>
+        )}
+
 
         {question.questionType === 'multiple-choice' && (
           <div className="flex flex-row items-center">
@@ -938,6 +951,49 @@ const QuestionComponent = React.memo(({ index, question, number, onChange, onDel
     </div>
   );
 });
+
+const RenderMedia = ({ url, index }) => {
+  if (!url) return null;
+
+  const lower = url.toLowerCase();
+
+  if (lower.match(/\.(jpg|jpeg|png|webp|gif)$/)) {
+    return <img src={`${process.env.REACT_APP_API_IMG}${url}`} alt={`file-${index}`} className="max-w-xs rounded shadow" />;
+  }
+
+  if (lower.match(/\.(mp3|wav|ogg)$/)) {
+    return (
+      <audio controls>
+        <source src={`${process.env.REACT_APP_API_IMG}${url}`} />
+        Browser tidak mendukung audio.
+      </audio>
+    );
+  }
+
+  if (lower.match(/\.(mp4|webm|ogg)$/)) {
+    return (
+      <video controls className="max-w-xs rounded shadow">
+        <source src={`${process.env.REACT_APP_API_IMG}${url}`} />
+        Browser tidak mendukung video.
+      </video>
+    );
+  }
+
+  if (lower.match(/\.pdf$/)) {
+    return (
+      <a href={`${process.env.REACT_APP_API_IMG}${url}`} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+        📄 Lihat Dokumen PDF
+      </a>
+    );
+  }
+
+  return (
+    <a href={`${process.env.REACT_APP_API_IMG}${url}`} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+      📎 File Lampiran
+    </a>
+  );
+};
+
 
 const DetailExam = ({ show, setShow, sendToParent, questions, setQuestions, time, setTime, ujianId }) => {
   /**

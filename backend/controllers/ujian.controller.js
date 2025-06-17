@@ -393,11 +393,18 @@ exports.updateUjian = async (req, res) => {
 
         if (s.questionType === 'multiple-choice' && Array.isArray(s.options)) {
           await ListJawaban.destroy({ where: { soal_id: soalInstance.id } });
+
           for (const opt of s.options) {
+            const isCorrect = Array.isArray(s.answer) ? s.answer.includes(opt.id) : false;
+
+            console.log(`✅ Menyimpan jawaban: "${opt.option}"`);
+            console.log(`   - ID Opsi: ${opt.id}`);
+            console.log(`   - Apakah benar? ${isCorrect}`);
+            
             await ListJawaban.create({
               soal_id: soalInstance.id,
               jawaban: opt.option,
-              isTrue: Array.isArray(s.answer) ? s.answer.includes(opt.id) : false,
+              isTrue: isCorrect,
               position: opt.position || null,
             });
           }
