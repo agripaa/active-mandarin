@@ -119,9 +119,10 @@ if (reviewMatch.tipe_soal === "order-arrange") {
 }
 
 const cleanOptions = (reviewMatch.list_jawaban || []).map((j) => ({
-      ...j,
-      position: j.position?.replace(/['"]+/g, "").trim(),
-    }));
+  ...j,
+  option: j.option || j.jawaban || "",  // fallback kalau `option` kosong
+  position: j.position?.replace(/['"]+/g, "").trim(),
+}));
 
     return {
       ...q,
@@ -705,25 +706,23 @@ useEffect(() => {
           {currentQuestion.options.map((option, idx) => (
               <Button
                 key={option.id || idx}
-                // type={!isReviewMode && currentQuestion.answer.includes(option.id) ? "primary" : "default"}
+                type={!isReviewMode && currentQuestion.answer.includes(option.id) ? "primary" : "default"}
                className={`py-4 pl-4 pr-10 rounded-2xl text-left w-full mb-2 h-auto 
-  ${isReviewMode ? "pointer-events-none" : ""}
-  ${
-    isReviewMode
-      ? currentQuestion.answer.includes(option.position?.trim())
-        ? currentQuestion.correctAnswer.includes(option.position?.trim())
-          ? "bg-green-500 text-white border border-green-600" // ✅ benar & dipilih
-          : "bg-red-100 border border-red-300"                // ❌ dipilih & salah
-        : currentQuestion.correctAnswer.includes(option.position?.trim())
-          ? "bg-green-100 border border-green-300"            // ✅ benar tapi tidak dipilih
-          : "bg-white border border-gray-300 text-blue-500"   // ❌ tidak dipilih & salah
-      : currentQuestion.answer.includes(option.id)
-        ? "bg-blue-100 border border-blue-400 text-blue-700"
-        : "bg-white border border-gray-300 text-blue-500"
-  }
-`}
-
-
+                ${isReviewMode ? "pointer-events-none" : ""}
+                ${
+                  isReviewMode
+                    ? currentQuestion.answer.includes(option.position?.trim())
+                      ? currentQuestion.correctAnswer.includes(option.position?.trim())
+                        ? "bg-green-500 text-white border border-green-600" // ✅ benar & dipilih
+                        : "bg-red-100 border border-red-300"                // ❌ dipilih & salah
+                      : currentQuestion.correctAnswer.includes(option.position?.trim())
+                        ? "bg-green-100 border border-green-300"            // ✅ benar tapi tidak dipilih
+                        : "bg-white border border-gray-300 text-blue-500"   // ❌ tidak dipilih & salah
+                    : currentQuestion.answer.includes(option.id)
+                      ? "bg-blue-100 border border-blue-400 text-blue-700"
+                      : "bg-white border border-gray-300 text-blue-500"
+                }
+              `}
                 onClick={() => {
                   if (isReviewMode) return;
                   setQuestionList(prev =>
