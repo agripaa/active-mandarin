@@ -296,7 +296,7 @@ const CreateExam = ({ dataProgram }) => {
           if (q.questionType === 'multiple-choice' && Array.isArray(q.options)) {
             const correctOptionIds = q.options
               .filter(opt => opt.isTrue)
-              .map(opt => opt.id); // gunakan ID asli dari backend
+              .map(opt => opt.id); 
             return {
               ...q,
               answer: correctOptionIds,

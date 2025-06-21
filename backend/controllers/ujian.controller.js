@@ -130,7 +130,7 @@ exports.createUjian = async (req, res) => {
               penjelasan: s.explanation || '',
               mutiple: s.isMultipleAnswer || false,
               point_soal: s.point || 0,
-              jawaban_benar: Array.isArray(s.answer) ? s.answer.join(',') : s.answer,
+              jawaban_benar: '',
               soal_awal: s.guideForQuestion?.start || null,
               soal_akhir: s.guideForQuestion?.end || null,
               pertanyaan: s.questionType === 'guide'
@@ -139,14 +139,26 @@ exports.createUjian = async (req, res) => {
             });
 
             if (s.questionType === 'multiple-choice' && Array.isArray(s.options)) {
+              // 1. Buat semua opsi jawaban
               await Promise.all(s.options.map(async (opt, idx) => {
                 await ListJawaban.create({
                   soal_id: soalBaru.id,
                   jawaban: opt.option,
-                  isTrue: Array.isArray(s.answer) ? s.answer.includes(opt.id) : s.answer === opt.id,
+                  isTrue: opt.isTrue === true, // pastikan frontend kirim opt.isTrue
                   position: String.fromCharCode(65 + idx),
                 });
               }));
+
+              // 2. Ambil kembali semua jawaban yang isTrue === true
+              const jawabanBenar = await ListJawaban.findAll({
+                where: {
+                  soal_id: soalBaru.id,
+                  isTrue: true
+                }
+              });
+
+              const kunciBenar = jawabanBenar.map(j => j.id).join(',');
+              await soalBaru.update({ jawaban_benar: kunciBenar });
             }
           }
         }
@@ -399,31 +411,51 @@ exports.updateUjian = async (req, res) => {
           // ID yang masih dipakai (untuk keperluan cleanup nanti)
           const usedIds = new Set();
 
-          // ✅ Tambahkan ini:
-          const parsedAnswer = Array.isArray(s.answer) ? s.answer.map(a => parseInt(a, 10)) : [];
+          // // ✅ Tambahkan ini:
+          // const parsedAnswer = Array.isArray(s.answer) ? s.answer.map(a => parseInt(a, 10)) : [];
+
+         for (let idx = 0; idx < s.options.length; idx++) {
+  const opt = s.options[idx];
+  const isCorrect = opt.isTrue === true;
+  const position = opt.position?.toString().trim() || String.fromCharCode(65 + idx);
+
+  if (opt.id && existingMap.has(opt.id)) {
+    const existing = existingMap.get(opt.id);
+    await existing.update({
+      jawaban: opt.option,
+      isTrue: isCorrect,
+      position,
+    });
+    usedIds.add(opt.id);
+  } else {
+    const newJawaban = await ListJawaban.create({
+      soal_id: soalInstance.id,
+      jawaban: opt.option,
+      isTrue: isCorrect,
+      position,
+    });
+    usedIds.add(newJawaban.id);
+  }
+}
 
 
-          for (const opt of s.options) {
-            const isCorrect = parsedAnswer.includes(opt.id);
-
-            if (opt.id && existingMap.has(opt.id)) {
-              const existing = existingMap.get(opt.id);
-              await existing.update({
-                jawaban: opt.option,
-                isTrue: isCorrect,
-                position: opt.position || null,
-              });
-              usedIds.add(opt.id);
-            } else {
-              const newJawaban = await ListJawaban.create({
-                soal_id: soalInstance.id,
-                jawaban: opt.option,
-                isTrue: isCorrect,
-                position: opt.position || null,
-              });
-              usedIds.add(newJawaban.id);
+          // Hapus jawaban lama yang tidak dipakai
+          for (const old of existingJawaban) {
+            if (!usedIds.has(old.id)) {
+              await old.destroy();
             }
           }
+
+          // Ambil jawaban benar berdasarkan isTrue yang baru
+          const jawabanBenar = await ListJawaban.findAll({
+            where: {
+              soal_id: soalInstance.id,
+              isTrue: true
+            }
+          });
+
+          const kunciBenar = jawabanBenar.map(j => j.id).join(',');
+          await soalInstance.update({ jawaban_benar: kunciBenar });
 
           for (const old of existingJawaban) {
             if (!usedIds.has(old.id)) {
