@@ -293,9 +293,14 @@ const CreateExam = ({ dataProgram }) => {
       // 🔧 Normalisasi jawaban (["1"] → option.id yang sesuai)
       const normalizeAnswerFromPosition = (questions) => {
         return questions.map((q) => {
-          if (q.questionType === 'multiple-choice' && Array.isArray(q.answer)) {
-            const newAnswer = q.answer.map(pos => Number(pos)).filter(Boolean);
-            return { ...q, answer: newAnswer };
+          if (q.questionType === 'multiple-choice' && Array.isArray(q.options)) {
+            const correctOptionIds = q.options
+              .filter(opt => opt.isTrue)
+              .map(opt => opt.id); // gunakan ID asli dari backend
+            return {
+              ...q,
+              answer: correctOptionIds,
+            };
           }
           return q;
         });
