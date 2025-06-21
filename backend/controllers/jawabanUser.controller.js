@@ -5,8 +5,8 @@ const { JawabanUser, User, Soal, ListJawaban } = db;
 //  Create
 exports.createJawabanUser = async (req, res) => {
   try {
-    const { soal_id, input_jawaban, list_jawaban_id, poing, isTrue } = req.body;
-    const user_id = req.userId; // Didapat dari middleware autentikasi
+    const { soal_id, list_jawaban_id } = req.body;
+    const user_id = req.userId;
 
     if (!soal_id || !user_id) {
       return res.status(400).json({ status: false, message: "soal_id and user_id are required" });
@@ -15,13 +15,25 @@ exports.createJawabanUser = async (req, res) => {
     const soal = await Soal.findByPk(soal_id);
     if (!soal) return res.status(404).json({ status: false, message: "Soal not found" });
 
+    // Ambil ListJawaban yang diklik user (berdasarkan ID)
+    let selectedAnswer = null;
+    if (list_jawaban_id) {
+      selectedAnswer = await ListJawaban.findOne({
+        where: { id: list_jawaban_id, soal_id: soal_id }
+      });
+
+      if (!selectedAnswer) {
+        return res.status(400).json({ status: false, message: "ListJawaban tidak valid" });
+      }
+    }
+
     const jawaban = await JawabanUser.create({
       soal_id,
       user_id,
-      input_jawaban,
-      list_jawaban_id,
-      poing,
-      isTrue
+      input_jawaban: selectedAnswer ? String(selectedAnswer.id) : null, // menyimpan ID sebagai string
+      list_jawaban_id: selectedAnswer?.id || null,
+      poing: 0, // default, bisa dinilai belakangan
+      isTrue: selectedAnswer?.isTrue ?? false, // tetap simpan walau salah
     });
 
     res.status(201).json({ status: true, message: "JawabanUser created successfully", data: jawaban });
