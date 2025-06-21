@@ -71,17 +71,19 @@ const ResultExams = () => {
                       {transaction.status}
                     </td>
                    <td className={`p-3 flex gap-3`}>
-                    <button
-                      onClick={(e) => handleCertif(e, transaction.ujian_id, transaction.exam_no)}
-                      disabled={transaction.status !== "Selesai"}
-                      className={`border-2 py-3 px-4 rounded-xl flex justify-center items-center font-semibold
-                        ${transaction.status !== "Selesai"
-                          ? "bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed"
-                          : "bg-transparent border-neutral-600 hover:bg-neutral-600 hover:text-white text-black"
-                        }`}
-                    >
-                      Certificate
-                    </button>
+                    {transaction.include_certif && (
+                      <button
+                        onClick={(e) => handleCertif(e, transaction.ujian_id, transaction.exam_no)}
+                        disabled={transaction.status !== "Selesai"}
+                        className={`border-2 py-3 px-4 rounded-xl flex justify-center items-center font-semibold
+                          ${transaction.status !== "Selesai"
+                            ? "bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed"
+                            : "bg-transparent border-neutral-600 hover:bg-neutral-600 hover:text-white text-black"
+                          }`}
+                      >
+                        Certificate
+                      </button>
+                    )}
 
                     <button
                       onClick={(e) => handleReview(e, transaction.ujian_id)}

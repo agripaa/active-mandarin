@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     brand_id: DataTypes.INTEGER,
     ujian_id: DataTypes.INTEGER, // ✅ Tambahan untuk transaksi ujian
     type_transaction: DataTypes.STRING, // optional: "brand" atau "ujian"
-    include_certif: DataTypes.BOOLEAN,
+    include_certif: { type: DataTypes.BOOLEAN, defaultValue: false },
     status_transaction: DataTypes.STRING,
     payment_method: DataTypes.STRING,
     proof_transaction: DataTypes.STRING,

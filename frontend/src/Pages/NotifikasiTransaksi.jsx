@@ -202,17 +202,24 @@ const NotifikasiTransaksi = () => {
       title: "Harga",
       key: "harga",
       render: (record) => {
-        let totalHarga = 0;
-
-        if (record.Ujian) {
-          const hargaDiskon = parseInt(record.Ujian.harga_diskon || record.Ujian.harga_normal || 0);
-          const hargaCertif = record.include_certif ? parseInt(record.Ujian.harga_certif || 0) : 0;
-          totalHarga = hargaDiskon + hargaCertif;
-        } else if (record.Brand) {
-          totalHarga = parseInt(record.Brand?.discount_price || record.Brand.price || 0);
+        if (record.type_transaction === "ujian") {
+          const ujian = record.Ujian;
+          const hargaDasar = ujian.harga_diskon !== "0"
+            ? parseInt(ujian.harga_diskon)
+            : parseInt(ujian.harga_normal);
+          const includeCertif = record.include_certif;
+          const certifHarga = includeCertif ? parseInt(ujian.harga_certif) : 0;
+          const total = hargaDasar + certifHarga;
+          return formatRupiah(total);
         }
 
-        return formatRupiah(totalHarga);
+        // CASE: BRAND
+        if (["product", "program"].includes(record.type_transaction)) {
+          const harga = record.Brand.discount_price || record.Brand.price;
+          return formatRupiah(harga);
+        }
+
+        return "-";
       },
     },
     {

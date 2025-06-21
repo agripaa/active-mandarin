@@ -893,6 +893,7 @@ exports.getExamResultsUser = async (req, res) => {
         nama_ujian: tx.Ujian?.nama_ujian || '-',
         nama_peserta: tx.User?.name || '-',
         tipe: tx.Ujian?.level || '-',
+        include_certif: tx.include_certif,
         nilai: nilaiFinal,
         exam_no: examNo,
         status

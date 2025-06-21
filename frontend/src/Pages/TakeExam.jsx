@@ -58,82 +58,76 @@ const TakeExam = () => {
     : `/dashboard/take-exam/${id}?question=${questionNo}`;
 };
 
-  const numberToPosition = (num) => {
-    const map = ["A", "B", "C", "D"];
-    return map[num - 1] || null;
-  };
-
 
   const currentQuestion = useMemo(() => {
-  const q = questionList[number] || {};
+    const q = questionList[number] || {};
 
-  if (!isReviewMode || reviewData.length === 0) return q;
+    if (!isReviewMode || reviewData.length === 0) return q;
 
-  const reviewMatch = reviewData.find((r) => r.soal_id === q.id);
-  
-  if (reviewMatch) {
-  let userAnswer = [];
-  let correct = [];
- if (reviewMatch.tipe_soal === "multiple-choice") {
-  const inputRaw = reviewMatch.jawaban_user?.input_jawaban || "";
-  
-  const inputIndexes = inputRaw
-    .split(/[;,]/)
-    .map(i => parseInt(i.trim()))
-    .filter(i => !isNaN(i));
-
- userAnswer = inputIndexes
-  .map(idx => reviewMatch.list_jawaban?.[idx - 1]?.position?.trim()) // << dikurangi 1 karena index mulai dari 1
-  .filter(Boolean);
-}
-
+    const reviewMatch = reviewData.find((r) => r.soal_id === q.id);
+    
+    if (reviewMatch) {
+    let userAnswer = [];
+    let correct = [];
   if (reviewMatch.tipe_soal === "multiple-choice") {
-  const inputRaw = reviewMatch.jawaban_user?.input_jawaban || "";
-  
-  const inputIndexes = inputRaw
-    .split(/[;,]/)
-    .map(i => parseInt(i.trim()))
-    .filter(i => !isNaN(i));
+    const inputRaw = reviewMatch.jawaban_user?.input_jawaban || "";
+    
+    const inputIndexes = inputRaw
+      .split(/[;,]/)
+      .map(i => parseInt(i.trim()))
+      .filter(i => !isNaN(i));
 
   userAnswer = inputIndexes
-  .map(idx => reviewMatch.list_jawaban?.[idx - 1]?.position?.trim()) // << dikurangi 1 karena index mulai dari 1
-  .filter(Boolean);
-
-  correct = (reviewMatch.jawaban_benar || []).map(p => p?.replace(/['"]+/g, "").trim());
-  reviewMatch.list_jawaban = reviewMatch.list_jawaban.map(j => ({
-  ...j,
-  position: j.position?.replace(/['"]+/g, "").trim(), 
-}));
-
-}
-
-
-
-if (reviewMatch.tipe_soal === "order-arrange") {
-  correct = reviewMatch.jawaban_benar || [];
-  userAnswer = [reviewMatch.jawaban_user?.input_jawaban || ""];
-}
-
-  if (reviewMatch.tipe_soal === "essay") {
-  userAnswer = [reviewMatch.jawaban_user?.input_jawaban || ""];
-}
-
-const cleanOptions = (reviewMatch.list_jawaban || []).map((j) => ({
-      ...j,
-      position: j.position?.replace(/['"]+/g, "").trim(),
-    }));
-
-    return {
-      ...q,
-      correctAnswer: correct,
-      answer: userAnswer,
-      isCorrect: reviewMatch.jawaban_user?.isTrue,
-      jawaban_user: reviewMatch.jawaban_user,
-      penjelasan: reviewMatch.penjelasan || "",
-      options: cleanOptions,
-    };
+    .map(idx => reviewMatch.list_jawaban?.[idx - 1]?.position?.trim()) // << dikurangi 1 karena index mulai dari 1
+    .filter(Boolean);
   }
 
+    if (reviewMatch.tipe_soal === "multiple-choice") {
+    const inputRaw = reviewMatch.jawaban_user?.input_jawaban || "";
+    
+    const inputIndexes = inputRaw
+      .split(/[;,]/)
+      .map(i => parseInt(i.trim()))
+      .filter(i => !isNaN(i));
+
+    userAnswer = inputIndexes
+    .map(idx => reviewMatch.list_jawaban?.[idx - 1]?.position?.trim()) // << dikurangi 1 karena index mulai dari 1
+    .filter(Boolean);
+
+    correct = (reviewMatch.jawaban_benar || []).map(p => p?.replace(/['"]+/g, "").trim());
+    reviewMatch.list_jawaban = reviewMatch.list_jawaban.map(j => ({
+    ...j,
+    position: j.position?.replace(/['"]+/g, "").trim(), 
+  }));
+
+  }
+
+
+
+  if (reviewMatch.tipe_soal === "order-arrange") {
+    correct = reviewMatch.jawaban_benar || [];
+    userAnswer = [reviewMatch.jawaban_user?.input_jawaban || ""];
+  }
+
+    if (reviewMatch.tipe_soal === "essay") {
+    userAnswer = [reviewMatch.jawaban_user?.input_jawaban || ""];
+  }
+
+  const cleanOptions = (reviewMatch.list_jawaban || []).map((j) => ({
+        ...j,
+        position: j.position?.replace(/['"]+/g, "").trim(),
+      }));
+
+      return {
+        ...q,
+        correctAnswer: correct,
+        answer: userAnswer,
+        isCorrect: reviewMatch.jawaban_user?.isTrue,
+        jawaban_user: reviewMatch.jawaban_user,
+        penjelasan: reviewMatch.penjelasan || "",
+        options: cleanOptions,
+      };
+  }
   return q;
 }, [questionList, number, isReviewMode, reviewData]);
 

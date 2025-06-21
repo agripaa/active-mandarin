@@ -83,20 +83,20 @@ const TransaksiAdmin = () => {
       title: "Harga",
       key: "harga",
       render: (_, record) => {
-        // CASE: UJIAN
-        if (record.Ujian) {
+        console.log({record})
+        if (record.type_transaction === "ujian") {
           const ujian = record.Ujian;
-          const hargaDasar = ujian.harga_diskon && ujian.harga_diskon !== "0"
+          const hargaDasar = ujian.harga_diskon !== "0"
             ? parseInt(ujian.harga_diskon)
             : parseInt(ujian.harga_normal);
           const includeCertif = record.include_certif;
-          const certifHarga = includeCertif ? parseInt(ujian.harga_certif || 0) : 0;
+          const certifHarga = includeCertif ? parseInt(ujian.harga_certif) : 0;
           const total = hargaDasar + certifHarga;
           return formatRupiah(total);
         }
 
         // CASE: BRAND
-        if (record.Brand) {
+        if (["product", "program"].includes(record.type_transaction)) {
           const harga = record.Brand.discount_price || record.Brand.price;
           return formatRupiah(harga);
         }
