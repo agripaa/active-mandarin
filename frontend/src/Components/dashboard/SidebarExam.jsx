@@ -147,10 +147,14 @@ const SidebarExam = ({ onClose }) => {
             const isActive = index === currentQuestionNumber - 1;
 
             const isAnswered = !isReviewMode &&
+              q.phase === examPhase && // ← hanya periksa soal aktif
               Array.isArray(q.answer) &&
-              (q.questionType === "essay"
-                ? q.answer[0]?.trim()?.length > 0
-                : q.answer.length > 0);
+              (
+                q.questionType === "essay"
+                  ? q.answer[0]?.trim()?.length > 0
+                  : q.answer.length > 0
+              );
+
 
             return (
               <button

@@ -69,7 +69,7 @@ const TakeExam = () => {
     if (reviewMatch) {
     let userAnswer = [];
     let correct = [];
-  if (reviewMatch.tipe_soal === "multiple-choice") {
+    if (reviewMatch.tipe_soal === "multiple-choice") {
       const inputRaw = reviewMatch.jawaban_user?.input_jawaban || "";
       
       const inputIndexes = inputRaw
@@ -82,24 +82,21 @@ const TakeExam = () => {
       .filter(Boolean);
     }
 
-      if (reviewMatch.tipe_soal === "multiple-choice") {
+    if (reviewMatch.tipe_soal === "multiple-choice") {
       const inputRaw = reviewMatch.jawaban_user?.input_jawaban || "";
       
       const inputIndexes = inputRaw
         .split(/[;,]/)
         .map(i => parseInt(i.trim()))
         .filter(i => !isNaN(i));
-
       userAnswer = inputIndexes
       .map(idx => reviewMatch.list_jawaban?.[idx - 1]?.position?.trim()) // << dikurangi 1 karena index mulai dari 1
       .filter(Boolean);
-
       correct = (reviewMatch.jawaban_benar || []).map(p => p?.replace(/['"]+/g, "").trim());
       reviewMatch.list_jawaban = reviewMatch.list_jawaban.map(j => ({
       ...j,
       position: j.position?.replace(/['"]+/g, "").trim(), 
     }));
-
   }
 
   if (reviewMatch.tipe_soal === "order-arrange") {
@@ -422,13 +419,15 @@ useEffect(() => {
               options: q.options?.sort((a, b) => a.position?.localeCompare(b.position)),
               shuffledOptions:
                 q.questionType === "order-arrange"
-                  ? shuffleArray(
-                      (q.answer?.[0] || "")
+                  ? (() => {
+                      const rawWords = (q.answer?.[0] || "")
                         .split(";")
-                        .map(word => word.trim())
+                        .map(w => w.trim())
                         .filter(Boolean)
-                        .map((opt, idx) => ({ id: idx + 1, option: opt }))
-                    )
+                        .map((opt, idx) => ({ id: idx + 1, option: opt }));
+
+                      return rawWords.length > 1 ? shuffleArray(rawWords) : rawWords;
+                    })()
                   : shuffleArray(q.options || []),
               answer: [],
               correctAnswer: q.answer || [],
@@ -484,55 +483,64 @@ useEffect(() => {
 }, [number, currentQuestion]);
 
 
-  useEffect(() => {
-    const initExamPhase = async () => {
-      if (!Object.keys(allQuestions).length || !allQuestions[examPhase]) return;
+useEffect(() => {
+  const initExamPhase = async () => {
+    if (!Object.keys(allQuestions).length || !allQuestions[examPhase]) return;
 
-      setQuestionList(allQuestions[examPhase].questions.map(q => ({ ...q })));
+    // ⬇️ RESET soal & set fase ke masing-masing soal
+    setQuestionList(
+      allQuestions[examPhase].questions.map(q => ({
+        ...q,
+        answer: [],
+        phase: examPhase,
+      }))
+    );
 
-      try {
-        const ujian_id = parseInt(id);
+    try {
+      const ujian_id = parseInt(id);
 
-        // Ambil progres
-        const progress = await progressUjian({
+      // Ambil progres
+      const progress = await progressUjian({
+        user_id: user.id,
+        ujian_id,
+        exam_phase: examPhase,
+      });
+
+      let remainingTime = parseInt(allQuestions[examPhase].time || "10") * 60;
+
+      if (progress?.data?.started_at) {
+        const startedAt = new Date(progress.data.started_at);
+        const now = new Date();
+        const elapsed = Math.floor((now - startedAt) / 1000); // in seconds
+        remainingTime = Math.max(0, remainingTime - elapsed);
+      } else {
+        // Simpan waktu mulai kalau belum ada
+        await startUjian({
           user_id: user.id,
           ujian_id,
           exam_phase: examPhase,
         });
-
-        let remainingTime = parseInt(allQuestions[examPhase].time || "10") * 60;
-
-        if (progress?.data?.started_at) {
-          const startedAt = new Date(progress.data.started_at);
-          const now = new Date();
-          const elapsed = Math.floor((now - startedAt) / 1000); // in seconds
-          remainingTime = Math.max(0, remainingTime - elapsed);
-        } else {
-          // Simpan waktu mulai kalau belum ada
-          await startUjian({
-            user_id: user.id,
-            ujian_id,
-            exam_phase: examPhase,
-          });
-        }
-
-        setTimeLeft(remainingTime);
-
-        // Ambil question dari URL
-        const params = new URLSearchParams(location.search);
-        const q = parseInt(params.get("question"), 10);
-        if (!isNaN(q)) {
-          const actualIdx = getQuestionIndexFromNumber(q);
-          setNumber(actualIdx);
-        }
-      } catch (error) {
-        console.error("❌ Gagal inisialisasi waktu ujian:", error);
-        Swal.fire("Error", "Gagal mengatur waktu ujian", "error");
       }
-    };
 
-    initExamPhase();
-  }, [examPhase, allQuestions, user.id]);
+      setTimeLeft(remainingTime);
+
+      // Ambil question dari URL
+      const params = new URLSearchParams(location.search);
+      const q = parseInt(params.get("question"), 10);
+      if (!isNaN(q)) {
+        const actualIdx = getQuestionIndexFromNumber(q);
+        setNumber(actualIdx);
+      } else {
+        setNumber(0); // fallback ke nomor pertama
+      }
+    } catch (error) {
+      console.error("❌ Gagal inisialisasi waktu ujian:", error);
+      Swal.fire("Error", "Gagal mengatur waktu ujian", "error");
+    }
+  };
+
+  initExamPhase();
+}, [examPhase, allQuestions, user.id]);
 
   useEffect(() => {
     if (isReviewMode) return;
@@ -638,17 +646,6 @@ useEffect(() => {
     } catch (err) {
       console.error("❌ Gagal menyelesaikan fase:", err);
       Swal.fire("Error", "Gagal menyelesaikan fase ujian", "error");
-    }
-  };
-
-
-
-  const prevNumber = () => {
-    if (number > 0) {
-      number < questionList.length - 1 ? setNumber(number - 1) : setNumber(1)
-      navigate(generateQuestionUrl(number), { replace: true });
-    } else {
-      Swal.fire("Sudah di soal pertama", "", "info");
     }
   };
 

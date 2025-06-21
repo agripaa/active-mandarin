@@ -846,6 +846,10 @@ exports.getExamResultsUser = async (req, res) => {
               as: 'UjianProgresses',
               where: { user_id: req.userId },
               required: false
+            },
+            {
+              model: TipeUjian,
+              required: false
             }
           ]
         },
@@ -871,19 +875,29 @@ exports.getExamResultsUser = async (req, res) => {
       let nilaiFinal = "-";
       let examNo = null;
 
+      // Hitung nilai dari JawabanUser
       if (status === "Selesai") {
-        const certificate = await Certificate.findOne({
-          where: {
-            user_id: req.userId,
-            ujian_id: tx.ujian_id
-          }
+        const tipeUjianIds = (tx.Ujian?.TipeUjians || []).map(t => t.id);
+        const soalList = await Soal.findAll({
+          where: { tipe_ujian_id: tipeUjianIds }
         });
+        const soalIds = soalList.map(s => s.id);
 
-        if (certificate) {
-          const phaseCount = progresses.length || 1;
-          const maxScore = phaseCount * 100;
-          nilaiFinal = `${certificate.total_score}/${maxScore}`;
-          examNo = certificate.exam_no || null;
+        if (soalIds.length > 0) {
+          const jawabanList = await JawabanUser.findAll({
+            where: {
+              soal_id: soalIds,
+              user_id: req.userId
+            }
+          });
+
+          const totalScore = jawabanList.reduce((sum, j) => sum + (j.poing || 0), 0);
+          let maxScore = 200; // default
+          const ujianLevel = tx.Ujian?.level;
+
+          if (ujianLevel && Number(ujianLevel) > 2) maxScore = 300;
+
+          nilaiFinal = `${totalScore}/${maxScore}`;
         }
       }
 
@@ -1116,27 +1130,22 @@ exports.getUjianReviewResult = async (req, res) => {
     const { ujian_id } = req.params;
     const user_id = req.userId;
 
-    const certificate = await db.Certificate.findOne({
-      where: { ujian_id, user_id }
-    });
-
-    if (!certificate) {
-      return res.status(404).json({ status: false, message: "Sertifikat tidak ditemukan" });
-    }
-
-    // Cek fase mana yang aktif berdasarkan keberadaan soal
+    // Ambil semua tipe ujian yang memiliki soal
     const tipeUjianList = await db.TipeUjian.findAll({
       where: { ujian_id },
-      include: [{
-        model: db.Soal,
-        as: 'Soals',
-        required: true
-      }]
+      include: [
+        {
+          model: db.Soal,
+          as: 'Soals',
+          required: true
+        }
+      ]
     });
 
-    const availablePhases = tipeUjianList.map(t => t.category_ujian); // yang ada soal
+    if (!tipeUjianList || tipeUjianList.length === 0) {
+      return res.status(404).json({ status: false, message: "Tidak ada soal yang ditemukan untuk ujian ini." });
+    }
 
-    const phases = ['listening', 'reading', 'writing'];
     const result = {
       total: {
         point: 0,
@@ -1146,25 +1155,44 @@ exports.getUjianReviewResult = async (req, res) => {
       per_phase: {}
     };
 
+    const phases = ['listening', 'reading', 'writing'];
+
     for (const phase of phases) {
-      const score = certificate[`${phase}_score`];
-      const isAvailable = availablePhases.includes(phase);
+      const tipeUjian = tipeUjianList.find(t => t.category_ujian === phase);
 
-      if (isAvailable && score !== null && score !== undefined) {
-        result.per_phase[phase] = {
-          score,
-          point: score,
-          max: 100,
-          available: true
-        };
-
-        result.total.point += score;
-        result.total.max += 100;
-      } else {
-        result.per_phase[phase] = {
-          available: false
-        };
+      if (!tipeUjian) {
+        result.per_phase[phase] = { available: false };
+        continue;
       }
+
+      const soalList = tipeUjian.Soals || [];
+      const soalIds = soalList.map(s => s.id);
+
+      if (soalIds.length === 0) {
+        result.per_phase[phase] = { available: false };
+        continue;
+      }
+
+      // Ambil jawaban user untuk soal-soal pada fase ini
+      const jawabanList = await db.JawabanUser.findAll({
+        where: {
+          user_id,
+          soal_id: soalIds
+        }
+      });
+
+      const totalPoint = jawabanList.reduce((sum, j) => sum + (j.poing || 0), 0);
+      const maxPoint = 100; // Asumsikan 100 per fase (bisa disesuaikan jika dynamic)
+
+      result.per_phase[phase] = {
+        available: true,
+        score: totalPoint,
+        point: totalPoint,
+        max: maxPoint
+      };
+
+      result.total.point += totalPoint;
+      result.total.max += maxPoint;
     }
 
     result.total.score = result.total.point;
@@ -1173,7 +1201,7 @@ exports.getUjianReviewResult = async (req, res) => {
 
   } catch (err) {
     console.error("❌ Gagal ambil review nilai ujian:", err);
-    res.status(500).json({ status: false, message: err.message });
+    return res.status(500).json({ status: false, message: err.message });
   }
 };
 

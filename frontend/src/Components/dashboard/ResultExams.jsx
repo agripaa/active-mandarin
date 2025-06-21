@@ -102,64 +102,6 @@ const ResultExams = () => {
               </tbody>
             </table>
           </div>
-
-          {/* Pagination */}
-          <div className="flex justify-center items-center mt-6 space-x-2 flex-wrap">
-            {/* <button
-              onClick={() => goToPage(currentPage - 1)}
-              disabled={currentPage === 1}
-              className={`px-2 py-1 border rounded-md ${currentPage === 1 ? "text-gray-400 cursor-not-allowed" : "text-gray-700 hover:bg-gray-100"}`}
-            >
-              &lt;
-            </button> */}
-
-            {/* Generate Pagination Items */}
-            {/* {(() => {
-              const pages = [];
-              const visiblePages = 3;
-
-              if (totalPages <= 7) {
-                // Show all pages if few
-                for (let i = 1; i <= totalPages; i++) {
-                  pages.push(i);
-                }
-              } else {
-                if (currentPage <= 3) {
-                  pages.push(1, 2, 3, 4, "...", totalPages);
-                } else if (currentPage >= totalPages - 2) {
-                  pages.push(1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
-                } else {
-                  pages.push(1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages);
-                }
-              }
-
-              return pages.map((page, idx) => {
-                if (page === "...") {
-                  return (
-                    <span key={`ellipsis-${idx}`} className="px-2 py-1 text-gray-400">...</span>
-                  );
-                }
-
-                return (
-                  <button
-                    key={page}
-                    onClick={() => goToPage(page)}
-                    className={`px-2 py-1 border rounded-md ${currentPage === page ? "bg-blue-500 text-white" : "text-gray-700 hover:bg-gray-100"}`}
-                  >
-                    {page}
-                  </button>
-                );
-              });
-            })()} */}
-
-            {/* <button
-              onClick={() => goToPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className={`px-2 py-1 border rounded-md ${currentPage === totalPages ? "text-gray-400 cursor-not-allowed" : "text-gray-700 hover:bg-gray-100"}`}
-            >
-              &gt;
-            </button> */}
-          </div>
         </div>
     </DashboardLayout>
   )
