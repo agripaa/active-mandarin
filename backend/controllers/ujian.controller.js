@@ -160,6 +160,13 @@ exports.createUjian = async (req, res) => {
               const kunciBenar = jawabanBenar.map(j => j.id).join(',');
               await soalBaru.update({ jawaban_benar: kunciBenar });
             }
+
+
+            if (s.questionType === 'order-arrange' && Array.isArray(s.answer)) {
+              await soalBaru.update({
+                jawaban_benar: s.answer[0] || '',
+              });
+            }
           }
         }
       }
@@ -414,30 +421,29 @@ exports.updateUjian = async (req, res) => {
           // // ✅ Tambahkan ini:
           // const parsedAnswer = Array.isArray(s.answer) ? s.answer.map(a => parseInt(a, 10)) : [];
 
-         for (let idx = 0; idx < s.options.length; idx++) {
-  const opt = s.options[idx];
-  const isCorrect = opt.isTrue === true;
-  const position = opt.position?.toString().trim() || String.fromCharCode(65 + idx);
+          for (let idx = 0; idx < s.options.length; idx++) {
+            const opt = s.options[idx];
+            const isCorrect = opt.isTrue === true;
+            const position = opt.position?.toString().trim() || String.fromCharCode(65 + idx);
 
-  if (opt.id && existingMap.has(opt.id)) {
-    const existing = existingMap.get(opt.id);
-    await existing.update({
-      jawaban: opt.option,
-      isTrue: isCorrect,
-      position,
-    });
-    usedIds.add(opt.id);
-  } else {
-    const newJawaban = await ListJawaban.create({
-      soal_id: soalInstance.id,
-      jawaban: opt.option,
-      isTrue: isCorrect,
-      position,
-    });
-    usedIds.add(newJawaban.id);
-  }
-}
-
+            if (opt.id && existingMap.has(opt.id)) {
+              const existing = existingMap.get(opt.id);
+              await existing.update({
+                jawaban: opt.option,
+                isTrue: isCorrect,
+                position,
+              });
+              usedIds.add(opt.id);
+            } else {
+              const newJawaban = await ListJawaban.create({
+                soal_id: soalInstance.id,
+                jawaban: opt.option,
+                isTrue: isCorrect,
+                position,
+              });
+              usedIds.add(newJawaban.id);
+            }
+          }
 
           // Hapus jawaban lama yang tidak dipakai
           for (const old of existingJawaban) {
@@ -462,6 +468,12 @@ exports.updateUjian = async (req, res) => {
               await old.destroy();
             }
           }
+        }
+
+        if (s.questionType === 'order-arrange' && Array.isArray(s.answer)) {
+          await soalInstance.update({
+            jawaban_benar: s.answer[0] || '',
+          });
         }
       }
 

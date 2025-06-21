@@ -536,7 +536,22 @@ useEffect(() => {
 
   initExamPhase();
 }, [examPhase, allQuestions, user.id]);
+    useEffect(() => {
+      if (isReviewMode) return;
 
+      const timer = setInterval(() => {
+        setTimeLeft(prev => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            handlePhaseChange();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }, [examPhase, allQuestions, isReviewMode]);
 
     const mapAnswerToPositionIndex = (answerIds, options) => {
       return answerIds
