@@ -211,39 +211,73 @@ exports.getSoalByUjianId = async (req, res) => {
   try {
     const { id } = req.params;
 
-  const tipeUjianList = await TipeUjian.findAll({
-    where: { ujian_id: id },
-    include: [{
-      model: Soal,
-      as: 'Soals',
+    const tipeUjianList = await TipeUjian.findAll({
+      where: { ujian_id: id },
       include: [{
-        model: ListJawaban,
-        as: 'ListJawabans',
+        model: Soal,
+        as: 'Soals',
+        include: [{
+          model: ListJawaban,
+          as: 'ListJawabans',
+        }],
       }],
-    }],
-    order: [
-      ['id', 'ASC'], // Urutan tipe ujian
-      [{ model: Soal, as: 'Soals' }, 'id', 'ASC'], // Urutan soal
-      [{ model: Soal, as: 'Soals' }, { model: ListJawaban, as: 'ListJawabans' }, 'position', 'ASC'] // Urutan jawaban
-    ]
-  });
-
-    if (!tipeUjianList || tipeUjianList.length === 0) {
-      return res.status(404).json({ status: false, message: "Soal tidak ditemukan untuk ujian ini." });
-    }
+      order: [
+        ['id', 'ASC'], // Urutan tipe ujian
+        [{ model: Soal, as: 'Soals' }, 'id', 'ASC'], // Urutan soal
+        [{ model: Soal, as: 'Soals' }, { model: ListJawaban, as: 'ListJawabans' }, 'position', 'ASC'] // Urutan jawaban
+      ]
+    });
 
     const result = {};
-    console.log("📦 Jumlah tipe ujian:", tipeUjianList.length);
+    const defaultTipes = ['listening', 'reading', 'writing'];
+
+    console.log("📦 Jumlah tipe ujian ditemukan:", tipeUjianList.length);
 
     for (const tipe of tipeUjianList) {
-      console.log(`🧩 ${tipe.category_ujian} → Jumlah soal:`, tipe.Soals?.length);
       const soalList = tipe.Soals.map((soal) => {
-        const options = soal.ListJawabans?.map((jawaban) => ({
+        let options = (soal.ListJawabans || []).map((jawaban) => ({
           id: jawaban.id,
           option: jawaban.jawaban,
           isTrue: jawaban.isTrue,
           position: jawaban.position,
-        })) || [];
+        }));
+
+        const rawWords = soal.jawaban_benar
+          ? soal.jawaban_benar.split(";").map(w => w.trim()).filter(Boolean)
+          : [];
+
+        if (soal.tipe_soal === 'order-arrange') {
+          // Buat original options
+          options = rawWords.map((opt, idx) => ({
+            id: `oa-${soal.id}-${idx}`,
+            option: opt,
+            isTrue: false,
+            position: String.fromCharCode(65 + idx),
+          }));
+
+          // Tambahkan shuffledOptions (acak yang beda dari aslinya)
+          const shuffleArray = (arr) => {
+            const copy = [...arr];
+            for (let i = copy.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [copy[i], copy[j]] = [copy[j], copy[i]];
+            }
+            return copy;
+          };
+
+          let shuffled = shuffleArray(rawWords);
+          let attempt = 0;
+          while (shuffled.join(";") === rawWords.join(";") && attempt < 5) {
+            shuffled = shuffleArray(rawWords);
+            attempt++;
+          }
+
+          // Tambahkan field baru ke response
+          soal.shuffledOptions = shuffled.map((opt, idx) => ({
+            id: `shuffled-${soal.id}-${idx}`,
+            option: opt,
+          }));
+        }
 
         return {
           id: soal.id,
@@ -251,6 +285,7 @@ exports.getSoalByUjianId = async (req, res) => {
           questionType: soal.tipe_soal,
           explanation: soal.penjelasan,
           options: options,
+          shuffledOptions: soal.shuffledOptions || [],
           isMultipleAnswer: soal.mutiple,
           answer: soal.jawaban_benar ? soal.jawaban_benar.split(',').map(j => j.trim()) : [],
           image: soal.file_soal,
@@ -264,17 +299,30 @@ exports.getSoalByUjianId = async (req, res) => {
         };
       });
 
+      console.log(`🧩 Tipe ${tipe.category_ujian} → ${soalList.length} soal`);
       result[tipe.category_ujian] = {
         id: tipe.id,
-        time: parseInt(tipe.time),
+        time: parseInt(tipe.time) || 0,
         questions: soalList,
       };
     }
 
-    res.json({ status: true, data: result });
+    // Tambahkan default tipe jika belum ada
+    for (const tipe of defaultTipes) {
+      if (!result[tipe]) {
+        result[tipe] = {
+          id: null,
+          time: 0,
+          questions: []
+        };
+        console.log(`⚠️ Tipe ${tipe} tidak ditemukan, ditambahkan default kosong.`);
+      }
+    }
+
+    return res.json({ status: true, data: result });
   } catch (error) {
     console.error("❌ Gagal ambil soal ujian:", error);
-    res.status(500).json({ status: false, message: error.message });
+    return res.status(500).json({ status: false, message: error.message });
   }
 };
 
@@ -934,6 +982,18 @@ exports.getExamResultsUser = async (req, res) => {
               user_id: req.userId
             }
           });
+
+          const certificate = await Certificate.findOne({
+            where: {
+              user_id: req.userId,
+              ujian_id: tx.ujian_id
+            }
+          });
+
+        if (certificate) {
+          examNo = certificate.exam_no || null;
+        }
+
 
           const totalScore = jawabanList.reduce((sum, j) => sum + (j.poing || 0), 0);
           let maxScore = 200; // default

@@ -296,10 +296,12 @@ const CreateExam = ({ dataProgram }) => {
           if (q.questionType === 'multiple-choice' && Array.isArray(q.options)) {
             const correctOptionIds = q.options
               .filter(opt => opt.isTrue)
-              .map(opt => opt.id); 
+              .map(opt => Number(opt.id)); // ✅ pastikan ID-nya valid dan konsisten
+
             return {
               ...q,
               answer: correctOptionIds,
+              isMultipleAnswer: q.isMultipleAnswer || correctOptionIds.length > 1,
             };
           }
           return q;
@@ -309,19 +311,19 @@ const CreateExam = ({ dataProgram }) => {
       setTypeData(prev => ({
         listening: {
           ...prev.listening,
-          id: tipe?.listening?.id,
+          id: tipe?.listening?.id ?? typeData.listening.id,
           time: tipe?.listening?.time ?? 0,
           questionCount: tipe?.listening?.questions?.length ?? 0,
         },
         reading: {
           ...prev.reading,
-          id: tipe?.reading?.id,
+          id: tipe?.reading?.id ?? tipe.reading.id,
           time: tipe?.reading?.time ?? 0,
           questionCount: tipe?.reading?.questions?.length ?? 0,
         },
         writing: {
           ...prev.writing,
-          id: tipe?.writing?.id,
+          id: tipe?.writing?.id ?? tipe.writing.id,
           time: tipe?.writing?.time ?? 0,
           questionCount: tipe?.writing?.questions?.length ?? 0,
         }
@@ -657,7 +659,17 @@ const totalWaktu = Number(typeData.listening.time) + Number(typeData.reading.tim
   )
 }
 
-const QuestionComponent = React.memo(({ index, question, number, onChange, onDelete, ujianId }) => {
+const QuestionComponent = React.memo(({ index, question, number, onChange, onDelete, ujianId, show }) => {
+  {console.log(`🧪 Soal ${index + 1}`, {
+    id: question.id,
+    isMultipleAnswer: question.isMultipleAnswer,
+    answer: question.answer,
+    options: question.options?.map(opt => ({
+      id: opt.id,
+      isTrue: opt.isTrue
+    }))
+  })}
+
    const handleDelete = async (index) => {
   try {
     // Jika soal belum punya id dari DB, langsung hapus dari frontend
@@ -728,11 +740,12 @@ const QuestionComponent = React.memo(({ index, question, number, onChange, onDel
               {question.options.map((option, optIndex) => (
                 <div key={option.id} className="flex items-center gap-2">
                   <input
+                    key={`input-${question.id}-${option.id}`}
                     type={question.isMultipleAnswer ? 'checkbox' : 'radio'}
-                    name={`correct-answer-${index}`}
+                    name={`correct-answer-${show}-${index}`}
                     checked={question.isMultipleAnswer
                       ? question.answer?.some(a => Number(a) === Number(option.id))
-                      : Number(question.answer?.[0]) === Number(option.id)}
+                      : question.answer?.includes(String(option.id)) || question.answer?.includes(Number(option.id))} 
                     onChange={() => {
                       let newAnswer = [];
                       const newOptions = [...question.options];
@@ -774,9 +787,13 @@ const QuestionComponent = React.memo(({ index, question, number, onChange, onDel
                     type="link"
                     danger
                     onClick={() => {
+                      const deletedId = option.id;
                       const newOptions = question.options.filter((_, i) => i !== optIndex);
-                      // If the deleted option was the correct answer, reset answer
-                      const newAnswer = question.answer === option.id ? [] : [question.answer];
+
+                      const newAnswer = Array.isArray(question.answer)
+                        ? question.answer.filter(a => a !== deletedId)
+                        : [];
+
                       onChange(index, 'options', newOptions);
                       onChange(index, 'answer', newAnswer);
                     }}
@@ -789,7 +806,8 @@ const QuestionComponent = React.memo(({ index, question, number, onChange, onDel
             <Button
               type="link"
               onClick={() => {
-                const newOption = { id: question.options.length + 1, option: '' };
+                const maxId = Math.max(0, ...question.options.map(opt => Number(opt.id) || 0));
+                const newOption = { id: maxId + 1, option: '', isTrue: false };
                 onChange(index, 'options', [...question.options, newOption]);
               }}
               icon={<RiAddFill />}
@@ -909,7 +927,12 @@ const QuestionComponent = React.memo(({ index, question, number, onChange, onDel
               checked={question.isMultipleAnswer}
               onChange={(checked) => {
                 onChange(index, 'isMultipleAnswer', checked);
-                onChange(index, 'answer', checked ? [question.answer[0]] : []); // Reset answer if switching to single answer
+
+                if (!checked && question.answer.length > 1) {
+                  onChange(index, 'answer', [question.answer[0]]);
+                } else if (checked && !Array.isArray(question.answer)) {
+                  onChange(index, 'answer', question.answer ? [question.answer] : []);
+                }
               }}
               className="mr-2"
             />
@@ -1107,6 +1130,7 @@ const DetailExam = ({ show, setShow, sendToParent, questions, setQuestions, time
             onChange={onChange}
             onDelete={handleDelete}
             ujianId={ujianId}
+            show={show}
           />
         ))}
         <Button type="default" className="w-fit text-blue-500 rounded-2xl" size="large" variant="outlined" onClick={() => setQuestions([...questions, { id: undefined, question: '', questionType: 'essay', explanation: '', options: [], isMultipleAnswer: false, answer: [], image: '', guideForQuestion: { start: 0, end: 0, guide: '' }, point: 0 }])}>

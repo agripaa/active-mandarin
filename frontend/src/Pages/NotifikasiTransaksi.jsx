@@ -214,7 +214,7 @@ const NotifikasiTransaksi = () => {
         }
 
         // CASE: BRAND
-        if (["product", "program"].includes(record.type_transaction)) {
+        if (["product", "program"].includes(record.type_transaction) && record.Brand) {
           const harga = record.Brand.discount_price || record.Brand.price;
           return formatRupiah(harga);
         }

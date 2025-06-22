@@ -27,8 +27,10 @@ const TransaksiAdmin = () => {
     try {
       const response = await getAllTransactions(currentPage, pageSize);
       setData(response.data);
-      setTotalPages(response.total_pages * pageSize); // Set total items instead of pages
-    } catch (error) {}
+      setTotalPages(response.total_transactions); // karena Ant Design butuh total item
+    } catch (error) {
+      console.error("Fetch transaction error:", error);
+    }
   };
 
   const fetchTransactionSummary = async () => {
@@ -36,7 +38,9 @@ const TransaksiAdmin = () => {
       const response = await getTransactionSummary();
       setTotalTransactions(response.total_transactions);
       setTotalRevenue(response.total_revenue);
-    } catch (error) {}
+    } catch (error) {
+      console.error("Fetch transaction error:", error);
+    }
   };
 
   const handleExportExcel = async () => {
@@ -96,10 +100,11 @@ const TransaksiAdmin = () => {
         }
 
         // CASE: BRAND
-        if (["product", "program"].includes(record.type_transaction)) {
+        if (["product", "program"].includes(record.type_transaction) && record.Brand) {
           const harga = record.Brand.discount_price || record.Brand.price;
           return formatRupiah(harga);
         }
+
 
         return "-";
       }

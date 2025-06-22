@@ -102,10 +102,10 @@
     userAnswer = [reviewMatch.jawaban_user?.input_jawaban || ""];
   }
 
-  const cleanOptions = (reviewMatch.list_jawaban || []).map((j) => ({
+  const cleanOptions = (reviewMatch.list_jawaban || []).map((j, idx) => ({
     ...j,
-    option: j.option || j.jawaban || "",  // fallback kalau `option` kosong
-    position: j.position?.replace(/['"]+/g, "").trim(),
+    option: j.option || j.jawaban || "",
+    position: j.position || String.fromCharCode(65 + idx),
   }));
 
       return {
@@ -173,56 +173,56 @@
   }, [currentQuestion?.phase, isReviewMode]);
 
 
-    useEffect(() => {
-      if (isReviewMode) return; 
-      const VIOLATION_KEY = `ujian-violation-${id}`;
-      const MAX_VIOLATION = 3;
+    // useEffect(() => {
+    //   if (isReviewMode) return; 
+    //   const VIOLATION_KEY = `ujian-violation-${id}`;
+    //   const MAX_VIOLATION = 3;
 
-      let violationCount = parseInt(localStorage.getItem(VIOLATION_KEY)) || 0;
+    //   let violationCount = parseInt(localStorage.getItem(VIOLATION_KEY)) || 0;
 
-      const handleViolation = () => {
-        violationCount += 1;
-        localStorage.setItem(VIOLATION_KEY, violationCount);
+    //   const handleViolation = () => {
+    //     violationCount += 1;
+    //     localStorage.setItem(VIOLATION_KEY, violationCount);
 
-        if (violationCount >= MAX_VIOLATION) {
-          Swal.fire("Ujian Dihentikan", "Anda terlalu sering meninggalkan halaman.", "error").then(async () => {
-            await finishUjian({
-              user_id: user.id,
-              ujian_id: parseInt(id),
-              exam_phase: examPhase,
-            });
-            localStorage.removeItem(VIOLATION_KEY); 
-            navigate("/result-exam");
-          });
-        } else {
-          Swal.fire({
-            icon: "warning",
-            title: "Perhatian!",
-            text: `Jangan keluar dari halaman ujian. Kesempatan tersisa: ${MAX_VIOLATION - violationCount}`,
-          });
-        }
-      };
+    //     if (violationCount >= MAX_VIOLATION) {
+    //       Swal.fire("Ujian Dihentikan", "Anda terlalu sering meninggalkan halaman.", "error").then(async () => {
+    //         await finishUjian({
+    //           user_id: user.id,
+    //           ujian_id: parseInt(id),
+    //           exam_phase: examPhase,
+    //         });
+    //         localStorage.removeItem(VIOLATION_KEY); 
+    //         navigate("/result-exam");
+    //       });
+    //     } else {
+    //       Swal.fire({
+    //         icon: "warning",
+    //         title: "Perhatian!",
+    //         text: `Jangan keluar dari halaman ujian. Kesempatan tersisa: ${MAX_VIOLATION - violationCount}`,
+    //       });
+    //     }
+    //   };
 
-      const handleVisibility = () => {
-        if (document.hidden) {
-          handleViolation();
-        }
-      };
+    //   const handleVisibility = () => {
+    //     if (document.hidden) {
+    //       handleViolation();
+    //     }
+    //   };
 
-      const handleBeforeUnload = (e) => {
-        handleViolation();
-        e.preventDefault();
-        e.returnValue = "";
-      };
+    //   const handleBeforeUnload = (e) => {
+    //     handleViolation();
+    //     e.preventDefault();
+    //     e.returnValue = "";
+    //   };
 
-      document.addEventListener("visibilitychange", handleVisibility);
-      window.addEventListener("beforeunload", handleBeforeUnload);
+    //   document.addEventListener("visibilitychange", handleVisibility);
+    //   window.addEventListener("beforeunload", handleBeforeUnload);
 
-      return () => {
-        document.removeEventListener("visibilitychange", handleVisibility);
-        window.removeEventListener("beforeunload", handleBeforeUnload);
-      };
-    }, [user.id, id, examPhase, navigate]);
+    //   return () => {
+    //     document.removeEventListener("visibilitychange", handleVisibility);
+    //     window.removeEventListener("beforeunload", handleBeforeUnload);
+    //   };
+    // }, [user.id, id, examPhase, navigate]);
 
 
     useEffect(() => {
@@ -314,6 +314,47 @@
 
         return null; // semua selesai
       };
+      useEffect(() => {
+        if (!allQuestions[examPhase]) return;
+
+        console.log("✅ Reprocessing questions for phase:", examPhase);
+        console.log("🧩 Raw questions:", allQuestions[examPhase].questions);
+
+        const reprocessedQuestions = allQuestions[examPhase].questions.map(q => {
+          const type = q.questionType || q.tipe_soal || "multiple-choice";
+
+          const shuffled = type === "order-arrange"
+            ? (Array.isArray(q.shuffledOptions) && q.shuffledOptions.length > 0
+                ? q.shuffledOptions.map((opt, idx) => ({
+                    id: opt.id || `shuf-${q.id}-${idx}`,
+                    option: opt.option || opt,
+                  }))
+                : shuffleArray((q.options || []).map((opt, idx) => ({
+                    id: opt.id || `oa-${q.id}-${idx}`,
+                    option: opt.option || opt,
+                  }))))
+            : shuffleArray(q.options || []);
+
+
+
+          const initialAnswer = type === "order-arrange"
+            ? [shuffled.map(w => w.option).join("; ")]
+            : [];
+
+          return {
+            ...q,
+            questionType: type,
+            shuffledOptions: shuffled,
+            answer: q.answer?.length ? q.answer : initialAnswer,
+            correctAnswer: q.answer || [],
+            phase: examPhase,
+          };
+        });
+
+        console.log("✅ Reprocessed Questions:", reprocessedQuestions);
+        setQuestionList(reprocessedQuestions);
+      }, [examPhase, allQuestions]);
+
 
     useEffect(() => {
     const fetchInitialData = async () => {
@@ -409,32 +450,51 @@
           // Proses soal
           const questions = await Promise.all(
             soalByPhase[activePhase].questions.map(async (q) => {
+
+            const type = q.questionType || q.tipe_soal || "multiple-choice";
+
             const processed = {
               ...q,
-              options: q.options?.sort((a, b) => a.position?.localeCompare(b.position)),
+              questionType: type,
+              options: q.options?.sort((a, b) => a.position?.localeCompare(b.position)) || [],
               shuffledOptions:
-                q.questionType === "order-arrange"
-                  ? (() => {
-                      const rawWords = (q.answer?.[0] || "")
-                        .split(";")
-                        .map(w => w.trim())
-                        .filter(Boolean)
-                        .map((opt, idx) => ({ id: idx + 1, option: opt }));
-
-                      return rawWords.length > 1 ? shuffleArray(rawWords) : rawWords;
-                    })()
+                type === "order-arrange"
+                  ? (Array.isArray(q.shuffledOptions) && q.shuffledOptions.length > 0
+                      ? q.shuffledOptions.map((opt, idx) => ({
+                          id: opt.id || `shuf-${q.id}-${idx}`,
+                          option: opt.option || opt,
+                        }))
+                      : shuffleArray((q.options || []).map((opt, idx) => ({
+                          id: opt.id || `oa-${q.id}-${idx}`,
+                          option: opt.option || opt,
+                        }))))
                   : shuffleArray(q.options || []),
-              answer: [],
+              answer:
+                type === "order-arrange"
+                  ? [
+                      (() => {
+                        const source = q.answer?.[0] || q.correctAnswer?.[0] || "";
+                        const rawWords = source
+                          .split(";")
+                          .map(w => w.trim())
+                          .filter(Boolean);
+
+                        return rawWords.length > 1
+                          ? shuffleArray(rawWords).join("; ")
+                          : rawWords.join("; ");
+                      })()
+                    ]
+                  : [],
               correctAnswer: q.answer || [],
               phase: activePhase,
             };
 
               const userAnswer = await getJawabanUser(q.id, userId);
               if (userAnswer?.data?.input_jawaban) {
-                const input = userAnswer?.data?.input_jawaban || "";
-                if (q.questionType === "multiple-choice") {
+                const input = userAnswer.data.input_jawaban;
+                if (type === "multiple-choice") {
                   processed.answer = input.split(/[;,]/).map(j => parseInt(j.trim()));
-                } else if (q.questionType === "order-arrange") {
+                } else if (type === "order-arrange") {
                   processed.answer = [input];
                 } else {
                   processed.answer = [input];
@@ -755,117 +815,126 @@ useEffect(() => {
       }
 
       if (currentQuestion.questionType === "order-arrange") {
-      const optionWords = currentQuestion.shuffledOptions?.map(opt => opt.option) || [];
-      const isCorrect = isReviewMode && currentQuestion?.jawaban_user?.isTrue === true;
-      const isWrong = isReviewMode && currentQuestion?.jawaban_user?.isTrue === false;
+        const optionWords = (currentQuestion.shuffledOptions || currentQuestion.options || [])
+        .map(opt => opt.option)
+        .filter(Boolean);
+
+        if (optionWords.length === 0 && !isReviewMode) {
+          return <p className="text-red-500 text-sm">Soal ini tidak memiliki opsi.</p>;
+        }
 
 
-      const userOrder = currentQuestion.answer[0]
-        ? currentQuestion.answer[0].split(";").map(s => s.trim()).filter(Boolean)
-        : optionWords;
+        const userOrder = currentQuestion.answer?.[0]
+          ? currentQuestion.answer[0].split(";").map(s => s.trim()).filter(Boolean)
+          : optionWords;
 
-      const handleDragStart = idx => setDraggedIdx(idx);
-      const handleDragOver = (e, idx) => {
-        e.preventDefault();
-        setDragOverIdx(idx);
-      };
-      const handleDrop = idx => {
-        if (draggedIdx === null || draggedIdx === idx) return;
+        const handleDragStart = idx => setDraggedIdx(idx);
+        const handleDragOver = (e, idx) => {
+          e.preventDefault();
+          setDragOverIdx(idx);
+        };
+        const handleDrop = idx => {
+          if (draggedIdx === null || draggedIdx === idx) return;
 
-        setQuestionList(prev =>
-          prev.map((q, qIdx) => {
-            if (qIdx !== number) return q;
-            const arr = [...userOrder];
-            const [moved] = arr.splice(draggedIdx, 1);
-            arr.splice(idx, 0, moved);
-            return { ...q, answer: [arr.join("; ")] };
-          })
-        );
+          setQuestionList(prev =>
+            prev.map((q, qIdx) => {
+              if (qIdx !== number) return q;
+              const arr = [...userOrder];
+              const [moved] = arr.splice(draggedIdx, 1);
+              arr.splice(idx, 0, moved);
+              return { ...q, answer: [arr.join("; ")] };
+            })
+          );
 
-        setDraggedIdx(null);
-        setDragOverIdx(null);
-      };
-      const handleDragEnd = () => {
-        setDraggedIdx(null);
-        setDragOverIdx(null);
-      };
+          setDraggedIdx(null);
+          setDragOverIdx(null);
+        };
+        const handleDragEnd = () => {
+          setDraggedIdx(null);
+          setDragOverIdx(null);
+        };
 
-      return (
-      <div className="flex flex-col gap-2">
-        {isReviewMode && (
-          <div className="text-sm text-gray-600 font-medium text-right">
-            Poin: {currentQuestion?.jawaban_user?.poing ?? 0}
-          </div>
-        )}
-        <h5 className="text-base font-medium">Susun Kata Di Bawah Ini!</h5>
-        <div className="flex flex-row flex-wrap gap-2">
-          {userOrder.map((word, idx) => (
-            <motion.div
-              key={word + idx}
-              layout
-              transition={{ type: "spring", stiffness: 500, damping: 30 }}
-              draggable={!isReviewMode}
-              onDragStart={isReviewMode ? undefined : () => handleDragStart(idx)}
-              onDragOver={isReviewMode ? undefined : (e) => handleDragOver(e, idx)}
-              onDrop={isReviewMode ? undefined : () => handleDrop(idx)}
-              onDragEnd={isReviewMode ? undefined : handleDragEnd}
-              style={{
-                display: "inline-block",
-                opacity: draggedIdx === idx ? 0.5 : 1,
-                outline: dragOverIdx === idx && draggedIdx !== null ? "2px dashed #3377FF" : "none",
-                cursor: isReviewMode ? "default" : draggedIdx === idx ? "grabbing" : "grab",
-              }}
-            >
-              <Button
-                // disabled={isReviewMode}
-                className={`rounded-2xl px-6 py-5 mr-2 mb-2 ${isReviewMode ? "pointer-events-none" : ""}
-                  ${isReviewMode
-                    ? currentQuestion?.jawaban_user?.isTrue === true
-                      ? "bg-green-100 border border-green-500 text-green-700"
-                      : currentQuestion?.jawaban_user?.isTrue === false
-                        ? "bg-red-100 border border-red-500 text-red-700"
-                        : "bg-white border border-gray-300 text-blue-500"
-                    : "bg-white border border-gray-300 text-blue-500"
-                  }
-                `}
-                style={{
-                  minWidth: 100,
-                  background:
-                    dragOverIdx === idx && draggedIdx !== null && !isReviewMode
-                      ? "#e6f0ff"
-                      : undefined,
-                }}
-              >
-                {word}
-              </Button>
-            </motion.div>
-          ))}
-        </div>
-        <div className="mt-2 text-xs text-gray-500">
-          {isReviewMode ? "* Ini adalah jawaban yang Anda susun" : "* Drag & drop untuk mengurutkan"}
-        </div>
+        return (
+          <div className="flex flex-col gap-2">
+            {isReviewMode && (
+              <div className="text-sm text-gray-600 font-medium text-right">
+                Poin: {currentQuestion?.jawaban_user?.poing ?? 0}
+              </div>
+            )}
 
-        {isReviewMode && currentQuestion?.jawaban_user?.isTrue === false && (
-          <div className="mt-6">
-            <h5 className="text-base font-medium text-red-500 mb-2">Jawaban yang benar:</h5>
-            <div className="flex flex-row flex-wrap gap-2">
-              {(currentQuestion.correctAnswer || []).map((word, idx) => (
-                <div key={`correct-${idx}`}>
-                  <Button
-                    // disabled
-                    className={`bg-green-100 border border-green-500 text-green-700 rounded-2xl px-6 py-5 mr-2 mb-2 ${isReviewMode ? "pointer-events-none" : ""}`}
-                    style={{ minWidth: 100 }}
-                  >
-                    {word}
-                  </Button>
+              <>
+                {!isReviewMode && <h5 className="text-base font-medium">Susun Kata Di Bawah Ini!</h5>}
+                {isReviewMode && (
+                  <h5 className="text-base font-medium mb-2 text-gray-600">
+                    Jawaban Anda:
+                  </h5>
+                )}
+                <div className="flex flex-row flex-wrap gap-2">
+                  {userOrder.map((word, idx) => (
+                    <motion.div
+                      key={word + idx}
+                      layout
+                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      draggable={!isReviewMode}
+                      onDragStart={isReviewMode ? undefined : () => handleDragStart(idx)}
+                      onDragOver={isReviewMode ? undefined : (e) => handleDragOver(e, idx)}
+                      onDrop={isReviewMode ? undefined : () => handleDrop(idx)}
+                      onDragEnd={isReviewMode ? undefined : handleDragEnd}
+                      style={{
+                        display: "inline-block",
+                        opacity: draggedIdx === idx ? 0.5 : 1,
+                        outline: dragOverIdx === idx && draggedIdx !== null ? "2px dashed #3377FF" : "none",
+                        cursor: isReviewMode ? "default" : draggedIdx === idx ? "grabbing" : "grab",
+                      }}
+                    >
+                      <Button
+                        className={`rounded-2xl px-6 py-5 mr-2 mb-2 ${isReviewMode ? "pointer-events-none" : ""}`}
+                        style={{
+                          minWidth: 100,
+                          backgroundColor: isReviewMode
+                            ? currentQuestion?.jawaban_user?.isTrue
+                              ? "#d1fae5" // ✅ hijau kalau benar
+                              : "#fee2e2" // ❌ merah kalau salah
+                            : undefined,
+                          borderColor: isReviewMode
+                            ? currentQuestion?.jawaban_user?.isTrue
+                              ? "#10b981"
+                              : "#f87171"
+                            : undefined,
+                          color: isReviewMode
+                            ? currentQuestion?.jawaban_user?.isTrue
+                              ? "#065f46"
+                              : "#991b1b"
+                            : undefined,
+                        }}
+                      >
+                        {word}
+                      </Button>
+                    </motion.div>
+                  ))}
                 </div>
-              ))}
-            </div>
+                <div className="mt-2 text-xs text-gray-500">
+                  {isReviewMode ? "* Ini adalah jawaban yang Anda susun" : "* Drag & drop untuk mengurutkan"}
+                </div>
+
+                {isReviewMode && currentQuestion?.jawaban_user?.isTrue === false && (
+                  <div className="mt-6">
+                    <h5 className="text-base font-medium text-red-500 mb-2">Jawaban yang benar:</h5>
+                    <div className="flex flex-row flex-wrap gap-2">
+                      {(currentQuestion.correctAnswer || []).map((word, idx) => (
+                        <div key={`correct-${idx}`}>
+                          <Button className="bg-green-100 border border-green-500 text-green-700 rounded-2xl px-6 py-5 mr-2 mb-2">
+                            {word}
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
           </div>
-        )}
-      </div>
-    );
-  }
+        );
+      }
 
 
       if (currentQuestion.questionType === "guide") {
@@ -887,18 +956,18 @@ useEffect(() => {
     };
 
     useEffect(() => {
-    if (
-      !isReviewMode &&
-      currentQuestion.questionType === "order-arrange" &&
-      (!currentQuestion.answer || !currentQuestion.answer[0])
-    ) {
-      const optionWords = currentQuestion.shuffledOptions?.map(opt => opt.option) || [];
-      const initialOrder = optionWords.join("; ");
-      setQuestionList(prev =>
-        prev.map((q, idx) => (idx === number ? { ...q, answer: [initialOrder] } : q))
-      );
-    }
-  }, [number, currentQuestion, isReviewMode]);
+      if (
+        !isReviewMode &&
+        currentQuestion.questionType === "order-arrange" &&
+        (!currentQuestion.answer || !currentQuestion.answer[0])
+      ) {
+        const optionWords = currentQuestion.shuffledOptions?.map(opt => opt.option) || [];
+        const initialOrder = optionWords.join("; ");
+        setQuestionList(prev =>
+          prev.map((q, idx) => (idx === number ? { ...q, answer: [initialOrder] } : q))
+        );
+      }
+    }, [number, currentQuestion, isReviewMode]);
 
     const renderMediaPreview = (imageString) => {
     if (!imageString) return null;
@@ -1014,6 +1083,7 @@ useEffect(() => {
                 <div className="my-6" dangerouslySetInnerHTML={{ __html: currentQuestion.question }} />
                 {currentQuestion.isMultipleAnswer && <h4 className="text-gray-500 text-sm mb-2">Silahkan Pilih Jawaban Lebih Dari Satu!</h4>}
                 {renderQuestion()}
+                
                 {(isReviewMode && currentQuestion?.penjelasan) && (
                   <div className="rounded-lg mb-4 mt-6">
                     <h5 className="text-base font-semibold mb-2">Penjelasan:</h5>
