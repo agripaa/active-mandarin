@@ -3,7 +3,7 @@ import { formatRupiah } from "../../utils/rupiahFormat";
 import { FaWhatsapp } from "react-icons/fa";
 import { getTransactionById } from "../../api/transaksi";
 import { getCertificateById } from "../../api/certificate";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { formatDate } from "../../utils/formatDate";
 import { getProfile } from "../../api/auth";
 import { html2pdf } from "html2pdf.js";
@@ -43,8 +43,12 @@ const levelMap = {
 const Certificate = () => {
   const { id, examNo } = useParams();
   const [certificate, setCertificate] = useState(null);
+  const [profileBase64, setProfileBase64] = useState("");
   const token = localStorage.getItem("token");
   const [user, setUser] = useState(null);
+  const leftRef = useRef(null);
+  const rightRef = useRef(null);
+
   const navigate = useNavigate();
 
   const fetchProfile = async () => {
@@ -58,6 +62,23 @@ const Certificate = () => {
       }
     }
   };
+
+  useEffect(() => {
+    if (leftRef.current && rightRef.current) {
+      rightRef.current.style.height = `${leftRef.current.offsetHeight}px`;
+    }
+  }, [certificate]);
+
+  useEffect(() => {
+    if (certificate?.User?.profile_img) {
+      const url = `${process.env.REACT_APP_API_IMG}${certificate.User.profile_img}`;
+      toDataURL(url, (dataUrl) => {
+        setProfileBase64(dataUrl);
+      });
+    }
+  }, [certificate]);
+
+
 
   const handleDownloadPDF = () => {
     const element = document.getElementById("certificate-content");
@@ -160,7 +181,7 @@ const Certificate = () => {
         </header>
         <main className="w-full mt-3">
           <div className="flex flex-col md:flex-row gap-6 w-full">
-            <div className="flex flex-col gap-2 grow">
+            <div className="flex flex-col gap-2 grow" ref={leftRef}>
               {/* Name */}
               <div className="flex flex-row gap-3 items-center">
                 <div className="flex flex-col">
@@ -239,14 +260,18 @@ const Certificate = () => {
                 </p>
               </div>
             </div>
-            <img
-              id="Img1"
-              src={
-                certificate?.User?.profile_img ? `${process.env.REACT_APP_API_IMG}${certificate?.User?.profile_img}` : "/assets/profile-dummy.webp"
-              }
-              alt="profile"
-              className="h-auto w-full max-w-[200px]"
-            />
+              <div ref={rightRef} className="flex">
+                <img
+                  id="Img1"
+                  src={
+                    certificate?.User?.profile_img
+                      ? `${process.env.REACT_APP_API_IMG}${certificate?.User?.profile_img}`
+                      : "/assets/profile-dummy.webp"
+                  }
+                  alt="profile"
+                  className="h-full object-cover w-full max-w-[250px]"
+                />
+              </div>
           </div>
           <hr className="w-full my-5" />
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">

@@ -35,14 +35,20 @@ app.use(cookieParser());
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/public/brand', express.static(path.join(__dirname, 'public/brand')));
-app.use('/public/products', express.static(path.join(__dirname, 'public/products')));
-app.use('/public/proofs', express.static(path.join(__dirname, 'public/proofs')));
-app.use('/public/cv', express.static(path.join(__dirname, 'public/cv')));
-app.use('/public/proof_donation', express.static(path.join(__dirname, 'public/proof_donation')));
-app.use('/public/profile-user', express.static(path.join(__dirname, 'public/profile-user')));
-app.use('/public/ujian', express.static(path.join(__dirname, 'public/ujian')));
-app.use('/public/soal', express.static(path.join(__dirname, 'public/soal')));
+const allowCrossDomain = function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*"); // or specific domain
+  res.header("Access-Control-Allow-Methods", "GET");
+  next();
+};
+
+app.use('/public/brand', allowCrossDomain, express.static(path.join(__dirname, 'public/brand')));
+app.use('/public/products', allowCrossDomain, express.static(path.join(__dirname, 'public/products')));
+app.use('/public/proofs', allowCrossDomain, express.static(path.join(__dirname, 'public/proofs')));
+app.use('/public/cv', allowCrossDomain, express.static(path.join(__dirname, 'public/cv')));
+app.use('/public/proof_donation', allowCrossDomain, express.static(path.join(__dirname, 'public/proof_donation')));
+app.use('/public/profile-user', allowCrossDomain, express.static(path.join(__dirname, 'public/profile-user')));
+app.use('/public/ujian', allowCrossDomain, express.static(path.join(__dirname, 'public/ujian')));
+app.use('/public/soal', allowCrossDomain, express.static(path.join(__dirname, 'public/soal')));
 
 createFolderIfNotExists(path.join(__dirname, 'public/ujian'));
 createFolderIfNotExists(path.join(__dirname, 'public/brand'));
